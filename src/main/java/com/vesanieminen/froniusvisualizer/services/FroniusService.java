@@ -9,6 +9,8 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 @Service
 public class FroniusService {
@@ -18,7 +20,8 @@ public class FroniusService {
     private final String API_BASE_URL = "/solar_api/v1/";
     private final String GET_API_VERSION = API_BASE + "GetAPIVersion.cgi";
 
-    private final String GET_ARCHIVE_DATA = API_BASE_URL + "GetArchiveData.cgi?Scope=System&StartDate=14.9.2022&EndDate=24.9.2022&Channel=EnergyReal_WAC_Sum_Produced&Channel=EnergyReal_WAC_Minus_Absolute";
+    private final String GET_ARCHIVE_DATA = API_BASE_URL + "GetArchiveData.cgi?Scope=System&StartDate=24.9.2022&EndDate=24.9.2022&Channel=TimeSpanInSec&Channel=EnergyReal_WAC_Sum_Produced";
+    private final String GET_POWER_FLOW_REALTIME_DATA = API_BASE_URL + "GetPowerFlowRealtimeData.fcgi";
 
     public APIVersion getAPIVersion() {
         try {
@@ -30,12 +33,28 @@ public class FroniusService {
         }
     }
 
-    public HttpResponse<String> getHistory() {
+    public void getHistory(Consumer<HttpResponse<String>> consumer) {
+        final HttpRequest request;
         try {
-            final var request = HttpRequest.newBuilder().uri(new URI(IP_ADDRESS + GET_ARCHIVE_DATA)).GET().build();
+            request = HttpRequest.newBuilder().uri(new URI(IP_ADDRESS + GET_ARCHIVE_DATA)).GET().build();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        CompletableFuture.supplyAsync(() -> {
+            try {
+                return HttpClient.newBuilder().build().send(request, HttpResponse.BodyHandlers.ofString());
+            } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }).thenAccept(consumer);
+        //final var strings = new Gson().fromJson(response.body(), String.class);
+    }
+
+    public String getPowerFlowRealtimeData() {
+        try {
+            final var request = HttpRequest.newBuilder().uri(new URI(IP_ADDRESS + GET_POWER_FLOW_REALTIME_DATA)).GET().build();
             final var response = HttpClient.newBuilder().build().send(request, HttpResponse.BodyHandlers.ofString());
-            //final var strings = new Gson().fromJson(response.body(), String.class);
-            return response;
+            return response.body();
         } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
