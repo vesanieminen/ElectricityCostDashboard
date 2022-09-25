@@ -14,8 +14,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-@Route(value = "")
-public class MainView extends Div {
+@Route(value = "fronius")
+public class FroniusLiveView extends Div {
 
     private ScheduledThreadPoolExecutor threadPool;
     private final Span productionSpan;
@@ -23,7 +23,7 @@ public class MainView extends Div {
     private final Span yearSpan;
     private FroniusService froniusService;
 
-    public MainView(@Autowired FroniusService froniusService) throws ExecutionException, InterruptedException {
+    public FroniusLiveView(@Autowired FroniusService froniusService) throws ExecutionException, InterruptedException {
         this.froniusService = froniusService;
 
         addClassNames(LumoUtility.FlexDirection.ROW, LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.JustifyContent.CENTER);
