@@ -70,14 +70,13 @@ public class MainView extends Div {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        threadPool = new ScheduledThreadPoolExecutor(4);
+        threadPool = new ScheduledThreadPoolExecutor(1);
 
         threadPool.scheduleAtFixedRate(() -> {
             getUI().ifPresent(ui -> {
                 froniusService.getHistory(response -> {
                     ui.access(() -> {
                         final var powerFlowRealtimeData = froniusService.getPowerFlowRealtimeData();
-                        //add(new Pre(powerFlowRealtimeData));
                         final var strings = powerFlowRealtimeData.lines().toList();
                         final var power = strings.get(9).split(":")[1];
                         final var powerDouble = Double.parseDouble(power) / 1000;
