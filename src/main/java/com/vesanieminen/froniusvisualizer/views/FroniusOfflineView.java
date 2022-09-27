@@ -15,12 +15,11 @@ import java.nio.file.Path;
 public class FroniusOfflineView extends Div {
 
     public FroniusOfflineView() throws IOException {
-        final var path = Path.of("").toAbsolutePath();
-        final var file = Files.readString(Path.of("src/main/resources/data/fronius/GetArchiveData 6-16.4.2022.js"));
         final var gson = Converters.registerAll(new GsonBuilder()).create();
+        final var file = Files.readString(Path.of("src/main/resources/data/fronius/GetArchiveData 6-16.4.2022.js"));
         final var froniusResponse = gson.fromJson(file, FroniusResponse.class);
-        System.out.println(froniusResponse.head);
-        add(new Pre(file));
+        add(new Pre(froniusResponse.Head.Timestamp.toString()));
+        add(new Pre(froniusResponse.Body.Data.values().stream().toList().get(0).Data.EnergyReal_WAC_Sum_Produced.Values.values().size() + ""));
     }
 
 }

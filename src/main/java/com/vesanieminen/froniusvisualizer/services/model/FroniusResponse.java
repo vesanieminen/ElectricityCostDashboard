@@ -6,49 +6,49 @@ import java.util.List;
 import java.util.Map;
 
 public class FroniusResponse implements Serializable {
-    public Head head;
-    public Body body;
+    public Head Head;
+    public Body Body;
 
     public static class Head implements Serializable {
-        public RequestArguments requestArguments;
-        public Status status;
-        public ZonedDateTime timeStamp;
+        public RequestArguments RequestArguments;
+        public Status Status;
+        public ZonedDateTime Timestamp;
     }
 
     public static class RequestArguments implements Serializable {
-        public List<String> channel;
-        public ZonedDateTime endDate;
-        public String humanReadable;
-        public String scope;
-        public String seriesType;
-        public ZonedDateTime startDate;
+        public List<String> Channel;
+        public ZonedDateTime EndDate;
+        public String HumanReadable;
+        public String Scope;
+        public String SeriesType;
+        public ZonedDateTime StartDate;
     }
 
     public static class Status implements Serializable {
-        public int code;
-        public String reason;
-        public String userMessage;
+        public int Code;
+        public String Reason;
+        public String UserMessage;
     }
 
     public static class Body implements Serializable {
-        public Map<String, Inverter> data;
+        public Map<String, Inverter> Data;
     }
 
     public static class Inverter implements Serializable {
-        public Data data;
-        public int deviceType;
-        public ZonedDateTime end;
-        public int nodeType;
-        public ZonedDateTime start;
+        public Data Data;
+        public int DeviceType;
+        public ZonedDateTime End;
+        public int NodeType;
+        public ZonedDateTime Start;
     }
 
     public static class Data implements Serializable {
-        public Produced energyReal_WAC_Sum_Produced;
+        public Produced EnergyReal_WAC_Sum_Produced;
     }
 
     public static class Produced implements Serializable {
-        public String unit;
-        public Map<String, Double> values;
+        public String Unit;
+        public Map<String, Double> Values;
     }
 
 }
