@@ -2,6 +2,14 @@ package com.vesanieminen.froniusvisualizer.views;
 
 import com.fatboyindustrial.gsonjavatime.Converters;
 import com.google.gson.GsonBuilder;
+import com.vaadin.flow.component.charts.Chart;
+import com.vaadin.flow.component.charts.ChartOptions;
+import com.vaadin.flow.component.charts.model.ChartType;
+import com.vaadin.flow.component.charts.model.ListSeries;
+import com.vaadin.flow.component.charts.model.Marker;
+import com.vaadin.flow.component.charts.model.PlotOptionsLine;
+import com.vaadin.flow.component.charts.model.Tooltip;
+import com.vaadin.flow.component.charts.themes.LumoDarkTheme;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Pre;
 import com.vaadin.flow.router.Route;
@@ -26,6 +34,19 @@ public class NordpoolspotView extends Div {
         final var nordpoolResponse = gson.fromJson(response.body(), NordpoolResponse.class);
         Stream.of(nordpoolResponse.data.getClass().getDeclaredFields()).forEach(field -> getAdd(nordpoolResponse, field));
         //add(new Pre(response.body()));
+
+        Chart chart = new Chart(ChartType.LINE);
+        ChartOptions.get().setTheme(new LumoDarkTheme());
+        add(chart);
+
+        final var listSeries = new ListSeries(1, 2, 3);
+        chart.getConfiguration().addSeries(listSeries);
+        final var plotOptionsLine = new PlotOptionsLine();
+        plotOptionsLine.setMarker(new Marker(true));
+        chart.getConfiguration().setPlotOptions(plotOptionsLine);
+        final var tooltip = new Tooltip();
+        tooltip.setFormatter("function() { return this.x + 'snt/kWh'}");
+        chart.getConfiguration().setTooltip(tooltip);
     }
 
     private void getAdd(NordpoolResponse nordpoolResponse, Field field) {

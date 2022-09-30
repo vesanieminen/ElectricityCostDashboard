@@ -134,6 +134,10 @@
             <artifactId>gson-javatime-serialisers</artifactId>
             <version>1.1.2</version>
         </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-charts-flow</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
