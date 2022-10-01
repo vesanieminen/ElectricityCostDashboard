@@ -15,6 +15,7 @@ import com.vaadin.flow.component.charts.themes.LumoDarkTheme;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Pre;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
 
 import java.io.IOException;
@@ -39,6 +40,9 @@ public class NordpoolspotView extends Div {
     private final DecimalFormat df = new DecimalFormat("#.00");
 
     public NordpoolspotView() throws URISyntaxException, IOException, InterruptedException, ParseException {
+        addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.CENTER, LumoUtility.TextColor.PRIMARY_CONTRAST);
+        setHeightFull();
+
         final var request = HttpRequest.newBuilder().uri(new URI("https://www.nordpoolgroup.com/api/marketdata/page/10")).GET().build();
         final var response = HttpClient.newBuilder().build().send(request, HttpResponse.BodyHandlers.ofString());
         final var gson = Converters.registerAll(new GsonBuilder()).create();
@@ -46,6 +50,7 @@ public class NordpoolspotView extends Div {
         //Stream.of(nordpoolResponse.data.getClass().getDeclaredFields()).forEach(field -> getAdd(nordpoolResponse, field));
 
         Chart chart = new Chart(ChartType.LINE);
+        chart.setHeightFull();
         ChartOptions.get().setTheme(new LumoDarkTheme());
         add(chart);
 
@@ -59,7 +64,7 @@ public class NordpoolspotView extends Div {
         plotOptionsLine.setMarker(new Marker(true));
         chart.getConfiguration().setPlotOptions(plotOptionsLine);
         final var tooltip = new Tooltip();
-        tooltip.setFormatter("function() { return this.y + 'snt/kWh'}");
+        tooltip.setFormatter("function() { return this.y + 'snt/kWh <br/>' + this.x }");
         chart.getConfiguration().setTooltip(tooltip);
 
         final var xAxis = new XAxis();
