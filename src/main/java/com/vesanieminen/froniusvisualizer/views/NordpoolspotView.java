@@ -9,6 +9,8 @@ import com.vaadin.flow.component.charts.model.ListSeries;
 import com.vaadin.flow.component.charts.model.Marker;
 import com.vaadin.flow.component.charts.model.PlotOptionsLine;
 import com.vaadin.flow.component.charts.model.Tooltip;
+import com.vaadin.flow.component.charts.model.XAxis;
+import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.charts.themes.LumoDarkTheme;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Pre;
@@ -27,6 +29,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
 import java.util.function.Function;
+import java.util.stream.IntStream;
 
 @Route("nordpool")
 public class NordpoolspotView extends Div {
@@ -55,6 +58,15 @@ public class NordpoolspotView extends Div {
         final var tooltip = new Tooltip();
         tooltip.setFormatter("function() { return this.y + 'snt/kWh'}");
         chart.getConfiguration().setTooltip(tooltip);
+
+        final var xAxis = new XAxis();
+        xAxis.setCategories(IntStream.range(1, 24).mapToObj(String::valueOf).toArray(String[]::new));
+        xAxis.setTitle("Time");
+        chart.getConfiguration().addxAxis(xAxis);
+        final var yAxis = new YAxis();
+        yAxis.setTitle("Price");
+        chart.getConfiguration().addyAxis(yAxis);
+
     }
 
     private Function<NordpoolResponse.Row, Number> getRowNumberFunction(NumberFormat format) {
