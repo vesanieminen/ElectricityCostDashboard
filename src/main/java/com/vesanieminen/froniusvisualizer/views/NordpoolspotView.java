@@ -27,6 +27,8 @@ import java.net.http.HttpResponse;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Locale;
 import java.util.function.Function;
 import java.util.stream.IntStream;
@@ -49,8 +51,9 @@ public class NordpoolspotView extends Div {
 
         NumberFormat format = NumberFormat.getInstance(Locale.FRANCE);
         format.setMaximumFractionDigits(2);
-        final var prices = nordpoolResponse.data.Rows.subList(0, 23).stream().map(getRowNumberFunction(format)).toList();
-        final var listSeries = new ListSeries(prices);
+        final var prices = nordpoolResponse.data.Rows.subList(0, 24).stream().map(getRowNumberFunction(format)).toList();
+        final var dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
+        final var listSeries = new ListSeries("Electricity price on " + nordpoolResponse.data.DataStartdate.format(dateTimeFormatter) + " - " + nordpoolResponse.data.DataEnddate.format(dateTimeFormatter), prices);
         chart.getConfiguration().addSeries(listSeries);
         final var plotOptionsLine = new PlotOptionsLine();
         plotOptionsLine.setMarker(new Marker(true));
@@ -60,13 +63,12 @@ public class NordpoolspotView extends Div {
         chart.getConfiguration().setTooltip(tooltip);
 
         final var xAxis = new XAxis();
-        xAxis.setCategories(IntStream.range(1, 24).mapToObj(String::valueOf).toArray(String[]::new));
+        xAxis.setCategories(IntStream.range(0, 24).mapToObj(i -> i + ":00").toArray(String[]::new));
         xAxis.setTitle("Time");
         chart.getConfiguration().addxAxis(xAxis);
         final var yAxis = new YAxis();
         yAxis.setTitle("Price");
         chart.getConfiguration().addyAxis(yAxis);
-
     }
 
     private Function<NordpoolResponse.Row, Number> getRowNumberFunction(NumberFormat format) {
