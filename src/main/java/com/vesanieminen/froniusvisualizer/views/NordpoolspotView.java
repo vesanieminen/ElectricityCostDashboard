@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
@@ -29,6 +30,8 @@ import java.util.function.Function;
 
 @Route("nordpool")
 public class NordpoolspotView extends Div {
+
+    private final DecimalFormat df = new DecimalFormat("#.00");
 
     public NordpoolspotView() throws URISyntaxException, IOException, InterruptedException, ParseException {
         final var request = HttpRequest.newBuilder().uri(new URI("https://www.nordpoolgroup.com/api/marketdata/page/10")).GET().build();
@@ -42,6 +45,7 @@ public class NordpoolspotView extends Div {
         add(chart);
 
         NumberFormat format = NumberFormat.getInstance(Locale.FRANCE);
+        format.setMaximumFractionDigits(2);
         final var prices = nordpoolResponse.data.Rows.subList(0, 23).stream().map(getRowNumberFunction(format)).toList();
         final var listSeries = new ListSeries(prices);
         chart.getConfiguration().addSeries(listSeries);
@@ -53,10 +57,10 @@ public class NordpoolspotView extends Div {
         chart.getConfiguration().setTooltip(tooltip);
     }
 
-    private static Function<NordpoolResponse.Row, Number> getRowNumberFunction(NumberFormat format) {
+    private Function<NordpoolResponse.Row, Number> getRowNumberFunction(NumberFormat format) {
         return row -> {
             try {
-                return format.parse(row.Columns.get(5).Value).doubleValue() / 10;
+                return Double.valueOf(df.format(format.parse(row.Columns.get(5).Value).doubleValue() / 10));
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
