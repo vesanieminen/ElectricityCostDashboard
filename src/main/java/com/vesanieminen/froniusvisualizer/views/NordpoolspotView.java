@@ -53,8 +53,8 @@ public class NordpoolspotView extends Div {
         //Stream.of(nordpoolResponse.data.getClass().getDeclaredFields()).forEach(field -> getAdd(nordpoolResponse, field));
 
         Chart chart = new Chart(ChartType.LINE);
+        chart.getConfiguration().getChart().setStyledMode(true);
         chart.setHeightFull();
-        //ChartOptions.get().setTheme(new LumoDarkTheme());
         add(chart);
 
         NumberFormat format = NumberFormat.getInstance(Locale.FRANCE);
@@ -120,4 +120,5 @@ public class NordpoolspotView extends Div {
             throw new RuntimeException(e);
         }
     }
+
 }
