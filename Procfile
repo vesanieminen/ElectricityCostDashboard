@@ -1,0 +1,1 @@
+web: java -jar target/froniusvizualiser-1.0-SNAPSHOT.jar $PORT
