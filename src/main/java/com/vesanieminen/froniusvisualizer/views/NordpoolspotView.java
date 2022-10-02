@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.DashStyle;
+import com.vaadin.flow.component.charts.model.Label;
 import com.vaadin.flow.component.charts.model.ListSeries;
 import com.vaadin.flow.component.charts.model.Marker;
 import com.vaadin.flow.component.charts.model.PlotLine;
@@ -85,11 +86,13 @@ public class NordpoolspotView extends Div {
         plotLine.setValue(LocalDateTime.now().getHour());
         chart.getConfiguration().getxAxis().addPlotLine(plotLine);
 
+        final var averageValue = mapToPrice(format, nordpoolResponse.data.Rows.get(26));
         PlotLine averagePrice = new PlotLine();
+        averagePrice.setLabel(new Label("Average value: " + averageValue + " snt/kWh"));
         averagePrice.setColor(SolidColor.GREEN);
         averagePrice.setDashStyle(DashStyle.DASH);
         averagePrice.setWidth(2);
-        averagePrice.setValue(mapToPrice(format, nordpoolResponse.data.Rows.get(26)));
+        averagePrice.setValue(averageValue);
         chart.getConfiguration().getyAxis().addPlotLine(averagePrice);
     }
 
