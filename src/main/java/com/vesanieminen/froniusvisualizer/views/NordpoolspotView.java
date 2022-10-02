@@ -37,7 +37,7 @@ import java.util.Locale;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
-@Route("nordpool")
+@Route("")
 public class NordpoolspotView extends Div {
 
     private final DecimalFormat df = new DecimalFormat("#.00");
