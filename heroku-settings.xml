@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <!-- activate by setting the MAVEN_SETTINGS_PATH config var to heroku-settings.xml in Heroku project settings tab.
+    See https://devcenter.heroku.com/articles/using-a-custom-maven-settings-xml for more details.
+     -->
+
+    <activeProfiles>
+        <activeProfile>production</activeProfile>
+        <activeProfile>npm</activeProfile>
+    </activeProfiles>
+</settings>
