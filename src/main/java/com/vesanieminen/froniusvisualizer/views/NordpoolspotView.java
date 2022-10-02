@@ -3,15 +3,16 @@ package com.vesanieminen.froniusvisualizer.views;
 import com.fatboyindustrial.gsonjavatime.Converters;
 import com.google.gson.GsonBuilder;
 import com.vaadin.flow.component.charts.Chart;
-import com.vaadin.flow.component.charts.ChartOptions;
 import com.vaadin.flow.component.charts.model.ChartType;
+import com.vaadin.flow.component.charts.model.DashStyle;
 import com.vaadin.flow.component.charts.model.ListSeries;
 import com.vaadin.flow.component.charts.model.Marker;
+import com.vaadin.flow.component.charts.model.PlotLine;
 import com.vaadin.flow.component.charts.model.PlotOptionsLine;
 import com.vaadin.flow.component.charts.model.Tooltip;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
-import com.vaadin.flow.component.charts.themes.LumoDarkTheme;
+import com.vaadin.flow.component.charts.model.style.SolidColor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Pre;
 import com.vaadin.flow.router.Route;
@@ -28,6 +29,7 @@ import java.net.http.HttpResponse;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
@@ -51,7 +53,7 @@ public class NordpoolspotView extends Div {
 
         Chart chart = new Chart(ChartType.LINE);
         chart.setHeightFull();
-        ChartOptions.get().setTheme(new LumoDarkTheme());
+        //ChartOptions.get().setTheme(new LumoDarkTheme());
         add(chart);
 
         NumberFormat format = NumberFormat.getInstance(Locale.FRANCE);
@@ -74,6 +76,13 @@ public class NordpoolspotView extends Div {
         final var yAxis = new YAxis();
         yAxis.setTitle("Price");
         chart.getConfiguration().addyAxis(yAxis);
+
+        PlotLine plotLine = new PlotLine();
+        plotLine.setColor(SolidColor.RED);
+        plotLine.setDashStyle(DashStyle.SOLID);
+        plotLine.setWidth(2);
+        plotLine.setValue(LocalDateTime.now().getHour());
+        chart.getConfiguration().getxAxis().addPlotLine(plotLine);
     }
 
     private Function<NordpoolResponse.Row, Number> getRowNumberFunction(NumberFormat format) {
