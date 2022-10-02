@@ -7,7 +7,7 @@ public class NordpoolResponse {
 
     public Data data;
 
-    public class Data {
+    public static class Data {
         public boolean IsDivided;
         public LocalDateTime DataStartdate;
         public LocalDateTime DataEnddate;
@@ -16,14 +16,14 @@ public class NordpoolResponse {
         public List<Row> Rows;
     }
 
-    public class Row {
+    public static class Row {
         public LocalDateTime StartTime;
         public LocalDateTime EndTime;
         public String Name;
         public List<Column> Columns;
     }
 
-    public class Column {
+    public static class Column {
         public String Name;
         public String Value;
         public int Index;

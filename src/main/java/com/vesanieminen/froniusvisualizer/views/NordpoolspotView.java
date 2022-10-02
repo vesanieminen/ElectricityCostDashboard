@@ -64,7 +64,7 @@ public class NordpoolspotView extends Div {
         plotOptionsLine.setMarker(new Marker(true));
         chart.getConfiguration().setPlotOptions(plotOptionsLine);
         final var tooltip = new Tooltip();
-        tooltip.setFormatter("function() { return this.y + 'snt/kWh <br/>' + this.x }");
+        tooltip.setFormatter("function() { return this.y + 'snt/kWh <br/>' + this.x + ' - ' + (parseInt(this.x.split(':')[0]) + 1) + ':00' }");
         chart.getConfiguration().setTooltip(tooltip);
 
         final var xAxis = new XAxis();
@@ -79,7 +79,7 @@ public class NordpoolspotView extends Div {
     private Function<NordpoolResponse.Row, Number> getRowNumberFunction(NumberFormat format) {
         return row -> {
             try {
-                return Double.valueOf(df.format(format.parse(row.Columns.get(5).Value).doubleValue() / 10));
+                return Double.valueOf(df.format(format.parse(row.Columns.get(5).Value).doubleValue() * 1.24d / 10));
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
