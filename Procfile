@@ -1,1 +1,1 @@
-web: java -jar target/froniusvizualiser-1.0-SNAPSHOT.jar $PORT
+web: java -jar target/froniusvizualizer-1.0-SNAPSHOT.jar $PORT
