@@ -84,16 +84,27 @@ public class NordpoolspotView extends Div {
         plotLine.setWidth(2);
         plotLine.setValue(LocalDateTime.now().getHour());
         chart.getConfiguration().getxAxis().addPlotLine(plotLine);
+
+        PlotLine averagePrice = new PlotLine();
+        averagePrice.setColor(SolidColor.GREEN);
+        averagePrice.setDashStyle(DashStyle.DASH);
+        averagePrice.setWidth(2);
+        averagePrice.setValue(mapToPrice(format, nordpoolResponse.data.Rows.get(26)));
+        chart.getConfiguration().getyAxis().addPlotLine(averagePrice);
     }
 
     private Function<NordpoolResponse.Row, Number> getRowNumberFunction(NumberFormat format) {
         return row -> {
             try {
-                return Double.valueOf(df.format(format.parse(row.Columns.get(5).Value).doubleValue() * 1.24d / 10));
+                return mapToPrice(format, row);
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
         };
+    }
+
+    private Double mapToPrice(NumberFormat format, NordpoolResponse.Row row) throws ParseException {
+        return Double.valueOf(df.format(format.parse(row.Columns.get(5).Value).doubleValue() * 1.24d / 10));
     }
 
     private void getAdd(NordpoolResponse nordpoolResponse, Field field) {
