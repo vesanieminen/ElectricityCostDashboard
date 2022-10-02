@@ -66,7 +66,7 @@ public class NordpoolspotView extends Div {
         plotOptionsLine.setMarker(new Marker(true));
         chart.getConfiguration().setPlotOptions(plotOptionsLine);
         final var tooltip = new Tooltip();
-        tooltip.setFormatter("function() { return this.y + 'snt/kWh <br/>' + this.x + ' - ' + (parseInt(this.x.split(':')[0]) + 1) + ':00' }");
+        tooltip.setFormatter("function() { return this.y + ' snt/kWh <br/>' + this.x + ' - ' + (parseInt(this.x.split(':')[0]) + 1) + ':00' }");
         chart.getConfiguration().setTooltip(tooltip);
 
         final var xAxis = new XAxis();
@@ -74,6 +74,7 @@ public class NordpoolspotView extends Div {
         xAxis.setTitle("Time");
         chart.getConfiguration().addxAxis(xAxis);
         final var yAxis = new YAxis();
+        yAxis.setMin(0);
         yAxis.setTitle("Price");
         chart.getConfiguration().addyAxis(yAxis);
 
