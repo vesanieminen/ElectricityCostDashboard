@@ -79,12 +79,14 @@ public class NordpoolspotView extends Div {
         yAxis.setTitle("Price");
         chart.getConfiguration().addyAxis(yAxis);
 
-        PlotLine plotLine = new PlotLine();
-        plotLine.setColor(SolidColor.RED);
-        plotLine.setDashStyle(DashStyle.SOLID);
-        plotLine.setWidth(2);
-        plotLine.setValue(LocalDateTime.now().getHour());
-        chart.getConfiguration().getxAxis().addPlotLine(plotLine);
+        if (LocalDateTime.now().getDayOfMonth() == nordpoolResponse.data.Rows.get(5).StartTime.getDayOfMonth()) {
+            PlotLine plotLine = new PlotLine();
+            plotLine.setColor(SolidColor.RED);
+            plotLine.setDashStyle(DashStyle.SOLID);
+            plotLine.setWidth(2);
+            plotLine.setValue(LocalDateTime.now().getHour());
+            chart.getConfiguration().getxAxis().addPlotLine(plotLine);
+        }
 
         final var averageValue = mapToPrice(format, nordpoolResponse.data.Rows.get(26));
         PlotLine averagePrice = new PlotLine();
