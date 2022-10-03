@@ -4,7 +4,6 @@ import com.fatboyindustrial.gsonjavatime.Converters;
 import com.google.gson.GsonBuilder;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
-import com.vaadin.flow.component.charts.model.DashStyle;
 import com.vaadin.flow.component.charts.model.Label;
 import com.vaadin.flow.component.charts.model.ListSeries;
 import com.vaadin.flow.component.charts.model.Marker;
@@ -13,7 +12,6 @@ import com.vaadin.flow.component.charts.model.PlotOptionsLine;
 import com.vaadin.flow.component.charts.model.Tooltip;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
-import com.vaadin.flow.component.charts.model.style.SolidColor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Pre;
 import com.vaadin.flow.router.Route;
@@ -31,6 +29,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
@@ -41,7 +40,6 @@ import java.util.stream.IntStream;
 public class NordpoolspotView extends Div {
 
     private final DecimalFormat df = new DecimalFormat("#.00");
-
     public NordpoolspotView() throws URISyntaxException, IOException, InterruptedException, ParseException {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.CENTER, LumoUtility.TextColor.PRIMARY_CONTRAST);
         setHeightFull();
@@ -49,10 +47,10 @@ public class NordpoolspotView extends Div {
         final var request = HttpRequest.newBuilder().uri(new URI("https://www.nordpoolgroup.com/api/marketdata/page/10")).GET().build();
         final var response = HttpClient.newBuilder().build().send(request, HttpResponse.BodyHandlers.ofString());
         final var gson = Converters.registerAll(new GsonBuilder()).create();
-        final var nordpoolResponse = gson.fromJson(response.body(), NordpoolResponse.class);
+        var nordpoolResponse = gson.fromJson(response.body(), NordpoolResponse.class);
         //Stream.of(nordpoolResponse.data.getClass().getDeclaredFields()).forEach(field -> getAdd(nordpoolResponse, field));
 
-        Chart chart = new Chart(ChartType.LINE);
+        var chart = new Chart(ChartType.LINE);
         chart.getConfiguration().getChart().setStyledMode(true);
         chart.setHeightFull();
         add(chart);
@@ -81,19 +79,14 @@ public class NordpoolspotView extends Div {
 
         if (LocalDateTime.now().getDayOfMonth() == nordpoolResponse.data.Rows.get(5).StartTime.getDayOfMonth()) {
             PlotLine plotLine = new PlotLine();
-            plotLine.setColor(SolidColor.RED);
-            plotLine.setDashStyle(DashStyle.SOLID);
-            plotLine.setWidth(2);
-            plotLine.setValue(LocalDateTime.now().getHour());
+            plotLine.setClassName("time");
+            plotLine.setValue(LocalDateTime.now(ZoneId.of("Europe/Helsinki")).getHour());
             chart.getConfiguration().getxAxis().addPlotLine(plotLine);
         }
 
         final var averageValue = mapToPrice(format, nordpoolResponse.data.Rows.get(26));
         PlotLine averagePrice = new PlotLine();
         averagePrice.setLabel(new Label("Average value: " + averageValue + " snt/kWh"));
-        averagePrice.setColor(SolidColor.GREEN);
-        averagePrice.setDashStyle(DashStyle.DASH);
-        averagePrice.setWidth(2);
         averagePrice.setValue(averageValue);
         chart.getConfiguration().getyAxis().addPlotLine(averagePrice);
     }

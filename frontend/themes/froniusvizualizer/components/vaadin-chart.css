@@ -1,0 +1,11 @@
+:host .highcharts-plot-line {
+    stroke: red;
+    stroke-width: 2px;
+    stroke-dasharray: 1, 3;
+}
+
+:host .highcharts-plot-line.time {
+    stroke: yellow;
+    stroke-width: 2px;
+    stroke-dasharray: 0, 0;
+}
