@@ -65,7 +65,7 @@ public class NordpoolspotView extends Div {
         plotOptionsLine.setMarker(new Marker(true));
         chart.getConfiguration().setPlotOptions(plotOptionsLine);
         final var tooltip = new Tooltip();
-        tooltip.setFormatter("function() { return this.y + ' snt/kWh <br/>' + this.x + ' - ' + (parseInt(this.x.split(':')[0]) + 1) + ':00' }");
+        tooltip.setFormatter("function() { return this.y + ' c/kWh <br/>' + this.x + ' - ' + (parseInt(this.x.split(':')[0]) + 1) + ':00' }");
         chart.getConfiguration().setTooltip(tooltip);
 
         final var xAxis = new XAxis();
@@ -86,7 +86,7 @@ public class NordpoolspotView extends Div {
 
         final var averageValue = mapToPrice(format, nordpoolResponse.data.Rows.get(26));
         PlotLine averagePrice = new PlotLine();
-        averagePrice.setLabel(new Label("Average value: " + averageValue + " snt/kWh"));
+        averagePrice.setLabel(new Label("Average price: " + averageValue + " c/kWh"));
         averagePrice.setValue(averageValue);
         chart.getConfiguration().getyAxis().addPlotLine(averagePrice);
     }
