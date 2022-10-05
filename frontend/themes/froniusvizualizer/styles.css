@@ -54,3 +54,7 @@ html {
     background-color: var(--yellow-900);
 }
 
+.color-yellow {
+    color: rgb(242, 182, 50);
+}
+
