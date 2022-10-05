@@ -89,7 +89,6 @@ public class NordpoolspotView extends Div {
         chart.getConfiguration().setTooltip(tooltip);
 
         final var xAxis = new XAxis();
-        //xAxis.setCategories(IntStream.range(0, 24).mapToObj(i -> i + ":00").toArray(String[]::new));
         xAxis.setTitle("Time");
         chart.getConfiguration().addxAxis(xAxis);
         final var yAxis = new YAxis();
@@ -97,13 +96,12 @@ public class NordpoolspotView extends Div {
         yAxis.setTitle("Price");
         chart.getConfiguration().addyAxis(yAxis);
 
-        //if (LocalDateTime.now().getDayOfMonth() == nordpoolResponse.data.Rows.get(5).StartTime.getDayOfMonth()) {
-        // TODO: the x plotline doesn't work anymore
+        // Add plotline to signify the current time:
         PlotLine plotLine = new PlotLine();
         plotLine.setClassName("time");
-        plotLine.setValue(LocalDateTime.now(ZoneId.of("Europe/Helsinki")).toEpochSecond(ZoneOffset.UTC));
+        plotLine.setValue(LocalDateTime.now(ZoneId.of("Europe/Helsinki")).toEpochSecond(ZoneOffset.UTC) * 1000);
         chart.getConfiguration().getxAxis().addPlotLine(plotLine);
-        //}
+
         final var rangeSelector = new RangeSelector();
         rangeSelector.setButtons(
                 new RangeSelectorButton(RangeSelectorTimespan.DAY, 1, "1d"),
