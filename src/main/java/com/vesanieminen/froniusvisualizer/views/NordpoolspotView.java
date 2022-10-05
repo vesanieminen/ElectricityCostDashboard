@@ -84,7 +84,6 @@ public class NordpoolspotView extends Div {
         chart.getConfiguration().setPlotOptions(plotOptionsLine);
         final var tooltip = new Tooltip();
         tooltip.setValueDecimals(2);
-        tooltip.setUseHTML(true);
         tooltip.setXDateFormat("%A<br />%H:%M %e.%m.%Y");
         tooltip.setPointFormat("{point.y} c/kWh");
         chart.getConfiguration().setTooltip(tooltip);
