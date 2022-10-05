@@ -16,13 +16,11 @@ import com.vaadin.flow.component.charts.model.Tooltip;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Pre;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -51,14 +49,12 @@ public class NordpoolspotView extends Div {
         final var response = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build().send(request, HttpResponse.BodyHandlers.ofString());
         final var gson = Converters.registerAll(new GsonBuilder()).create();
         var nordpoolResponse = gson.fromJson(response.body(), NordpoolResponse.class);
-        //Stream.of(nordpoolResponse.data.getClass().getDeclaredFields()).forEach(field -> getAdd(nordpoolResponse, field));
 
         var chart = new Chart(ChartType.LINE);
         chart.setTimeline(true);
         chart.getConfiguration().getChart().setStyledMode(true);
         chart.setHeightFull();
         add(chart);
-
 
         NumberFormat format = NumberFormat.getInstance(Locale.FRANCE);
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
@@ -99,7 +95,8 @@ public class NordpoolspotView extends Div {
         // Add plotline to signify the current time:
         PlotLine plotLine = new PlotLine();
         plotLine.setClassName("time");
-        plotLine.setValue(LocalDateTime.now(ZoneId.of("Europe/Helsinki")).toEpochSecond(ZoneOffset.UTC) * 1000);
+        final var now = LocalDateTime.now(ZoneId.of("Europe/Helsinki"));
+        plotLine.setValue(now.minusMinutes(now.getMinute()).minusSeconds(now.getSecond()).toEpochSecond(ZoneOffset.UTC) * 1000);
         chart.getConfiguration().getxAxis().addPlotLine(plotLine);
 
         final var rangeSelector = new RangeSelector();
@@ -111,7 +108,7 @@ public class NordpoolspotView extends Div {
                 new RangeSelectorButton(RangeSelectorTimespan.ALL, "7d")
         );
         rangeSelector.setButtonSpacing(12);
-        rangeSelector.setSelected(2);
+        rangeSelector.setSelected(4);
         chart.getConfiguration().setRangeSelector(rangeSelector);
 
         //final var averageValue = mapToPrice(format, nordpoolResponse.data.Rows.get(26));
@@ -133,15 +130,6 @@ public class NordpoolspotView extends Div {
 
     private Double mapToPrice(NumberFormat format, NordpoolResponse.Row row) throws ParseException {
         return Double.valueOf(df.format(format.parse(row.Columns.get(5).Value).doubleValue() * 1 / 10));
-    }
-
-    private void getAdd(NordpoolResponse nordpoolResponse, Field field) {
-        try {
-            field.setAccessible(true);
-            add(new Pre(field.getName() + ": " + field.get(nordpoolResponse.data)));
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }
