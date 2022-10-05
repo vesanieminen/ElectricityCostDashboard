@@ -106,11 +106,13 @@ public class NordpoolspotView extends Div {
         //}
         final var rangeSelector = new RangeSelector();
         rangeSelector.setButtons(
-                new RangeSelectorButton(RangeSelectorTimespan.DAY, 1, "1 day"),
-                new RangeSelectorButton(RangeSelectorTimespan.DAY, 2, "2 days"),
-                new RangeSelectorButton(RangeSelectorTimespan.DAY, 3, "3 days"),
-                new RangeSelectorButton(RangeSelectorTimespan.ALL, "All")
+                new RangeSelectorButton(RangeSelectorTimespan.DAY, 1, "1d"),
+                new RangeSelectorButton(RangeSelectorTimespan.DAY, 2, "2d"),
+                new RangeSelectorButton(RangeSelectorTimespan.DAY, 3, "3d"),
+                new RangeSelectorButton(RangeSelectorTimespan.DAY, 5, "5d"),
+                new RangeSelectorButton(RangeSelectorTimespan.ALL, "7d")
         );
+        rangeSelector.setButtonSpacing(12);
         rangeSelector.setSelected(2);
         chart.getConfiguration().setRangeSelector(rangeSelector);
 
