@@ -80,7 +80,7 @@ public class NordpoolspotView extends Div {
         chart.getConfiguration().addSeries(dataSeries);
 
         final var plotOptionsLine = new PlotOptionsLine();
-        plotOptionsLine.setMarker(new Marker(true));
+        plotOptionsLine.setMarker(new Marker(false));
         chart.getConfiguration().setPlotOptions(plotOptionsLine);
         final var tooltip = new Tooltip();
         tooltip.setValueDecimals(2);

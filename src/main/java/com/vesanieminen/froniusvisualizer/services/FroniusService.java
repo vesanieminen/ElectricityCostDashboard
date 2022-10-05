@@ -47,7 +47,6 @@ public class FroniusService {
                 throw new RuntimeException(e);
             }
         }).thenAccept(consumer);
-        //final var strings = new Gson().fromJson(response.body(), String.class);
     }
 
     public String getPowerFlowRealtimeData() {

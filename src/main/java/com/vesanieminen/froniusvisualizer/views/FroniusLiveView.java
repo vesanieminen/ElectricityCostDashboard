@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 @Route(value = "fronius")
 public class FroniusLiveView extends Div {
@@ -70,9 +69,9 @@ public class FroniusLiveView extends Div {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        threadPool = new ScheduledThreadPoolExecutor(1);
+        //threadPool = new ScheduledThreadPoolExecutor(1);
 
-        threadPool.scheduleAtFixedRate(() -> {
+        //threadPool.scheduleAtFixedRate(() -> {
             getUI().ifPresent(ui -> {
                 froniusService.getHistory(response -> {
                     ui.access(() -> {
@@ -92,11 +91,11 @@ public class FroniusLiveView extends Div {
                     });
                 });
             });
-        }, 4, 4, TimeUnit.SECONDS);
+        //}, 5, 5, TimeUnit.SECONDS);
     }
 
     @Override
     protected void onDetach(DetachEvent detachEvent) {
-        threadPool.shutdown();
+        //threadPool.shutdown();
     }
 }
