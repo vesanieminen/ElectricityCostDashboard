@@ -71,7 +71,7 @@ public class NordpoolspotView extends Div {
                 final var time = row.StartTime.toString().split("T")[1];
                 NordpoolResponse.Column column = row.Columns.get(columnIndex);
                 final var dateTimeString = column.Name + " " + time;
-                dataSeriesItem.setX(LocalDateTime.parse(dateTimeString, dateTimeFormatter).toInstant(ZoneOffset.UTC));
+                dataSeriesItem.setX(LocalDateTime.parse(dateTimeString, dateTimeFormatter).toInstant(ZoneOffset.of("-01:00")));
                 dataSeriesItem.setY(format.parse(column.Value).doubleValue() * 1.24d / 10);
                 dataSeries.add(dataSeriesItem);
             }
