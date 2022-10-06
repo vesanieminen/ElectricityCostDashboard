@@ -1,7 +1,5 @@
 package com.vesanieminen.froniusvisualizer.views;
 
-import com.fatboyindustrial.gsonjavatime.Converters;
-import com.google.gson.GsonBuilder;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.charts.Chart;
@@ -22,13 +20,10 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
+import com.vesanieminen.froniusvisualizer.services.model.NordpoolSpotService;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -52,14 +47,14 @@ public class NordpoolspotView extends Div {
     private Button vat10Button;
     private Button vat0Button;
 
-    public NordpoolspotView() throws URISyntaxException, IOException, InterruptedException, ParseException {
+    public NordpoolspotView() throws URISyntaxException, IOException, InterruptedException {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.CENTER, LumoUtility.TextColor.PRIMARY_CONTRAST);
         setHeightFull();
 
         createVatButtons();
 
         priceNow = new DoubleLabel("Price now", "");
-        priceNow.addClassNamesToSpans("color-yellow");
+        //priceNow.addClassNamesToSpans("color-yellow");
         lowestAndHighest = new DoubleLabel("Lowest / highest today", "0.01 / 13.63 c/kWh");
         averagePrice = new DoubleLabel("7 day average", "25.36 c/kWh");
         final var pricesLayout = new Div(priceNow, lowestAndHighest, averagePrice);
@@ -67,10 +62,7 @@ public class NordpoolspotView extends Div {
         pricesLayout.setMaxWidth("1320px");
         add(pricesLayout);
 
-        final var request = HttpRequest.newBuilder().uri(new URI("https://www.nordpoolspot.com/api/marketdata/page/35?currency=,,EUR,EUR")).GET().build();
-        final var response = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build().send(request, HttpResponse.BodyHandlers.ofString());
-        final var gson = Converters.registerAll(new GsonBuilder()).create();
-        var nordpoolResponse = gson.fromJson(response.body(), NordpoolResponse.class);
+        var nordpoolResponse = NordpoolSpotService.getLatest7Days();
 
         var chart = new Chart(ChartType.LINE);
         //chart.getConfiguration().setExporting(true);
@@ -131,18 +123,20 @@ public class NordpoolspotView extends Div {
 
     private static LocalDateTime getCurrentTimeWithHourPrecision() {
         final var now = LocalDateTime.now(ZoneId.of("Europe/Helsinki"));
-        final var nowWithHourOnly = now.minusMinutes(now.getMinute()).minusSeconds(now.getSecond()).minusNanos(now.getNano());
-        return nowWithHourOnly;
+        return now.minusMinutes(now.getMinute()).minusSeconds(now.getSecond()).minusNanos(now.getNano());
     }
 
     private void createVatButtons() {
         vat24Button = new Button("VAT 24%");
         vat24Button.setWidthFull();
         vat24Button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        vat24Button.addClassNames(LumoUtility.BorderRadius.NONE);
         vat10Button = new Button("VAT 10%");
         vat10Button.setWidthFull();
+        vat10Button.addClassNames(LumoUtility.BorderRadius.NONE);
         vat0Button = new Button("VAT 0%");
         vat0Button.setWidthFull();
+        vat0Button.addClassNames(LumoUtility.BorderRadius.NONE);
         final var buttonLayout = new Div(vat24Button, vat10Button, vat0Button);
         buttonLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Width.FULL);
         add(buttonLayout);
