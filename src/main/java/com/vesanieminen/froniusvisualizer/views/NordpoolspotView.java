@@ -219,6 +219,13 @@ public class NordpoolspotView extends Div {
         }
         chart.getConfiguration().setSeries(dataSeries);
         lowestAndHighest.setTitleBottom(df.format(lowest) + " / " + df.format(highest) + " c/kWh");
+        //var sum = rows.get(26).Columns.stream().map(column -> {
+        //    try {
+        //        return format.parse(column.Value).doubleValue() * vat / 10;
+        //    } catch (ParseException e) {
+        //        throw new RuntimeException(e);
+        //    }
+        //}).reduce(0d, Double::sum);
         averagePrice.setTitleBottom(df.format(total / amount) + " c/kWh");
         return dataSeries;
     }

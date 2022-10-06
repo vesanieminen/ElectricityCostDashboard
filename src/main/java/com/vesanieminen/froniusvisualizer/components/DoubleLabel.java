@@ -10,9 +10,9 @@ public class DoubleLabel extends Div {
 
     public DoubleLabel(String titleTop, String titleBottom) {
         spanTop = new Span(titleTop);
-        spanTop.addClassNames(LumoUtility.FontSize.LARGE);
+        spanTop.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.TextColor.PRIMARY);
         spanBottom = new Span(titleBottom);
-        spanBottom.addClassNames(LumoUtility.FontSize.LARGE);
+        spanBottom.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.TextColor.SECONDARY);
         add(spanTop, spanBottom);
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Flex.GROW, LumoUtility.AlignItems.CENTER);
     }
