@@ -1,7 +1,8 @@
-package com.vesanieminen.froniusvisualizer.services.model;
+package com.vesanieminen.froniusvisualizer.services;
 
 import com.fatboyindustrial.gsonjavatime.Converters;
 import com.google.gson.GsonBuilder;
+import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
 
 import java.io.IOException;
 import java.net.URI;

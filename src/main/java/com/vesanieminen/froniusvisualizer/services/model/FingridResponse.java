@@ -1,0 +1,20 @@
+package com.vesanieminen.froniusvisualizer.services.model;
+
+import java.time.ZonedDateTime;
+import java.util.List;
+
+public class FingridResponse {
+
+    public List<Data> HydroPower;
+    public List<Data> NuclearPower;
+    public List<Data> WindPower;
+    public List<Data> SolarPower;
+    public List<Data> Consumption;
+
+    public static class Data {
+        public double value;
+        public ZonedDateTime start_time;
+        public ZonedDateTime end_time;
+    }
+
+}

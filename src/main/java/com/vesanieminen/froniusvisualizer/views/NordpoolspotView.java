@@ -6,6 +6,7 @@ import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.DataSeries;
 import com.vaadin.flow.component.charts.model.DataSeriesItem;
+import com.vaadin.flow.component.charts.model.Labels;
 import com.vaadin.flow.component.charts.model.Marker;
 import com.vaadin.flow.component.charts.model.PlotLine;
 import com.vaadin.flow.component.charts.model.PlotOptionsLine;
@@ -19,8 +20,10 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
+import com.vesanieminen.froniusvisualizer.services.FingridService;
+import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
+import com.vesanieminen.froniusvisualizer.services.model.FingridResponse;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
-import com.vesanieminen.froniusvisualizer.services.model.NordpoolSpotService;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -41,6 +44,10 @@ public class NordpoolspotView extends Div {
     private final DoubleLabel priceNow;
     private final DoubleLabel lowestAndHighest;
     private final DoubleLabel averagePrice;
+    private final DataSeries windPowerSeries;
+    private final DataSeries nuclearPowerSeries;
+    private final DataSeries solarPowerSeries;
+    private final DataSeries consumptionSeries;
     private double vat = 1.24d;
     private final DecimalFormat df = new DecimalFormat("#0.00");
     private Button vat24Button;
@@ -63,10 +70,12 @@ public class NordpoolspotView extends Div {
         add(pricesLayout);
 
         var nordpoolResponse = NordpoolSpotService.getLatest7Days();
+        var fingridResponse = FingridService.getLatest7Days();
 
         var chart = new Chart(ChartType.LINE);
         //chart.getConfiguration().setExporting(true);
         chart.setTimeline(true);
+        chart.getConfiguration().getLegend().setEnabled(true);
         chart.getConfiguration().getChart().setStyledMode(true);
         chart.setHeight("500px");
         chart.setMaxWidth("1320px");
@@ -74,11 +83,41 @@ public class NordpoolspotView extends Div {
 
         NumberFormat format = NumberFormat.getInstance(Locale.FRANCE);
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-        createDataSeries(nordpoolResponse, chart, format, dateTimeFormatter);
+        final var windPowerProduction = "Wind power production";
+        windPowerSeries = new DataSeries(windPowerProduction);
+        for (FingridResponse.Data data : fingridResponse.WindPower) {
+            final var dataSeriesItem = new DataSeriesItem();
+            dataSeriesItem.setX(data.start_time.toInstant());
+            dataSeriesItem.setY(data.value);
+            windPowerSeries.add(dataSeriesItem);
+        }
+        nuclearPowerSeries = new DataSeries("Nuclear power production");
+        for (FingridResponse.Data data : fingridResponse.NuclearPower) {
+            final var dataSeriesItem = new DataSeriesItem();
+            dataSeriesItem.setX(data.start_time.toInstant());
+            dataSeriesItem.setY(data.value);
+            nuclearPowerSeries.add(dataSeriesItem);
+        }
+        solarPowerSeries = new DataSeries("Solar power production");
+        for (FingridResponse.Data data : fingridResponse.SolarPower) {
+            final var dataSeriesItem = new DataSeriesItem();
+            dataSeriesItem.setX(data.start_time.toInstant());
+            dataSeriesItem.setY(data.value);
+            solarPowerSeries.add(dataSeriesItem);
+        }
+        consumptionSeries = new DataSeries("Consumption");
+        for (FingridResponse.Data data : fingridResponse.Consumption) {
+            final var dataSeriesItem = new DataSeriesItem();
+            dataSeriesItem.setX(data.start_time.toInstant());
+            dataSeriesItem.setY(data.value);
+            consumptionSeries.add(dataSeriesItem);
+        }
+        createSpotPriceDataSeries(nordpoolResponse, chart, format, dateTimeFormatter);
 
         addVatButtonListeners(nordpoolResponse, chart, format, dateTimeFormatter);
 
         final var plotOptionsLine = new PlotOptionsLine();
+        plotOptionsLine.setStickyTracking(true);
         plotOptionsLine.setMarker(new Marker(false));
         chart.getConfiguration().setPlotOptions(plotOptionsLine);
         final var tooltip = new Tooltip();
@@ -86,14 +125,41 @@ public class NordpoolspotView extends Div {
         tooltip.setXDateFormat("%A<br />%H:%M %e.%m.%Y");
         tooltip.setPointFormat("{point.y} c/kWh");
         chart.getConfiguration().setTooltip(tooltip);
+        //final var fingridTooltip = new Tooltip();
+        //fingridTooltip.setValueDecimals(2);
+        ////fingridTooltip.setXDateFormat("%A<br />%H:%M %e.%m.%Y");
+        //fingridTooltip.setPointFormat("{point.y} MWh");
+        //windPowerSeries.getConfiguration().setTooltip(fingridTooltip);
+        //tooltip.setFormatter("function() { "
+        //        + "var unit = { 'FI electricity price': 'c/kWh', 'Wind power production': 'MWh' }[this.series.name];"
+        //        + "return ''+ this.x +': '+ this.y +' '+ unit; }");
+        //chart.getConfiguration().setTooltip(tooltip);
 
         final var xAxis = new XAxis();
         xAxis.setTitle("Time");
         chart.getConfiguration().addxAxis(xAxis);
         final var yAxis = new YAxis();
-        yAxis.setSoftMin(0);
+        var labels = new Labels();
+        labels.setFormatter("return this.value +' c/kWh'");
+        yAxis.setLabels(labels);
+        yAxis.setMin(0);
         yAxis.setTitle("Price");
         chart.getConfiguration().addyAxis(yAxis);
+        final var fingridYAxis = new YAxis();
+        labels = new Labels();
+        labels.setFormatter("return this.value +' MWh'");
+        fingridYAxis.setLabels(labels);
+        fingridYAxis.setTitle("Production");
+        fingridYAxis.setOpposite(true);
+        chart.getConfiguration().addyAxis(fingridYAxis);
+        windPowerSeries.setyAxis(1);
+        windPowerSeries.setVisible(false);
+        nuclearPowerSeries.setyAxis(1);
+        nuclearPowerSeries.setVisible(false);
+        solarPowerSeries.setyAxis(1);
+        solarPowerSeries.setVisible(false);
+        consumptionSeries.setyAxis(1);
+        consumptionSeries.setVisible(false);
 
         // Add plotline to signify the current time:
         PlotLine plotLine = new PlotLine();
@@ -119,6 +185,7 @@ public class NordpoolspotView extends Div {
         //averagePrice.setLabel(new Label("Average price: " + averageValue + " c/kWh"));
         //averagePrice.setValue(averageValue);
         //chart.getConfiguration().getyAxis().addPlotLine(averagePrice);
+
     }
 
     private static LocalDateTime getCurrentTimeWithHourPrecision() {
@@ -145,7 +212,7 @@ public class NordpoolspotView extends Div {
     private void addVatButtonListeners(NordpoolResponse nordpoolResponse, Chart chart, NumberFormat format, DateTimeFormatter dateTimeFormatter) {
         vat24Button.addClickListener(e -> {
             vat = 1.24d;
-            var dataSeries = createDataSeries(nordpoolResponse, chart, format, dateTimeFormatter);
+            var dataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, format, dateTimeFormatter);
             dataSeries.updateSeries();
             vat24Button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             vat10Button.removeThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -153,7 +220,7 @@ public class NordpoolspotView extends Div {
         });
         vat10Button.addClickListener(e -> {
             vat = 1.10d;
-            var dataSeries = createDataSeries(nordpoolResponse, chart, format, dateTimeFormatter);
+            var dataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, format, dateTimeFormatter);
             dataSeries.updateSeries();
             vat24Button.removeThemeVariants(ButtonVariant.LUMO_PRIMARY);
             vat10Button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -161,7 +228,7 @@ public class NordpoolspotView extends Div {
         });
         vat0Button.addClickListener(e -> {
             vat = 1;
-            var dataSeries = createDataSeries(nordpoolResponse, chart, format, dateTimeFormatter);
+            var dataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, format, dateTimeFormatter);
             dataSeries.updateSeries();
             vat24Button.removeThemeVariants(ButtonVariant.LUMO_PRIMARY);
             vat10Button.removeThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -169,7 +236,7 @@ public class NordpoolspotView extends Div {
         });
     }
 
-    private DataSeries createDataSeries(NordpoolResponse nordpoolResponse, Chart chart, NumberFormat format, DateTimeFormatter dateTimeFormatter) {
+    private DataSeries createSpotPriceDataSeries(NordpoolResponse nordpoolResponse, Chart chart, NumberFormat format, DateTimeFormatter dateTimeFormatter) {
         var now = getCurrentTimeWithHourPrecision();
         var highest = Double.MIN_VALUE;
         var lowest = Double.MAX_VALUE;
@@ -211,7 +278,6 @@ public class NordpoolspotView extends Div {
             }
             --columnIndex;
         }
-        chart.getConfiguration().setSeries(dataSeries);
         lowestAndHighest.setTitleBottom(df.format(lowest) + " / " + df.format(highest) + " c/kWh");
         //var sum = rows.get(26).Columns.stream().map(column -> {
         //    try {
@@ -221,6 +287,9 @@ public class NordpoolspotView extends Div {
         //    }
         //}).reduce(0d, Double::sum);
         averagePrice.setTitleBottom(df.format(total / amount) + " c/kWh");
+
+        chart.getConfiguration().setSeries(dataSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries);
+
         return dataSeries;
     }
 
