@@ -111,7 +111,6 @@ public class NordpoolspotView extends Div {
         labels.setFormatter("return this.value +' MWh'");
         fingridYAxis.setLabels(labels);
         fingridYAxis.setTitle("Production");
-        //fingridYAxis.setOpposite(true);
         chart.getConfiguration().addyAxis(fingridYAxis);
 
         NumberFormat format = NumberFormat.getInstance(Locale.FRANCE);
