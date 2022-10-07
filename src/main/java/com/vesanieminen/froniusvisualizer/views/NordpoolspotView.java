@@ -73,8 +73,8 @@ public class NordpoolspotView extends Div {
 
         priceNow = new DoubleLabel("Price now", "");
         //priceNow.addClassNamesToSpans("color-yellow");
-        lowestAndHighest = new DoubleLabel("Lowest / highest today", "0.01 / 13.63 c/kWh");
-        averagePrice = new DoubleLabel("7 day average", "25.36 c/kWh");
+        lowestAndHighest = new DoubleLabel("Lowest / highest today", "");
+        averagePrice = new DoubleLabel("7 day average", "");
         final var pricesLayout = new Div(priceNow, lowestAndHighest, averagePrice);
         pricesLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Width.FULL);
         pricesLayout.setMaxWidth("1320px");
@@ -161,7 +161,7 @@ public class NordpoolspotView extends Div {
         final var seriesTooltipSpot = new SeriesTooltip();
         seriesTooltipSpot.setValueDecimals(2);
         seriesTooltipSpot.setValueSuffix(" c/kWh");
-        seriesTooltipSpot.setXDateFormat("%A<br />%H:%M %e.%m.%Y");
+        //seriesTooltipSpot.setXDateFormat("%A<br />%H:%M %e.%m.%Y");
         final var dateTimeLabelFormats = new DateTimeLabelFormats();
         seriesTooltipSpot.setDateTimeLabelFormats(dateTimeLabelFormats);
         //seriesTooltipSpot.setPointFormat("{point.y} c/kWh");
