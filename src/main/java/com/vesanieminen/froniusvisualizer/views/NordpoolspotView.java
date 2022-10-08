@@ -275,9 +275,6 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         }
     }
 
-    private void setButtonActive() {
-    }
-
     private DataSeries createSpotPriceDataSeries(NordpoolResponse nordpoolResponse, Chart chart, NumberFormat format, DateTimeFormatter dateTimeFormatter, ArrayList<Series> series) {
         var now = getCurrentTimeWithHourPrecision();
         var highest = Double.MIN_VALUE;
