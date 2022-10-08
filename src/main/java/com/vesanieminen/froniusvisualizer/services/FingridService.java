@@ -20,7 +20,7 @@ public class FingridService {
     private static final ZoneId fiZoneID = ZoneId.of("Europe/Helsinki");
     private static FingridResponse finGridResponse;
     private static LocalDateTime nextUpdate = LocalDateTime.now(fiZoneID);
-    private static final String url = "https://www.fingrid.fi/api/graph/power-system-production?start=2022-10-02&end=2022-10-09";
+    private static final String url = "https://www.fingrid.fi/api/graph/power-system-production?start=2022-10-03&end=2022-10-09";
 
     public static FingridResponse getLatest7Days() throws URISyntaxException, IOException, InterruptedException {
         if (nextUpdate.isBefore(LocalDateTime.now(fiZoneID))) {
