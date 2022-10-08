@@ -12,6 +12,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
+import java.util.stream.IntStream;
 
 public class FingridService {
 
@@ -28,8 +30,20 @@ public class FingridService {
             final var response = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build().send(request, HttpResponse.BodyHandlers.ofString());
             final var gson = Converters.registerAll(new GsonBuilder()).create();
             finGridResponse = gson.fromJson(response.body(), FingridResponse.class);
+            System.out.println("Before: " + finGridResponse.HydroPower.size());
+            finGridResponse.HydroPower = keepEveryNthItem(finGridResponse.HydroPower, 20);
+            finGridResponse.NuclearPower = keepEveryNthItem(finGridResponse.NuclearPower, 20);
+            finGridResponse.WindPower = keepEveryNthItem(finGridResponse.WindPower, 20);
+            finGridResponse.SolarPower = keepEveryNthItem(finGridResponse.SolarPower, 20);
+            finGridResponse.Consumption = keepEveryNthItem(finGridResponse.Consumption, 20);
+            System.out.println("After: " + finGridResponse.HydroPower.size());
         }
+
         return finGridResponse;
+    }
+
+    public static List<FingridResponse.Data> keepEveryNthItem(List<FingridResponse.Data> input, int n) {
+        return IntStream.range(0, input.size()).filter(item -> item % n == 0).mapToObj(input::get).toList();
     }
 
 }
