@@ -10,6 +10,7 @@ public class FingridResponse {
     public List<Data> WindPower;
     public List<Data> SolarPower;
     public List<Data> Consumption;
+    public List<Data> NetImportExport;
 
     public static class Data {
         public double value;

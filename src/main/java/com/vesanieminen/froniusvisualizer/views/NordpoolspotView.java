@@ -57,8 +57,10 @@ public class NordpoolspotView extends Div {
     private final String nuclearPowerProductionTitle = "Nuclear production";
     private final String solarPowerProductionTitle = "Solar power";
     private final String consumptionTitle = "Consumption";
+    private final String importExportTitle = "Net export - import";
     private final YAxis yAxisSpot;
     private final DataSeries hydroPowerSeries;
+    private final DataSeries importExportSeries;
     private double vat = 1.24d;
     private final DecimalFormat df = new DecimalFormat("#0.00");
     private Button vat24Button;
@@ -150,6 +152,13 @@ public class NordpoolspotView extends Div {
             dataSeriesItem.setY(data.value);
             consumptionSeries.add(dataSeriesItem);
         }
+        importExportSeries = new DataSeries(importExportTitle);
+        for (FingridResponse.Data data : fingridResponse.NetImportExport) {
+            final var dataSeriesItem = new DataSeriesItem();
+            dataSeriesItem.setX(data.start_time.toInstant());
+            dataSeriesItem.setY(data.value);
+            importExportSeries.add(dataSeriesItem);
+        }
         final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, format, dateTimeFormatter);
 
         addVatButtonListeners(nordpoolResponse, chart, format, dateTimeFormatter);
@@ -167,8 +176,10 @@ public class NordpoolspotView extends Div {
         plotOptionsLineSpot.setTooltip(seriesTooltipSpot);
         spotPriceDataSeries.setPlotOptions(plotOptionsLineSpot);
 
-        //final var plotOptionsLine = new PlotOptionsLine();
-        //chart.getConfiguration().setPlotOptions(plotOptionsLine);
+        final var plotOptionsLine = new PlotOptionsLine();
+        plotOptionsLine.setStickyTracking(true);
+        plotOptionsLine.setMarker(new Marker(false));
+        chart.getConfiguration().setPlotOptions(plotOptionsLine);
         final var tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
         //tooltip.setXDateFormat("%A<br />%H:%M %e.%m.%Y");
@@ -197,6 +208,8 @@ public class NordpoolspotView extends Div {
         solarPowerSeries.setVisible(false);
         consumptionSeries.setyAxis(1);
         consumptionSeries.setVisible(false);
+        importExportSeries.setyAxis(1);
+        importExportSeries.setVisible(false);
 
         // Add plotline to signify the current time:
         PlotLine plotLine = new PlotLine();
@@ -327,7 +340,7 @@ public class NordpoolspotView extends Div {
         averagePrice.setTitleBottom(df.format(total / amount) + " c/kWh");
 
         //yAxisSpot.setMin(lowest);
-        chart.getConfiguration().setSeries(dataSeries, hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries);
+        chart.getConfiguration().setSeries(dataSeries, hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries);
 
         return dataSeries;
     }

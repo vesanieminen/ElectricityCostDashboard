@@ -30,13 +30,12 @@ public class FingridService {
             final var response = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build().send(request, HttpResponse.BodyHandlers.ofString());
             final var gson = Converters.registerAll(new GsonBuilder()).create();
             finGridResponse = gson.fromJson(response.body(), FingridResponse.class);
-            System.out.println("Before: " + finGridResponse.HydroPower.size());
             finGridResponse.HydroPower = keepEveryNthItem(finGridResponse.HydroPower, 20);
             finGridResponse.NuclearPower = keepEveryNthItem(finGridResponse.NuclearPower, 20);
             finGridResponse.WindPower = keepEveryNthItem(finGridResponse.WindPower, 20);
             finGridResponse.SolarPower = keepEveryNthItem(finGridResponse.SolarPower, 20);
             finGridResponse.Consumption = keepEveryNthItem(finGridResponse.Consumption, 20);
-            System.out.println("After: " + finGridResponse.HydroPower.size());
+            finGridResponse.NetImportExport = keepEveryNthItem(finGridResponse.NetImportExport, 20);
         }
 
         return finGridResponse;
