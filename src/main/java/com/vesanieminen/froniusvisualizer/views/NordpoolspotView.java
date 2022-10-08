@@ -1,6 +1,5 @@
 package com.vesanieminen.froniusvisualizer.views;
 
-import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.charts.Chart;
@@ -31,7 +30,10 @@ import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
 import com.vesanieminen.froniusvisualizer.services.FingridService;
 import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
 import com.vesanieminen.froniusvisualizer.services.model.FingridResponse;
+import com.vesanieminen.froniusvisualizer.services.model.FingridWindEstimateResponse;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -69,6 +71,9 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     private double vat = vat24Value;
     private final DecimalFormat df = new DecimalFormat("#0.00");
 
+    @Autowired
+    private Environment environment;
+
     public NordpoolspotView() {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.CENTER, LumoUtility.TextColor.PRIMARY_CONTRAST);
         setHeightFull();
@@ -77,10 +82,6 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         //priceNow.addClassNamesToSpans("color-yellow");
         lowestAndHighest = new DoubleLabel("Lowest / highest today", "");
         averagePrice = new DoubleLabel("7 day average", "");
-    }
-
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
     }
 
     @Override
@@ -97,14 +98,16 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
 
         NordpoolResponse nordpoolResponse = null;
         FingridResponse fingridResponse = null;
+        List<FingridWindEstimateResponse> windEstimateResponses = null;
         try {
             nordpoolResponse = NordpoolSpotService.getLatest7Days();
             fingridResponse = FingridService.getLatest7Days();
+            windEstimateResponses = FingridService.getWindEstimate(environment);
         } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
 
-        removeAll();
+        //removeAll();
         createVatButtons();
         var pricesLayout = new Div(priceNow, lowestAndHighest, averagePrice);
         pricesLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Width.FULL);
@@ -134,8 +137,9 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         final var solarPowerSeries = createDataSeries(fingridResponse.SolarPower, solarPowerProductionTitle);
         final var consumptionSeries = createDataSeries(fingridResponse.Consumption, consumptionTitle);
         final var importExportSeries = createDataSeries(fingridResponse.NetImportExport, importExportTitle);
-        final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, format, dateTimeFormatter, new ArrayList<>(Arrays.asList(hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries)));
-        configureChartTooltips(chart, hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, spotPriceDataSeries);
+        final var windEstimateDataSeries = createWindEstimateDataSeries(windEstimateResponses, "Wind production estimate");
+        final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, format, dateTimeFormatter, new ArrayList<>(Arrays.asList(hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, windEstimateDataSeries)));
+        configureChartTooltips(chart, hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, spotPriceDataSeries, windEstimateDataSeries);
 
         final var rangeSelector = new RangeSelector();
         rangeSelector.setButtons(
@@ -186,7 +190,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         chart.getConfiguration().addxAxis(xAxis);
     }
 
-    private static void configureChartTooltips(Chart chart, DataSeries hydroPowerSeries, DataSeries windPowerSeries, DataSeries nuclearPowerSeries, DataSeries solarPowerSeries, DataSeries consumptionSeries, DataSeries importExportSeries, DataSeries spotPriceDataSeries) {
+    private static void configureChartTooltips(Chart chart, DataSeries hydroPowerSeries, DataSeries windPowerSeries, DataSeries nuclearPowerSeries, DataSeries solarPowerSeries, DataSeries consumptionSeries, DataSeries importExportSeries, DataSeries spotPriceDataSeries, DataSeries windEstimateDataSeries) {
         final var plotOptionsLineSpot = new PlotOptionsLine();
         plotOptionsLineSpot.setStickyTracking(true);
         plotOptionsLineSpot.setMarker(new Marker(false));
@@ -220,6 +224,8 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         consumptionSeries.setVisible(false);
         importExportSeries.setyAxis(1);
         importExportSeries.setVisible(false);
+        windEstimateDataSeries.setyAxis(1);
+        windEstimateDataSeries.setVisible(false);
 
         // Add plotline to point the current time:
         PlotLine plotLine = new PlotLine();
@@ -229,12 +235,23 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         chart.getConfiguration().getxAxis().addPlotLine(plotLine);
     }
 
-    private DataSeries createDataSeries(List<FingridResponse.Data> datasouce, String title) {
+    private DataSeries createDataSeries(List<FingridResponse.Data> datasource, String title) {
         final var dataSeries = new DataSeries(title);
-        for (FingridResponse.Data data : datasouce) {
+        for (FingridResponse.Data data : datasource) {
             final var dataSeriesItem = new DataSeriesItem();
             dataSeriesItem.setX(data.start_time.toInstant());
             dataSeriesItem.setY(data.value);
+            dataSeries.add(dataSeriesItem);
+        }
+        return dataSeries;
+    }
+
+    private DataSeries createWindEstimateDataSeries(List<FingridWindEstimateResponse> dataSource, String title) {
+        final var dataSeries = new DataSeries(title);
+        for (FingridWindEstimateResponse response : dataSource) {
+            final var dataSeriesItem = new DataSeriesItem();
+            dataSeriesItem.setX(response.start_time.toInstant());
+            dataSeriesItem.setY(response.value);
             dataSeries.add(dataSeriesItem);
         }
         return dataSeries;
