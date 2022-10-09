@@ -40,6 +40,7 @@ import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -115,7 +116,14 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         add(pricesLayout);
 
         var chart = new Chart(ChartType.LINE);
+        // Buggy still and cannot be enabled yet:
         //chart.getConfiguration().setExporting(true);
+        //final var exporting = chart.getConfiguration().getExporting();
+        //exporting.setScale(1);
+        //exporting.setSourceHeight(500);
+        //exporting.setSourceWidth(1320);
+        //exporting.setAllowHTML(true);
+        // Buggy still and cannot be enabled yet:
         //chart.setTimeline(true);
         chart.getConfiguration().getLegend().setEnabled(true);
         chart.getConfiguration().getChart().setStyledMode(true);
@@ -239,7 +247,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         final var dataSeries = new DataSeries(title);
         for (FingridResponse.Data data : datasource) {
             final var dataSeriesItem = new DataSeriesItem();
-            dataSeriesItem.setX(data.start_time.toInstant());
+            dataSeriesItem.setX(data.start_time.plusHours(3).toInstant());
             dataSeriesItem.setY(data.value);
             dataSeries.add(dataSeriesItem);
         }
@@ -250,7 +258,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         final var dataSeries = new DataSeries(title);
         for (FingridWindEstimateResponse response : dataSource) {
             final var dataSeriesItem = new DataSeriesItem();
-            dataSeriesItem.setX(response.start_time.toInstant());
+            dataSeriesItem.setX(response.start_time.toInstant().plus(Duration.ofHours(3)));
             dataSeriesItem.setY(response.value);
             dataSeries.add(dataSeriesItem);
         }

@@ -22,9 +22,11 @@ public class FingridService {
 
     private static final ZoneId fiZoneID = ZoneId.of("Europe/Helsinki");
     private static FingridResponse finGridResponse;
+    private static List<FingridWindEstimateResponse> windEstimateResponses;
     private static LocalDateTime nextUpdate = LocalDateTime.now(fiZoneID);
+    private static LocalDateTime nextWindEstimateUpdate = LocalDateTime.now(fiZoneID);
     private static final String url = "https://www.fingrid.fi/api/graph/power-system-production?start=2022-10-03&end=2022-10-10";
-    private static final String url2 = "https://api.fingrid.fi/v1/variable/245/events/json?start_time=2022-10-09T00%3A00%3A00%2B0300&end_time=2022-10-11T00%3A00%3A00%2B0300";
+    private static final String url2 = "https://api.fingrid.fi/v1/variable/245/events/json?start_time=2022-10-09T00%3A00%3A00%2B0300&end_time=2022-10-12T00%3A00%3A00%2B0300";
 
     public static FingridResponse getLatest7Days() throws URISyntaxException, IOException, InterruptedException {
         if (nextUpdate.isBefore(LocalDateTime.now(fiZoneID))) {
@@ -49,11 +51,16 @@ public class FingridService {
     }
 
     public static List<FingridWindEstimateResponse> getWindEstimate(Environment env) throws URISyntaxException, IOException, InterruptedException {
-        final var apiKey = env.getProperty("fingrid.api.key");
-        final var request = HttpRequest.newBuilder().uri(new URI(url2)).GET().header("x-api-key", apiKey).build();
-        var response = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build().send(request, HttpResponse.BodyHandlers.ofString());
-        final var gson = Converters.registerAll(new GsonBuilder()).create();
-        return Arrays.stream(gson.fromJson(response.body(), FingridWindEstimateResponse[].class)).toList();
+        if (nextWindEstimateUpdate.isBefore(LocalDateTime.now(fiZoneID))) {
+            final var nowWithoutMinutes = LocalDateTime.now(fiZoneID).withMinute(0);
+            nextWindEstimateUpdate = nowWithoutMinutes.plusHours(1);
+            final var apiKey = env.getProperty("fingrid.api.key");
+            final var request = HttpRequest.newBuilder().uri(new URI(url2)).GET().header("x-api-key", apiKey).build();
+            var response = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build().send(request, HttpResponse.BodyHandlers.ofString());
+            final var gson = Converters.registerAll(new GsonBuilder()).create();
+            windEstimateResponses = Arrays.stream(gson.fromJson(response.body(), FingridWindEstimateResponse[].class)).toList();
+        }
+        return windEstimateResponses;
     }
 
 }

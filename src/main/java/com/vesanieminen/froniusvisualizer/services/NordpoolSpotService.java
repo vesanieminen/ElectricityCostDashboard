@@ -15,7 +15,7 @@ import java.time.ZoneId;
 
 public class NordpoolSpotService {
 
-    private static final ZoneId fiZoneID = ZoneId.of("Europe/Helsinki");
+    public static final ZoneId fiZoneID = ZoneId.of("Europe/Helsinki");
     private static NordpoolResponse nordpoolResponse;
     private static LocalDateTime nextUpdate = LocalDateTime.now(fiZoneID);
     private static final String url = "https://www.nordpoolspot.com/api/marketdata/page/35?currency=,,EUR,EUR";
