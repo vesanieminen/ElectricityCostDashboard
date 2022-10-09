@@ -79,6 +79,8 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     private final Button fullScreenButton;
     private final DecimalFormat df = new DecimalFormat("#0.00");
 
+    private boolean isInitialRender = true;
+
     @Autowired
     private Environment environment;
 
@@ -118,10 +120,27 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         } else {
             this.vat = vat24Value;
         }
-        renderView();
+        if (!isInitialRender) {
+            renderView();
+        }
     }
 
-    private void renderView() {
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        final var chart = renderView();
+        getUI().ifPresent(ui -> ui.getPage().retrieveExtendedClientDetails(details -> {
+            // TODO: for some reason the following doesn't work even with Server Push enabled:
+            //ui.access(() -> {
+            //    if (details.isTouchDevice()) {
+            //        chart.getConfiguration().getRangeSelector().setSelected(2);
+            //    }
+            //});
+            fullScreenButton.setVisible(!details.isTouchDevice());
+        }));
+    }
+
+    private Chart renderView() {
+        isInitialRender = false;
         NordpoolResponse nordpoolResponse = null;
         FingridResponse fingridResponse = null;
         List<FingridWindEstimateResponse> windEstimateResponses = null;
@@ -198,14 +217,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         //averagePrice.setLabel(new Label("Average price: " + averageValue + " c/kWh"));
         //averagePrice.setValue(averageValue);
         //chart.getConfiguration().getyAxis().addPlotLine(averagePrice);
-    }
-
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
-        getUI().ifPresent(ui -> ui.getPage().retrieveExtendedClientDetails(details -> {
-            //rangeSelector.setSelected(3);
-            fullScreenButton.setVisible(!details.isTouchDevice());
-        }));
+        return chart;
     }
 
     private static void printSizeOf(Object object) {
