@@ -23,8 +23,8 @@ public class FingridService {
     private static final ZoneId fiZoneID = ZoneId.of("Europe/Helsinki");
     private static FingridResponse finGridResponse;
     private static LocalDateTime nextUpdate = LocalDateTime.now(fiZoneID);
-    private static final String url = "https://www.fingrid.fi/api/graph/power-system-production?start=2022-10-03&end=2022-10-09";
-    private static final String url2 = "https://api.fingrid.fi/v1/variable/245/events/json?start_time=2022-10-08T00%3A00%3A00%2B0300&end_time=2022-10-10T00%3A00%3A00%2B0300";
+    private static final String url = "https://www.fingrid.fi/api/graph/power-system-production?start=2022-10-03&end=2022-10-10";
+    private static final String url2 = "https://api.fingrid.fi/v1/variable/245/events/json?start_time=2022-10-09T00%3A00%3A00%2B0300&end_time=2022-10-11T00%3A00%3A00%2B0300";
 
     public static FingridResponse getLatest7Days() throws URISyntaxException, IOException, InterruptedException {
         if (nextUpdate.isBefore(LocalDateTime.now(fiZoneID))) {
