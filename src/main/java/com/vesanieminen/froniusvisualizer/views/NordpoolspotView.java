@@ -252,7 +252,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         windEstimateDataSeries.setyAxis(1);
         windEstimateDataSeries.setVisible(true);
         renewablesSeries.setyAxis(1);
-        windEstimateDataSeries.setVisible(false);
+        renewablesSeries.setVisible(false);
 
         // Add plotline to point the current time:
         PlotLine plotLine = new PlotLine();
@@ -274,7 +274,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     }
 
     private DataSeries createRenewablesDataSeries(FingridResponse fingridResponse) {
-        final var dataSeries = new DataSeries("All renewables");
+        final var dataSeries = new DataSeries("Total renewables");
         for (int i = 0; i < fingridResponse.WindPower.size() && i < fingridResponse.HydroPower.size() && i < fingridResponse.SolarPower.size(); ++i) {
             final var value = fingridResponse.WindPower.get(i).value + fingridResponse.HydroPower.get(i).value + fingridResponse.SolarPower.get(i).value;
             final var dataSeriesItem = new DataSeriesItem();
