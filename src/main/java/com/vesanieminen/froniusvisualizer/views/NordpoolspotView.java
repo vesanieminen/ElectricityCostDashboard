@@ -233,7 +233,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         importExportSeries.setyAxis(1);
         importExportSeries.setVisible(false);
         windEstimateDataSeries.setyAxis(1);
-        windEstimateDataSeries.setVisible(false);
+        windEstimateDataSeries.setVisible(true);
 
         // Add plotline to point the current time:
         PlotLine plotLine = new PlotLine();
