@@ -67,6 +67,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     private static final String consumptionTitle = "Consumption";
     private static final String importExportTitle = "Net export - import";
     private final String windProductionEstimateTitle = "Wind production estimate";
+    private final String totalRenewablesTitle = "Total renewables";
     private final String vat10 = "vat=10";
     private final String vat0 = "vat=0";
     private final double vat24Value = 1.24d;
@@ -305,7 +306,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     }
 
     private DataSeries createRenewablesDataSeries(FingridResponse fingridResponse) {
-        final var dataSeries = new DataSeries("Total renewables");
+        final var dataSeries = new DataSeries(totalRenewablesTitle);
         for (int i = 0; i < fingridResponse.WindPower.size() && i < fingridResponse.HydroPower.size() && i < fingridResponse.SolarPower.size(); ++i) {
             final var value = fingridResponse.WindPower.get(i).value + fingridResponse.HydroPower.get(i).value + fingridResponse.SolarPower.get(i).value;
             final var dataSeriesItem = new DataSeriesItem();
