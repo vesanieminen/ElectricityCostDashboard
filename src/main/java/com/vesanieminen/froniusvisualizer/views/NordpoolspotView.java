@@ -118,7 +118,6 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         } else {
             this.vat = vat24Value;
         }
-
         renderView();
     }
 
@@ -148,22 +147,23 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         //exporting.setSourceHeight(500);
         //exporting.setSourceWidth(1320);
         //exporting.setAllowHTML(true);
-        // Buggy still and cannot be enabled yet:
-        //chart.setTimeline(true);
+        chart.setTimeline(true);
         chart.getConfiguration().getLegend().setEnabled(true);
         chart.getConfiguration().getChart().setStyledMode(true);
         if (isFullscreen) {
             chart.setHeightFull();
         } else {
-            chart.setHeight("500px");
+            chart.setMinHeight("500px");
+            chart.setHeight("580px");
             chart.setMaxWidth("1320px");
+            //chart.setHeightFull();
         }
         add(chart);
 
         // create x and y-axis
         createXAxis(chart);
-        createSpotPriceYAxis(chart);
         createFingridYAxis(chart);
+        createSpotPriceYAxis(chart);
 
         NumberFormat format = NumberFormat.getInstance(Locale.FRANCE);
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
@@ -218,6 +218,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         labelsFingrid.setFormatter("return this.value +' MWh'");
         fingridYAxis.setLabels(labelsFingrid);
         fingridYAxis.setTitle("Production");
+        fingridYAxis.setOpposite(false);
         chart.getConfiguration().addyAxis(fingridYAxis);
     }
 
@@ -262,22 +263,15 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         chart.getConfiguration().setTooltip(tooltip);
 
         // Change the fingrid series to use the 2nd y-axis
-        hydroPowerSeries.setyAxis(1);
         hydroPowerSeries.setVisible(false);
-        windPowerSeries.setyAxis(1);
         windPowerSeries.setVisible(true);
-        nuclearPowerSeries.setyAxis(1);
         nuclearPowerSeries.setVisible(false);
-        solarPowerSeries.setyAxis(1);
         solarPowerSeries.setVisible(false);
-        consumptionSeries.setyAxis(1);
         consumptionSeries.setVisible(false);
-        importExportSeries.setyAxis(1);
         importExportSeries.setVisible(false);
-        windEstimateDataSeries.setyAxis(1);
         windEstimateDataSeries.setVisible(true);
-        renewablesSeries.setyAxis(1);
         renewablesSeries.setVisible(false);
+        spotPriceDataSeries.setyAxis(1);
 
         // Add plotline to point the current time:
         PlotLine plotLine = new PlotLine();
@@ -291,7 +285,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         final var dataSeries = new DataSeries(title);
         for (FingridResponse.Data data : datasource) {
             final var dataSeriesItem = new DataSeriesItem();
-            dataSeriesItem.setX(data.start_time.plusHours(3).toInstant());
+            dataSeriesItem.setX(data.start_time.plusHours(3).withMinute(0).toInstant());
             dataSeriesItem.setY(data.value);
             dataSeries.add(dataSeriesItem);
         }
@@ -303,7 +297,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         for (int i = 0; i < fingridResponse.WindPower.size() && i < fingridResponse.HydroPower.size() && i < fingridResponse.SolarPower.size(); ++i) {
             final var value = fingridResponse.WindPower.get(i).value + fingridResponse.HydroPower.get(i).value + fingridResponse.SolarPower.get(i).value;
             final var dataSeriesItem = new DataSeriesItem();
-            dataSeriesItem.setX(fingridResponse.WindPower.get(i).start_time.plusHours(3).toInstant());
+            dataSeriesItem.setX(fingridResponse.WindPower.get(i).start_time.withMinute(0).plusHours(3).toInstant());
             dataSeriesItem.setY(value);
             dataSeries.add(dataSeriesItem);
         }
