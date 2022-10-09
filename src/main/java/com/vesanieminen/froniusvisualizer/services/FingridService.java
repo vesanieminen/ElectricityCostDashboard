@@ -45,7 +45,7 @@ public class FingridService {
 
     public static FingridResponse getLatest7Days() throws URISyntaxException, IOException, InterruptedException {
         if (nextUpdate.isBefore(LocalDateTime.now(fiZoneID))) {
-            final LocalDateTime nowWithoutMinutes = currentTimeWithoutMinutes();
+            final LocalDateTime nowWithoutMinutes = currentTimeWithoutMinutesAndSeconds();
             nextUpdate = nowWithoutMinutes.plusHours(1);
             final var request = HttpRequest.newBuilder().uri(new URI(createFingridDataQuery())).GET().build();
             final var response = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build().send(request, HttpResponse.BodyHandlers.ofString());
@@ -67,7 +67,7 @@ public class FingridService {
 
     public static List<FingridWindEstimateResponse> getWindEstimate(Environment env) throws URISyntaxException, IOException, InterruptedException {
         if (nextWindEstimateUpdate.isBefore(LocalDateTime.now(fiZoneID))) {
-            final LocalDateTime nowWithoutMinutes = currentTimeWithoutMinutes();
+            final LocalDateTime nowWithoutMinutes = currentTimeWithoutMinutesAndSeconds();
             nextWindEstimateUpdate = nowWithoutMinutes.plusHours(1);
             final var apiKey = env.getProperty("fingrid.api.key");
             final var request = HttpRequest.newBuilder().uri(new URI(createWindEstimateQuery())).GET().header("x-api-key", apiKey).build();
@@ -80,15 +80,17 @@ public class FingridService {
 
     private static String createFingridDataQuery() {
         Map<String, String> requestParams = new HashMap<>();
-        final var now = currentTimeWithoutMinutes();
-        requestParams.put("start", createFingridDateTimeString(now.minusDays(5)));
+        final var now = currentTimeWithoutMinutesAndSeconds();
+        // Nordpool gives data for the next day at 14:00. Before that we need to retrieve 6 days back and after 5 to match the amount of Fingrid and Nordpool history
+        var daysBack = now.getHour() < 14 ? 6 : 5;
+        requestParams.put("start", createFingridDateTimeString(now.minusDays(daysBack)));
         requestParams.put("end", createFingridDateTimeString(now.plusDays(1)));
         return requestParams.keySet().stream().map(key -> key + "=" + requestParams.get(key)).collect(joining("&", fingridBaseUrl, ""));
     }
 
     private static String createWindEstimateQuery() {
         Map<String, String> requestParams = new HashMap<>();
-        final var now = currentTimeWithoutMinutes();
+        final var now = currentTimeWithoutMinutesAndSeconds();
         requestParams.put("start_time", createWindEstimateDateTimeString(now));
         requestParams.put("end_time", createWindEstimateDateTimeString(now.plusDays(2)));
 
@@ -105,7 +107,7 @@ public class FingridService {
         return URLEncoder.encode(url, StandardCharsets.UTF_8);
     }
 
-    private static LocalDateTime currentTimeWithoutMinutes() {
+    private static LocalDateTime currentTimeWithoutMinutesAndSeconds() {
         return LocalDateTime.now(fiZoneID).withMinute(0).withSecond(0);
     }
 
