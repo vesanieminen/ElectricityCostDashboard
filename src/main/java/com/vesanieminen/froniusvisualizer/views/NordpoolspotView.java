@@ -1,5 +1,6 @@
 package com.vesanieminen.froniusvisualizer.views;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.charts.Chart;
@@ -32,6 +33,7 @@ import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
 import com.vesanieminen.froniusvisualizer.services.model.FingridResponse;
 import com.vesanieminen.froniusvisualizer.services.model.FingridWindEstimateResponse;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
+import org.openjdk.jol.info.GraphLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
@@ -64,6 +66,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     private static final String solarPowerProductionTitle = "Solar power";
     private static final String consumptionTitle = "Consumption";
     private static final String importExportTitle = "Net export - import";
+    private final String windProductionEstimateTitle = "Wind production estimate";
     private final String vat10 = "vat=10";
     private final String vat0 = "vat=0";
     private final double vat24Value = 1.24d;
@@ -80,8 +83,10 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         setHeightFull();
 
         priceNow = new DoubleLabel("Price now", "");
+        priceNow.addClassNames(LumoUtility.Border.RIGHT);
         //priceNow.addClassNamesToSpans("color-yellow");
         lowestAndHighest = new DoubleLabel("Lowest / highest today", "");
+        lowestAndHighest.addClassNames(LumoUtility.Border.RIGHT);
         averagePrice = new DoubleLabel("7 day average", "");
     }
 
@@ -112,7 +117,6 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         createVatButtons();
         var pricesLayout = new Div(priceNow, lowestAndHighest, averagePrice);
         pricesLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Width.FULL);
-        pricesLayout.setMaxWidth("1320px");
         add(pricesLayout);
 
         var chart = new Chart(ChartType.LINE);
@@ -145,7 +149,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         final var solarPowerSeries = createDataSeries(fingridResponse.SolarPower, solarPowerProductionTitle);
         final var consumptionSeries = createDataSeries(fingridResponse.Consumption, consumptionTitle);
         final var importExportSeries = createDataSeries(fingridResponse.NetImportExport, importExportTitle);
-        final var windEstimateDataSeries = createWindEstimateDataSeries(windEstimateResponses, "Wind production estimate");
+        final var windEstimateDataSeries = createWindEstimateDataSeries(windEstimateResponses);
         final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, format, dateTimeFormatter, new ArrayList<>(Arrays.asList(hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, windEstimateDataSeries)));
         configureChartTooltips(chart, hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, spotPriceDataSeries, windEstimateDataSeries);
 
@@ -168,6 +172,18 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         //averagePrice.setLabel(new Label("Average price: " + averageValue + " c/kWh"));
         //averagePrice.setValue(averageValue);
         //chart.getConfiguration().getyAxis().addPlotLine(averagePrice);
+    }
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        getUI().ifPresent(ui -> ui.getPage().retrieveExtendedClientDetails(details -> {
+            //rangeSelector.setSelected(3);
+        }));
+
+    }
+
+    private static void printSizeOf(Object object) {
+        System.out.println(GraphLayout.parseInstance(object).toFootprint());
     }
 
     private static void createFingridYAxis(Chart chart) {
@@ -254,8 +270,8 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         return dataSeries;
     }
 
-    private DataSeries createWindEstimateDataSeries(List<FingridWindEstimateResponse> dataSource, String title) {
-        final var dataSeries = new DataSeries(title);
+    private DataSeries createWindEstimateDataSeries(List<FingridWindEstimateResponse> dataSource) {
+        final var dataSeries = new DataSeries(windProductionEstimateTitle);
         for (FingridWindEstimateResponse response : dataSource) {
             final var dataSeriesItem = new DataSeriesItem();
             dataSeriesItem.setX(response.start_time.toInstant().plus(Duration.ofHours(3)));
@@ -271,15 +287,9 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     }
 
     private void createVatButtons() {
-        Button vat24Button = new Button("VAT 24%");
-        vat24Button.setWidthFull();
-        vat24Button.addClassNames(LumoUtility.BorderRadius.NONE);
-        Button vat10Button = new Button("VAT 10%");
-        vat10Button.setWidthFull();
-        vat10Button.addClassNames(LumoUtility.BorderRadius.NONE);
-        Button vat0Button = new Button("VAT 0%");
-        vat0Button.setWidthFull();
-        vat0Button.addClassNames(LumoUtility.BorderRadius.NONE);
+        Button vat24Button = createButton("VAT 24%");
+        Button vat10Button = createButton("VAT 10%");
+        Button vat0Button = createButton("VAT 0%");
         final var buttonLayout = new Div(vat24Button, vat10Button, vat0Button);
         buttonLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Width.FULL);
         add(buttonLayout);
@@ -298,6 +308,13 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         if (vat == vat0Value) {
             vat0Button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         }
+    }
+
+    private static Button createButton(String text) {
+        Button button = new Button(text);
+        button.setWidthFull();
+        button.addClassNames(LumoUtility.BorderRadius.NONE, LumoUtility.Margin.Vertical.NONE, LumoUtility.Height.LARGE);
+        return button;
     }
 
     private DataSeries createSpotPriceDataSeries(NordpoolResponse nordpoolResponse, Chart chart, NumberFormat format, DateTimeFormatter dateTimeFormatter, ArrayList<Series> series) {
