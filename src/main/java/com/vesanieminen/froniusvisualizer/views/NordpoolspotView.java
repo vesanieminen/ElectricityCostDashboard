@@ -73,6 +73,10 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     private final double vat10Value = 1.10d;
     private final double vat0Value = 1d;
     private double vat = vat24Value;
+
+    private boolean isFullscreen = false;
+
+    private final Button fullScreenButton;
     private final DecimalFormat df = new DecimalFormat("#0.00");
 
     @Autowired
@@ -88,6 +92,19 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         lowestAndHighest = new DoubleLabel("Lowest / highest today", "");
         lowestAndHighest.addClassNames(LumoUtility.Border.RIGHT);
         averagePrice = new DoubleLabel("7 day average", "");
+
+        fullScreenButton = createButton("Fullscreen");
+        if (isFullscreen) {
+            fullScreenButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        }
+        fullScreenButton.addClickListener(e -> {
+            isFullscreen = !isFullscreen;
+            fullScreenButton.removeThemeVariants(ButtonVariant.LUMO_PRIMARY);
+            if (isFullscreen) {
+                fullScreenButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+            }
+            renderView();
+        });
     }
 
     @Override
@@ -102,6 +119,10 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
             this.vat = vat24Value;
         }
 
+        renderView();
+    }
+
+    private void renderView() {
         NordpoolResponse nordpoolResponse = null;
         FingridResponse fingridResponse = null;
         List<FingridWindEstimateResponse> windEstimateResponses = null;
@@ -131,8 +152,12 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         //chart.setTimeline(true);
         chart.getConfiguration().getLegend().setEnabled(true);
         chart.getConfiguration().getChart().setStyledMode(true);
-        chart.setHeight("500px");
-        chart.setMaxWidth("1320px");
+        if (isFullscreen) {
+            chart.setHeightFull();
+        } else {
+            chart.setHeight("500px");
+            chart.setMaxWidth("1320px");
+        }
         add(chart);
 
         // create x and y-axis
@@ -179,8 +204,8 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     protected void onAttach(AttachEvent attachEvent) {
         getUI().ifPresent(ui -> ui.getPage().retrieveExtendedClientDetails(details -> {
             //rangeSelector.setSelected(3);
+            fullScreenButton.setVisible(!details.isTouchDevice());
         }));
-
     }
 
     private static void printSizeOf(Object object) {
@@ -305,7 +330,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         Button vat24Button = createButton("VAT 24%");
         Button vat10Button = createButton("VAT 10%");
         Button vat0Button = createButton("VAT 0%");
-        final var buttonLayout = new Div(vat24Button, vat10Button, vat0Button);
+        final var buttonLayout = new Div(vat24Button, vat10Button, vat0Button, fullScreenButton);
         buttonLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Width.FULL);
         add(buttonLayout);
 
