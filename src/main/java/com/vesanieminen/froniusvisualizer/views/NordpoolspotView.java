@@ -107,7 +107,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
             throw new RuntimeException(e);
         }
 
-        //removeAll();
+        removeAll();
         createVatButtons();
         var pricesLayout = new Div(priceNow, lowestAndHighest, averagePrice);
         pricesLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Width.FULL);
