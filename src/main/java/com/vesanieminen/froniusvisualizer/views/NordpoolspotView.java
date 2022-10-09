@@ -149,9 +149,10 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         final var solarPowerSeries = createDataSeries(fingridResponse.SolarPower, solarPowerProductionTitle);
         final var consumptionSeries = createDataSeries(fingridResponse.Consumption, consumptionTitle);
         final var importExportSeries = createDataSeries(fingridResponse.NetImportExport, importExportTitle);
+        final var renewablesSeries = createRenewablesDataSeries(fingridResponse);
         final var windEstimateDataSeries = createWindEstimateDataSeries(windEstimateResponses);
-        final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, format, dateTimeFormatter, new ArrayList<>(Arrays.asList(hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, windEstimateDataSeries)));
-        configureChartTooltips(chart, hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, spotPriceDataSeries, windEstimateDataSeries);
+        final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, format, dateTimeFormatter, new ArrayList<>(Arrays.asList(hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, windEstimateDataSeries, renewablesSeries)));
+        configureChartTooltips(chart, hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, spotPriceDataSeries, windEstimateDataSeries, renewablesSeries);
 
         final var rangeSelector = new RangeSelector();
         rangeSelector.setButtons(
@@ -214,7 +215,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         chart.getConfiguration().addxAxis(xAxis);
     }
 
-    private static void configureChartTooltips(Chart chart, DataSeries hydroPowerSeries, DataSeries windPowerSeries, DataSeries nuclearPowerSeries, DataSeries solarPowerSeries, DataSeries consumptionSeries, DataSeries importExportSeries, DataSeries spotPriceDataSeries, DataSeries windEstimateDataSeries) {
+    private static void configureChartTooltips(Chart chart, DataSeries hydroPowerSeries, DataSeries windPowerSeries, DataSeries nuclearPowerSeries, DataSeries solarPowerSeries, DataSeries consumptionSeries, DataSeries importExportSeries, DataSeries spotPriceDataSeries, DataSeries windEstimateDataSeries, DataSeries renewablesSeries) {
         final var plotOptionsLineSpot = new PlotOptionsLine();
         plotOptionsLineSpot.setStickyTracking(true);
         plotOptionsLineSpot.setMarker(new Marker(false));
@@ -250,6 +251,8 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         importExportSeries.setVisible(false);
         windEstimateDataSeries.setyAxis(1);
         windEstimateDataSeries.setVisible(true);
+        renewablesSeries.setyAxis(1);
+        windEstimateDataSeries.setVisible(false);
 
         // Add plotline to point the current time:
         PlotLine plotLine = new PlotLine();
@@ -265,6 +268,18 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
             final var dataSeriesItem = new DataSeriesItem();
             dataSeriesItem.setX(data.start_time.plusHours(3).toInstant());
             dataSeriesItem.setY(data.value);
+            dataSeries.add(dataSeriesItem);
+        }
+        return dataSeries;
+    }
+
+    private DataSeries createRenewablesDataSeries(FingridResponse fingridResponse) {
+        final var dataSeries = new DataSeries("All renewables");
+        for (int i = 0; i < fingridResponse.WindPower.size() && i < fingridResponse.HydroPower.size() && i < fingridResponse.SolarPower.size(); ++i) {
+            final var value = fingridResponse.WindPower.get(i).value + fingridResponse.HydroPower.get(i).value + fingridResponse.SolarPower.get(i).value;
+            final var dataSeriesItem = new DataSeriesItem();
+            dataSeriesItem.setX(fingridResponse.WindPower.get(i).start_time.plusHours(3).toInstant());
+            dataSeriesItem.setY(value);
             dataSeries.add(dataSeriesItem);
         }
         return dataSeries;
