@@ -1,7 +1,7 @@
 # ElectricityCostDashboard
 
-This project can be used as a starting point to create your own Vaadin application with Spring Boot.
-It contains all the necessary configuration and some placeholder files to get you started.
+This is a simple web app visualizing the current electricity prices and sources, inspired by exceptionally high electricity prices in 2022. 
+Built using [Vaadin](https://vaadin.com/) & [Spring Boot](https://spring.io/). A hosted version is available at [sahko.vesanieminen.com](http://sahko.vesanieminen.com).
 
 ## Running the application
 
