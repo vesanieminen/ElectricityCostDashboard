@@ -279,12 +279,12 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
 
         // Change the fingrid series to use the 2nd y-axis
         hydroPowerSeries.setVisible(false);
-        windPowerSeries.setVisible(false);
+        windPowerSeries.setVisible(true);
         nuclearPowerSeries.setVisible(false);
         solarPowerSeries.setVisible(false);
         consumptionSeries.setVisible(false);
         importExportSeries.setVisible(false);
-        windEstimateDataSeries.setVisible(false);
+        windEstimateDataSeries.setVisible(true);
         renewablesSeries.setVisible(false);
         spotPriceDataSeries.setyAxis(1);
 
