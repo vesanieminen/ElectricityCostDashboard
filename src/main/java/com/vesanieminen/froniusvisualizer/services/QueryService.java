@@ -13,7 +13,7 @@ import java.net.http.HttpResponse;
 public class QueryService {
 
     public HttpResponse<String> getTVOPage() throws URISyntaxException, IOException, InterruptedException {
-        var url = "https://www.tvo.fi/index.html";
+        var url = "https://www.tvo.fi/tuotanto/laitosyksikot/ol3/ol3ennusteet.html";
         final var request = HttpRequest.newBuilder().uri(new URI(url)).GET().build();
         return HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
     }

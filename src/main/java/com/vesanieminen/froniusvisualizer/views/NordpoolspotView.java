@@ -21,7 +21,9 @@ import com.vaadin.flow.component.charts.model.SeriesTooltip;
 import com.vaadin.flow.component.charts.model.Tooltip;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
@@ -146,6 +148,8 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         FingridResponse fingridResponse = null;
         List<FingridWindEstimateResponse> windEstimateResponses = null;
         try {
+            // the TVO OL3 requires some page crawling to work reliably
+            //var test = getDayAheadPrediction();
             nordpoolResponse = NordpoolSpotService.getLatest7Days();
             fingridResponse = FingridService.getLatest7Days();
             windEstimateResponses = FingridService.getWindEstimate(environment);
@@ -178,7 +182,6 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
             chart.setMaxWidth("1320px");
             //chart.setHeightFull();
         }
-        add(chart);
 
         // create x and y-axis
         createXAxis(chart);
@@ -218,6 +221,22 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         //averagePrice.setLabel(new Label("Average price: " + averageValue + " c/kWh"));
         //averagePrice.setValue(averageValue);
         //chart.getConfiguration().getyAxis().addPlotLine(averagePrice);
+
+        add(chart);
+        final var spacer = new Div();
+        spacer.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Flex.GROW);
+        add(spacer);
+        final var span = new Span("Built with ");
+        final var span2 = new Span(". Fork me on ");
+        span.addClassNames(LumoUtility.TextColor.SECONDARY);
+        span2.addClassNames(LumoUtility.TextColor.SECONDARY);
+        final var anchor = new Anchor("https://github.com/vesanieminen/ElectricityCostDashboard", "GitHub");
+        final var vaadin = new Anchor("http://vaadin.com", "Vaadin");
+        final var spanLayout = new Span(span, vaadin, span2, anchor);
+        final var footer = new Div(spanLayout);
+        footer.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Background.CONTRAST_5, LumoUtility.Width.FULL, LumoUtility.Height.LARGE);
+        footer.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.CENTER);
+        add(footer);
         return chart;
     }
 
