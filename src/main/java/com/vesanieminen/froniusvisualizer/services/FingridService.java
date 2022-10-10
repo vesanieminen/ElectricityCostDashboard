@@ -31,8 +31,8 @@ public class FingridService {
     private static final ZoneId fiZoneID = ZoneId.of("Europe/Helsinki");
     private static FingridResponse finGridResponse;
     private static List<FingridWindEstimateResponse> windEstimateResponses;
-    private static LocalDateTime nextUpdate = LocalDateTime.now(fiZoneID);
-    private static LocalDateTime nextWindEstimateUpdate = LocalDateTime.now(fiZoneID);
+    private static LocalDateTime nextUpdate = LocalDateTime.now(fiZoneID).minusHours(1);
+    private static LocalDateTime nextWindEstimateUpdate = LocalDateTime.now(fiZoneID).minusHours(1);
 
     // The final target for the basic fingrid query is:
     // https://www.fingrid.fi/api/graph/power-system-production?start=2022-10-04&end=2022-10-10
@@ -45,8 +45,8 @@ public class FingridService {
 
     public static FingridResponse getLatest7Days() throws URISyntaxException, IOException, InterruptedException {
         if (nextUpdate.isBefore(LocalDateTime.now(fiZoneID))) {
-            final LocalDateTime nowWithoutMinutes = currentTimeWithoutMinutesAndSeconds();
-            nextUpdate = nowWithoutMinutes.plusHours(1);
+            final LocalDateTime nowWithoutMinutes = currentTimeWithoutMinutes();
+            nextUpdate = nowWithoutMinutes.plusHours(1).plusSeconds(10);
             final var request = HttpRequest.newBuilder().uri(new URI(createFingridDataQuery())).GET().build();
             final var response = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build().send(request, HttpResponse.BodyHandlers.ofString());
             final var gson = Converters.registerAll(new GsonBuilder()).create();
@@ -67,8 +67,8 @@ public class FingridService {
 
     public static List<FingridWindEstimateResponse> getWindEstimate(Environment env) throws URISyntaxException, IOException, InterruptedException {
         if (nextWindEstimateUpdate.isBefore(LocalDateTime.now(fiZoneID))) {
-            final LocalDateTime nowWithoutMinutes = currentTimeWithoutMinutesAndSeconds();
-            nextWindEstimateUpdate = nowWithoutMinutes.plusHours(1);
+            final LocalDateTime nowWithoutMinutes = currentTimeWithoutMinutes();
+            nextWindEstimateUpdate = nowWithoutMinutes.plusHours(1).plusSeconds(20);
             final var apiKey = env.getProperty("fingrid.api.key");
             final var request = HttpRequest.newBuilder().uri(new URI(createWindEstimateQuery())).GET().header("x-api-key", apiKey).build();
             var response = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build().send(request, HttpResponse.BodyHandlers.ofString());
@@ -105,6 +105,10 @@ public class FingridService {
 
     private static String encodeUrl(String url) throws UnsupportedEncodingException {
         return URLEncoder.encode(url, StandardCharsets.UTF_8);
+    }
+
+    private static LocalDateTime currentTimeWithoutMinutes() {
+        return LocalDateTime.now(fiZoneID).withMinute(0);
     }
 
     private static LocalDateTime currentTimeWithoutMinutesAndSeconds() {

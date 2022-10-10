@@ -17,7 +17,7 @@ public class NordpoolSpotService {
 
     public static final ZoneId fiZoneID = ZoneId.of("Europe/Helsinki");
     private static NordpoolResponse nordpoolResponse;
-    private static LocalDateTime nextUpdate = LocalDateTime.now(fiZoneID);
+    private static LocalDateTime nextUpdate = LocalDateTime.now(fiZoneID).minusHours(1);
     private static final String url = "https://www.nordpoolspot.com/api/marketdata/page/35?currency=,,EUR,EUR";
 
     public static NordpoolResponse getLatest7Days() throws URISyntaxException, IOException, InterruptedException {
