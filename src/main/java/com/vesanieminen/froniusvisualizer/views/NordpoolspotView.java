@@ -238,6 +238,8 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     private static void createSpotPriceYAxis(Chart chart) {
         final var yAxisSpot = new YAxis();
         var labels = new Labels();
+        //labels.setAlign(HorizontalAlign.RIGHT);
+        labels.setReserveSpace(true);
         labels.setFormatter("return this.value +' c/kWh'");
         yAxisSpot.setLabels(labels);
         yAxisSpot.setMin(0);
