@@ -235,7 +235,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         final var spanLayout = new Span(span, vaadin, span2, anchor);
         final var footer = new Div(spanLayout);
         footer.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Background.CONTRAST_5, LumoUtility.Width.FULL, LumoUtility.Height.LARGE);
-        footer.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.CENTER);
+        footer.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.CENTER, LumoUtility.Flex.SHRINK_NONE);
         add(footer);
         return chart;
     }
