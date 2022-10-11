@@ -23,7 +23,10 @@ import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
@@ -223,21 +226,32 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         //chart.getConfiguration().getyAxis().addPlotLine(averagePrice);
 
         add(chart);
+        createFooter();
+        return chart;
+    }
+
+    private void createFooter() {
         final var spacer = new Div();
         spacer.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Flex.GROW);
         add(spacer);
+        final var icon = new Icon(VaadinIcon.VAADIN_H);
+        icon.addClassNames(LumoUtility.Height.MEDIUM, LumoUtility.TextColor.PRIMARY);
         final var span = new Span("Built with ");
-        final var span2 = new Span(". Fork me on ");
+        final var span2 = new Span(" Fork me on ");
         span.addClassNames(LumoUtility.TextColor.SECONDARY);
-        span2.addClassNames(LumoUtility.TextColor.SECONDARY);
+        span2.addClassNames(LumoUtility.TextColor.SECONDARY, LumoUtility.Margin.Left.SMALL);
+        final var vaadin = new Anchor("http://vaadin.com", "Vaadin ");
         final var anchor = new Anchor("https://github.com/vesanieminen/ElectricityCostDashboard", "GitHub");
-        final var vaadin = new Anchor("http://vaadin.com", "Vaadin");
-        final var spanLayout = new Span(span, vaadin, span2, anchor);
+        anchor.addClassNames(LumoUtility.Margin.Right.SMALL);
+        final var githubIcon = new Image("images/GitHub-Mark-32px.png", "GitHub icon");
+        githubIcon.addClassNames(LumoUtility.IconSize.MEDIUM, LumoUtility.TextColor.PRIMARY);
+        final var spanLayout = new Span(span, vaadin, icon, span2, anchor, githubIcon);
+        spanLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER, LumoUtility.AlignItems.CENTER, LumoUtility.Gap.XSMALL);
         final var footer = new Div(spanLayout);
+        getUI().ifPresent(ui -> ui.getElement().getThemeList());
         footer.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Background.CONTRAST_5, LumoUtility.Width.FULL, LumoUtility.Height.LARGE);
         footer.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.CENTER, LumoUtility.Flex.SHRINK_NONE);
         add(footer);
-        return chart;
     }
 
     private static void printSizeOf(Object object) {
