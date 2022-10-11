@@ -135,9 +135,9 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     protected void onAttach(AttachEvent e) {
         final var chart = renderView();
         e.getUI().getPage().retrieveExtendedClientDetails(details -> {
-            if(details.isTouchDevice()) {
+            if (details.isTouchDevice()) {
                 chart.getConfiguration().getRangeSelector().setSelected(2);
-                if(details.getScreenWidth() < 1000) {
+                if (details.getScreenWidth() < 1000) {
                     YAxis production = chart.getConfiguration().getyAxis(0);
                     production.setTitle("Production (GWh)");
                     production.getLabels().setFormatter("return this.value/1000");
@@ -246,10 +246,12 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         final var anchor = new Anchor("https://github.com/vesanieminen/ElectricityCostDashboard", "Fork me on GitHub");
         final var githubIcon = new Image("images/GitHub-Mark-32px.png", "GitHub icon");
         githubIcon.addClassNames(LumoUtility.IconSize.MEDIUM, LumoUtility.TextColor.PRIMARY);
-        final var spanLayout = new Span(vaadin, icon, anchor, githubIcon);
-        spanLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER, LumoUtility.AlignItems.CENTER, LumoUtility.Gap.SMALL);
+        final var divider = new Div();
+        divider.setWidth("1px");
+        divider.addClassNames(LumoUtility.Background.CONTRAST_10, LumoUtility.Height.FULL, LumoUtility.Margin.Horizontal.MEDIUM);
+        final var spanLayout = new Span(vaadin, icon, divider, anchor, githubIcon);
+        spanLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER, LumoUtility.AlignItems.CENTER, LumoUtility.Gap.SMALL, LumoUtility.Height.FULL);
         final var footer = new Div(spanLayout);
-        getUI().ifPresent(ui -> ui.getElement().getThemeList());
         footer.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Background.CONTRAST_5, LumoUtility.Width.FULL, LumoUtility.Height.LARGE);
         footer.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.CENTER, LumoUtility.Flex.SHRINK_NONE);
         add(footer);
