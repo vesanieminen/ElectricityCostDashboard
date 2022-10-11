@@ -129,17 +129,23 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     }
 
     @Override
-    protected void onAttach(AttachEvent attachEvent) {
+    protected void onAttach(AttachEvent e) {
         final var chart = renderView();
-        getUI().ifPresent(ui -> ui.getPage().retrieveExtendedClientDetails(details -> {
-            // TODO: for some reason the following doesn't work even with Server Push enabled:
-            //ui.access(() -> {
-            //    if (details.isTouchDevice()) {
-            //        chart.getConfiguration().getRangeSelector().setSelected(2);
-            //    }
-            //});
+        e.getUI().getPage().retrieveExtendedClientDetails(details -> {
+            if(details.isTouchDevice()) {
+                chart.getConfiguration().getRangeSelector().setSelected(2);
+                if(details.getScreenWidth() < 1000) {
+                    YAxis production = chart.getConfiguration().getyAxis(0);
+                    production.setTitle("Production (GWh)");
+                    production.getLabels().setFormatter("return this.value/1000");
+                    YAxis price = chart.getConfiguration().getyAxis(1);
+                    price.setTitle("Price (c/kWh)");
+                    price.getLabels().setFormatter(null);
+                }
+                chart.drawChart(true);
+            }
             fullScreenButton.setVisible(!details.isTouchDevice());
-        }));
+        });
     }
 
     private Chart renderView() {
