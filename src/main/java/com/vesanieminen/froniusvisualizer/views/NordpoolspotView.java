@@ -248,7 +248,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         githubIcon.addClassNames(LumoUtility.IconSize.MEDIUM, LumoUtility.TextColor.PRIMARY);
         final var divider = new Div();
         divider.setWidth("1px");
-        divider.addClassNames(LumoUtility.Background.CONTRAST_10, LumoUtility.Height.FULL, LumoUtility.Margin.Horizontal.MEDIUM);
+        divider.addClassNames(LumoUtility.Background.CONTRAST_10, LumoUtility.Height.FULL, LumoUtility.Margin.Horizontal.SMALL);
         final var spanLayout = new Span(vaadin, icon, divider, anchor, githubIcon);
         spanLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER, LumoUtility.AlignItems.CENTER, LumoUtility.Gap.SMALL, LumoUtility.Height.FULL);
         final var footer = new Div(spanLayout);
