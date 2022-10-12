@@ -12,6 +12,9 @@ html {
     --yellow-700: #B2830A;
     --yellow-800: #8A6C1E;
     --yellow-900: #5F4B18;
+    --green-500: #1BA875;
+    --red-500: #FF3A49;
+
 }
 
 .bg-yellow-50 {
@@ -56,5 +59,13 @@ html {
 
 .color-yellow {
     color: rgb(242, 182, 50);
+}
+
+.color-green {
+    color: var(--green-500);
+}
+
+.color-red {
+    color: var(--red-500);
 }
 

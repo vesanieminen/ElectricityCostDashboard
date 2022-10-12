@@ -78,6 +78,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     private final double vat24Value = 1.24d;
     private final double vat10Value = 1.10d;
     private final double vat0Value = 1d;
+    private final DoubleLabel netToday;
     private double vat = vat24Value;
 
     private boolean isFullscreen = false;
@@ -100,8 +101,10 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         lowestAndHighest = new DoubleLabel("Lowest / highest today", "");
         lowestAndHighest.addClassNames(LumoUtility.Border.RIGHT);
         averagePrice = new DoubleLabel("7 day average", "");
+        netToday = new DoubleLabel("Net today", "");
 
         fullScreenButton = createButton("Fullscreen");
+        fullScreenButton.setVisible(false);
         if (isFullscreen) {
             fullScreenButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         }
@@ -168,8 +171,8 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
 
         removeAll();
         createVatButtons();
-        var pricesLayout = new Div(priceNow, lowestAndHighest, averagePrice);
-        pricesLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Width.FULL);
+        var pricesLayout = new Div(priceNow, lowestAndHighest, averagePrice, netToday);
+        pricesLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Width.FULL);
         add(pricesLayout);
 
         var chart = new Chart(ChartType.LINE);
@@ -210,6 +213,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         final var windEstimateDataSeries = createWindEstimateDataSeries(windEstimateResponses);
         final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, format, dateTimeFormatter, new ArrayList<>(Arrays.asList(hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, windEstimateDataSeries, renewablesSeries)));
         configureChartTooltips(chart, hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, spotPriceDataSeries, windEstimateDataSeries, renewablesSeries);
+        setNetToday(fingridResponse, df);
 
         final var rangeSelector = new RangeSelector();
         rangeSelector.setButtons(
@@ -371,6 +375,20 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         return now.minusMinutes(now.getMinute()).minusSeconds(now.getSecond()).minusNanos(now.getNano());
     }
 
+    public void setNetToday(FingridResponse fingridResponse, DecimalFormat df) {
+        final var now = getCurrentTimeWithHourPrecision();
+        final var value = fingridResponse.NetImportExport.stream().filter(item -> item.start_time.getDayOfMonth() == now.getDayOfMonth()).map(item -> item.value).reduce(0d, Double::sum);
+        final var formattedValue = df.format(value) + " MWh";
+        netToday.setTitleBottom(formattedValue);
+        // The red color isn't looking good yet:
+        //if (value < 0) {
+        //    netToday.getSpanBottom().addClassNames("color-red");
+        //}
+        //else {
+        //    netToday.getSpanBottom().addClassNames("color-red");
+        //}
+    }
+
     private void createVatButtons() {
         Button vat24Button = createButton("VAT 24%");
         Button vat10Button = createButton("VAT 10%");
@@ -398,7 +416,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     private static Button createButton(String text) {
         Button button = new Button(text);
         button.setWidthFull();
-        button.addClassNames(LumoUtility.BorderRadius.NONE, LumoUtility.Margin.Vertical.NONE, LumoUtility.Height.LARGE);
+        button.addClassNames(LumoUtility.BorderRadius.NONE, LumoUtility.Margin.Vertical.NONE, LumoUtility.Height.MEDIUM);
         return button;
     }
 
