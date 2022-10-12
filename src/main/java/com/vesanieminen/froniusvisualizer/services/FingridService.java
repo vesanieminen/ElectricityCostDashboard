@@ -42,22 +42,30 @@ public class FingridService {
     // https://api.fingrid.fi/v1/variable/245/events/json?start_time=2022-10-09T00%3A00%3A00%2B0300&end_time=2022-10-12T00%3A00%3A00%2B0300
     private static final String windEstimateBaseUrl = "https://api.fingrid.fi/v1/variable/245/events/json?";
 
+    public static void updateFingriData() {
+        //if (nextUpdate.isBefore(LocalDateTime.now(fiZoneID))) {
+        final LocalDateTime nowWithoutMinutes = currentTimeWithoutMinutes();
+        nextUpdate = nowWithoutMinutes.plusHours(1).plusSeconds(10);
+        final HttpRequest request;
+        final HttpResponse<String> response;
+        try {
+            request = HttpRequest.newBuilder().uri(new URI(createFingridDataQuery())).GET().build();
+            response = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build().send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (URISyntaxException | IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        final var gson = Converters.registerAll(new GsonBuilder()).create();
+        finGridResponse = gson.fromJson(response.body(), FingridResponse.class);
+        finGridResponse.HydroPower = keepEveryNthItem(finGridResponse.HydroPower, 20);
+        finGridResponse.NuclearPower = keepEveryNthItem(finGridResponse.NuclearPower, 20);
+        finGridResponse.WindPower = keepEveryNthItem(finGridResponse.WindPower, 20);
+        finGridResponse.SolarPower = keepEveryNthItem(finGridResponse.SolarPower, 20);
+        finGridResponse.Consumption = keepEveryNthItem(finGridResponse.Consumption, 20);
+        finGridResponse.NetImportExport = keepEveryNthItem(finGridResponse.NetImportExport, 20);
+        //}
+    }
 
     public static FingridResponse getLatest7Days() throws URISyntaxException, IOException, InterruptedException {
-        if (nextUpdate.isBefore(LocalDateTime.now(fiZoneID))) {
-            final LocalDateTime nowWithoutMinutes = currentTimeWithoutMinutes();
-            nextUpdate = nowWithoutMinutes.plusHours(1).plusSeconds(10);
-            final var request = HttpRequest.newBuilder().uri(new URI(createFingridDataQuery())).GET().build();
-            final var response = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build().send(request, HttpResponse.BodyHandlers.ofString());
-            final var gson = Converters.registerAll(new GsonBuilder()).create();
-            finGridResponse = gson.fromJson(response.body(), FingridResponse.class);
-            finGridResponse.HydroPower = keepEveryNthItem(finGridResponse.HydroPower, 20);
-            finGridResponse.NuclearPower = keepEveryNthItem(finGridResponse.NuclearPower, 20);
-            finGridResponse.WindPower = keepEveryNthItem(finGridResponse.WindPower, 20);
-            finGridResponse.SolarPower = keepEveryNthItem(finGridResponse.SolarPower, 20);
-            finGridResponse.Consumption = keepEveryNthItem(finGridResponse.Consumption, 20);
-            finGridResponse.NetImportExport = keepEveryNthItem(finGridResponse.NetImportExport, 20);
-        }
         return finGridResponse;
     }
 
