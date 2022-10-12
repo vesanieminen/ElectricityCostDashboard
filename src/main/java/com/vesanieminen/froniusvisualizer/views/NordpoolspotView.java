@@ -98,10 +98,8 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         setHeightFull();
 
         priceNow = new DoubleLabel("Price now", "");
-        priceNow.addClassNames(LumoUtility.Border.RIGHT);
         //priceNow.addClassNamesToSpans("color-yellow");
         lowestAndHighest = new DoubleLabel("Lowest / highest today", "");
-        lowestAndHighest.addClassNames(LumoUtility.Border.RIGHT);
         averagePrice = new DoubleLabel("7 day average", "");
         netToday = new DoubleLabel("Net today", "");
 
