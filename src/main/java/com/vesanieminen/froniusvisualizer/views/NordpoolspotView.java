@@ -82,6 +82,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     private double vat = vat24Value;
 
     private boolean isFullscreen = false;
+    private boolean isTouchDevice = false;
 
     private final Button fullScreenButton;
     private final DecimalFormat df = new DecimalFormat("#0.00");
@@ -139,6 +140,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         final var chart = renderView();
         e.getUI().getPage().retrieveExtendedClientDetails(details -> {
             if (details.isTouchDevice()) {
+                isTouchDevice = true;
                 chart.getConfiguration().getRangeSelector().setSelected(2);
                 if (details.getScreenWidth() < 1000) {
                     YAxis production = chart.getConfiguration().getyAxis(0);
@@ -224,7 +226,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
                 new RangeSelectorButton(RangeSelectorTimespan.ALL, "7d")
         );
         rangeSelector.setButtonSpacing(12);
-        rangeSelector.setSelected(4);
+        rangeSelector.setSelected(isTouchDevice ? 2 : 4);
         chart.getConfiguration().setRangeSelector(rangeSelector);
         rangeSelector.setEnabled(true);
 
