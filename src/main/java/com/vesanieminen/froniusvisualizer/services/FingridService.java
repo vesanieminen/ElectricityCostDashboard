@@ -4,7 +4,6 @@ import com.fatboyindustrial.gsonjavatime.Converters;
 import com.google.gson.GsonBuilder;
 import com.vesanieminen.froniusvisualizer.services.model.FingridResponse;
 import com.vesanieminen.froniusvisualizer.services.model.FingridWindEstimateResponse;
-import org.springframework.core.env.Environment;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -73,16 +72,25 @@ public class FingridService {
         return IntStream.range(0, input.size()).filter(item -> item % n == 0).mapToObj(input::get).toList();
     }
 
-    public static List<FingridWindEstimateResponse> getWindEstimate(Environment env) throws URISyntaxException, IOException, InterruptedException {
-        if (nextWindEstimateUpdate.isBefore(LocalDateTime.now(fiZoneID))) {
-            final LocalDateTime nowWithoutMinutes = currentTimeWithoutMinutes();
-            nextWindEstimateUpdate = nowWithoutMinutes.plusHours(1).plusSeconds(20);
-            final var apiKey = env.getProperty("fingrid.api.key");
-            final var request = HttpRequest.newBuilder().uri(new URI(createWindEstimateQuery())).GET().header("x-api-key", apiKey).build();
-            var response = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build().send(request, HttpResponse.BodyHandlers.ofString());
-            final var gson = Converters.registerAll(new GsonBuilder()).create();
-            windEstimateResponses = Arrays.stream(gson.fromJson(response.body(), FingridWindEstimateResponse[].class)).toList();
+    public static void updateWindEstimateData() {
+        //if (nextWindEstimateUpdate.isBefore(LocalDateTime.now(fiZoneID))) {
+        final LocalDateTime nowWithoutMinutes = currentTimeWithoutMinutes();
+        nextWindEstimateUpdate = nowWithoutMinutes.plusHours(1).plusSeconds(20);
+        final var apiKey = System.getProperty("FINGRID_API_KEY");
+        final HttpRequest request;
+        HttpResponse<String> response = null;
+        try {
+            request = HttpRequest.newBuilder().uri(new URI(createWindEstimateQuery())).GET().header("x-api-key", apiKey).build();
+            response = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build().send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (URISyntaxException | IOException | InterruptedException e) {
+            throw new RuntimeException(e);
         }
+        final var gson = Converters.registerAll(new GsonBuilder()).create();
+        windEstimateResponses = Arrays.stream(gson.fromJson(response.body(), FingridWindEstimateResponse[].class)).toList();
+        //}
+    }
+
+    public static List<FingridWindEstimateResponse> getWindEstimate() throws URISyntaxException, IOException, InterruptedException {
         return windEstimateResponses;
     }
 

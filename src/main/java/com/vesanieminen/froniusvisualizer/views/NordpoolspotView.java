@@ -39,8 +39,6 @@ import com.vesanieminen.froniusvisualizer.services.model.FingridResponse;
 import com.vesanieminen.froniusvisualizer.services.model.FingridWindEstimateResponse;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
 import org.openjdk.jol.info.GraphLayout;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -89,8 +87,6 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
 
     private boolean isInitialRender = true;
 
-    @Autowired
-    private Environment environment;
     private int screenWidth;
 
     public NordpoolspotView() {
@@ -172,7 +168,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
             //var test = getDayAheadPrediction();
             nordpoolResponse = NordpoolSpotService.getLatest7Days();
             fingridResponse = FingridService.getLatest7Days();
-            windEstimateResponses = FingridService.getWindEstimate(environment);
+            windEstimateResponses = FingridService.getWindEstimate();
         } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }

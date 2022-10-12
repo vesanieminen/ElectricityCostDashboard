@@ -9,8 +9,8 @@ public class Executor {
     static {
         ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
         executorService.scheduleAtFixedRate(FingridService::updateFingriData, 0, 30, TimeUnit.MINUTES);
+        executorService.scheduleAtFixedRate(FingridService::updateWindEstimateData, 0, 30, TimeUnit.MINUTES);
         executorService.scheduleAtFixedRate(NordpoolSpotService::updateNordpoolData, 0, 30, TimeUnit.MINUTES);
-        // TODO: add the wind estimate updating here
     }
 
     public static void init() {
