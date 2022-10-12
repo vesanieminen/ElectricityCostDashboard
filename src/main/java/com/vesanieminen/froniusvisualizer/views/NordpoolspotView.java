@@ -91,6 +91,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
 
     @Autowired
     private Environment environment;
+    private int screenWidth;
 
     public NordpoolspotView() {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.CENTER, LumoUtility.TextColor.PRIMARY_CONTRAST);
@@ -141,19 +142,26 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         e.getUI().getPage().retrieveExtendedClientDetails(details -> {
             if (details.isTouchDevice()) {
                 isTouchDevice = true;
-                chart.getConfiguration().getRangeSelector().setSelected(2);
-                if (details.getScreenWidth() < 1000) {
-                    YAxis production = chart.getConfiguration().getyAxis(0);
-                    production.setTitle("Production (GWh)");
-                    production.getLabels().setFormatter("return this.value/1000");
-                    YAxis price = chart.getConfiguration().getyAxis(1);
-                    price.setTitle("Price (c/kWh)");
-                    price.getLabels().setFormatter(null);
-                }
-                chart.drawChart(true);
+                screenWidth = details.getScreenWidth();
+                setTouchDeviceConfiguration(chart);
             }
             fullScreenButton.setVisible(!details.isTouchDevice());
         });
+    }
+
+    private void setTouchDeviceConfiguration(Chart chart) {
+        if (isTouchDevice) {
+            chart.getConfiguration().getRangeSelector().setSelected(2);
+            if (screenWidth < 1000) {
+                YAxis production = chart.getConfiguration().getyAxis(0);
+                production.setTitle("Production (GWh)");
+                production.getLabels().setFormatter("return this.value/1000");
+                YAxis price = chart.getConfiguration().getyAxis(1);
+                price.setTitle("Price (c/kWh)");
+                price.getLabels().setFormatter(null);
+            }
+            chart.drawChart(true);
+        }
     }
 
     private Chart renderView() {
@@ -236,6 +244,8 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         //averagePrice.setLabel(new Label("Average price: " + averageValue + " c/kWh"));
         //averagePrice.setValue(averageValue);
         //chart.getConfiguration().getyAxis().addPlotLine(averagePrice);
+
+        setTouchDeviceConfiguration(chart);
 
         add(chart);
         createFooter();
