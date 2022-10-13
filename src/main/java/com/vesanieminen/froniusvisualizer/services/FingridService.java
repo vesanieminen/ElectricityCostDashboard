@@ -76,7 +76,7 @@ public class FingridService {
         //if (nextWindEstimateUpdate.isBefore(LocalDateTime.now(fiZoneID))) {
         final LocalDateTime nowWithoutMinutes = currentTimeWithoutMinutes();
         nextWindEstimateUpdate = nowWithoutMinutes.plusHours(1).plusSeconds(20);
-        final var apiKey = System.getProperty("FINGRID_API_KEY");
+        final var apiKey = System.getenv().get("FINGRID_API_KEY");
         final HttpRequest request;
         HttpResponse<String> response = null;
         try {
