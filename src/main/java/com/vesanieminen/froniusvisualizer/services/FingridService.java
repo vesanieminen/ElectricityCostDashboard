@@ -42,7 +42,7 @@ public class FingridService {
     // https://api.fingrid.fi/v1/variable/245/events/json?start_time=2022-10-09T00%3A00%3A00%2B0300&end_time=2022-10-12T00%3A00%3A00%2B0300
     private static final String windEstimateBaseUrl = "https://api.fingrid.fi/v1/variable/245/events/json?";
 
-    public static void updateFingriData() {
+    public static void updateFingridData() {
         //if (nextUpdate.isBefore(LocalDateTime.now(fiZoneID))) {
         final LocalDateTime nowWithoutMinutes = currentTimeWithoutMinutes();
         nextUpdate = nowWithoutMinutes.plusHours(1).plusSeconds(10);
