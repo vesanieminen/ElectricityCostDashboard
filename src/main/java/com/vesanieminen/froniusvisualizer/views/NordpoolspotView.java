@@ -367,7 +367,6 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
 
     private DataSeries createWindEstimateDataSeries(List<FingridWindEstimateResponse> dataSource) {
         final var dataSeries = new DataSeries(windProductionEstimateTitle);
-        System.out.println("Fingrid.api.key: " + System.getProperty("FINGRID_API_KEY"));
         for (FingridWindEstimateResponse response : dataSource) {
             final var dataSeriesItem = new DataSeriesItem();
             dataSeriesItem.setX(response.start_time.toInstant().plus(Duration.ofHours(3)));
