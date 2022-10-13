@@ -23,7 +23,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Application implements AppShellConfigurator {
 
     public static void main(String[] args) {
-        System.out.println("Fingrid.api.key: " + System.getenv("FINGRID_API_KEY"));
         Executor.init();
         SpringApplication.run(Application.class, args);
     }

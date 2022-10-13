@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
+import static com.vesanieminen.froniusvisualizer.util.Properties.getFingridAPIKey;
 import static java.util.stream.Collectors.joining;
 
 public class FingridService {
@@ -76,7 +77,7 @@ public class FingridService {
         //if (nextWindEstimateUpdate.isBefore(LocalDateTime.now(fiZoneID))) {
         final LocalDateTime nowWithoutMinutes = currentTimeWithoutMinutes();
         nextWindEstimateUpdate = nowWithoutMinutes.plusHours(1).plusSeconds(20);
-        final var apiKey = System.getenv("FINGRID_API_KEY");
+        final var apiKey = getFingridAPIKey();
         final HttpRequest request;
         HttpResponse<String> response = null;
         try {
