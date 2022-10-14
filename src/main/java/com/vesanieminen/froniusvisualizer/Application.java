@@ -47,7 +47,7 @@ public class Application implements AppShellConfigurator {
                 context.addConstraint(securityConstraint);
             }
         };
-        tomcat.addAdditionalTomcatConnectors(redirectConnector());
+        //tomcat.addAdditionalTomcatConnectors(redirectConnector());
         return tomcat;
     }
 
