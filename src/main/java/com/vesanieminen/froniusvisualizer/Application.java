@@ -7,7 +7,6 @@ import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import com.vesanieminen.froniusvisualizer.services.Executor;
 import org.apache.catalina.Context;
-import org.apache.catalina.connector.Connector;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
 import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 import org.springframework.boot.SpringApplication;
@@ -47,17 +46,7 @@ public class Application implements AppShellConfigurator {
                 context.addConstraint(securityConstraint);
             }
         };
-        //tomcat.addAdditionalTomcatConnectors(redirectConnector());
         return tomcat;
-    }
-
-    private Connector redirectConnector() {
-        Connector connector = new Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL);
-        connector.setScheme("http");
-        connector.setPort(80);
-        connector.setSecure(false);
-        connector.setRedirectPort(443);
-        return connector;
     }
 
 }
