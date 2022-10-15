@@ -1,6 +1,7 @@
 package com.vesanieminen.froniusvisualizer.views;
 
 import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
@@ -20,6 +21,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -51,7 +53,7 @@ public class PriceListView extends Div {
     }
 
     private void addRows(NordpoolResponse data, Locale locale) {
-        var containerList = new ArrayList<Div>();
+        Collection<Component> containerList = new ArrayList<>();
         Div currentTimeDiv = null;
 
         var now = getCurrentTimeWithHourPrecision();
@@ -74,7 +76,7 @@ public class PriceListView extends Div {
                 final var dataLocalDataTime = LocalDateTime.parse(dateTimeString, dateTimeFormatter);
                 final var instant = dataLocalDataTime.toInstant(ZoneOffset.of("-01:00"));
                 final var localDateTime = LocalDateTime.ofInstant(instant, ZoneId.of("UTC"));
-                daySpan.setText(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(localDateTime));
+                daySpan.setText(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale).format(localDateTime));
                 try {
                     final var price = format.parse(column.Value).doubleValue() * 1.24 / 10;
                     final var div = new Div();
@@ -107,7 +109,7 @@ public class PriceListView extends Div {
             --columnIndex;
         }
 
-        add(containerList.toArray(new Div[]{}));
+        add(containerList);
         currentTimeDiv.scrollIntoView();
     }
 
