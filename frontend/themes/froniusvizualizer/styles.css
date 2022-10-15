@@ -84,8 +84,15 @@ html {
     color: var(--list-red);
 }
 
-.sticky {
+.sticky-button {
     position: sticky;
     position: -webkit-sticky;
-    top: 0px;
+    top: 0;
+    z-index: 10;
+}
+
+.sticky-date {
+    position: sticky;
+    position: -webkit-sticky;
+    top: calc(var(--lumo-size-m) - 1px);
 }

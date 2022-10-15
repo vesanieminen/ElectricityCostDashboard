@@ -3,6 +3,7 @@ package com.vesanieminen.froniusvisualizer.views;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Unit;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.Route;
@@ -41,6 +42,10 @@ public class PriceListView extends Div {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
+        final var button = new Button("Back");
+        button.addClassNames(LumoUtility.Height.MEDIUM, "sticky-button", LumoUtility.Background.BASE, LumoUtility.Margin.NONE);
+        button.addClickListener(e -> attachEvent.getUI().navigate(NordpoolspotView.class));
+        add(button);
         renderView(attachEvent.getUI().getLocale());
     }
 
@@ -65,8 +70,8 @@ public class PriceListView extends Div {
             final var dayDiv = new Div();
             dayDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.JustifyContent.CENTER);
             final var daySpan = new Span();
-            daySpan.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER, LumoUtility.Padding.SMALL, LumoUtility.Background.BASE);
-            daySpan.addClassNames(LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL, LumoUtility.Border.BOTTOM, LumoUtility.BorderColor.CONTRAST_10, "sticky");
+            daySpan.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER, LumoUtility.Padding.MEDIUM, LumoUtility.Background.BASE);
+            daySpan.addClassNames(LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL, LumoUtility.Border.BOTTOM, LumoUtility.BorderColor.CONTRAST_10, "sticky-date");
             dayDiv.add(daySpan);
             containerList.add(dayDiv);
             for (NordpoolResponse.Row row : rows.subList(0, rows.size() - 6)) {
@@ -99,7 +104,7 @@ public class PriceListView extends Div {
                         //currentTimeDiv = div;
                         div.addClassNames(LumoUtility.Background.CONTRAST_10);
                     }
-                    if (Objects.equals(localDateTime, now.minusHours(1))) {
+                    if (Objects.equals(localDateTime, now.minusHours(2))) {
                         currentTimeDiv = div;
                     }
                 } catch (ParseException e) {
