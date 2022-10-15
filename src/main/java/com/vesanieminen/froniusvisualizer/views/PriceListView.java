@@ -81,7 +81,7 @@ public class PriceListView extends Div {
                 final var dataLocalDataTime = LocalDateTime.parse(dateTimeString, dateTimeFormatter);
                 final var instant = dataLocalDataTime.toInstant(ZoneOffset.of("-01:00"));
                 final var localDateTime = LocalDateTime.ofInstant(instant, ZoneId.of("UTC"));
-                daySpan.setText(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale).format(localDateTime));
+                daySpan.setText(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(dataLocalDataTime));
                 try {
                     final var price = format.parse(column.Value).doubleValue() * 1.24 / 10;
                     final var div = new Div();
