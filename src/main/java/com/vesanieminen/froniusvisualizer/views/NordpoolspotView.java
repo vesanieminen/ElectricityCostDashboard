@@ -398,7 +398,9 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         Button vat24Button = createButton("VAT 24%");
         Button vat10Button = createButton("VAT 10%");
         Button vat0Button = createButton("VAT 0%");
-        final var buttonLayout = new Div(vat24Button, vat10Button, vat0Button, fullScreenButton);
+        Button priceListButton = createButton("List");
+        priceListButton.setSizeUndefined();
+        final var buttonLayout = new Div(vat24Button, vat10Button, vat0Button, priceListButton, fullScreenButton);
         buttonLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Width.FULL);
         add(buttonLayout);
 
@@ -406,6 +408,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         vat24Button.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(NordpoolspotView.class)));
         vat10Button.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(NordpoolspotView.class, vat10)));
         vat0Button.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(NordpoolspotView.class, vat0)));
+        priceListButton.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(PriceListView.class)));
 
         if (vat == vat24Value) {
             vat24Button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);

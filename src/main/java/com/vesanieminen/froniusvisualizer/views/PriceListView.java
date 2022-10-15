@@ -1,6 +1,7 @@
 package com.vesanieminen.froniusvisualizer.views;
 
 import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.Route;
@@ -30,7 +31,8 @@ public class PriceListView extends Div {
     private static final double cheapLimit = 2;
 
     public PriceListView() {
-        addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
+        addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.JustifyContent.CENTER, LumoUtility.Margin.AUTO);
+        setMaxWidth(1024, Unit.PIXELS);
     }
 
 
@@ -74,7 +76,7 @@ public class PriceListView extends Div {
                 try {
                     final var price = format.parse(column.Value).doubleValue() * 1.24 / 10;
                     final var div = new Div();
-                    div.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.BETWEEN, LumoUtility.Border.BOTTOM, LumoUtility.BorderColor.CONTRAST_10, LumoUtility.Padding.SMALL);
+                    div.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.BETWEEN, LumoUtility.Border.BOTTOM, LumoUtility.BorderColor.CONTRAST_10, LumoUtility.Padding.SMALL, LumoUtility.Padding.Horizontal.MEDIUM);
                     final var timeSpan = new Span(DateTimeFormatter.ofPattern("HH:mm").format(localDateTime));
                     final var df = new DecimalFormat("#0.000");
                     final var priceSpan = new Span(df.format(price) + "¢");
