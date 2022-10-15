@@ -19,6 +19,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -38,19 +39,19 @@ public class PriceListView extends Div {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        renderView();
+        renderView(attachEvent.getUI().getLocale());
     }
 
-    void renderView() {
+    void renderView(Locale locale) {
         var data = getData();
         if (data == null) {
             return;
         }
-        addRows(data);
+        addRows(data, locale);
     }
 
-    private void addRows(NordpoolResponse data) {
-        var container = new Div();
+    private void addRows(NordpoolResponse data, Locale locale) {
+        var containerList = new ArrayList<Div>();
         Div currentTimeDiv = null;
 
         var now = getCurrentTimeWithHourPrecision();
@@ -60,11 +61,12 @@ public class PriceListView extends Div {
         int columnIndex = 6;
         while (columnIndex >= 0) {
             final var dayDiv = new Div();
-            dayDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Border.BOTTOM, LumoUtility.BorderColor.CONTRAST_10, LumoUtility.Padding.SMALL, LumoUtility.JustifyContent.CENTER);
+            dayDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.JustifyContent.CENTER);
             final var daySpan = new Span();
-            daySpan.addClassNames(LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL);
+            daySpan.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER, LumoUtility.Padding.SMALL, LumoUtility.Background.BASE);
+            daySpan.addClassNames(LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL, LumoUtility.Border.BOTTOM, LumoUtility.BorderColor.CONTRAST_10, "sticky");
             dayDiv.add(daySpan);
-            container.add(dayDiv);
+            containerList.add(dayDiv);
             for (NordpoolResponse.Row row : rows.subList(0, rows.size() - 6)) {
                 final var time = row.StartTime.toString().split("T")[1];
                 NordpoolResponse.Column column = row.Columns.get(columnIndex);
@@ -77,7 +79,7 @@ public class PriceListView extends Div {
                     final var price = format.parse(column.Value).doubleValue() * 1.24 / 10;
                     final var div = new Div();
                     div.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.BETWEEN, LumoUtility.Border.BOTTOM, LumoUtility.BorderColor.CONTRAST_10, LumoUtility.Padding.SMALL, LumoUtility.Padding.Horizontal.MEDIUM);
-                    final var timeSpan = new Span(DateTimeFormatter.ofPattern("HH:mm").format(localDateTime));
+                    final var timeSpan = new Span(DateTimeFormatter.ofPattern("HH:mm").withLocale(locale).format(localDateTime));
                     final var df = new DecimalFormat("#0.000");
                     final var priceSpan = new Span(df.format(price) + "¢");
                     if (price <= cheapLimit) {
@@ -90,10 +92,13 @@ public class PriceListView extends Div {
                         priceSpan.addClassName("list-red");
                     }
                     div.add(timeSpan, priceSpan);
-                    container.add(div);
+                    dayDiv.add(div);
                     if (Objects.equals(localDateTime, now)) {
-                        currentTimeDiv = div;
+                        //currentTimeDiv = div;
                         div.addClassNames(LumoUtility.Background.CONTRAST_10);
+                    }
+                    if (Objects.equals(localDateTime, now.minusHours(1))) {
+                        currentTimeDiv = div;
                     }
                 } catch (ParseException e) {
                     throw new RuntimeException(e);
@@ -102,7 +107,7 @@ public class PriceListView extends Div {
             --columnIndex;
         }
 
-        add(container);
+        add(containerList.toArray(new Div[]{}));
         currentTimeDiv.scrollIntoView();
     }
 

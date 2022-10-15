@@ -17,8 +17,7 @@ html {
 
     --list-green: #94d066;
     --list-blue: #1589d6;
-    --list-red: #f90006;
-
+    --list-red: #FF3A49;
 }
 
 .bg-yellow-50 {
@@ -83,4 +82,10 @@ html {
 
 .list-red {
     color: var(--list-red);
+}
+
+.sticky {
+    position: sticky;
+    position: -webkit-sticky;
+    top: 0px;
 }
