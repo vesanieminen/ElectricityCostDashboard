@@ -232,6 +232,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         rangeSelector.setSelected(isTouchDevice ? 2 : 4);
         chart.getConfiguration().setRangeSelector(rangeSelector);
         rangeSelector.setEnabled(true);
+        rangeSelector.setInputEnabled(false);
 
         // TODO: bring back the average price per day?
         //final var averageValue = mapToPrice(format, nordpoolResponse.data.Rows.get(26));
