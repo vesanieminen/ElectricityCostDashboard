@@ -100,7 +100,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         //priceNow.addClassNamesToSpans("color-yellow");
         lowestAndHighest = new DoubleLabel("Lowest / highest today", "");
         averagePrice = new DoubleLabel("7 day average", "");
-        nextPrice = new DoubleLabel("Next price", "");
+        nextPrice = new DoubleLabel("Price in 1h", "");
 
         fullScreenButton = createButton("Fullscreen");
         fullScreenButton.setVisible(false);
@@ -399,7 +399,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         Button vat10Button = createButton("VAT 10%");
         Button vat0Button = createButton("VAT 0%");
         Button priceListButton = createButton("List");
-        priceListButton.setSizeUndefined();
+        //priceListButton.setSizeUndefined();
         final var buttonLayout = new Div(vat24Button, vat10Button, vat0Button, priceListButton, fullScreenButton);
         buttonLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Width.FULL);
         add(buttonLayout);
@@ -424,7 +424,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     private static Button createButton(String text) {
         Button button = new Button(text);
         button.setWidthFull();
-        button.addClassNames(LumoUtility.BorderRadius.NONE, LumoUtility.Margin.Vertical.NONE, LumoUtility.Height.MEDIUM);
+        button.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.BorderRadius.NONE, LumoUtility.Margin.Vertical.NONE, LumoUtility.Height.MEDIUM);
         return button;
     }
 
