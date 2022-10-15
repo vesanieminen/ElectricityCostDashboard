@@ -56,6 +56,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
+
 @Route("")
 public class NordpoolspotView extends Div implements HasUrlParameter<String> {
 
@@ -376,11 +378,6 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
             dataSeries.add(dataSeriesItem);
         }
         return dataSeries;
-    }
-
-    private static LocalDateTime getCurrentTimeWithHourPrecision() {
-        final var now = LocalDateTime.now(ZoneId.of("Europe/Helsinki"));
-        return now.minusMinutes(now.getMinute()).minusSeconds(now.getSecond()).minusNanos(now.getNano());
     }
 
     public void setNetToday(FingridResponse fingridResponse, DecimalFormat df, DoubleLabel netToday) {
