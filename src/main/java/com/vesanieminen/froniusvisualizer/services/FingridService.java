@@ -31,8 +31,6 @@ public class FingridService {
     private static final ZoneId fiZoneID = ZoneId.of("Europe/Helsinki");
     private static FingridResponse finGridResponse;
     private static List<FingridWindEstimateResponse> windEstimateResponses;
-    private static LocalDateTime nextUpdate = LocalDateTime.now(fiZoneID).minusHours(1);
-    private static LocalDateTime nextWindEstimateUpdate = LocalDateTime.now(fiZoneID).minusHours(1);
 
     // The final target for the basic fingrid query is:
     // https://www.fingrid.fi/api/graph/power-system-production?start=2022-10-04&end=2022-10-10
@@ -43,9 +41,6 @@ public class FingridService {
     private static final String windEstimateBaseUrl = "https://api.fingrid.fi/v1/variable/245/events/json?";
 
     public static void updateFingridData() {
-        //if (nextUpdate.isBefore(LocalDateTime.now(fiZoneID))) {
-        final LocalDateTime nowWithoutMinutes = currentTimeWithoutMinutes();
-        nextUpdate = nowWithoutMinutes.plusHours(1).plusSeconds(10);
         final HttpRequest request;
         final HttpResponse<String> response;
         try {
@@ -55,14 +50,18 @@ public class FingridService {
             throw new RuntimeException(e);
         }
         final var gson = Converters.registerAll(new GsonBuilder()).create();
-        finGridResponse = gson.fromJson(response.body(), FingridResponse.class);
+        final var newFingridResponse = gson.fromJson(response.body(), FingridResponse.class);
+        // If data is missing do not overwrite the previous values
+        if (!newFingridResponse.isValid()) {
+            return;
+        }
+        finGridResponse = newFingridResponse;
         finGridResponse.HydroPower = keepEveryNthItem(finGridResponse.HydroPower, 20);
         finGridResponse.NuclearPower = keepEveryNthItem(finGridResponse.NuclearPower, 20);
         finGridResponse.WindPower = keepEveryNthItem(finGridResponse.WindPower, 20);
         finGridResponse.SolarPower = keepEveryNthItem(finGridResponse.SolarPower, 20);
         finGridResponse.Consumption = keepEveryNthItem(finGridResponse.Consumption, 20);
         finGridResponse.NetImportExport = keepEveryNthItem(finGridResponse.NetImportExport, 20);
-        //}
     }
 
     public static FingridResponse getLatest7Days() throws URISyntaxException, IOException, InterruptedException {
@@ -74,9 +73,6 @@ public class FingridService {
     }
 
     public static void updateWindEstimateData() {
-        //if (nextWindEstimateUpdate.isBefore(LocalDateTime.now(fiZoneID))) {
-        final LocalDateTime nowWithoutMinutes = currentTimeWithoutMinutes();
-        nextWindEstimateUpdate = nowWithoutMinutes.plusHours(1).plusSeconds(20);
         final var apiKey = getFingridAPIKey();
         final HttpRequest request;
         HttpResponse<String> response = null;
@@ -87,8 +83,10 @@ public class FingridService {
             throw new RuntimeException(e);
         }
         final var gson = Converters.registerAll(new GsonBuilder()).create();
-        windEstimateResponses = Arrays.stream(gson.fromJson(response.body(), FingridWindEstimateResponse[].class)).toList();
-        //}
+        final var newWindEstimateResponses = Arrays.stream(gson.fromJson(response.body(), FingridWindEstimateResponse[].class)).toList();
+        if (newWindEstimateResponses.size() > 0) {
+            windEstimateResponses = newWindEstimateResponses;
+        }
     }
 
     public static List<FingridWindEstimateResponse> getWindEstimate() throws URISyntaxException, IOException, InterruptedException {
@@ -122,10 +120,6 @@ public class FingridService {
 
     private static String encodeUrl(String url) throws UnsupportedEncodingException {
         return URLEncoder.encode(url, StandardCharsets.UTF_8);
-    }
-
-    private static LocalDateTime currentTimeWithoutMinutes() {
-        return LocalDateTime.now(fiZoneID).withMinute(0);
     }
 
     private static LocalDateTime currentTimeWithoutMinutesAndSeconds() {

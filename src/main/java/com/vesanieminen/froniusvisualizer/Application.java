@@ -15,6 +15,8 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 
+import static com.vesanieminen.froniusvisualizer.util.Properties.isDevelopmentMode;
+
 /**
  * The entry point of the Spring Boot application.
  * <p>
@@ -35,7 +37,10 @@ public class Application implements AppShellConfigurator {
 
     @Bean
     public ServletWebServerFactory servletContainer() {
-        TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory() {
+        if (isDevelopmentMode()) {
+            return new TomcatServletWebServerFactory();
+        }
+        return new TomcatServletWebServerFactory() {
             @Override
             protected void postProcessContext(Context context) {
                 SecurityConstraint securityConstraint = new SecurityConstraint();
@@ -46,7 +51,6 @@ public class Application implements AppShellConfigurator {
                 context.addConstraint(securityConstraint);
             }
         };
-        return tomcat;
     }
 
 }

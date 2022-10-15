@@ -10,20 +10,15 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 public class NordpoolSpotService {
 
     public static final ZoneId fiZoneID = ZoneId.of("Europe/Helsinki");
     private static NordpoolResponse nordpoolResponse;
-    private static LocalDateTime nextUpdate = LocalDateTime.now(fiZoneID).minusHours(1);
     private static final String url = "https://www.nordpoolspot.com/api/marketdata/page/35?currency=,,EUR,EUR";
 
     public static void updateNordpoolData() {
-        //if (nextUpdate.isBefore(LocalDateTime.now(fiZoneID))) {
-        final var nowWithoutMinutes = LocalDateTime.now(fiZoneID).withMinute(0);
-        nextUpdate = nowWithoutMinutes.plusHours(1);
         final HttpRequest request;
         final HttpResponse<String> response;
         try {
@@ -33,8 +28,10 @@ public class NordpoolSpotService {
             throw new RuntimeException(e);
         }
         final var gson = Converters.registerAll(new GsonBuilder()).create();
-        nordpoolResponse = gson.fromJson(response.body(), NordpoolResponse.class);
-        //}
+        var newNordpoolResponse = gson.fromJson(response.body(), NordpoolResponse.class);
+        if (newNordpoolResponse.isValid()) {
+            nordpoolResponse = newNordpoolResponse;
+        }
     }
 
     public static NordpoolResponse getLatest7Days() throws URISyntaxException, IOException, InterruptedException {

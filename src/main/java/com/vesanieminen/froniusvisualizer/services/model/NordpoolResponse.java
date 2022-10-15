@@ -3,7 +3,7 @@ package com.vesanieminen.froniusvisualizer.services.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class NordpoolResponse {
+public class NordpoolResponse implements ResponseValidator {
 
     public Data data;
 
@@ -28,6 +28,11 @@ public class NordpoolResponse {
         public String Value;
         public int Index;
         public int Scale;
+    }
+
+    @Override
+    public Object[] getObjects() {
+        return new Object[]{this, data, data.Rows, data.Units};
     }
 
 }
