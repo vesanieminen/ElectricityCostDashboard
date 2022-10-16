@@ -1,6 +1,7 @@
 package com.vesanieminen.froniusvisualizer.views;
 
 import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.charts.Chart;
@@ -21,6 +22,7 @@ import com.vaadin.flow.component.charts.model.SeriesTooltip;
 import com.vaadin.flow.component.charts.model.Tooltip;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
@@ -389,21 +391,60 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         //}
     }
 
+    public enum VAT {
+        VAT24("VAT 24%"),
+        VAT10("VAT 10%"),
+        VAT0("VAT 0%");
+
+        private String vatName;
+
+        VAT(String vatName) {
+            this.vatName = vatName;
+        }
+
+        public String getVatName() {
+            return vatName;
+        }
+    }
+
     private void createVatButtons() {
+        final var vatComboBox = new ComboBox<VAT>();
+        vatComboBox.addClassNames(LumoUtility.Padding.NONE);
+        vatComboBox.setWidth(140, Unit.PIXELS);
+        vatComboBox.setItems(VAT.values());
+        if (vat == vat24Value) {
+            vatComboBox.setValue(VAT.VAT24);
+        }
+        if (vat == vat10Value) {
+            vatComboBox.setValue(VAT.VAT10);
+        }
+        if (vat == vat0Value) {
+            vatComboBox.setValue(VAT.VAT0);
+        }
+        vatComboBox.setItemLabelGenerator(VAT::getVatName);
         Button vat24Button = createButton("VAT 24%");
         Button vat10Button = createButton("VAT 10%");
         Button vat0Button = createButton("VAT 0%");
         Button priceListButton = createButton("List");
+        Button priceCalculationButton = createButton("Calculation");
         //priceListButton.setSizeUndefined();
-        final var buttonLayout = new Div(vat24Button, vat10Button, vat0Button, priceListButton, fullScreenButton);
+        final var buttonLayout = new Div(/*vat24Button, vat10Button, vat0Button,*/ vatComboBox, priceListButton, priceCalculationButton, fullScreenButton);
         buttonLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Width.FULL);
         add(buttonLayout);
 
         // Add event listeners
+        vatComboBox.addValueChangeListener(e -> getUI().ifPresent(ui -> {
+            switch (e.getValue()) {
+                case VAT24 -> ui.navigate(NordpoolspotView.class);
+                case VAT10 -> ui.navigate(NordpoolspotView.class, vat10);
+                case VAT0 -> ui.navigate(NordpoolspotView.class, vat0);
+            }
+        }));
         vat24Button.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(NordpoolspotView.class)));
         vat10Button.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(NordpoolspotView.class, vat10)));
         vat0Button.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(NordpoolspotView.class, vat0)));
         priceListButton.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(PriceListView.class)));
+        priceCalculationButton.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(PriceCalculatorView.class)));
 
         if (vat == vat24Value) {
             vat24Button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);

@@ -1,5 +1,6 @@
 package com.vesanieminen.froniusvisualizer.views;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Pre;
@@ -28,7 +29,7 @@ public class PriceCalculatorView extends Div {
     private String lastFile;
 
     public PriceCalculatorView() throws IOException, ParseException {
-        addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.MEDIUM);
+        addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.SMALL);
 
         final var title = new Span("Spot price / fixed electricity price calculator");
         title.addClassNames(LumoUtility.TextColor.PRIMARY, LumoUtility.FontSize.MEDIUM);
@@ -40,7 +41,7 @@ public class PriceCalculatorView extends Div {
         final var numberField = new NumberField("Fixed price for calculation");
         numberField.setRequiredIndicatorVisible(true);
         numberField.setSuffixComponent(new Span("c/kWh"));
-        numberField.setPlaceholder("E.g. 12,50");
+        numberField.setPlaceholder("Please enter e.g. 12.50");
         numberField.setWidthFull();
         add(numberField);
 
@@ -79,4 +80,11 @@ public class PriceCalculatorView extends Div {
         add(container);
     }
 
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        final var backButton = new Button("Back");
+        backButton.addClassNames(LumoUtility.Height.MEDIUM, "sticky-button", LumoUtility.Background.BASE, LumoUtility.Margin.Bottom.MEDIUM, LumoUtility.BorderColor.CONTRAST_10, LumoUtility.Border.ALL);
+        backButton.addClickListener(e -> attachEvent.getUI().navigate(NordpoolspotView.class));
+        addComponentAsFirst(backButton);
+    }
 }
