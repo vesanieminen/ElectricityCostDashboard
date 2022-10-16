@@ -25,10 +25,11 @@ public class PriceCalculatorService {
 
     public static final DateTimeFormatter datetimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static LinkedHashMap<LocalDateTime, Double> spotPriceMap;
+    private static Double spotAverage2022;
 
     public static LinkedHashMap<LocalDateTime, Double> getSpotData() throws IOException {
         if (spotPriceMap == null) {
-            spotPriceMap = new LinkedHashMap<LocalDateTime, Double>();
+            spotPriceMap = new LinkedHashMap<>();
             final var reader = Files.newBufferedReader(Path.of(spotPriceDataFile));
             final var csvReader = new CSVReader(reader);
             csvReader.readNext(); // skip header
@@ -41,9 +42,9 @@ public class PriceCalculatorService {
         return spotPriceMap;
     }
 
-    public static LinkedHashMap<LocalDateTime, Double> getFingridConsumptionData() throws IOException, ParseException {
+    public static LinkedHashMap<LocalDateTime, Double> getFingridConsumptionData(String filePath) throws IOException, ParseException {
         final var map = new LinkedHashMap<LocalDateTime, Double>();
-        final var reader = Files.newBufferedReader(Path.of(fingridConsumptionDataFile));
+        final var reader = Files.newBufferedReader(Path.of(filePath));
         CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
         CSVReader csvReader = new CSVReaderBuilder(reader)
                 .withSkipLines(1)
@@ -62,8 +63,12 @@ public class PriceCalculatorService {
         return spotData.values().stream().reduce(0d, Double::sum) / spotData.values().size();
     }
 
-    public static double calculateSpotAveragePrice2022(LinkedHashMap<LocalDateTime, Double> spotData) {
-        return spotData.entrySet().stream().filter(item -> item.getKey().getYear() == 2022).map(Map.Entry::getValue).reduce(0d, Double::sum) / spotData.values().size();
+    public static double calculateSpotAveragePrice2022() throws IOException {
+        if (spotAverage2022 == null) {
+
+        }
+        spotAverage2022 = getSpotData().entrySet().stream().filter(item -> item.getKey().getYear() == 2022).map(Map.Entry::getValue).reduce(0d, Double::sum) / getSpotData().values().size();
+        return spotAverage2022;
     }
 
     public static double calculateSpotElectricityPrice(LinkedHashMap<LocalDateTime, Double> spotData, LinkedHashMap<LocalDateTime, Double> fingridConsumptionData) {
