@@ -1,6 +1,7 @@
 package com.vesanieminen.froniusvisualizer.views;
 
 import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
@@ -30,7 +31,8 @@ public class PriceCalculatorView extends Div {
     private String lastFile;
 
     public PriceCalculatorView() throws IOException, ParseException {
-        addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Horizontal.MEDIUM);
+        addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Padding.Horizontal.MEDIUM, LumoUtility.Margin.AUTO);
+        setMaxWidth(1024, Unit.PIXELS);
 
         final var title = new Span("Spot price / fixed electricity price calculator");
         title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
@@ -57,20 +59,19 @@ public class PriceCalculatorView extends Div {
         //span.addClassNames(LumoUtility.Margin.Top.MEDIUM);
         add(span);
 
-
-        final var numberField = new NumberField("Fixed price for calculation");
+        final var numberField = new NumberField("Fixed price");
         numberField.setRequiredIndicatorVisible(true);
         numberField.setSuffixComponent(new Span("c/kWh"));
         numberField.setPlaceholder("Please enter e.g. 12.50");
-        numberField.setWidthFull();
         //numberField.addClassNames(LumoUtility.Padding.Top.NONE);
+        numberField.setWidth(16, Unit.EM);
         add(numberField);
 
         final var spotMargin = new NumberField("Spot margin");
         spotMargin.setRequiredIndicatorVisible(true);
         spotMargin.setSuffixComponent(new Span("c/kWh"));
         spotMargin.setPlaceholder("Please enter e.g. 0.38");
-        spotMargin.setWidthFull();
+        spotMargin.setWidth(16, Unit.EM);
         add(spotMargin);
 
         FileBuffer fileBuffer = new FileBuffer();
@@ -121,4 +122,5 @@ public class PriceCalculatorView extends Div {
         backButton.addClickListener(e -> attachEvent.getUI().navigate(NordpoolspotView.class));
         addComponentAsFirst(backButton);
     }
+
 }
