@@ -86,8 +86,15 @@ public class PriceCalculatorView extends Div {
         });
         upload.addClassNames(LumoUtility.Margin.Vertical.MEDIUM);
         add(upload);
+        final var total = new Div();
+        total.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Top.MEDIUM);
         final var container = new Div();
-        container.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
+        container.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.EVENLY, LumoUtility.Gap.SMALL);
+        final var spot = new Div();
+        spot.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
+        final var fixed = new Div();
+        fixed.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
+        container.add(spot, fixed);
         final var button = new Button("Calculate costs", e -> {
             try {
                 if (numberField.getValue() == null) {
@@ -102,13 +109,17 @@ public class PriceCalculatorView extends Div {
                 //final var spotCost = calculateSpotElectricityPrice(getSpotData(), consumptionData, spotMargin.getValue());
                 final var spotCalculation = calculateSpotElectricityPriceDetails(getSpotData(), consumptionData, spotMargin.getValue());
                 final var fixedCost = calculateFixedElectricityPrice(consumptionData, numberField.getValue());
-                container.removeAll();
-                container.add(new Pre("Total consumption over period: " + decimalFormat.format(spotCalculation.totalConsumption) + "kWh"));
-                container.add(new Pre("Average spot price over period: " + decimalFormat.format(spotCalculation.averagePrice) + " c/kWh"));
-                container.add(new Pre("Total spot cost (incl. margin): " + decimalFormat.format(spotCalculation.totalCost) + "€"));
-                container.add(new Pre("Total spot cost (without margin): " + decimalFormat.format(spotCalculation.totalCostWithoutMargin) + "€"));
-                container.add(new Pre("Fixed price: " + numberField.getValue() + " c/kWh"));
-                container.add(new Pre("Fixed cost total: " + decimalFormat.format(fixedCost) + "€"));
+                total.removeAll();
+                spot.removeAll();
+                fixed.removeAll();
+                final var totalConsumption = new Pre("Total consumption over period: " + decimalFormat.format(spotCalculation.totalConsumption) + "kWh");
+                totalConsumption.addClassNames(LumoUtility.AlignSelf.CENTER);
+                total.add(totalConsumption);
+                spot.add(new Pre("Average spot price over period: \t" + decimalFormat.format(spotCalculation.averagePrice) + " c/kWh"));
+                spot.add(new Pre("Total spot cost (incl. margin): \t" + decimalFormat.format(spotCalculation.totalCost) + "€"));
+                spot.add(new Pre("Total spot cost (without margin): \t" + decimalFormat.format(spotCalculation.totalCostWithoutMargin) + "€"));
+                fixed.add(new Pre("Fixed price: \t\t" + numberField.getValue() + " c/kWh"));
+                fixed.add(new Pre("Fixed cost total: \t" + decimalFormat.format(fixedCost) + "€"));
             } catch (IOException | ParseException ex) {
                 throw new RuntimeException(ex);
             }
@@ -116,6 +127,7 @@ public class PriceCalculatorView extends Div {
         numberField.addValueChangeListener(e -> button.setEnabled(e.getValue() != null));
         button.setEnabled(false);
         add(button);
+        add(total);
         add(container);
     }
 
