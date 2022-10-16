@@ -15,15 +15,15 @@ import com.vaadin.flow.component.upload.receivers.FileData;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService;
-import com.vesanieminen.froniusvisualizer.util.Utils;
 
 import java.io.IOException;
 import java.text.ParseException;
 
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateFixedElectricityPrice;
-import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotElectricityPrice;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotElectricityPriceDetails;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getFingridConsumptionData;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getSpotData;
+import static com.vesanieminen.froniusvisualizer.util.Utils.decimalFormat;
 
 @Route("price-calculator")
 public class PriceCalculatorView extends Div {
@@ -55,7 +55,7 @@ public class PriceCalculatorView extends Div {
         add(anchor);
 
         final var spotAverage = PriceCalculatorService.calculateSpotAveragePrice2022();
-        final var span = new Span("Spot average in 2022 so far: " + Utils.decimalFormat.format(spotAverage) + " c/kWh");
+        final var span = new Span("Spot average in 2022 so far: " + decimalFormat.format(spotAverage) + " c/kWh");
         //span.addClassNames(LumoUtility.Margin.Top.MEDIUM);
         add(span);
 
@@ -99,12 +99,16 @@ public class PriceCalculatorView extends Div {
                     return;
                 }
                 final var consumptionData = getFingridConsumptionData(lastFile);
-                final var spotCost = calculateSpotElectricityPrice(getSpotData(), consumptionData, spotMargin.getValue());
+                //final var spotCost = calculateSpotElectricityPrice(getSpotData(), consumptionData, spotMargin.getValue());
+                final var spotCalculation = calculateSpotElectricityPriceDetails(getSpotData(), consumptionData, spotMargin.getValue());
                 final var fixedCost = calculateFixedElectricityPrice(consumptionData, numberField.getValue());
                 container.removeAll();
-                container.add(new Pre("Spot cost total: " + Utils.decimalFormat.format(spotCost) + "€"));
+                container.add(new Pre("Total consumption over period: " + decimalFormat.format(spotCalculation.totalConsumption) + "kWh"));
+                container.add(new Pre("Average spot price over period: " + decimalFormat.format(spotCalculation.averagePrice) + " c/kWh"));
+                container.add(new Pre("Total spot cost (incl. margin): " + decimalFormat.format(spotCalculation.totalCost) + "€"));
+                container.add(new Pre("Total spot cost (no margin): " + decimalFormat.format(spotCalculation.totalCostWithoutMargin) + "€"));
                 container.add(new Pre("Fixed price: " + numberField.getValue() + " c/kWh"));
-                container.add(new Pre("Fixed cost total: " + Utils.decimalFormat.format(fixedCost) + "€"));
+                container.add(new Pre("Fixed cost total: " + decimalFormat.format(fixedCost) + "€"));
             } catch (IOException | ParseException ex) {
                 throw new RuntimeException(ex);
             }

@@ -74,8 +74,34 @@ public class PriceCalculatorService {
         return fingridConsumptionData.keySet().stream().filter(spotData::containsKey).map(item -> (spotData.get(item) + margin) * fingridConsumptionData.get(item)).reduce(0d, Double::sum) / 100;
     }
 
+    public static SpotCalculation calculateSpotElectricityPriceDetails(LinkedHashMap<LocalDateTime, Double> spotData, LinkedHashMap<LocalDateTime, Double> fingridConsumptionData, double margin) {
+        final var spotCalculation = fingridConsumptionData.keySet().stream().filter(spotData::containsKey)
+                .map(item -> new SpotCalculation(spotData.get(item) + margin, (spotData.get(item) + margin) * fingridConsumptionData.get(item), spotData.get(item) * fingridConsumptionData.get(item), fingridConsumptionData.get(item)))
+                .reduce(new SpotCalculation(0, 0, 0, 0), (i1, i2) -> new SpotCalculation(i1.totalPrice + i2.totalPrice, (i1.totalCost + i2.totalCost), i1.totalCostWithoutMargin + i2.totalCostWithoutMargin, i1.totalConsumption + i2.totalConsumption));
+        final var count = fingridConsumptionData.keySet().stream().filter(spotData::containsKey).count();
+        spotCalculation.averagePrice = spotCalculation.totalPrice / count;
+        spotCalculation.totalCost = spotCalculation.totalCost / 100;
+        spotCalculation.totalCostWithoutMargin = spotCalculation.totalCostWithoutMargin / 100;
+        return spotCalculation;
+    }
+
     public static double calculateFixedElectricityPrice(LinkedHashMap<LocalDateTime, Double> fingridConsumptionData, double fixed) {
         return fingridConsumptionData.keySet().stream().map(item -> fixed * fingridConsumptionData.get(item)).reduce(0d, Double::sum) / 100;
+    }
+
+    public static class SpotCalculation {
+        public double totalPrice;
+        public double totalCost;
+        public double totalCostWithoutMargin;
+        public double totalConsumption;
+        public double averagePrice;
+
+        public SpotCalculation(double totalPrice, double totalCost, double totalCostWithoutMargin, double totalConsumption) {
+            this.totalPrice = totalPrice;
+            this.totalCost = totalCost;
+            this.totalCostWithoutMargin = totalCostWithoutMargin;
+            this.totalConsumption = totalConsumption;
+        }
     }
 
 }
