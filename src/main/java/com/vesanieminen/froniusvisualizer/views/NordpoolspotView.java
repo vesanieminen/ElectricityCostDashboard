@@ -224,7 +224,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
             configureChartTooltips(chart, hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, spotPriceDataSeries, windEstimateDataSeries, renewablesSeries);
             //setNetToday(fingridResponse, df, netToday);
         } else {
-            add(new Span("Fingrid API is not responding currently ;~("));
+            add(new Span("Fingrid API is down currently ;~("));
             final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, dateTimeFormatter, new ArrayList<>());
             configureChartTooltips(chart, null, null, null, null, null, null, spotPriceDataSeries, null, null);
         }
