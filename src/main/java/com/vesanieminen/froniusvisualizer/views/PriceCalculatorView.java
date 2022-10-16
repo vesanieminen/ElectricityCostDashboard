@@ -106,7 +106,7 @@ public class PriceCalculatorView extends Div {
                 container.add(new Pre("Total consumption over period: " + decimalFormat.format(spotCalculation.totalConsumption) + "kWh"));
                 container.add(new Pre("Average spot price over period: " + decimalFormat.format(spotCalculation.averagePrice) + " c/kWh"));
                 container.add(new Pre("Total spot cost (incl. margin): " + decimalFormat.format(spotCalculation.totalCost) + "€"));
-                container.add(new Pre("Total spot cost (no margin): " + decimalFormat.format(spotCalculation.totalCostWithoutMargin) + "€"));
+                container.add(new Pre("Total spot cost (without margin): " + decimalFormat.format(spotCalculation.totalCostWithoutMargin) + "€"));
                 container.add(new Pre("Fixed price: " + numberField.getValue() + " c/kWh"));
                 container.add(new Pre("Fixed cost total: " + decimalFormat.format(fixedCost) + "€"));
             } catch (IOException | ParseException ex) {
