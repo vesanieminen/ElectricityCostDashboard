@@ -29,7 +29,7 @@ public class PriceCalculatorView extends Div {
     private String lastFile;
 
     public PriceCalculatorView() throws IOException, ParseException {
-        addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.SMALL);
+        addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Horizontal.MEDIUM);
 
         final var title = new Span("Spot price / fixed electricity price calculator");
         title.addClassNames(LumoUtility.TextColor.PRIMARY, LumoUtility.FontSize.MEDIUM);
@@ -45,10 +45,12 @@ public class PriceCalculatorView extends Div {
         numberField.setWidthFull();
         add(numberField);
 
+        //final var anchor = new Anchor("/data/consumption.csv", "Example consumption.csv file");
+        //add(anchor);
+
         FileBuffer fileBuffer = new FileBuffer();
         final var uploadFingridConsumptionData = new Button("Upload Fingrid consumption.csv data");
         Upload upload = new Upload(fileBuffer);
-        //upload.setWidthFull();
         upload.setUploadButton(uploadFingridConsumptionData);
         upload.setDropAllowed(true);
         upload.addSucceededListener(event -> {
@@ -83,7 +85,7 @@ public class PriceCalculatorView extends Div {
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         final var backButton = new Button("Back");
-        backButton.addClassNames(LumoUtility.Height.MEDIUM, "sticky-button", LumoUtility.Background.BASE, LumoUtility.Margin.Bottom.MEDIUM, LumoUtility.BorderColor.CONTRAST_10, LumoUtility.Border.ALL);
+        backButton.addClassNames(LumoUtility.Height.MEDIUM, LumoUtility.Background.BASE, LumoUtility.Margin.NONE, LumoUtility.Margin.Bottom.MEDIUM, LumoUtility.BorderColor.CONTRAST_10, LumoUtility.Border.ALL);
         backButton.addClickListener(e -> attachEvent.getUI().navigate(NordpoolspotView.class));
         addComponentAsFirst(backButton);
     }
