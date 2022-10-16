@@ -19,14 +19,14 @@ public class PriceCalculatorView extends Div {
     public PriceCalculatorView() throws IOException, ParseException {
         final var spotData = getSpotData();
         final var fingridConsumptionData = getFingridConsumptionData();
-        final var spotAverage = PriceCalculatorService.calculateSpotAveragePrice(spotData);
+        final var spotAverage = PriceCalculatorService.calculateSpotAveragePrice2022(spotData);
         final var spotPrice = PriceCalculatorService.calculateSpotElectricityPrice(spotData, fingridConsumptionData);
         final var fixed = 12;
         final var fixedPrice = PriceCalculatorService.calculateFixedElectricityPrice(fingridConsumptionData, fixed);
         add(new Pre("Spot average 2022: " + Utils.decimalFormat.format(spotAverage) + " c/kWh"));
-        add(new Pre("Spot price: " + Utils.decimalFormat.format(spotPrice) + "€"));
+        add(new Pre("Spot price total: " + Utils.decimalFormat.format(spotPrice) + "€"));
         add(new Pre("Fixed price: " + fixed + " c/kWh"));
-        add(new Pre("Fixed price: " + Utils.decimalFormat.format(fixedPrice) + "€"));
+        add(new Pre("Fixed price total: " + Utils.decimalFormat.format(fixedPrice) + "€"));
     }
 
     @Override

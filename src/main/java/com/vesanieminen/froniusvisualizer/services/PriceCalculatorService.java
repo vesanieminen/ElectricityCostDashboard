@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
 
@@ -23,18 +24,21 @@ public class PriceCalculatorService {
     public static final String fingridConsumptionDataFile = "src/main/resources/data/fingrid/consumption.csv";
 
     public static final DateTimeFormatter datetimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static LinkedHashMap<LocalDateTime, Double> spotPriceMap;
 
     public static LinkedHashMap<LocalDateTime, Double> getSpotData() throws IOException {
-        var map = new LinkedHashMap<LocalDateTime, Double>();
-        final var reader = Files.newBufferedReader(Path.of(spotPriceDataFile));
-        final var csvReader = new CSVReader(reader);
-        csvReader.readNext(); // skip header
-        String[] line;
-        while ((line = csvReader.readNext()) != null) {
-            final var dateTime = LocalDateTime.parse(line[0], datetimeFormatter);
-            map.put(dateTime, Double.valueOf(line[1]));
+        if (spotPriceMap == null) {
+            spotPriceMap = new LinkedHashMap<LocalDateTime, Double>();
+            final var reader = Files.newBufferedReader(Path.of(spotPriceDataFile));
+            final var csvReader = new CSVReader(reader);
+            csvReader.readNext(); // skip header
+            String[] line;
+            while ((line = csvReader.readNext()) != null) {
+                final var dateTime = LocalDateTime.parse(line[0], datetimeFormatter);
+                spotPriceMap.put(dateTime, Double.valueOf(line[1]));
+            }
         }
-        return map;
+        return spotPriceMap;
     }
 
     public static LinkedHashMap<LocalDateTime, Double> getFingridConsumptionData() throws IOException, ParseException {
@@ -58,8 +62,12 @@ public class PriceCalculatorService {
         return spotData.values().stream().reduce(0d, Double::sum) / spotData.values().size();
     }
 
+    public static double calculateSpotAveragePrice2022(LinkedHashMap<LocalDateTime, Double> spotData) {
+        return spotData.entrySet().stream().filter(item -> item.getKey().getYear() == 2022).map(Map.Entry::getValue).reduce(0d, Double::sum) / spotData.values().size();
+    }
+
     public static double calculateSpotElectricityPrice(LinkedHashMap<LocalDateTime, Double> spotData, LinkedHashMap<LocalDateTime, Double> fingridConsumptionData) {
-        return fingridConsumptionData.keySet().stream().map(item -> spotData.get(item) * fingridConsumptionData.get(item)).reduce(0d, Double::sum) / 100;
+        return fingridConsumptionData.keySet().stream().filter(spotData::containsKey).map(item -> spotData.get(item) * fingridConsumptionData.get(item)).reduce(0d, Double::sum) / 100;
     }
 
     public static double calculateFixedElectricityPrice(LinkedHashMap<LocalDateTime, Double> fingridConsumptionData, double fixed) {
