@@ -66,6 +66,13 @@ public class PriceCalculatorView extends Div {
         //numberField.addClassNames(LumoUtility.Padding.Top.NONE);
         add(numberField);
 
+        final var spotMargin = new NumberField("Spot margin");
+        spotMargin.setRequiredIndicatorVisible(true);
+        spotMargin.setSuffixComponent(new Span("c/kWh"));
+        spotMargin.setPlaceholder("Please enter e.g. 0.38");
+        spotMargin.setWidthFull();
+        add(spotMargin);
+
         FileBuffer fileBuffer = new FileBuffer();
         final var uploadFingridConsumptionData = new Button("Upload Fingrid consumption.csv data");
         Upload upload = new Upload(fileBuffer);
@@ -86,8 +93,12 @@ public class PriceCalculatorView extends Div {
                     Notification.show("Please add fixed price to compare with!", 3000, Notification.Position.MIDDLE);
                     return;
                 }
+                if (spotMargin.getValue() == null) {
+                    Notification.show("Missing spot margin", 3000, Notification.Position.MIDDLE);
+                    return;
+                }
                 final var consumptionData = getFingridConsumptionData(lastFile);
-                final var spotCost = calculateSpotElectricityPrice(getSpotData(), consumptionData);
+                final var spotCost = calculateSpotElectricityPrice(getSpotData(), consumptionData, spotMargin.getValue());
                 final var fixedCost = calculateFixedElectricityPrice(consumptionData, numberField.getValue());
                 container.removeAll();
                 container.add(new Pre("Spot cost total: " + Utils.decimalFormat.format(spotCost) + "€"));

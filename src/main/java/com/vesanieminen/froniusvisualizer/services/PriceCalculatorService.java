@@ -65,14 +65,13 @@ public class PriceCalculatorService {
 
     public static double calculateSpotAveragePrice2022() throws IOException {
         if (spotAverage2022 == null) {
-
+            spotAverage2022 = getSpotData().entrySet().stream().filter(item -> item.getKey().getYear() == 2022).map(Map.Entry::getValue).reduce(0d, Double::sum) / getSpotData().values().size();
         }
-        spotAverage2022 = getSpotData().entrySet().stream().filter(item -> item.getKey().getYear() == 2022).map(Map.Entry::getValue).reduce(0d, Double::sum) / getSpotData().values().size();
         return spotAverage2022;
     }
 
-    public static double calculateSpotElectricityPrice(LinkedHashMap<LocalDateTime, Double> spotData, LinkedHashMap<LocalDateTime, Double> fingridConsumptionData) {
-        return fingridConsumptionData.keySet().stream().filter(spotData::containsKey).map(item -> spotData.get(item) * fingridConsumptionData.get(item)).reduce(0d, Double::sum) / 100;
+    public static double calculateSpotElectricityPrice(LinkedHashMap<LocalDateTime, Double> spotData, LinkedHashMap<LocalDateTime, Double> fingridConsumptionData, double margin) {
+        return fingridConsumptionData.keySet().stream().filter(spotData::containsKey).map(item -> (spotData.get(item) + margin) * fingridConsumptionData.get(item)).reduce(0d, Double::sum) / 100;
     }
 
     public static double calculateFixedElectricityPrice(LinkedHashMap<LocalDateTime, Double> fingridConsumptionData, double fixed) {
