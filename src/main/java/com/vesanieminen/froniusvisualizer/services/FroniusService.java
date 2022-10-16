@@ -1,6 +1,7 @@
 package com.vesanieminen.froniusvisualizer.services;
 
 import com.google.gson.Gson;
+import com.vesanieminen.froniusvisualizer.services.model.APIVersion;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;

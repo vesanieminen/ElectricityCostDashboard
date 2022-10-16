@@ -1,4 +1,4 @@
-package com.vesanieminen.froniusvisualizer.services;
+package com.vesanieminen.froniusvisualizer.services.model;
 
 import java.io.Serializable;
 

@@ -38,12 +38,11 @@ import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
 import com.vesanieminen.froniusvisualizer.services.model.FingridResponse;
 import com.vesanieminen.froniusvisualizer.services.model.FingridWindEstimateResponse;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
-import org.openjdk.jol.info.GraphLayout;
+import com.vesanieminen.froniusvisualizer.util.Utils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -53,10 +52,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
+import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
 
 @Route("")
 public class NordpoolspotView extends Div implements HasUrlParameter<String> {
@@ -86,7 +85,6 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     private boolean isTouchDevice = false;
 
     private final Button fullScreenButton;
-    private final DecimalFormat df = new DecimalFormat("#0.00");
 
     private boolean isInitialRender = true;
 
@@ -209,7 +207,6 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         createFingridYAxis(chart);
         createSpotPriceYAxis(chart);
 
-        NumberFormat format = NumberFormat.getInstance(Locale.FRANCE);
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
         final var hydroPowerSeries = createDataSeries(fingridResponse.HydroPower, hydroPowerProductionTitle);
@@ -220,7 +217,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         final var importExportSeries = createDataSeries(fingridResponse.NetImportExport, importExportTitle);
         final var renewablesSeries = createRenewablesDataSeries(fingridResponse);
         final var windEstimateDataSeries = createWindEstimateDataSeries(windEstimateResponses);
-        final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, format, dateTimeFormatter, new ArrayList<>(Arrays.asList(hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, windEstimateDataSeries, renewablesSeries)));
+        final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, dateTimeFormatter, new ArrayList<>(Arrays.asList(hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, windEstimateDataSeries, renewablesSeries)));
         configureChartTooltips(chart, hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, spotPriceDataSeries, windEstimateDataSeries, renewablesSeries);
         //setNetToday(fingridResponse, df, netToday);
 
@@ -271,10 +268,6 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         footer.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Background.CONTRAST_5, LumoUtility.Width.FULL, LumoUtility.Height.LARGE);
         footer.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.CENTER, LumoUtility.Flex.SHRINK_NONE);
         add(footer);
-    }
-
-    private static void printSizeOf(Object object) {
-        System.out.println(GraphLayout.parseInstance(object).toFootprint());
     }
 
     private static void createFingridYAxis(Chart chart) {
@@ -430,7 +423,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         return button;
     }
 
-    private DataSeries createSpotPriceDataSeries(NordpoolResponse nordpoolResponse, Chart chart, NumberFormat format, DateTimeFormatter dateTimeFormatter, ArrayList<Series> series) {
+    private DataSeries createSpotPriceDataSeries(NordpoolResponse nordpoolResponse, Chart chart, DateTimeFormatter dateTimeFormatter, ArrayList<Series> series) {
         var now = getCurrentTimeWithHourPrecision();
         var highest = Double.MIN_VALUE;
         var lowest = Double.MAX_VALUE;
@@ -450,15 +443,15 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
                 final var localDateTime = LocalDateTime.ofInstant(instant, ZoneId.of("UTC"));
                 dataSeriesItem.setX(instant);
                 try {
-                    final var y = format.parse(column.Value).doubleValue() * vat / 10;
+                    final var y = numberFormat.parse(column.Value).doubleValue() * vat / 10;
                     total += y;
                     ++amount;
                     dataSeriesItem.setY(y);
                     if (Objects.equals(localDateTime, now)) {
-                        priceNow.setTitleBottom(df.format(y) + " c/kWh");
+                        priceNow.setTitleBottom(Utils.decimalFormat.format(y) + " c/kWh");
                     }
                     if (Objects.equals(localDateTime, now.plusHours(1))) {
-                        nextPrice.setTitleBottom(df.format(y) + " c/kWh");
+                        nextPrice.setTitleBottom(Utils.decimalFormat.format(y) + " c/kWh");
                     }
                     if (localDateTime.getDayOfMonth() == now.getDayOfMonth()) {
                         if (y > highest) {
@@ -475,8 +468,8 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
             }
             --columnIndex;
         }
-        lowestAndHighest.setTitleBottom(df.format(lowest) + " / " + df.format(highest) + " c/kWh");
-        averagePrice.setTitleBottom(df.format(total / amount) + " c/kWh");
+        lowestAndHighest.setTitleBottom(Utils.decimalFormat.format(lowest) + " / " + Utils.decimalFormat.format(highest) + " c/kWh");
+        averagePrice.setTitleBottom(Utils.decimalFormat.format(total / amount) + " c/kWh");
         series.add(0, dataSeries);
         chart.getConfiguration().setSeries(series);
         return dataSeries;
