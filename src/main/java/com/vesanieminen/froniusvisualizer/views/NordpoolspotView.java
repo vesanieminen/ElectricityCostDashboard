@@ -426,7 +426,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     private static Button createButton(String text) {
         Button button = new Button(text);
         button.setWidthFull();
-        button.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.BorderRadius.NONE, LumoUtility.Margin.Vertical.NONE, LumoUtility.Height.MEDIUM);
+        button.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.BorderRadius.NONE, LumoUtility.Margin.Vertical.NONE, LumoUtility.Height.MEDIUM, LumoUtility.BorderColor.CONTRAST_10, LumoUtility.Border.ALL);
         return button;
     }
 

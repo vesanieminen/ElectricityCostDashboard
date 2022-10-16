@@ -39,7 +39,6 @@ public class PriceListView extends Div {
         setMaxWidth(1024, Unit.PIXELS);
     }
 
-
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         final var button = new Button("Back");
