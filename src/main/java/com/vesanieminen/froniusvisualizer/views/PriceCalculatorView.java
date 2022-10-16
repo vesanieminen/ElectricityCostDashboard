@@ -2,6 +2,7 @@ package com.vesanieminen.froniusvisualizer.views;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Pre;
 import com.vaadin.flow.component.html.Span;
@@ -32,21 +33,38 @@ public class PriceCalculatorView extends Div {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Horizontal.MEDIUM);
 
         final var title = new Span("Spot price / fixed electricity price calculator");
-        title.addClassNames(LumoUtility.TextColor.PRIMARY, LumoUtility.FontSize.MEDIUM);
+        title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
         add(title);
+        final var help = new Span("Usage:");
+        help.addClassNames(LumoUtility.Margin.Top.MEDIUM);
+        add(help);
+        final var helpLayout = new Div();
+        helpLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Left.LARGE);
+        add(helpLayout);
+        final var help2 = new Span(new Span("1) login to "), new Anchor("https://www.fingrid.fi/en/electricity-market/datahub/sign-in-to-datahub-customer-portal/", "Fingrid Datahub"));
+        final var help3 = new Span("2) Download your consumption data csv file");
+        final var help4 = new Span("3) Upload the file below");
+        final var help5 = new Span("4) Enter your comparative fixed electricity cost in the field below");
+        final var help6 = new Span("5) Click the calculate costs button");
+        helpLayout.add(help2, help3, help4, help5, help6);
+
+        final var anchor = new Anchor("https://raw.githubusercontent.com/vesanieminen/ElectricityCostDashboard/main/src/main/resources/META-INF/resources/data/consumption.csv", "Download example csv file here");
+        anchor.addClassNames(LumoUtility.Margin.Vertical.MEDIUM);
+        add(anchor);
 
         final var spotAverage = PriceCalculatorService.calculateSpotAveragePrice2022();
-        add(new Span("Spot average in 2022 so far: " + Utils.decimalFormat.format(spotAverage) + " c/kWh"));
+        final var span = new Span("Spot average in 2022 so far: " + Utils.decimalFormat.format(spotAverage) + " c/kWh");
+        //span.addClassNames(LumoUtility.Margin.Top.MEDIUM);
+        add(span);
+
 
         final var numberField = new NumberField("Fixed price for calculation");
         numberField.setRequiredIndicatorVisible(true);
         numberField.setSuffixComponent(new Span("c/kWh"));
         numberField.setPlaceholder("Please enter e.g. 12.50");
         numberField.setWidthFull();
+        //numberField.addClassNames(LumoUtility.Padding.Top.NONE);
         add(numberField);
-
-        //final var anchor = new Anchor("/data/consumption.csv", "Example consumption.csv file");
-        //add(anchor);
 
         FileBuffer fileBuffer = new FileBuffer();
         final var uploadFingridConsumptionData = new Button("Upload Fingrid consumption.csv data");
@@ -58,6 +76,7 @@ public class PriceCalculatorView extends Div {
             lastFile = savedFileData.getFile().getAbsolutePath();
             System.out.printf("File saved to: %s%n", lastFile);
         });
+        upload.addClassNames(LumoUtility.Margin.Vertical.MEDIUM);
         add(upload);
         final var container = new Div();
         container.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
@@ -78,6 +97,8 @@ public class PriceCalculatorView extends Div {
                 throw new RuntimeException(ex);
             }
         });
+        numberField.addValueChangeListener(e -> button.setEnabled(e.getValue() != null));
+        button.setEnabled(false);
         add(button);
         add(container);
     }
