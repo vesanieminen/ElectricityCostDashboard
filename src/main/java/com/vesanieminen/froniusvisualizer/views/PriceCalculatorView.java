@@ -37,27 +37,36 @@ public class PriceCalculatorView extends Div {
         final var title = new Span("Spot price / fixed electricity price calculator");
         title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
         add(title);
-        final var help = new Span("Usage:");
-        help.addClassNames(LumoUtility.Margin.Top.MEDIUM);
-        add(help);
+        final var spotAverage = PriceCalculatorService.calculateSpotAveragePrice2022();
+        final var span = new Span("Spot average in 2022 so far: " + decimalFormat.format(spotAverage) + " c/kWh");
+        span.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
+        add(span);
+
+        final var helpButton = new Button("Click to show/hide help");
+        helpButton.addClassNames(LumoUtility.Margin.Top.SMALL, LumoUtility.Background.BASE);
+        add(helpButton);
         final var helpLayout = new Div();
-        helpLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Left.LARGE);
+        helpLayout.setVisible(false);
+        helpLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
+        final var helpStepsLayout = new Div();
+        helpStepsLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Left.LARGE);
+        helpLayout.add(helpStepsLayout);
         add(helpLayout);
         final var help2 = new Span(new Span("1) login to "), new Anchor("https://www.fingrid.fi/en/electricity-market/datahub/sign-in-to-datahub-customer-portal/", "Fingrid Datahub"));
         final var help3 = new Span("2) Download your consumption data csv file");
-        final var help4 = new Span("3) Upload the file below");
-        final var help5 = new Span("4) Enter your comparative fixed electricity cost in the field below");
-        final var help6 = new Span("5) Click the calculate costs button");
-        helpLayout.add(help2, help3, help4, help5, help6);
+        final var help4 = new Span("3) Upload the file below.");
+        final var help5 = new Span("4) Enter your comparative fixed electricity cost in the field below.");
+        final var help6 = new Span("5) Click the calculate costs button.");
+        helpStepsLayout.add(help2, help3, help4, help5, help6);
+        helpButton.addClickListener(e -> helpLayout.setVisible(!helpLayout.isVisible()));
 
         final var anchor = new Anchor("https://raw.githubusercontent.com/vesanieminen/ElectricityCostDashboard/main/src/main/resources/META-INF/resources/data/consumption.csv", "Download example csv file here");
-        anchor.addClassNames(LumoUtility.Margin.Vertical.MEDIUM);
-        add(anchor);
+        anchor.addClassNames(LumoUtility.Margin.Top.MEDIUM);
+        helpLayout.add(anchor);
 
-        final var spotAverage = PriceCalculatorService.calculateSpotAveragePrice2022();
-        final var span = new Span("Spot average in 2022 so far: " + decimalFormat.format(spotAverage) + " c/kWh");
-        //span.addClassNames(LumoUtility.Margin.Top.MEDIUM);
-        add(span);
+        final var additionalInfo = new Span("Do note that the Fingrid data is 3h ahead of the Finnish timezone. For the moment if you want to calculate costs e.g. for August 2022 you need to include 3h from end of July and remove the last three hours from August.");
+        additionalInfo.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
+        helpLayout.add(additionalInfo);
 
         final var numberField = new NumberField("Fixed price");
         numberField.setRequiredIndicatorVisible(true);
@@ -134,7 +143,7 @@ public class PriceCalculatorView extends Div {
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         final var backButton = new Button("Back");
-        backButton.addClassNames(LumoUtility.Height.MEDIUM, LumoUtility.Background.BASE, LumoUtility.Margin.NONE, LumoUtility.Margin.Bottom.MEDIUM, LumoUtility.BorderColor.CONTRAST_10, LumoUtility.Border.ALL);
+        backButton.addClassNames(LumoUtility.Height.MEDIUM/*, LumoUtility.Background.BASE, LumoUtility.Margin.NONE, LumoUtility.Margin.Bottom.MEDIUM, LumoUtility.BorderColor.CONTRAST_10, LumoUtility.Border.ALL*/);
         backButton.addClickListener(e -> attachEvent.getUI().navigate(NordpoolspotView.class));
         addComponentAsFirst(backButton);
     }
