@@ -88,11 +88,6 @@ public class PriceCalculatorView extends Div {
         Upload upload = new Upload(fileBuffer);
         upload.setUploadButton(uploadFingridConsumptionData);
         upload.setDropAllowed(true);
-        upload.addSucceededListener(event -> {
-            FileData savedFileData = fileBuffer.getFileData();
-            lastFile = savedFileData.getFile().getAbsolutePath();
-            System.out.printf("File saved to: %s%n", lastFile);
-        });
         upload.addClassNames(LumoUtility.Margin.Vertical.MEDIUM);
         add(upload);
         final var total = new Div();
@@ -133,11 +128,22 @@ public class PriceCalculatorView extends Div {
                 throw new RuntimeException(ex);
             }
         });
-        numberField.addValueChangeListener(e -> button.setEnabled(e.getValue() != null));
+        upload.addSucceededListener(event -> {
+            FileData savedFileData = fileBuffer.getFileData();
+            lastFile = savedFileData.getFile().getAbsolutePath();
+            System.out.printf("File saved to: %s%n", lastFile);
+            updateCalculateButtonState(button, numberField.getValue(), spotMargin.getValue());
+        });
+        numberField.addValueChangeListener(e -> updateCalculateButtonState(button, numberField.getValue(), spotMargin.getValue()));
+        spotMargin.addValueChangeListener(e -> updateCalculateButtonState(button, numberField.getValue(), spotMargin.getValue()));
         button.setEnabled(false);
         add(button);
         add(total);
         add(container);
+    }
+
+    private void updateCalculateButtonState(Button button, Double fixedPrice, Double spotPrice) {
+        button.setEnabled(fixedPrice != null && spotPrice != null && lastFile != null);
     }
 
     @Override
