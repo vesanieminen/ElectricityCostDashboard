@@ -18,6 +18,13 @@ public class DoubleLabel extends Div {
         addClassNames(LumoUtility.Border.BOTTOM, LumoUtility.BorderColor.CONTRAST_10, LumoUtility.Padding.SMALL, LumoUtility.Padding.Horizontal.MEDIUM);
     }
 
+    public DoubleLabel(String titleTop, String titleBottom, boolean noBorders) {
+        this(titleTop, titleBottom);
+        if (noBorders) {
+            removeClassNames(LumoUtility.Border.BOTTOM);
+        }
+    }
+
     public Span getSpanTop() {
         return spanTop;
     }

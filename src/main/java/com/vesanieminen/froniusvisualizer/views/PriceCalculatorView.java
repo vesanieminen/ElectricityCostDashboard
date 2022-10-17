@@ -31,27 +31,30 @@ public class PriceCalculatorView extends Div {
     private String lastFile;
 
     public PriceCalculatorView() throws IOException, ParseException {
-        addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Padding.Horizontal.MEDIUM, LumoUtility.Margin.AUTO);
+        addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
         setMaxWidth(1024, Unit.PIXELS);
+        final var content = new Div();
+        content.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Padding.Horizontal.MEDIUM, LumoUtility.Margin.AUTO);
+        add(content);
 
         final var title = new Span("Spot price / fixed electricity price calculator");
         title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
-        add(title);
+        content.add(title);
         final var spotAverage = PriceCalculatorService.calculateSpotAveragePrice2022();
         final var span = new Span("Spot average in 2022 so far: " + decimalFormat.format(spotAverage) + " c/kWh");
         span.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
-        add(span);
+        content.add(span);
 
         final var helpButton = new Button("Click to show/hide help");
         helpButton.addClassNames(LumoUtility.Margin.Top.SMALL, LumoUtility.Background.BASE);
-        add(helpButton);
+        content.add(helpButton);
         final var helpLayout = new Div();
         helpLayout.setVisible(false);
         helpLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
         final var helpStepsLayout = new Div();
         helpStepsLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Left.LARGE);
         helpLayout.add(helpStepsLayout);
-        add(helpLayout);
+        content.add(helpLayout);
         final var help2 = new Span(new Span("1) login to "), new Anchor("https://www.fingrid.fi/en/electricity-market/datahub/sign-in-to-datahub-customer-portal/", "Fingrid Datahub"));
         final var help3 = new Span("2) Download your consumption data csv file");
         final var help4 = new Span("3) Upload the file below.");
@@ -74,14 +77,14 @@ public class PriceCalculatorView extends Div {
         numberField.setPlaceholder("Please enter e.g. 12.50");
         //numberField.addClassNames(LumoUtility.Padding.Top.NONE);
         numberField.setWidth(16, Unit.EM);
-        add(numberField);
+        content.add(numberField);
 
         final var spotMargin = new NumberField("Spot margin");
         spotMargin.setRequiredIndicatorVisible(true);
         spotMargin.setSuffixComponent(new Span("c/kWh"));
         spotMargin.setPlaceholder("Please enter e.g. 0.38");
         spotMargin.setWidth(16, Unit.EM);
-        add(spotMargin);
+        content.add(spotMargin);
 
         FileBuffer fileBuffer = new FileBuffer();
         final var uploadFingridConsumptionData = new Button("Upload Fingrid consumption.csv data");
@@ -89,7 +92,7 @@ public class PriceCalculatorView extends Div {
         upload.setUploadButton(uploadFingridConsumptionData);
         upload.setDropAllowed(true);
         upload.addClassNames(LumoUtility.Margin.Vertical.MEDIUM);
-        add(upload);
+        content.add(upload);
         final var total = new Div();
         total.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Top.MEDIUM);
         final var container = new Div();
@@ -116,14 +119,14 @@ public class PriceCalculatorView extends Div {
                 total.removeAll();
                 spot.removeAll();
                 fixed.removeAll();
-                final var totalConsumption = new DoubleLabel("Total consumption over period", decimalFormat.format(spotCalculation.totalConsumption) + "kWh");
+                final var totalConsumption = new DoubleLabel("Total consumption over period", decimalFormat.format(spotCalculation.totalConsumption) + "kWh", true);
                 totalConsumption.addClassNames(LumoUtility.AlignSelf.CENTER);
                 total.add(totalConsumption);
-                spot.add(new DoubleLabel("Average spot price (incl. margin)", decimalFormat.format(spotCalculation.averagePrice) + " c/kWh"));
-                spot.add(new DoubleLabel("Total spot cost (incl. margin)", decimalFormat.format(spotCalculation.totalCost) + "€"));
-                spot.add(new DoubleLabel("Total spot cost (without margin)", decimalFormat.format(spotCalculation.totalCostWithoutMargin) + "€"));
-                fixed.add(new DoubleLabel("Fixed price", numberField.getValue() + " c/kWh"));
-                fixed.add(new DoubleLabel("Fixed cost total", decimalFormat.format(fixedCost) + "€"));
+                spot.add(new DoubleLabel("Average spot price (incl. margin)", decimalFormat.format(spotCalculation.averagePrice) + " c/kWh", true));
+                spot.add(new DoubleLabel("Total spot cost (incl. margin)", decimalFormat.format(spotCalculation.totalCost) + "€", true));
+                spot.add(new DoubleLabel("Total spot cost (without margin)", decimalFormat.format(spotCalculation.totalCostWithoutMargin) + "€", true));
+                fixed.add(new DoubleLabel("Fixed price", numberField.getValue() + " c/kWh", true));
+                fixed.add(new DoubleLabel("Fixed cost total", decimalFormat.format(fixedCost) + "€", true));
             } catch (IOException | ParseException ex) {
                 throw new RuntimeException(ex);
             }
@@ -137,9 +140,9 @@ public class PriceCalculatorView extends Div {
         numberField.addValueChangeListener(e -> updateCalculateButtonState(button, numberField.getValue(), spotMargin.getValue()));
         spotMargin.addValueChangeListener(e -> updateCalculateButtonState(button, numberField.getValue(), spotMargin.getValue()));
         button.setEnabled(false);
-        add(button);
-        add(total);
-        add(container, spot, fixed);
+        content.add(button);
+        content.add(total);
+        content.add(container, spot, fixed);
     }
 
     private void updateCalculateButtonState(Button button, Double fixedPrice, Double spotPrice) {
