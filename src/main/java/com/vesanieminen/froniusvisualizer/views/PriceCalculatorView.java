@@ -64,7 +64,7 @@ public class PriceCalculatorView extends Div {
         anchor.addClassNames(LumoUtility.Margin.Top.MEDIUM);
         helpLayout.add(anchor);
 
-        final var additionalInfo = new Span("Do note that the Fingrid data is 3h ahead of the Finnish timezone. For the moment if you want to calculate costs e.g. for August 2022 you need to include 3h from end of July and remove the last three hours from August.");
+        final var additionalInfo = new Span("Do note that the Fingrid csv data is in UTC timezone which is currently 3h earlier than the Finnish timezone. For the moment if you want to calculate costs e.g. for August 2022 you need to include 3h from end of July and remove the last three hours from August.");
         additionalInfo.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
         helpLayout.add(additionalInfo);
 
