@@ -31,10 +31,10 @@ public class PriceCalculatorView extends Div {
     private String lastFile;
 
     public PriceCalculatorView() throws IOException, ParseException {
-        addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
+        addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.AUTO);
         setMaxWidth(1024, Unit.PIXELS);
         final var content = new Div();
-        content.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Padding.Horizontal.MEDIUM, LumoUtility.Margin.AUTO);
+        content.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Padding.Horizontal.MEDIUM);
         add(content);
 
         final var title = new Span("Spot price / fixed electricity price calculator");
@@ -50,17 +50,19 @@ public class PriceCalculatorView extends Div {
         content.add(helpButton);
         final var helpLayout = new Div();
         helpLayout.setVisible(false);
+        helpLayout.add(new Span("Usage:"));
         helpLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
         final var helpStepsLayout = new Div();
         helpStepsLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Left.LARGE);
         helpLayout.add(helpStepsLayout);
         content.add(helpLayout);
-        final var help2 = new Span(new Span("1) login to "), new Anchor("https://www.fingrid.fi/en/electricity-market/datahub/sign-in-to-datahub-customer-portal/", "Fingrid Datahub"));
-        final var help3 = new Span("2) Download your consumption data csv file");
-        final var help4 = new Span("3) Upload the file below.");
-        final var help5 = new Span("4) Enter your comparative fixed electricity cost in the field below.");
-        final var help6 = new Span("5) Click the calculate costs button.");
-        helpStepsLayout.add(help2, help3, help4, help5, help6);
+        helpStepsLayout.add(new Span(new Span("1) login to "), new Anchor("https://www.fingrid.fi/en/electricity-market/datahub/sign-in-to-datahub-customer-portal/", "Fingrid Datahub.")));
+        helpStepsLayout.add(new Span("2) Download your hourly consumption data csv file."));
+        helpStepsLayout.add(new Span("3) Modify the data to your liking, e.g. remove all other rows except one month's data."));
+        helpStepsLayout.add(new Span("4) Upload the file below."));
+        helpStepsLayout.add(new Span("5) Enter your comparative fixed electricity cost in the field below."));
+        helpStepsLayout.add(new Span("6) Enter your spot price margin."));
+        helpStepsLayout.add(new Span("7) Click the calculate costs button."));
         helpButton.addClickListener(e -> helpLayout.setVisible(!helpLayout.isVisible()));
 
         final var anchor = new Anchor("https://raw.githubusercontent.com/vesanieminen/ElectricityCostDashboard/main/src/main/resources/META-INF/resources/data/consumption.csv", "Download example csv file here");
