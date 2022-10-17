@@ -127,7 +127,7 @@ public class PriceCalculatorView extends Div {
                 final var totalConsumption = new DoubleLabel("Total consumption over period", decimalFormat.format(spotCalculation.totalConsumption) + "kWh", true);
                 totalConsumption.addClassNames(LumoUtility.AlignSelf.CENTER);
                 total.add(totalConsumption);
-                spot.add(new DoubleLabel("Average spot price (incl. margin)", decimalFormat.format(spotCalculation.averagePrice) + " c/kWh", true));
+                spot.add(new DoubleLabel("Average spot price (incl. margin)", decimalFormat.format(spotCalculation.totalCost / spotCalculation.totalConsumption) + " c/kWh", true));
                 spot.add(new DoubleLabel("Total spot cost (incl. margin)", decimalFormat.format(spotCalculation.totalCost) + "€", true));
                 spot.add(new DoubleLabel("Total spot cost (without margin)", decimalFormat.format(spotCalculation.totalCostWithoutMargin) + "€", true));
                 fixed.add(new DoubleLabel("Fixed price", numberField.getValue() + " c/kWh", true));
