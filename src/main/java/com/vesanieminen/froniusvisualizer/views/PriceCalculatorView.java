@@ -148,7 +148,7 @@ public class PriceCalculatorView extends Div {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        final var backButton = new Button("Back to electricity price view");
+        final var backButton = new Button("Back to electricity price graph");
         backButton.addClassNames(LumoUtility.Height.MEDIUM, LumoUtility.Margin.NONE, LumoUtility.Margin.Bottom.MEDIUM, LumoUtility.BorderColor.CONTRAST_10, LumoUtility.Border.ALL);
         backButton.addClickListener(e -> attachEvent.getUI().navigate(NordpoolspotView.class));
         addComponentAsFirst(backButton);
