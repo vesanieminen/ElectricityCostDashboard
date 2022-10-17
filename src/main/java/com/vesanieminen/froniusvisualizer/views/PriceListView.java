@@ -41,7 +41,7 @@ public class PriceListView extends Div {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        final var button = new Button("Back");
+        final var button = new Button("Back to electricity price view");
         button.addClassNames(LumoUtility.Height.MEDIUM, "sticky-button", LumoUtility.Background.BASE, LumoUtility.Margin.NONE);
         button.addClickListener(e -> attachEvent.getUI().navigate(NordpoolspotView.class));
         add(button);
