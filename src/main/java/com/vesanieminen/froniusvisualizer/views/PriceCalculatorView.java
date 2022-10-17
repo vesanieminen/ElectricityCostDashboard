@@ -14,6 +14,8 @@ import com.vaadin.flow.component.upload.receivers.FileData;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
+import com.vesanieminen.froniusvisualizer.components.Footer;
+import com.vesanieminen.froniusvisualizer.components.Spacer;
 import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService;
 
 import java.io.IOException;
@@ -32,6 +34,7 @@ public class PriceCalculatorView extends Div {
 
     public PriceCalculatorView() throws IOException, ParseException {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.AUTO);
+        setHeightFull();
         setMaxWidth(1024, Unit.PIXELS);
         final var content = new Div();
         content.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Padding.Horizontal.MEDIUM);
@@ -56,7 +59,7 @@ public class PriceCalculatorView extends Div {
         helpStepsLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Left.LARGE);
         helpLayout.add(helpStepsLayout);
         content.add(helpLayout);
-        helpStepsLayout.add(new Span(new Span("1) login to "), new Anchor("https://www.fingrid.fi/en/electricity-market/datahub/sign-in-to-datahub-customer-portal/", "Fingrid Datahub.")));
+        helpStepsLayout.add(new Span(new Span("1) Login to "), new Anchor("https://www.fingrid.fi/en/electricity-market/datahub/sign-in-to-datahub-customer-portal/", "Fingrid Datahub.")));
         helpStepsLayout.add(new Span("2) Download your hourly consumption data csv file."));
         helpStepsLayout.add(new Span("3) Modify the data to your liking, e.g. remove all other rows except one month's data."));
         helpStepsLayout.add(new Span("4) Upload the file below."));
@@ -145,6 +148,8 @@ public class PriceCalculatorView extends Div {
         content.add(button);
         content.add(total);
         content.add(container, spot, fixed);
+        add(new Spacer());
+        add(new Footer());
     }
 
     private void updateCalculateButtonState(Button button, Double fixedPrice, Double spotPrice) {
@@ -154,7 +159,7 @@ public class PriceCalculatorView extends Div {
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         final var backButton = new Button("Back to electricity price graph");
-        backButton.addClassNames(LumoUtility.Height.MEDIUM, LumoUtility.Margin.NONE, LumoUtility.Margin.Bottom.MEDIUM, LumoUtility.BorderColor.CONTRAST_10, LumoUtility.Border.ALL);
+        backButton.addClassNames(LumoUtility.Height.MEDIUM, LumoUtility.Margin.NONE, LumoUtility.Margin.Bottom.MEDIUM, LumoUtility.BorderColor.CONTRAST_10, LumoUtility.Border.ALL, LumoUtility.BorderRadius.NONE);
         backButton.addClickListener(e -> attachEvent.getUI().navigate(NordpoolspotView.class));
         addComponentAsFirst(backButton);
     }

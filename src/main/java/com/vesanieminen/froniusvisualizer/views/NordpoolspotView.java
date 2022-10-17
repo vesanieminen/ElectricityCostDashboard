@@ -23,18 +23,16 @@ import com.vaadin.flow.component.charts.model.Tooltip;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
+import com.vesanieminen.froniusvisualizer.components.Footer;
+import com.vesanieminen.froniusvisualizer.components.Spacer;
 import com.vesanieminen.froniusvisualizer.services.FingridService;
 import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
 import com.vesanieminen.froniusvisualizer.services.model.FingridResponse;
@@ -253,29 +251,9 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         setTouchDeviceConfiguration(chart);
 
         add(chart);
-        createFooter();
+        add(new Spacer());
+        add(new Footer());
         return chart;
-    }
-
-    private void createFooter() {
-        final var spacer = new Div();
-        spacer.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Flex.GROW);
-        add(spacer);
-        final var icon = new Icon(VaadinIcon.VAADIN_H);
-        icon.addClassNames(LumoUtility.Height.MEDIUM, LumoUtility.TextColor.PRIMARY);
-        final var vaadin = new Anchor("http://vaadin.com", "Built with Vaadin ");
-        final var anchor = new Anchor("https://github.com/vesanieminen/ElectricityCostDashboard", "Fork me on GitHub");
-        final var githubIcon = new Image("images/GitHub-Mark-32px.png", "GitHub icon");
-        githubIcon.addClassNames(LumoUtility.IconSize.MEDIUM, LumoUtility.TextColor.PRIMARY);
-        final var divider = new Div();
-        divider.setWidth("1px");
-        divider.addClassNames(LumoUtility.Background.CONTRAST_10, LumoUtility.Height.FULL, LumoUtility.Margin.Horizontal.SMALL);
-        final var spanLayout = new Span(vaadin, icon, divider, anchor, githubIcon);
-        spanLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER, LumoUtility.AlignItems.CENTER, LumoUtility.Gap.SMALL, LumoUtility.Height.FULL);
-        final var footer = new Div(spanLayout);
-        footer.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Background.CONTRAST_5, LumoUtility.Width.FULL, LumoUtility.Height.LARGE);
-        footer.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.CENTER, LumoUtility.Flex.SHRINK_NONE);
-        add(footer);
     }
 
     private static void createFingridYAxis(Chart chart) {
