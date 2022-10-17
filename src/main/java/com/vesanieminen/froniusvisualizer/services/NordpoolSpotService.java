@@ -10,11 +10,9 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.ZoneId;
 
 public class NordpoolSpotService {
 
-    public static final ZoneId fiZoneID = ZoneId.of("Europe/Helsinki");
     private static NordpoolResponse nordpoolResponse;
     private static final String url = "https://www.nordpoolspot.com/api/marketdata/page/35?currency=,,EUR,EUR";
 

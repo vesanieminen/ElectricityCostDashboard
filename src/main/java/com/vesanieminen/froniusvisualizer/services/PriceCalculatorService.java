@@ -11,11 +11,11 @@ import java.nio.file.Path;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
 
 public class PriceCalculatorService {
@@ -53,8 +53,8 @@ public class PriceCalculatorService {
         String[] line;
         while ((line = csvReader.readNext()) != null) {
             final var instant = Instant.parse(line[4]);
-            final var utc = LocalDateTime.ofInstant(instant, ZoneId.of("UTC"));
-            map.put(utc, numberFormat.parse(line[5]).doubleValue());
+            final var fiLocalDateTime = LocalDateTime.ofInstant(instant, fiZoneID);
+            map.put(fiLocalDateTime, numberFormat.parse(line[5]).doubleValue());
         }
         return map;
     }
@@ -77,7 +77,7 @@ public class PriceCalculatorService {
     public static SpotCalculation calculateSpotElectricityPriceDetails(LinkedHashMap<LocalDateTime, Double> spotData, LinkedHashMap<LocalDateTime, Double> fingridConsumptionData, double margin) {
         final var spotCalculation = fingridConsumptionData.keySet().stream().filter(spotData::containsKey)
                 .map(item -> new SpotCalculation(spotData.get(item) + margin, (spotData.get(item) + margin) * fingridConsumptionData.get(item), spotData.get(item) * fingridConsumptionData.get(item), fingridConsumptionData.get(item)))
-                .reduce(new SpotCalculation(0, 0, 0, 0), (i1, i2) -> new SpotCalculation(i1.totalPrice + i2.totalPrice, (i1.totalCost + i2.totalCost), i1.totalCostWithoutMargin + i2.totalCostWithoutMargin, i1.totalConsumption + i2.totalConsumption));
+                .reduce(new SpotCalculation(0, 0, 0, 0), (i1, i2) -> new SpotCalculation(i1.totalPrice + i2.totalPrice, i1.totalCost + i2.totalCost, i1.totalCostWithoutMargin + i2.totalCostWithoutMargin, i1.totalConsumption + i2.totalConsumption));
         final var count = fingridConsumptionData.keySet().stream().filter(spotData::containsKey).count();
         spotCalculation.averagePrice = spotCalculation.totalPrice / count;
         spotCalculation.totalCost = spotCalculation.totalCost / 100;

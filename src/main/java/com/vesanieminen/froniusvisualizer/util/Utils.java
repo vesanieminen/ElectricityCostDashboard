@@ -14,6 +14,7 @@ public class Utils {
 
     public static final NumberFormat numberFormat = NumberFormat.getInstance(Locale.FRANCE);
     public static final DecimalFormat decimalFormat = new DecimalFormat("#0.00");
+    public static final ZoneId fiZoneID = ZoneId.of("Europe/Helsinki");
 
     public static boolean notNull(Object... objects) {
         return Arrays.stream(objects).allMatch(Objects::nonNull);
