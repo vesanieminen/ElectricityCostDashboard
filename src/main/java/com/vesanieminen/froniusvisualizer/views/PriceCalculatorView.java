@@ -5,7 +5,6 @@ import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Pre;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.textfield.NumberField;
@@ -14,6 +13,7 @@ import com.vaadin.flow.component.upload.receivers.FileBuffer;
 import com.vaadin.flow.component.upload.receivers.FileData;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
 import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService;
 
 import java.io.IOException;
@@ -98,7 +98,7 @@ public class PriceCalculatorView extends Div {
         spot.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
         final var fixed = new Div();
         fixed.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
-        container.add(spot, fixed);
+        //container.add(spot, fixed);
         final var button = new Button("Calculate costs", e -> {
             try {
                 if (numberField.getValue() == null) {
@@ -116,14 +116,14 @@ public class PriceCalculatorView extends Div {
                 total.removeAll();
                 spot.removeAll();
                 fixed.removeAll();
-                final var totalConsumption = new Pre("Total consumption over period: " + decimalFormat.format(spotCalculation.totalConsumption) + "kWh");
+                final var totalConsumption = new DoubleLabel("Total consumption over period", decimalFormat.format(spotCalculation.totalConsumption) + "kWh");
                 totalConsumption.addClassNames(LumoUtility.AlignSelf.CENTER);
                 total.add(totalConsumption);
-                spot.add(new Pre("Average spot price over period: \t" + decimalFormat.format(spotCalculation.averagePrice) + " c/kWh"));
-                spot.add(new Pre("Total spot cost (incl. margin): \t" + decimalFormat.format(spotCalculation.totalCost) + "€"));
-                spot.add(new Pre("Total spot cost (without margin): \t" + decimalFormat.format(spotCalculation.totalCostWithoutMargin) + "€"));
-                fixed.add(new Pre("Fixed price: \t\t" + numberField.getValue() + " c/kWh"));
-                fixed.add(new Pre("Fixed cost total: \t" + decimalFormat.format(fixedCost) + "€"));
+                spot.add(new DoubleLabel("Average spot price (incl. margin)", decimalFormat.format(spotCalculation.averagePrice) + " c/kWh"));
+                spot.add(new DoubleLabel("Total spot cost (incl. margin)", decimalFormat.format(spotCalculation.totalCost) + "€"));
+                spot.add(new DoubleLabel("Total spot cost (without margin)", decimalFormat.format(spotCalculation.totalCostWithoutMargin) + "€"));
+                fixed.add(new DoubleLabel("Fixed price", numberField.getValue() + " c/kWh"));
+                fixed.add(new DoubleLabel("Fixed cost total", decimalFormat.format(fixedCost) + "€"));
             } catch (IOException | ParseException ex) {
                 throw new RuntimeException(ex);
             }
@@ -139,7 +139,7 @@ public class PriceCalculatorView extends Div {
         button.setEnabled(false);
         add(button);
         add(total);
-        add(container);
+        add(container, spot, fixed);
     }
 
     private void updateCalculateButtonState(Button button, Double fixedPrice, Double spotPrice) {
