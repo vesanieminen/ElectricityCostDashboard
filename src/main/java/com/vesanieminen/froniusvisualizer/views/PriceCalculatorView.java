@@ -97,8 +97,10 @@ public class PriceCalculatorView extends Div {
         fixed.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
         //container.add(spot, fixed);
 
-        final var fromDateTimePicker = new DateTimePicker("From");
-        final var toDateTimePicker = new DateTimePicker("To");
+        final var fromDateTimePicker = new DateTimePicker("Start period");
+        fromDateTimePicker.setLocale(fiLocale);
+        final var toDateTimePicker = new DateTimePicker("End period");
+        toDateTimePicker.setLocale(fiLocale);
         //toDateTimePicker.addClassNames(LumoUtility.Margin.Bottom.MEDIUM);
         content.add(fromDateTimePicker);
         content.add(toDateTimePicker);
