@@ -28,6 +28,7 @@ import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getFingridConsumptionData;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getSpotData;
 import static com.vesanieminen.froniusvisualizer.util.Utils.decimalFormat;
+import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
 
 @Route("price-calculator")
 public class PriceCalculatorView extends Div {
@@ -126,8 +127,8 @@ public class PriceCalculatorView extends Div {
                 total.removeAll();
                 spot.removeAll();
                 fixed.removeAll();
-                final var start = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(spotCalculation.start);
-                final var end = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(spotCalculation.end);
+                final var start = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(fiLocale).format(spotCalculation.start);
+                final var end = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(fiLocale).format(spotCalculation.end);
                 total.add(new DoubleLabel("Calculation period (start times)", start + " - " + end, true));
                 total.add(new DoubleLabel("Total consumption over period", decimalFormat.format(spotCalculation.totalConsumption) + "kWh", true));
                 spot.add(new DoubleLabel("Average spot price (incl. margin)", decimalFormat.format(spotCalculation.totalCost / spotCalculation.totalConsumption * 100) + " c/kWh", true));
