@@ -397,7 +397,8 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     private void createMenuLayout() {
         final var vatComboBox = new ComboBox<VAT>();
         vatComboBox.addClassNames(LumoUtility.Padding.NONE);
-        vatComboBox.setWidth(140, Unit.PIXELS);
+        vatComboBox.setMinWidth(8, Unit.EM);
+        vatComboBox.setWidthFull();
         vatComboBox.setItems(VAT.values());
         if (vat == vat24Value) {
             vatComboBox.setValue(VAT.VAT24);
