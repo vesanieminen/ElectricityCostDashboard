@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
@@ -42,7 +43,10 @@ public class PriceCalculatorService {
         return spotPriceMap;
     }
 
-    public static LinkedHashMap<LocalDateTime, Double> getFingridConsumptionData(String filePath) throws IOException, ParseException {
+    public static ConsumptionData getFingridConsumptionData(String filePath) throws IOException, ParseException {
+        final var consumptionData = new ConsumptionData();
+        var start = LocalDateTime.MAX;
+        var end = LocalDateTime.MIN;
         final var map = new LinkedHashMap<LocalDateTime, Double>();
         final var reader = Files.newBufferedReader(Path.of(filePath));
         CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
@@ -55,8 +59,23 @@ public class PriceCalculatorService {
             final var instant = Instant.parse(line[4]);
             final var fiLocalDateTime = LocalDateTime.ofInstant(instant, fiZoneID);
             map.put(fiLocalDateTime, numberFormat.parse(line[5]).doubleValue());
+            if (start.isAfter(fiLocalDateTime)) {
+                start = fiLocalDateTime;
+            }
+            if (end.isBefore(fiLocalDateTime)) {
+                end = fiLocalDateTime;
+            }
         }
-        return map;
+        consumptionData.data = map;
+        consumptionData.start = start;
+        consumptionData.end = end;
+        return consumptionData;
+    }
+
+    public static class ConsumptionData {
+        public LinkedHashMap<LocalDateTime, Double> data;
+        public LocalDateTime start;
+        public LocalDateTime end;
     }
 
     public static double calculateSpotAveragePrice(LinkedHashMap<LocalDateTime, Double> spotData) {
@@ -74,7 +93,8 @@ public class PriceCalculatorService {
         return fingridConsumptionData.keySet().stream().filter(spotData::containsKey).map(item -> (spotData.get(item) + margin) * fingridConsumptionData.get(item)).reduce(0d, Double::sum) / 100;
     }
 
-    public static SpotCalculation calculateSpotElectricityPriceDetails(LinkedHashMap<LocalDateTime, Double> spotData, LinkedHashMap<LocalDateTime, Double> fingridConsumptionData, double margin) {
+    public static SpotCalculation calculateSpotElectricityPriceDetails(LinkedHashMap<LocalDateTime, Double> fingridConsumptionData, double margin) throws IOException {
+        final var spotData = getSpotData();
         final var spotCalculation = fingridConsumptionData.keySet().stream().filter(spotData::containsKey)
                 .map(item -> new SpotCalculation(
                         spotData.get(item) + margin,
@@ -97,6 +117,14 @@ public class PriceCalculatorService {
         spotCalculation.totalCost = spotCalculation.totalCost / 100;
         spotCalculation.totalCostWithoutMargin = spotCalculation.totalCostWithoutMargin / 100;
         return spotCalculation;
+    }
+
+    public static SpotCalculation calculateSpotElectricityPriceDetails(LinkedHashMap<LocalDateTime, Double> fingridConsumptionData, double margin, LocalDateTime start, LocalDateTime end) throws IOException {
+        final var filtered = fingridConsumptionData.entrySet().stream().filter(item ->
+                (start.isBefore(item.getKey()) || start.isEqual(item.getKey())) &&
+                        (end.isAfter(item.getKey()) || end.isEqual(item.getKey()))
+        ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
+        return calculateSpotElectricityPriceDetails(filtered, margin);
     }
 
     public static double calculateFixedElectricityPrice(LinkedHashMap<LocalDateTime, Double> fingridConsumptionData, double fixed) {

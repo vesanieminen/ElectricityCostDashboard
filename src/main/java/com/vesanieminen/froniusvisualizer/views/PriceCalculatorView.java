@@ -3,6 +3,7 @@ package com.vesanieminen.froniusvisualizer.views;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
@@ -26,7 +27,6 @@ import java.time.format.FormatStyle;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateFixedElectricityPrice;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotElectricityPriceDetails;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getFingridConsumptionData;
-import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getSpotData;
 import static com.vesanieminen.froniusvisualizer.util.Utils.decimalFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
 
@@ -79,20 +79,6 @@ public class PriceCalculatorView extends Div {
         additionalInfo.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
         helpLayout.add(additionalInfo);
 
-        final var numberField = new NumberField("Fixed price");
-        numberField.setRequiredIndicatorVisible(true);
-        numberField.setSuffixComponent(new Span("c/kWh"));
-        numberField.setPlaceholder("Please enter e.g. 12.50");
-        //numberField.addClassNames(LumoUtility.Padding.Top.NONE);
-        numberField.setWidth(16, Unit.EM);
-        content.add(numberField);
-
-        final var spotMargin = new NumberField("Spot margin");
-        spotMargin.setRequiredIndicatorVisible(true);
-        spotMargin.setSuffixComponent(new Span("c/kWh"));
-        spotMargin.setPlaceholder("Please enter e.g. 0.38");
-        spotMargin.setWidth(16, Unit.EM);
-        content.add(spotMargin);
 
         FileBuffer fileBuffer = new FileBuffer();
         final var uploadFingridConsumptionData = new Button("Upload Fingrid consumption.csv data");
@@ -110,6 +96,28 @@ public class PriceCalculatorView extends Div {
         final var fixed = new Div();
         fixed.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
         //container.add(spot, fixed);
+
+        final var fromDateTimePicker = new DateTimePicker("From");
+        final var toDateTimePicker = new DateTimePicker("To");
+        //toDateTimePicker.addClassNames(LumoUtility.Margin.Bottom.MEDIUM);
+        content.add(fromDateTimePicker);
+        content.add(toDateTimePicker);
+
+        final var numberField = new NumberField("Fixed price");
+        numberField.setRequiredIndicatorVisible(true);
+        numberField.setSuffixComponent(new Span("c/kWh"));
+        numberField.setPlaceholder("Please enter e.g. 12.50");
+        //numberField.addClassNames(LumoUtility.Padding.Top.NONE);
+        numberField.setWidth(16, Unit.EM);
+        content.add(numberField);
+
+        final var spotMargin = new NumberField("Spot margin");
+        spotMargin.setRequiredIndicatorVisible(true);
+        spotMargin.setSuffixComponent(new Span("c/kWh"));
+        spotMargin.setPlaceholder("Please enter e.g. 0.38");
+        spotMargin.setWidth(16, Unit.EM);
+        content.add(spotMargin);
+
         final var button = new Button("Calculate costs", e -> {
             try {
                 if (numberField.getValue() == null) {
@@ -121,9 +129,8 @@ public class PriceCalculatorView extends Div {
                     return;
                 }
                 final var consumptionData = getFingridConsumptionData(lastFile);
-                //final var spotCost = calculateSpotElectricityPrice(getSpotData(), consumptionData, spotMargin.getValue());
-                final var spotCalculation = calculateSpotElectricityPriceDetails(getSpotData(), consumptionData, spotMargin.getValue());
-                final var fixedCost = calculateFixedElectricityPrice(consumptionData, numberField.getValue());
+                final var spotCalculation = calculateSpotElectricityPriceDetails(consumptionData.data, spotMargin.getValue(), fromDateTimePicker.getValue(), toDateTimePicker.getValue());
+                final var fixedCost = calculateFixedElectricityPrice(consumptionData.data, numberField.getValue());
                 total.removeAll();
                 spot.removeAll();
                 fixed.removeAll();
@@ -140,14 +147,29 @@ public class PriceCalculatorView extends Div {
                 throw new RuntimeException(ex);
             }
         });
+        button.addClassNames(LumoUtility.Margin.Top.MEDIUM);
+
         upload.addSucceededListener(event -> {
             FileData savedFileData = fileBuffer.getFileData();
             lastFile = savedFileData.getFile().getAbsolutePath();
             System.out.printf("File saved to: %s%n", lastFile);
-            updateCalculateButtonState(button, numberField.getValue(), spotMargin.getValue());
+            updateCalculateButtonState(button, numberField.getValue(), spotMargin.getValue(), fromDateTimePicker, toDateTimePicker);
+            try {
+                final var consumptionData = getFingridConsumptionData(lastFile);
+                fromDateTimePicker.setMin(consumptionData.start);
+                fromDateTimePicker.setMax(consumptionData.end.minusHours(1));
+                fromDateTimePicker.setValue(consumptionData.start);
+                toDateTimePicker.setMin(consumptionData.start.plusHours(1));
+                toDateTimePicker.setMax(consumptionData.end);
+                toDateTimePicker.setValue(consumptionData.end);
+            } catch (IOException | ParseException e) {
+                throw new RuntimeException(e);
+            }
         });
-        numberField.addValueChangeListener(e -> updateCalculateButtonState(button, numberField.getValue(), spotMargin.getValue()));
-        spotMargin.addValueChangeListener(e -> updateCalculateButtonState(button, numberField.getValue(), spotMargin.getValue()));
+        numberField.addValueChangeListener(e -> updateCalculateButtonState(button, numberField.getValue(), spotMargin.getValue(), fromDateTimePicker, toDateTimePicker));
+        spotMargin.addValueChangeListener(e -> updateCalculateButtonState(button, numberField.getValue(), spotMargin.getValue(), fromDateTimePicker, toDateTimePicker));
+        fromDateTimePicker.addValueChangeListener(e -> updateCalculateButtonState(button, numberField.getValue(), spotMargin.getValue(), fromDateTimePicker, toDateTimePicker));
+        toDateTimePicker.addValueChangeListener(e -> updateCalculateButtonState(button, numberField.getValue(), spotMargin.getValue(), fromDateTimePicker, toDateTimePicker));
         button.setEnabled(false);
         content.add(button);
         content.add(total);
@@ -156,8 +178,8 @@ public class PriceCalculatorView extends Div {
         add(new Footer());
     }
 
-    private void updateCalculateButtonState(Button button, Double fixedPrice, Double spotPrice) {
-        button.setEnabled(fixedPrice != null && spotPrice != null && lastFile != null);
+    private void updateCalculateButtonState(Button button, Double fixedPrice, Double spotPrice, DateTimePicker fromDateTimePicker, DateTimePicker toDateTimePicker) {
+        button.setEnabled(fixedPrice != null && spotPrice != null && lastFile != null && fromDateTimePicker.getValue() != null && toDateTimePicker.getValue() != null && fromDateTimePicker.getValue().isBefore(toDateTimePicker.getValue()) && !fromDateTimePicker.isInvalid() && !toDateTimePicker.isInvalid());
     }
 
     @Override
