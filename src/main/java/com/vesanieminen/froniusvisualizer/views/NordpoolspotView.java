@@ -412,7 +412,6 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         vatComboBox.setItemLabelGenerator(VAT::getVatName);
         Button priceListButton = createButton("List");
         Button priceCalculationButton = createButton("Calculator");
-        //priceListButton.setSizeUndefined();
         final var menuLayout = new Div(vatComboBox, priceListButton, priceCalculationButton, fullScreenButton);
         menuLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Width.FULL);
         add(menuLayout);

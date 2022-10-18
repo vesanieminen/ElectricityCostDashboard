@@ -76,8 +76,22 @@ public class PriceCalculatorService {
 
     public static SpotCalculation calculateSpotElectricityPriceDetails(LinkedHashMap<LocalDateTime, Double> spotData, LinkedHashMap<LocalDateTime, Double> fingridConsumptionData, double margin) {
         final var spotCalculation = fingridConsumptionData.keySet().stream().filter(spotData::containsKey)
-                .map(item -> new SpotCalculation(spotData.get(item) + margin, (spotData.get(item) + margin) * fingridConsumptionData.get(item), spotData.get(item) * fingridConsumptionData.get(item), fingridConsumptionData.get(item)))
-                .reduce(new SpotCalculation(0, 0, 0, 0), (i1, i2) -> new SpotCalculation(i1.totalPrice + i2.totalPrice, i1.totalCost + i2.totalCost, i1.totalCostWithoutMargin + i2.totalCostWithoutMargin, i1.totalConsumption + i2.totalConsumption));
+                .map(item -> new SpotCalculation(
+                        spotData.get(item) + margin,
+                        (spotData.get(item) + margin) * fingridConsumptionData.get(item),
+                        spotData.get(item) * fingridConsumptionData.get(item),
+                        fingridConsumptionData.get(item),
+                        item,
+                        item
+                ))
+                .reduce(new SpotCalculation(0, 0, 0, 0, LocalDateTime.MAX, LocalDateTime.MIN), (i1, i2) -> new SpotCalculation(
+                        i1.totalPrice + i2.totalPrice,
+                        i1.totalCost + i2.totalCost,
+                        i1.totalCostWithoutMargin + i2.totalCostWithoutMargin,
+                        i1.totalConsumption + i2.totalConsumption,
+                        i1.start.compareTo(i2.start) < 0 ? i1.start : i2.start,
+                        i1.end.compareTo(i2.end) > 0 ? i1.end : i2.end
+                ));
         final var count = fingridConsumptionData.keySet().stream().filter(spotData::containsKey).count();
         spotCalculation.averagePrice = spotCalculation.totalPrice / count;
         spotCalculation.totalCost = spotCalculation.totalCost / 100;
@@ -95,12 +109,16 @@ public class PriceCalculatorService {
         public double totalCostWithoutMargin;
         public double totalConsumption;
         public double averagePrice;
+        public LocalDateTime start;
+        public LocalDateTime end;
 
-        public SpotCalculation(double totalPrice, double totalCost, double totalCostWithoutMargin, double totalConsumption) {
+        public SpotCalculation(double totalPrice, double totalCost, double totalCostWithoutMargin, double totalConsumption, LocalDateTime start, LocalDateTime end) {
             this.totalPrice = totalPrice;
             this.totalCost = totalCost;
             this.totalCostWithoutMargin = totalCostWithoutMargin;
             this.totalConsumption = totalConsumption;
+            this.start = start;
+            this.end = end;
         }
     }
 

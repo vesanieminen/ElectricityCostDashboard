@@ -20,6 +20,8 @@ import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateFixedElectricityPrice;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotElectricityPriceDetails;
@@ -124,9 +126,10 @@ public class PriceCalculatorView extends Div {
                 total.removeAll();
                 spot.removeAll();
                 fixed.removeAll();
-                final var totalConsumption = new DoubleLabel("Total consumption over period", decimalFormat.format(spotCalculation.totalConsumption) + "kWh", true);
-                totalConsumption.addClassNames(LumoUtility.AlignSelf.CENTER);
-                total.add(totalConsumption);
+                final var start = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withLocale(getLocale()).format(spotCalculation.start);
+                final var end = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withLocale(getLocale()).format(spotCalculation.end);
+                total.add(new DoubleLabel("Calculation period", start + " - " + end, true));
+                total.add(new DoubleLabel("Total consumption over period", decimalFormat.format(spotCalculation.totalConsumption) + "kWh", true));
                 spot.add(new DoubleLabel("Average spot price (incl. margin)", decimalFormat.format(spotCalculation.totalCost / spotCalculation.totalConsumption * 100) + " c/kWh", true));
                 spot.add(new DoubleLabel("Total spot cost (incl. margin)", decimalFormat.format(spotCalculation.totalCost) + "€", true));
                 spot.add(new DoubleLabel("Total spot cost (without margin)", decimalFormat.format(spotCalculation.totalCostWithoutMargin) + "€", true));
