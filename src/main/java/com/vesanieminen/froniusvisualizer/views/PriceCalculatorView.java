@@ -128,7 +128,7 @@ public class PriceCalculatorView extends Div {
                 fixed.removeAll();
                 final var start = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(spotCalculation.start);
                 final var end = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(spotCalculation.end);
-                total.add(new DoubleLabel("Calculation period", start + " - " + end, true));
+                total.add(new DoubleLabel("Calculation period (start times)", start + " - " + end, true));
                 total.add(new DoubleLabel("Total consumption over period", decimalFormat.format(spotCalculation.totalConsumption) + "kWh", true));
                 spot.add(new DoubleLabel("Average spot price (incl. margin)", decimalFormat.format(spotCalculation.totalCost / spotCalculation.totalConsumption * 100) + " c/kWh", true));
                 spot.add(new DoubleLabel("Total spot cost (incl. margin)", decimalFormat.format(spotCalculation.totalCost) + "€", true));
