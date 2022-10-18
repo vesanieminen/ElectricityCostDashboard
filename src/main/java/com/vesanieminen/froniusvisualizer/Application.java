@@ -16,6 +16,7 @@ import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 
 import static com.vesanieminen.froniusvisualizer.util.Properties.isDevelopmentMode;
+import static com.vesanieminen.froniusvisualizer.util.Properties.isStagingEnvironment;
 
 /**
  * The entry point of the Spring Boot application.
@@ -37,7 +38,7 @@ public class Application implements AppShellConfigurator {
 
     @Bean
     public ServletWebServerFactory servletContainer() {
-        if (isDevelopmentMode()) {
+        if (isDevelopmentMode() || isStagingEnvironment()) {
             return new TomcatServletWebServerFactory();
         }
         return new TomcatServletWebServerFactory() {

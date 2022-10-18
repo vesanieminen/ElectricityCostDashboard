@@ -12,4 +12,8 @@ public class Properties {
         return "true".equals(System.getProperty("dev"));
     }
 
+    public static boolean isStagingEnvironment() {
+        return "true".equals(System.getenv("staging"));
+    }
+
 }
