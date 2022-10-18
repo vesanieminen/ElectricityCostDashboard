@@ -39,8 +39,10 @@ public class Application implements AppShellConfigurator {
     @Bean
     public ServletWebServerFactory servletContainer() {
         if (isDevelopmentMode() || isStagingEnvironment()) {
+            System.out.println("dev / staging mode");
             return new TomcatServletWebServerFactory();
         }
+        System.out.println("production mode");
         return new TomcatServletWebServerFactory() {
             @Override
             protected void postProcessContext(Context context) {
