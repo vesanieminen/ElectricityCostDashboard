@@ -64,8 +64,8 @@ public class PriceCalculatorView extends Div {
         content.add(helpLayout);
         helpStepsLayout.add(new Span(new Span("1) Login to "), new Anchor("https://www.fingrid.fi/en/electricity-market/datahub/sign-in-to-datahub-customer-portal/", "Fingrid Datahub.")));
         helpStepsLayout.add(new Span("2) Download your hourly consumption data csv file."));
-        helpStepsLayout.add(new Span("3) Modify the data to your liking, e.g. remove all other rows except one month's data."));
-        helpStepsLayout.add(new Span("4) Upload the file below."));
+        helpStepsLayout.add(new Span("3) Upload the file below."));
+        helpStepsLayout.add(new Span("4) Select the date and time range for the calculation (the end of day is 23:00)."));
         helpStepsLayout.add(new Span("5) Enter your comparative fixed electricity cost in the field below."));
         helpStepsLayout.add(new Span("6) Enter your spot price margin."));
         helpStepsLayout.add(new Span("7) Click the calculate costs button."));
