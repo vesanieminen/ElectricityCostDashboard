@@ -100,26 +100,28 @@ public class PriceCalculatorView extends Div {
         //container.add(spot, fixed);
 
         final var fromDateTimePicker = new DateTimePicker("Start period");
+        fromDateTimePicker.setRequiredIndicatorVisible(true);
         fromDateTimePicker.setLocale(fiLocale);
         final var toDateTimePicker = new DateTimePicker("End period");
+        toDateTimePicker.setRequiredIndicatorVisible(true);
         toDateTimePicker.setLocale(fiLocale);
         content.add(fromDateTimePicker);
         content.add(toDateTimePicker);
 
+        final var fieldRow = new Div();
+        fieldRow.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Gap.MEDIUM);
+        content.add(fieldRow);
         final var numberField = new NumberField("Fixed price");
         numberField.setRequiredIndicatorVisible(true);
         numberField.setSuffixComponent(new Span("c/kWh"));
-        numberField.setPlaceholder("Please enter e.g. 12.50");
-        //numberField.addClassNames(LumoUtility.Padding.Top.NONE);
-        numberField.setWidth(16, Unit.EM);
-        content.add(numberField);
-
+        numberField.setPlaceholder("E.g. 12.50");
+        numberField.addClassNames(LumoUtility.Flex.GROW);
         final var spotMargin = new NumberField("Spot margin");
         spotMargin.setRequiredIndicatorVisible(true);
         spotMargin.setSuffixComponent(new Span("c/kWh"));
-        spotMargin.setPlaceholder("Please enter e.g. 0.38");
-        spotMargin.setWidth(16, Unit.EM);
-        content.add(spotMargin);
+        spotMargin.setPlaceholder("E.g. 0.38");
+        spotMargin.addClassNames(LumoUtility.Flex.GROW);
+        fieldRow.add(numberField, spotMargin);
 
         final var button = new Button("Calculate costs", e -> {
             try {
