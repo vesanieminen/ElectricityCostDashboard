@@ -1,5 +1,11 @@
 @import url('line-awesome/dist/line-awesome/css/line-awesome.min.css');
 
+body, #outlet {
+    height: 100vh;
+    width: 100%;
+    margin: 0;
+}
+
 html {
     --lumo-size-xl: 6rem;
     --yellow-50: #FFFBEF;

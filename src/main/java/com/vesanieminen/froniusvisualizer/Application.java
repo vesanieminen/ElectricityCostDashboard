@@ -29,6 +29,7 @@ import static com.vesanieminen.froniusvisualizer.util.Properties.isStagingEnviro
 @PWA(name = "FroniusVizualizer", shortName = "FroniusVizualizer", offlineResources = {})
 @NpmPackage(value = "line-awesome", version = "1.3.0")
 @JsModule("src/prefers-color-scheme.js")
+//@JsModule("src/app-height.js")
 public class Application implements AppShellConfigurator {
 
     public static void main(String[] args) {
