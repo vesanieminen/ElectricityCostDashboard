@@ -1,6 +1,7 @@
 package com.vesanieminen.froniusvisualizer.views;
 
 import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.stream.Stream;
 
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateFixedElectricityPrice;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotElectricityPriceDetails;
@@ -132,7 +134,7 @@ public class PriceCalculatorView extends Div {
                 }
                 final var consumptionData = getFingridConsumptionData(lastFile);
                 final var spotCalculation = calculateSpotElectricityPriceDetails(consumptionData.data, spotMargin.getValue(), fromDateTimePicker.getValue(), toDateTimePicker.getValue());
-                final var fixedCost = calculateFixedElectricityPrice(consumptionData.data, numberField.getValue());
+                final var fixedCost = calculateFixedElectricityPrice(consumptionData.data, numberField.getValue(), fromDateTimePicker.getValue(), toDateTimePicker.getValue());
                 total.removeAll();
                 spot.removeAll();
                 fixed.removeAll();
@@ -155,7 +157,6 @@ public class PriceCalculatorView extends Div {
             FileData savedFileData = fileBuffer.getFileData();
             lastFile = savedFileData.getFile().getAbsolutePath();
             System.out.printf("File saved to: %s%n", lastFile);
-            updateCalculateButtonState(button, numberField.getValue(), spotMargin.getValue(), fromDateTimePicker, toDateTimePicker);
             try {
                 final var consumptionData = getFingridConsumptionData(lastFile);
                 fromDateTimePicker.setMin(consumptionData.start);
@@ -164,20 +165,28 @@ public class PriceCalculatorView extends Div {
                 toDateTimePicker.setMin(consumptionData.start.plusHours(1));
                 toDateTimePicker.setMax(consumptionData.end);
                 toDateTimePicker.setValue(consumptionData.end);
+                updateCalculateButtonState(button, numberField.getValue(), spotMargin.getValue(), fromDateTimePicker, toDateTimePicker);
+                setFieldsEnabled(true, numberField, spotMargin, fromDateTimePicker, toDateTimePicker);
             } catch (IOException | ParseException e) {
                 throw new RuntimeException(e);
             }
         });
+        upload.addFailedListener(e -> setFieldsEnabled(false, numberField, spotMargin, fromDateTimePicker, toDateTimePicker, button));
         numberField.addValueChangeListener(e -> updateCalculateButtonState(button, numberField.getValue(), spotMargin.getValue(), fromDateTimePicker, toDateTimePicker));
         spotMargin.addValueChangeListener(e -> updateCalculateButtonState(button, numberField.getValue(), spotMargin.getValue(), fromDateTimePicker, toDateTimePicker));
         fromDateTimePicker.addValueChangeListener(e -> updateCalculateButtonState(button, numberField.getValue(), spotMargin.getValue(), fromDateTimePicker, toDateTimePicker));
         toDateTimePicker.addValueChangeListener(e -> updateCalculateButtonState(button, numberField.getValue(), spotMargin.getValue(), fromDateTimePicker, toDateTimePicker));
+        setFieldsEnabled(false, numberField, spotMargin, fromDateTimePicker, toDateTimePicker);
         button.setEnabled(false);
         content.add(button);
         content.add(total);
         content.add(container, spot, fixed);
         add(new Spacer());
         add(new Footer());
+    }
+
+    private void setFieldsEnabled(boolean isEnabled, HasEnabled... hasEnableds) {
+        Stream.of(hasEnableds).forEach(field -> field.setEnabled(isEnabled));
     }
 
     private void updateCalculateButtonState(Button button, Double fixedPrice, Double spotPrice, DateTimePicker fromDateTimePicker, DateTimePicker toDateTimePicker) {

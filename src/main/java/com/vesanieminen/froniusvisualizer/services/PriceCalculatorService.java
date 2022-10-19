@@ -120,15 +120,25 @@ public class PriceCalculatorService {
     }
 
     public static SpotCalculation calculateSpotElectricityPriceDetails(LinkedHashMap<LocalDateTime, Double> fingridConsumptionData, double margin, LocalDateTime start, LocalDateTime end) throws IOException {
+        final LinkedHashMap<LocalDateTime, Double> filtered = getDateTimeRange(fingridConsumptionData, start, end);
+        return calculateSpotElectricityPriceDetails(filtered, margin);
+    }
+
+    private static LinkedHashMap<LocalDateTime, Double> getDateTimeRange(LinkedHashMap<LocalDateTime, Double> fingridConsumptionData, LocalDateTime start, LocalDateTime end) {
         final var filtered = fingridConsumptionData.entrySet().stream().filter(item ->
                 (start.isBefore(item.getKey()) || start.isEqual(item.getKey())) &&
                         (end.isAfter(item.getKey()) || end.isEqual(item.getKey()))
         ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
-        return calculateSpotElectricityPriceDetails(filtered, margin);
+        return filtered;
     }
 
     public static double calculateFixedElectricityPrice(LinkedHashMap<LocalDateTime, Double> fingridConsumptionData, double fixed) {
         return fingridConsumptionData.keySet().stream().map(item -> fixed * fingridConsumptionData.get(item)).reduce(0d, Double::sum) / 100;
+    }
+
+    public static double calculateFixedElectricityPrice(LinkedHashMap<LocalDateTime, Double> fingridConsumptionData, double fixed, LocalDateTime start, LocalDateTime end) {
+        final LinkedHashMap<LocalDateTime, Double> filtered = getDateTimeRange(fingridConsumptionData, start, end);
+        return calculateFixedElectricityPrice(filtered, fixed);
     }
 
     public static class SpotCalculation {
