@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
+import static com.vesanieminen.froniusvisualizer.util.Utils.sum;
 
 public class PriceCalculatorService {
 
@@ -116,15 +117,28 @@ public class PriceCalculatorService {
                         spotData.get(item) * fingridConsumptionData.get(item),
                         fingridConsumptionData.get(item),
                         item,
-                        item
+                        item,
+                        new HourValue(item.getHour(), fingridConsumptionData.get(item)),
+                        new HourValue(item.getHour(), (spotData.get(item) + margin) * fingridConsumptionData.get(item) / 100)
                 ))
-                .reduce(new SpotCalculation(0, 0, 0, 0, LocalDateTime.MAX, LocalDateTime.MIN), (i1, i2) -> new SpotCalculation(
+                .reduce(new SpotCalculation(
+                        0,
+                        0,
+                        0,
+                        0,
+                        LocalDateTime.MAX,
+                        LocalDateTime.MIN,
+                        HourValue.Zero(),
+                        HourValue.Zero()
+                ), (i1, i2) -> new SpotCalculation(
                         i1.totalPrice + i2.totalPrice,
                         i1.totalCost + i2.totalCost,
                         i1.totalCostWithoutMargin + i2.totalCostWithoutMargin,
                         i1.totalConsumption + i2.totalConsumption,
                         i1.start.compareTo(i2.start) < 0 ? i1.start : i2.start,
-                        i1.end.compareTo(i2.end) > 0 ? i1.end : i2.end
+                        i1.end.compareTo(i2.end) > 0 ? i1.end : i2.end,
+                        sum(i1.consumptionHours, i2.consumptionHours),
+                        sum(i1.costHours, i2.costHours)
                 ));
         final var count = fingridConsumptionData.keySet().stream().filter(spotData::containsKey).count();
         spotCalculation.averagePrice = spotCalculation.totalPrice / count;
@@ -163,6 +177,8 @@ public class PriceCalculatorService {
         public double averagePrice;
         public LocalDateTime start;
         public LocalDateTime end;
+        public double[] consumptionHours = new double[24];
+        public double[] costHours = new double[24];
 
         public SpotCalculation(double totalPrice, double totalCost, double totalCostWithoutMargin, double totalConsumption, LocalDateTime start, LocalDateTime end) {
             this.totalPrice = totalPrice;
@@ -171,6 +187,33 @@ public class PriceCalculatorService {
             this.totalConsumption = totalConsumption;
             this.start = start;
             this.end = end;
+        }
+
+        public SpotCalculation(double totalPrice, double totalCost, double totalCostWithoutMargin, double totalConsumption, LocalDateTime start, LocalDateTime end, HourValue consumption, HourValue cost) {
+            this(totalPrice, totalCost, totalCostWithoutMargin, totalConsumption, start, end);
+            consumptionHours[consumption.hour] = consumption.value;
+            costHours[cost.hour] = cost.value;
+        }
+
+        public SpotCalculation(double totalPrice, double totalCost, double totalCostWithoutMargin, double totalConsumption, LocalDateTime start, LocalDateTime end, double[] consumptionHours, double[] costHours) {
+            this(totalPrice, totalCost, totalCostWithoutMargin, totalConsumption, start, end);
+            this.consumptionHours = consumptionHours;
+            this.costHours = costHours;
+        }
+
+    }
+
+    public static class HourValue {
+        public int hour;
+        public double value;
+
+        public HourValue(int hour, double value) {
+            this.hour = hour;
+            this.value = value;
+        }
+
+        public static HourValue Zero() {
+            return new HourValue(0, 0);
         }
     }
 

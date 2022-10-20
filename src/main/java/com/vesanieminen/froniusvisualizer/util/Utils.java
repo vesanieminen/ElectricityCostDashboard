@@ -31,4 +31,12 @@ public class Utils {
         System.out.println(GraphLayout.parseInstance(object).toFootprint());
     }
 
+    public static double[] sum(double[] first, double[] second) {
+        final var array = new double[first.length];
+        for (int i = 0; i < first.length; ++i) {
+            array[i] = first[i] + second[i];
+        }
+        return array;
+    }
+
 }
