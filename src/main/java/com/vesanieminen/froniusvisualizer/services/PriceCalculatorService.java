@@ -14,9 +14,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
 
 public class PriceCalculatorService {
@@ -26,7 +28,8 @@ public class PriceCalculatorService {
 
     public static final DateTimeFormatter datetimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static LinkedHashMap<LocalDateTime, Double> spotPriceMap;
-    private static Double spotAverage2022;
+    private static Double spotAverageThisYear;
+    private static Double spotAverageThisMonth;
 
     public static LinkedHashMap<LocalDateTime, Double> getSpotData() throws IOException {
         if (spotPriceMap == null) {
@@ -82,11 +85,22 @@ public class PriceCalculatorService {
         return spotData.values().stream().reduce(0d, Double::sum) / spotData.values().size();
     }
 
-    public static double calculateSpotAveragePrice2022() throws IOException {
-        if (spotAverage2022 == null) {
-            spotAverage2022 = getSpotData().entrySet().stream().filter(item -> item.getKey().getYear() == 2022).map(Map.Entry::getValue).reduce(0d, Double::sum) / getSpotData().values().size();
+    public static double calculateSpotAveragePriceThisYear() throws IOException {
+        if (spotAverageThisYear == null) {
+            spotAverageThisYear = getSpotData().entrySet().stream().filter(item -> item.getKey().getYear() == getCurrentTimeWithHourPrecision().getYear()).map(Map.Entry::getValue).reduce(0d, Double::sum) / getSpotData().values().size();
         }
-        return spotAverage2022;
+        return spotAverageThisYear;
+    }
+
+    public static double calculateSpotAveragePriceThisMonth() throws IOException {
+        final var now = getCurrentTimeWithHourPrecision();
+        final var month = now.getMonthValue();
+        final var year = now.getYear();
+        return getSpotData().entrySet().stream().filter(monthFilter(month, year)).map(Map.Entry::getValue).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(monthFilter(month, year)).count();
+    }
+
+    private static Predicate<Map.Entry<LocalDateTime, Double>> monthFilter(int month, int year) {
+        return item -> item.getKey().getMonthValue() == month && item.getKey().getYear() == year;
     }
 
     public static double calculateSpotElectricityPrice(LinkedHashMap<LocalDateTime, Double> spotData, LinkedHashMap<LocalDateTime, Double> fingridConsumptionData, double margin) {

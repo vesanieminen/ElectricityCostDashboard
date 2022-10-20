@@ -54,6 +54,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisYear;
+import static com.vesanieminen.froniusvisualizer.util.Utils.decimalFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
 
@@ -179,6 +182,14 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         removeAll();
         createMenuLayout();
         var pricesLayout = new Div(priceNow, nextPrice, lowestAndHighest, averagePrice);
+        try {
+            final var averagePriceThisMonth = calculateSpotAveragePriceThisMonth();
+            pricesLayout.add(new DoubleLabel("Average this month", decimalFormat.format(averagePriceThisMonth) + " c/kWh"));
+            final var averagePriceThisYear = calculateSpotAveragePriceThisYear();
+            pricesLayout.add(new DoubleLabel("Average this year", decimalFormat.format(averagePriceThisYear) + " c/kWh"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         pricesLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Width.FULL);
         add(pricesLayout);
 

@@ -37,7 +37,7 @@ public class PriceCalculatorView extends Div {
 
     private String lastFile;
 
-    public PriceCalculatorView() throws IOException, ParseException {
+    public PriceCalculatorView() throws IOException {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.AUTO);
         setHeightFull();
         setMaxWidth(1024, Unit.PIXELS);
@@ -48,10 +48,14 @@ public class PriceCalculatorView extends Div {
         final var title = new Span("Spot price / fixed electricity price calculator");
         title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
         content.add(title);
-        final var spotAverage = PriceCalculatorService.calculateSpotAveragePrice2022();
-        final var span = new Span("Spot average in 2022 so far: " + decimalFormat.format(spotAverage) + " c/kWh");
+        final var spotAverage = PriceCalculatorService.calculateSpotAveragePriceThisYear();
+        final var span = new Span("Spot average this year: " + decimalFormat.format(spotAverage) + " c/kWh");
         span.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
         content.add(span);
+        final var spotAverageMonth = PriceCalculatorService.calculateSpotAveragePriceThisMonth();
+        final var spanMonth = new Span("Spot average this month: " + decimalFormat.format(spotAverageMonth) + " c/kWh");
+        spanMonth.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
+        content.add(spanMonth);
 
         createHelpLayout(content);
 
