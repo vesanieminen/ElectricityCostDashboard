@@ -185,7 +185,7 @@ public class PriceCalculatorView extends Div {
         final var xLabel = new Labels();
         //xLabel.setFormatter("return this.value +':00'");
         xAxis.setLabels(xLabel);
-        xLabel.setStep(2);
+        //xLabel.setStep(2);
         final var categories = IntStream.range(0, 24).mapToObj(i -> i + ":00").toList();
         xAxis.setCategories(categories.toArray(String[]::new));
         chart.getConfiguration().addxAxis(xAxis);
