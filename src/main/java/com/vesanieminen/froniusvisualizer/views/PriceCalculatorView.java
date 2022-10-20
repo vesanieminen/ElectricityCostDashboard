@@ -53,41 +53,14 @@ public class PriceCalculatorView extends Div {
         span.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
         content.add(span);
 
-        final var helpButton = new Button("Click to show/hide help");
-        helpButton.addClassNames(LumoUtility.Margin.Top.SMALL, LumoUtility.Background.BASE);
-        content.add(helpButton);
-        final var helpLayout = new Div();
-        helpLayout.setVisible(false);
-        helpLayout.add(new Span("Usage:"));
-        helpLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
-        final var helpStepsLayout = new Div();
-        helpStepsLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Left.LARGE);
-        helpLayout.add(helpStepsLayout);
-        content.add(helpLayout);
-        helpStepsLayout.add(new Span(new Span("1) Login to "), new Anchor("https://www.fingrid.fi/en/electricity-market/datahub/sign-in-to-datahub-customer-portal/", "Fingrid Datahub.")));
-        helpStepsLayout.add(new Span("2) Download your hourly consumption data csv file."));
-        helpStepsLayout.add(new Span("3) Upload the file below."));
-        helpStepsLayout.add(new Span("4) Select the date and time range for the calculation (the end of day is 23:00)."));
-        helpStepsLayout.add(new Span("5) Enter your comparative fixed electricity cost in the field below."));
-        helpStepsLayout.add(new Span("6) Enter your spot price margin."));
-        helpStepsLayout.add(new Span("7) Click the calculate costs button."));
-        helpButton.addClickListener(e -> helpLayout.setVisible(!helpLayout.isVisible()));
-
-        final var anchor = new Anchor("https://raw.githubusercontent.com/vesanieminen/ElectricityCostDashboard/main/src/main/resources/META-INF/resources/data/consumption.csv", "Download example csv file here");
-        anchor.addClassNames(LumoUtility.Margin.Top.MEDIUM);
-        helpLayout.add(anchor);
-
-        final var additionalInfo = new Span("Do note that the Fingrid csv data is in UTC timezone which is currently 3h earlier than the Finnish timezone. E.g. to calculate costs for August 2022 you need to have 3h from end of July in the csv file as well.");
-        additionalInfo.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
-        helpLayout.add(additionalInfo);
-
+        createHelpLayout(content);
 
         FileBuffer fileBuffer = new FileBuffer();
         final var uploadFingridConsumptionData = new Button("Upload Fingrid consumption.csv data");
         Upload upload = new Upload(fileBuffer);
         upload.setUploadButton(uploadFingridConsumptionData);
         upload.setDropAllowed(true);
-        upload.addClassNames(LumoUtility.Margin.Vertical.MEDIUM);
+        upload.addClassNames(LumoUtility.Margin.Top.XSMALL);
         content.add(upload);
         final var total = new Div();
         total.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Top.MEDIUM);
@@ -184,6 +157,38 @@ public class PriceCalculatorView extends Div {
         content.add(container, spot, fixed);
         add(new Spacer());
         add(new Footer());
+    }
+
+    private static Div createHelpLayout(Div content) {
+        final var helpButton = new Button("Click to show/hide help");
+        helpButton.addClassNames(LumoUtility.Margin.Top.SMALL, LumoUtility.Background.BASE);
+        content.add(helpButton);
+        final var helpLayout = new Div();
+        helpLayout.setVisible(false);
+        helpLayout.add(new Span("Usage:"));
+        helpLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
+        final var helpStepsLayout = new Div();
+        helpStepsLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Left.LARGE);
+        helpLayout.add(helpStepsLayout);
+        content.add(helpLayout);
+        helpStepsLayout.add(new Span(new Span("1) Login to "), new Anchor("https://www.fingrid.fi/en/electricity-market/datahub/sign-in-to-datahub-customer-portal/", "Fingrid Datahub.")));
+        helpStepsLayout.add(new Span("2) Download your hourly consumption data csv file."));
+        helpStepsLayout.add(new Span("3) Upload the file below."));
+        helpStepsLayout.add(new Span("4) Select the date and time range for the calculation (the end of day is 23:00)."));
+        helpStepsLayout.add(new Span("5) Enter your comparative fixed electricity cost in the field below."));
+        helpStepsLayout.add(new Span("6) Enter your spot price margin."));
+        helpStepsLayout.add(new Span("7) Click the calculate costs button."));
+        helpButton.addClickListener(e -> helpLayout.setVisible(!helpLayout.isVisible()));
+
+        final var anchor = new Anchor("https://raw.githubusercontent.com/vesanieminen/ElectricityCostDashboard/main/src/main/resources/META-INF/resources/data/consumption.csv", "Download example csv file here");
+        anchor.addClassNames(LumoUtility.Margin.Top.MEDIUM);
+        helpLayout.add(anchor);
+
+        final var additionalInfo = new Span("Do note that the Fingrid csv data is in UTC timezone which is currently 3h earlier than the Finnish timezone. E.g. to calculate costs for August 2022 you need to have 3h from end of July in the csv file as well.");
+        additionalInfo.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
+        helpLayout.add(additionalInfo);
+
+        return helpLayout;
     }
 
     private void setFieldsEnabled(boolean isEnabled, HasEnabled... hasEnableds) {
