@@ -11,20 +11,29 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 public class Footer extends Div {
 
     public Footer() {
-        final var icon = new Icon(VaadinIcon.VAADIN_H);
-        icon.addClassNames(LumoUtility.Height.MEDIUM, LumoUtility.TextColor.PRIMARY);
-        final var vaadin = new Anchor("http://vaadin.com", "Built with Vaadin ");
-        final var anchor = new Anchor("https://github.com/vesanieminen/ElectricityCostDashboard", "Fork me on GitHub");
-        final var githubIcon = new Image("images/GitHub-Mark-32px.png", "GitHub icon");
-        githubIcon.addClassNames(LumoUtility.IconSize.MEDIUM, LumoUtility.TextColor.PRIMARY);
-        final var divider = new Div();
-        divider.setWidth("1px");
-        divider.addClassNames(LumoUtility.Background.CONTRAST_10, LumoUtility.Height.FULL, LumoUtility.Margin.Horizontal.SMALL);
-        final var spanLayout = new Span(vaadin, icon, divider, anchor, githubIcon);
-        spanLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER, LumoUtility.AlignItems.CENTER, LumoUtility.Gap.SMALL, LumoUtility.Height.FULL);
-        add(spanLayout);
-        addClassNames(LumoUtility.Display.FLEX, LumoUtility.Background.CONTRAST_5, LumoUtility.Width.FULL, LumoUtility.Height.LARGE);
+        addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Background.CONTRAST_5, LumoUtility.Padding.SMALL);
         addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.CENTER, LumoUtility.Flex.SHRINK_NONE);
+
+        final var icon = new Icon(VaadinIcon.VAADIN_H);
+        icon.addClassNames(LumoUtility.TextColor.PRIMARY);
+        final var vaadinLink = new Anchor("http://vaadin.com", "Built with Vaadin ");
+        vaadinLink.add(icon);
+        final var image = new Image("https://cdn.ko-fi.com/cdn/kofi2.png?v=3", "Buy Me a Coffee at ko-fi.com");
+        image.setHeight("36px");
+        image.getStyle().set("border", "0px");
+        image.getElement().setAttribute("height", "36");
+        image.getElement().setAttribute("border", "0");
+        final var kofiLink = new Anchor("https://ko-fi.com/F2F4FU50T");
+        kofiLink.addClassNames(LumoUtility.Display.FLEX);
+        kofiLink.add(image);
+        final var githubIcon = new Image("images/GitHub-Mark-32px.png", "GitHub icon");
+        final var githubLink = new Anchor("https://github.com/vesanieminen/ElectricityCostDashboard", "Fork me on GitHub");
+        githubLink.addClassNames(LumoUtility.Display.FLEX);
+        githubLink.add(githubIcon);
+        githubIcon.addClassNames(LumoUtility.IconSize.MEDIUM, LumoUtility.TextColor.PRIMARY, LumoUtility.Margin.Left.SMALL);
+        final var spanLayout = new Span(vaadinLink, kofiLink, githubLink);
+        spanLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.JustifyContent.CENTER, LumoUtility.AlignItems.CENTER, LumoUtility.Gap.MEDIUM);
+        add(spanLayout);
     }
 
 }

@@ -179,9 +179,6 @@ public class PriceCalculatorView extends Div {
 
     private static Chart createChart(PriceCalculatorService.SpotCalculation spotCalculation) {
         var chart = new Chart(ChartType.COLUMN);
-        //chart.setMinHeight("500px");
-        //chart.setHeight("580px");
-        //chart.setMaxWidth("1320px");
         chart.getConfiguration().setTitle("Consumption / cost per hour");
         chart.getConfiguration().getLegend().setEnabled(true);
         chart.getConfiguration().getChart().setStyledMode(true);
@@ -192,7 +189,6 @@ public class PriceCalculatorView extends Div {
         XAxis xAxis = new XAxis();
         xAxis.setCrosshair(new Crosshair());
         final var xLabel = new Labels();
-        //xLabel.setFormatter("return this.value +':00'");
         xAxis.setLabels(xLabel);
         //xLabel.setStep(2);
         final var categories = IntStream.range(0, 24).mapToObj(i -> i + ":00").toList();
