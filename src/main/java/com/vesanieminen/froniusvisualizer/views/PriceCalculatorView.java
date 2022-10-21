@@ -10,6 +10,7 @@ import com.vaadin.flow.component.charts.model.Crosshair;
 import com.vaadin.flow.component.charts.model.Labels;
 import com.vaadin.flow.component.charts.model.ListSeries;
 import com.vaadin.flow.component.charts.model.PlotOptionsColumn;
+import com.vaadin.flow.component.charts.model.PlotOptionsLine;
 import com.vaadin.flow.component.charts.model.SeriesTooltip;
 import com.vaadin.flow.component.charts.model.Tooltip;
 import com.vaadin.flow.component.charts.model.XAxis;
@@ -49,12 +50,16 @@ public class PriceCalculatorView extends Div {
     private String lastFile;
 
     public PriceCalculatorView() throws IOException {
-        addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.AUTO);
+        addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
         setHeightFull();
-        setMaxWidth(1024, Unit.PIXELS);
+        final var wrapper = new Div();
+        wrapper.addClassNames(LumoUtility.Margin.AUTO);
+        wrapper.setWidthFull();
+        wrapper.setMaxWidth(1024, Unit.PIXELS);
+        add(wrapper);
         final var content = new Div();
         content.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Padding.Horizontal.MEDIUM);
-        add(content);
+        wrapper.add(content);
 
         final var title = new Span("Spot price / fixed electricity price calculator");
         title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
@@ -77,10 +82,10 @@ public class PriceCalculatorView extends Div {
         upload.setDropAllowed(true);
         upload.addClassNames(LumoUtility.Margin.Top.XSMALL);
         content.add(upload);
-        final var total = new Div();
-        total.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Top.MEDIUM);
-        final var other = new Div();
-        other.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
+        final var resultLayout = new Div();
+        resultLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Margin.Top.MEDIUM);
+
+        final var chartLayout = new Div();
 
         final var fromDateTimePicker = new DateTimePicker("Start period");
         fromDateTimePicker.setRequiredIndicatorVisible(true);
@@ -119,19 +124,19 @@ public class PriceCalculatorView extends Div {
                 final var consumptionData = getFingridConsumptionData(lastFile);
                 final var spotCalculation = calculateSpotElectricityPriceDetails(consumptionData.data, spotMargin.getValue(), fromDateTimePicker.getValue(), toDateTimePicker.getValue());
                 final var fixedCost = calculateFixedElectricityPrice(consumptionData.data, numberField.getValue(), fromDateTimePicker.getValue(), toDateTimePicker.getValue());
-                total.removeAll();
-                other.removeAll();
+                resultLayout.removeAll();
+                chartLayout.removeAll();
                 final var start = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(fiLocale).format(spotCalculation.start);
                 final var end = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(fiLocale).format(spotCalculation.end);
-                total.add(new DoubleLabel("Calculation period (start times)", start + " - " + end, true));
-                total.add(new DoubleLabel("Total consumption over period", decimalFormat.format(spotCalculation.totalConsumption) + "kWh", true));
-                other.add(new DoubleLabel("Average spot price (incl. margin)", decimalFormat.format(spotCalculation.totalCost / spotCalculation.totalConsumption * 100) + " c/kWh", true));
-                other.add(new DoubleLabel("Total spot cost (incl. margin)", decimalFormat.format(spotCalculation.totalCost) + "€", true));
-                other.add(new DoubleLabel("Total spot cost (without margin)", decimalFormat.format(spotCalculation.totalCostWithoutMargin) + "€", true));
-                other.add(new DoubleLabel("Fixed price", numberField.getValue() + " c/kWh", true));
-                other.add(new DoubleLabel("Fixed cost total", decimalFormat.format(fixedCost) + "€", true));
+                resultLayout.add(new DoubleLabel("Calculation period (start times)", start + " - " + end, true));
+                resultLayout.add(new DoubleLabel("Total consumption over period", decimalFormat.format(spotCalculation.totalConsumption) + "kWh", true));
+                resultLayout.add(new DoubleLabel("Average spot price (incl. margin)", decimalFormat.format(spotCalculation.totalCost / spotCalculation.totalConsumption * 100) + " c/kWh", true));
+                resultLayout.add(new DoubleLabel("Total spot cost (incl. margin)", decimalFormat.format(spotCalculation.totalCost) + "€", true));
+                resultLayout.add(new DoubleLabel("Total spot cost (without margin)", decimalFormat.format(spotCalculation.totalCostWithoutMargin) + "€", true));
+                resultLayout.add(new DoubleLabel("Fixed price", numberField.getValue() + " c/kWh", true));
+                resultLayout.add(new DoubleLabel("Fixed cost total", decimalFormat.format(fixedCost) + "€", true));
 
-                other.add(createChart(spotCalculation));
+                chartLayout.add(createChart(spotCalculation));
 
             } catch (IOException | ParseException ex) {
                 throw new RuntimeException(ex);
@@ -165,14 +170,17 @@ public class PriceCalculatorView extends Div {
         setFieldsEnabled(false, numberField, spotMargin, fromDateTimePicker, toDateTimePicker);
         button.setEnabled(false);
         content.add(button);
-        content.add(total);
-        content.add(other);
+        add(resultLayout);
+        add(chartLayout);
         add(new Spacer());
         add(new Footer());
     }
 
     private static Chart createChart(PriceCalculatorService.SpotCalculation spotCalculation) {
         var chart = new Chart(ChartType.COLUMN);
+        //chart.setMinHeight("500px");
+        //chart.setHeight("580px");
+        //chart.setMaxWidth("1320px");
         chart.getConfiguration().setTitle("Consumption / cost per hour");
         chart.getConfiguration().getLegend().setEnabled(true);
         chart.getConfiguration().getChart().setStyledMode(true);
@@ -202,13 +210,23 @@ public class PriceCalculatorView extends Div {
         // Second YAxis
         final var costYAxis = new YAxis();
         var labels = new Labels();
-        //labels.setAlign(HorizontalAlign.RIGHT);
         labels.setReserveSpace(true);
         labels.setFormatter("return this.value +'€'");
         costYAxis.setLabels(labels);
         costYAxis.setTitle("Price");
         costYAxis.setOpposite(true);
         chart.getConfiguration().addyAxis(costYAxis);
+
+        // third YAxis
+        final var spotYAxis = new YAxis();
+        spotYAxis.setVisible(false);
+        var spotLabels = new Labels();
+        ////spotLabels.setReserveSpace(true);
+        spotLabels.setFormatter("return this.value +'c/kWh'");
+        spotYAxis.setLabels(spotLabels);
+        spotYAxis.setTitle("Spot");
+        spotYAxis.setOpposite(true);
+        chart.getConfiguration().addyAxis(spotYAxis);
 
         final var consumptionHoursSeries = new ListSeries("Consumption");
         for (int i = 0; i < spotCalculation.consumptionHours.length; ++i) {
@@ -232,9 +250,21 @@ public class PriceCalculatorView extends Div {
         costHoursPlotOptionsColumn.setTooltip(costHoursTooltipSpot);
         costHoursSeries.setPlotOptions(costHoursPlotOptionsColumn);
 
-        chart.getConfiguration().setSeries(consumptionHoursSeries, costHoursSeries);
+        final var spotAverageSeries = new ListSeries("Spot average (incl. margin)");
+        for (int i = 0; i < spotCalculation.spotAverage.length; ++i) {
+            spotAverageSeries.addData(spotCalculation.spotAverage[i]);
+        }
+        final var spotAveragePlotOptionsColumn = new PlotOptionsLine();
+        final var spotAverageTooltipSpot = new SeriesTooltip();
+        spotAverageTooltipSpot.setValueDecimals(2);
+        spotAverageTooltipSpot.setValueSuffix("c/kWh");
+        spotAveragePlotOptionsColumn.setTooltip(spotAverageTooltipSpot);
+        spotAverageSeries.setPlotOptions(spotAveragePlotOptionsColumn);
+
+        chart.getConfiguration().setSeries(consumptionHoursSeries, costHoursSeries, spotAverageSeries);
         consumptionHoursSeries.setyAxis(consumptionYAxis);
         costHoursSeries.setyAxis(costYAxis);
+        spotAverageSeries.setyAxis(spotYAxis);
 
         return chart;
     }

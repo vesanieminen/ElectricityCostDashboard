@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static com.vesanieminen.froniusvisualizer.util.Utils.divide;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
@@ -119,7 +120,8 @@ public class PriceCalculatorService {
                         item,
                         item,
                         new HourValue(item.getHour(), fingridConsumptionData.get(item)),
-                        new HourValue(item.getHour(), (spotData.get(item) + margin) * fingridConsumptionData.get(item) / 100)
+                        new HourValue(item.getHour(), (spotData.get(item) + margin) * fingridConsumptionData.get(item) / 100),
+                        new HourValue(item.getHour(), spotData.get(item) + margin)
                 ))
                 .reduce(new SpotCalculation(
                         0,
@@ -128,6 +130,7 @@ public class PriceCalculatorService {
                         0,
                         LocalDateTime.MAX,
                         LocalDateTime.MIN,
+                        HourValue.Zero(),
                         HourValue.Zero(),
                         HourValue.Zero()
                 ), (i1, i2) -> new SpotCalculation(
@@ -138,12 +141,17 @@ public class PriceCalculatorService {
                         i1.start.compareTo(i2.start) < 0 ? i1.start : i2.start,
                         i1.end.compareTo(i2.end) > 0 ? i1.end : i2.end,
                         sum(i1.consumptionHours, i2.consumptionHours),
-                        sum(i1.costHours, i2.costHours)
+                        sum(i1.costHours, i2.costHours),
+                        sum(i1.spotAverage, i2.spotAverage)
                 ));
         final var count = fingridConsumptionData.keySet().stream().filter(spotData::containsKey).count();
         spotCalculation.averagePrice = spotCalculation.totalPrice / count;
         spotCalculation.totalCost = spotCalculation.totalCost / 100;
         spotCalculation.totalCostWithoutMargin = spotCalculation.totalCostWithoutMargin / 100;
+        //if (spotCalculation.costHours[0] < 1) {
+        //    divide(spotCalculation.costHours, 100);
+        //}
+        divide(spotCalculation.spotAverage, count / 24.0);
         return spotCalculation;
     }
 
@@ -179,6 +187,7 @@ public class PriceCalculatorService {
         public LocalDateTime end;
         public double[] consumptionHours = new double[24];
         public double[] costHours = new double[24];
+        public double[] spotAverage = new double[24];
 
         public SpotCalculation(double totalPrice, double totalCost, double totalCostWithoutMargin, double totalConsumption, LocalDateTime start, LocalDateTime end) {
             this.totalPrice = totalPrice;
@@ -189,16 +198,18 @@ public class PriceCalculatorService {
             this.end = end;
         }
 
-        public SpotCalculation(double totalPrice, double totalCost, double totalCostWithoutMargin, double totalConsumption, LocalDateTime start, LocalDateTime end, HourValue consumption, HourValue cost) {
+        public SpotCalculation(double totalPrice, double totalCost, double totalCostWithoutMargin, double totalConsumption, LocalDateTime start, LocalDateTime end, HourValue consumption, HourValue cost, HourValue spot) {
             this(totalPrice, totalCost, totalCostWithoutMargin, totalConsumption, start, end);
             consumptionHours[consumption.hour] = consumption.value;
             costHours[cost.hour] = cost.value;
+            spotAverage[spot.hour] = spot.value;
         }
 
-        public SpotCalculation(double totalPrice, double totalCost, double totalCostWithoutMargin, double totalConsumption, LocalDateTime start, LocalDateTime end, double[] consumptionHours, double[] costHours) {
+        public SpotCalculation(double totalPrice, double totalCost, double totalCostWithoutMargin, double totalConsumption, LocalDateTime start, LocalDateTime end, double[] consumptionHours, double[] costHours, double[] spotAverage) {
             this(totalPrice, totalCost, totalCostWithoutMargin, totalConsumption, start, end);
             this.consumptionHours = consumptionHours;
             this.costHours = costHours;
+            this.spotAverage = spotAverage;
         }
 
     }

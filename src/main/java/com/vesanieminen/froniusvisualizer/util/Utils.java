@@ -39,4 +39,11 @@ public class Utils {
         return array;
     }
 
+    public static void divide(double[] array, double divisor) {
+        for (int i = 0; i < array.length; ++i) {
+            final var value = array[i] / divisor;
+            array[i] = value;
+        }
+    }
+
 }
