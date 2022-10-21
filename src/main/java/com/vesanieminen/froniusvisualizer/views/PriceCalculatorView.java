@@ -9,6 +9,7 @@ import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.Crosshair;
 import com.vaadin.flow.component.charts.model.Labels;
 import com.vaadin.flow.component.charts.model.ListSeries;
+import com.vaadin.flow.component.charts.model.Marker;
 import com.vaadin.flow.component.charts.model.PlotOptionsColumn;
 import com.vaadin.flow.component.charts.model.PlotOptionsLine;
 import com.vaadin.flow.component.charts.model.SeriesTooltip;
@@ -255,6 +256,7 @@ public class PriceCalculatorView extends Div {
             spotAverageSeries.addData(spotCalculation.spotAverage[i]);
         }
         final var spotAveragePlotOptionsColumn = new PlotOptionsLine();
+        spotAveragePlotOptionsColumn.setMarker(new Marker(false));
         final var spotAverageTooltipSpot = new SeriesTooltip();
         spotAverageTooltipSpot.setValueDecimals(2);
         spotAverageTooltipSpot.setValueSuffix("c/kWh");
