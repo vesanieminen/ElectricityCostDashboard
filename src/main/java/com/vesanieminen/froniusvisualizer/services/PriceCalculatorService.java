@@ -89,9 +89,14 @@ public class PriceCalculatorService {
 
     public static double calculateSpotAveragePriceThisYear() throws IOException {
         if (spotAverageThisYear == null) {
-            spotAverageThisYear = getSpotData().entrySet().stream().filter(item -> item.getKey().getYear() == getCurrentTimeWithHourPrecision().getYear()).map(Map.Entry::getValue).reduce(0d, Double::sum) / getSpotData().values().size();
+            final var year = getCurrentTimeWithHourPrecision().getYear();
+            spotAverageThisYear = getSpotData().entrySet().stream().filter(yearFilter(year)).map(Map.Entry::getValue).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(yearFilter(year)).count();
         }
         return spotAverageThisYear;
+    }
+
+    private static Predicate<Map.Entry<LocalDateTime, Double>> yearFilter(int year) {
+        return item -> item.getKey().getYear() == year;
     }
 
     public static double calculateSpotAveragePriceThisMonth() throws IOException {
