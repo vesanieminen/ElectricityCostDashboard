@@ -15,6 +15,7 @@ public class Utils {
     public static final NumberFormat numberFormat = NumberFormat.getInstance(Locale.FRANCE);
     public static final DecimalFormat decimalFormat = new DecimalFormat("#0.00");
     public static final ZoneId fiZoneID = ZoneId.of("Europe/Helsinki");
+    public static final ZoneId nordpoolZoneID = ZoneId.of("Europe/Oslo");
     public static final Locale fiLocale = new Locale("fi", "FI");
 
     public static boolean notNull(Object... objects) {

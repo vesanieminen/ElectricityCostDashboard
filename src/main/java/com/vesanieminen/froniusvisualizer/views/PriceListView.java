@@ -17,8 +17,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
@@ -26,7 +24,9 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.Objects;
 
+import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
+import static com.vesanieminen.froniusvisualizer.util.Utils.nordpoolZoneID;
 
 @Route("price-list")
 public class PriceListView extends Div {
@@ -78,8 +78,8 @@ public class PriceListView extends Div {
                 NordpoolResponse.Column column = row.Columns.get(columnIndex);
                 final var dateTimeString = column.Name + " " + time;
                 final var dataLocalDataTime = LocalDateTime.parse(dateTimeString, dateTimeFormatter);
-                final var instant = dataLocalDataTime.toInstant(ZoneOffset.of("-01:00"));
-                final var localDateTime = LocalDateTime.ofInstant(instant, ZoneId.of("UTC"));
+                // Convert the Nordpool timezone (Norwegian) to Finnish time zone
+                final var localDateTime = dataLocalDataTime.atZone(nordpoolZoneID).withZoneSameInstant(fiZoneID).toLocalDateTime();
                 daySpan.setText(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(dataLocalDataTime));
                 try {
                     final var price = format.parse(column.Value).doubleValue() * 1.24 / 10;
