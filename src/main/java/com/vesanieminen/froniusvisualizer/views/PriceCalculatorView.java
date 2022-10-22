@@ -62,7 +62,7 @@ public class PriceCalculatorView extends Div {
         content.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Padding.Horizontal.MEDIUM);
         wrapper.add(content);
 
-        final var title = new Span("Spot price / fixed electricity price calculator");
+        final var title = new Span("Spot / fixed electricity price calculator");
         title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
         content.add(title);
         final var spotAverage = PriceCalculatorService.calculateSpotAveragePriceThisYear();
