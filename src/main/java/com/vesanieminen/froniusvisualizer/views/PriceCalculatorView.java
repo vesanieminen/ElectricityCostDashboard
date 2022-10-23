@@ -137,7 +137,7 @@ public class PriceCalculatorView extends Div {
                 resultLayout.add(new DoubleLabel("Fixed price", numberField.getValue() + " c/kWh", true));
                 resultLayout.add(new DoubleLabel("Fixed cost total", decimalFormat.format(fixedCost) + "€", true));
 
-                chartLayout.add(createChart(spotCalculation));
+                chartLayout.add(createChart(spotCalculation, numberField.getValue()));
 
             } catch (IOException | ParseException ex) {
                 throw new RuntimeException(ex);
@@ -177,7 +177,7 @@ public class PriceCalculatorView extends Div {
         add(new Footer());
     }
 
-    private static Chart createChart(PriceCalculatorService.SpotCalculation spotCalculation) {
+    private static Chart createChart(PriceCalculatorService.SpotCalculation spotCalculation, double fixedPrice) {
         var chart = new Chart(ChartType.COLUMN);
         chart.getConfiguration().setTitle("Consumption / cost per hour");
         chart.getConfiguration().getLegend().setEnabled(true);
@@ -236,7 +236,7 @@ public class PriceCalculatorView extends Div {
         consumptionPlotOptionsColumn.setTooltip(consumptionTooltipSpot);
         consumptionHoursSeries.setPlotOptions(consumptionPlotOptionsColumn);
 
-        final var costHoursSeries = new ListSeries("Cost");
+        final var costHoursSeries = new ListSeries("Spot cost");
         for (int i = 0; i < spotCalculation.costHours.length; ++i) {
             costHoursSeries.addData(spotCalculation.costHours[i]);
         }
@@ -259,10 +259,23 @@ public class PriceCalculatorView extends Div {
         spotAveragePlotOptionsColumn.setTooltip(spotAverageTooltipSpot);
         spotAverageSeries.setPlotOptions(spotAveragePlotOptionsColumn);
 
-        chart.getConfiguration().setSeries(consumptionHoursSeries, costHoursSeries, spotAverageSeries);
+        // Fixed cost
+        final var fixedCostSeries = new ListSeries("Fixed cost");
+        for (int i = 0; i < spotCalculation.consumptionHours.length; ++i) {
+            fixedCostSeries.addData(spotCalculation.consumptionHours[i] * fixedPrice / 100);
+        }
+        final var fixedCostPlotOptionsColumn = new PlotOptionsColumn();
+        final var fixedCostTooltipSpot = new SeriesTooltip();
+        fixedCostTooltipSpot.setValueDecimals(2);
+        fixedCostTooltipSpot.setValueSuffix("€");
+        fixedCostPlotOptionsColumn.setTooltip(fixedCostTooltipSpot);
+        fixedCostSeries.setPlotOptions(fixedCostPlotOptionsColumn);
+
+        chart.getConfiguration().setSeries(consumptionHoursSeries, costHoursSeries, spotAverageSeries, fixedCostSeries);
         consumptionHoursSeries.setyAxis(consumptionYAxis);
         costHoursSeries.setyAxis(costYAxis);
         spotAverageSeries.setyAxis(spotYAxis);
+        fixedCostSeries.setyAxis(costYAxis);
 
         return chart;
     }
