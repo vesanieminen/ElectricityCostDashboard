@@ -12,7 +12,7 @@ public class Footer extends Div {
 
     public Footer() {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Background.CONTRAST_5, LumoUtility.Padding.SMALL);
-        addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.CENTER, LumoUtility.Flex.SHRINK_NONE, LumoUtility.Width.FULL);
+        addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.CENTER, LumoUtility.Flex.SHRINK_NONE);
 
         final var icon = new Icon(VaadinIcon.VAADIN_H);
         icon.addClassNames(LumoUtility.TextColor.PRIMARY);
