@@ -24,9 +24,8 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.Objects;
 
-import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
+import static com.vesanieminen.froniusvisualizer.util.Utils.convertNordpoolLocalDateTimeToFinnish;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
-import static com.vesanieminen.froniusvisualizer.util.Utils.nordpoolZoneID;
 
 @Route("price-list")
 public class PriceListView extends Div {
@@ -79,7 +78,7 @@ public class PriceListView extends Div {
                 final var dateTimeString = column.Name + " " + time;
                 final var dataLocalDataTime = LocalDateTime.parse(dateTimeString, dateTimeFormatter);
                 // Convert the Nordpool timezone (Norwegian) to Finnish time zone
-                final var localDateTime = dataLocalDataTime.atZone(nordpoolZoneID).withZoneSameInstant(fiZoneID).toLocalDateTime();
+                final var localDateTime = convertNordpoolLocalDateTimeToFinnish(dataLocalDataTime);
                 daySpan.setText(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(dataLocalDataTime));
                 try {
                     final var price = format.parse(column.Value).doubleValue() * 1.24 / 10;
@@ -103,6 +102,7 @@ public class PriceListView extends Div {
                         //currentTimeDiv = div;
                         div.addClassNames(LumoUtility.Background.CONTRAST_10);
                     }
+                    // Due to the sticky position of some elements we need to scroll to the position of -2h
                     if (Objects.equals(localDateTime, now.minusHours(2))) {
                         currentTimeDiv = div;
                     }

@@ -11,12 +11,12 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+
+import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 
 public class TVOService {
 
-    public static final ZoneId fiZoneID = ZoneId.of("Europe/Helsinki");
     private static TVOResponse tvoResponse;
     private static LocalDateTime nextUpdate = LocalDateTime.now(fiZoneID).minusHours(1);
 
