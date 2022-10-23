@@ -16,11 +16,12 @@ import com.vaadin.flow.component.charts.model.SeriesTooltip;
 import com.vaadin.flow.component.charts.model.Tooltip;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
+import com.vaadin.flow.component.checkbox.CheckboxGroup;
+import com.vaadin.flow.component.checkbox.CheckboxGroupVariant;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.FileBuffer;
@@ -36,6 +37,10 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -48,7 +53,15 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
 @Route("price-calculator")
 public class PriceCalculatorView extends Div {
 
-    private String lastFile;
+    private final DateTimePicker fromDateTimePicker;
+    private final DateTimePicker toDateTimePicker;
+    private final NumberField fixedPriceField;
+    private final NumberField spotMarginField;
+    private final NumberField spotProductionMarginField;
+    private final List<HasEnabled> fields;
+    private final Button button;
+    private final CheckboxGroup<Calculations> calculationsCheckboxGroup;
+    private String lastConsumptionFile;
 
     public PriceCalculatorView() throws IOException {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
@@ -74,57 +87,88 @@ public class PriceCalculatorView extends Div {
         spanMonth.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
         content.add(spanMonth);
 
+        calculationsCheckboxGroup = new CheckboxGroup<>("Select calculations");
+        calculationsCheckboxGroup.addThemeVariants(CheckboxGroupVariant.LUMO_VERTICAL);
+        calculationsCheckboxGroup.setItems(Calculations.values());
+        calculationsCheckboxGroup.setItemLabelGenerator(Calculations::getName);
+        calculationsCheckboxGroup.setItemEnabledProvider(item -> !(Objects.equals(item.getName(), Calculations.SPOT.getName())) && !(Objects.equals(item.getName(), Calculations.SPOT_PRODUCTION.getName())));
+        final var calculations = new HashSet<Calculations>();
+        calculations.add(Calculations.SPOT);
+        calculationsCheckboxGroup.setValue(calculations);
+        content.add(calculationsCheckboxGroup);
+
         createHelpLayout(content);
 
-        FileBuffer fileBuffer = new FileBuffer();
+        FileBuffer consumptionFileBuffer = new FileBuffer();
         final var uploadFingridConsumptionData = new Button("Upload Fingrid consumption.csv data");
-        Upload upload = new Upload(fileBuffer);
-        upload.setUploadButton(uploadFingridConsumptionData);
-        upload.setDropAllowed(true);
-        upload.addClassNames(LumoUtility.Margin.Top.XSMALL);
-        content.add(upload);
+        Upload consumptionUpload = new Upload(consumptionFileBuffer);
+        consumptionUpload.setUploadButton(uploadFingridConsumptionData);
+        consumptionUpload.setDropAllowed(true);
+        consumptionUpload.addClassNames(LumoUtility.Margin.Top.XSMALL);
+        content.add(consumptionUpload);
         final var resultLayout = new Div();
         resultLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Margin.Top.MEDIUM);
 
         final var chartLayout = new Div();
 
-        final var fromDateTimePicker = new DateTimePicker("Start period");
+        fromDateTimePicker = new DateTimePicker("Start period");
         fromDateTimePicker.setRequiredIndicatorVisible(true);
         fromDateTimePicker.setLocale(fiLocale);
-        final var toDateTimePicker = new DateTimePicker("End period");
+        toDateTimePicker = new DateTimePicker("End period");
         toDateTimePicker.setRequiredIndicatorVisible(true);
         toDateTimePicker.setLocale(fiLocale);
         content.add(fromDateTimePicker);
         content.add(toDateTimePicker);
 
         final var fieldRow = new Div();
-        fieldRow.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Gap.MEDIUM);
+        fieldRow.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Gap.Column.MEDIUM, LumoUtility.FlexWrap.WRAP);
         content.add(fieldRow);
-        final var numberField = new NumberField("Fixed price");
-        numberField.setRequiredIndicatorVisible(true);
-        numberField.setSuffixComponent(new Span("c/kWh"));
-        numberField.setPlaceholder("E.g. 12.50");
-        numberField.addClassNames(LumoUtility.Flex.GROW);
-        final var spotMargin = new NumberField("Spot margin");
-        spotMargin.setRequiredIndicatorVisible(true);
-        spotMargin.setSuffixComponent(new Span("c/kWh"));
-        spotMargin.setPlaceholder("E.g. 0.38");
-        spotMargin.addClassNames(LumoUtility.Flex.GROW);
-        fieldRow.add(numberField, spotMargin);
 
-        final var button = new Button("Calculate costs", e -> {
+        // Fixed price field
+        fixedPriceField = new NumberField("Fixed price");
+        fixedPriceField.setRequiredIndicatorVisible(true);
+        fixedPriceField.setSuffixComponent(new Span("c/kWh"));
+        fixedPriceField.setPlaceholder("E.g. 12.50");
+        fixedPriceField.addClassNames(LumoUtility.Flex.GROW);
+        fixedPriceField.setVisible(false);
+        fieldRow.add(fixedPriceField);
+
+        // Spot price field
+        spotMarginField = new NumberField("Spot margin");
+        spotMarginField.setRequiredIndicatorVisible(true);
+        spotMarginField.setSuffixComponent(new Span("c/kWh"));
+        spotMarginField.setPlaceholder("E.g. 0.38");
+        spotMarginField.addClassNames(LumoUtility.Flex.GROW);
+        fieldRow.add(spotMarginField);
+
+        // Spot price field
+        spotProductionMarginField = new NumberField("Production margin");
+        spotProductionMarginField.setRequiredIndicatorVisible(true);
+        spotProductionMarginField.setSuffixComponent(new Span("c/kWh"));
+        spotProductionMarginField.setPlaceholder("E.g. 0.38");
+        spotProductionMarginField.addClassNames(LumoUtility.Flex.GROW);
+        spotProductionMarginField.setVisible(false);
+        fieldRow.add(spotProductionMarginField);
+
+        calculationsCheckboxGroup.addValueChangeListener(e -> {
+            fixedPriceField.setVisible(e.getValue().contains(Calculations.FIXED));
+            spotProductionMarginField.setVisible(e.getValue().contains(Calculations.SPOT_PRODUCTION));
+            updateCalculateButtonState();
+        });
+        fields = Arrays.asList(fromDateTimePicker, toDateTimePicker, fixedPriceField, spotMarginField, spotProductionMarginField);
+
+        button = new Button("Calculate costs", e -> {
             try {
-                if (numberField.getValue() == null) {
-                    Notification.show("Please add fixed price to compare with!", 3000, Notification.Position.MIDDLE);
-                    return;
+                if (isCalculatingFixed()) {
+                    if (fixedPriceField.getValue() == null) {
+                        fixedPriceField.setValue(0d);
+                    }
                 }
-                if (spotMargin.getValue() == null) {
-                    Notification.show("Missing spot margin", 3000, Notification.Position.MIDDLE);
-                    return;
+                if (spotMarginField.getValue() == null) {
+                    spotMarginField.setValue(0d);
                 }
-                final var consumptionData = getFingridConsumptionData(lastFile);
-                final var spotCalculation = calculateSpotElectricityPriceDetails(consumptionData.data, spotMargin.getValue(), fromDateTimePicker.getValue(), toDateTimePicker.getValue());
-                final var fixedCost = calculateFixedElectricityPrice(consumptionData.data, numberField.getValue(), fromDateTimePicker.getValue(), toDateTimePicker.getValue());
+                final var consumptionData = getFingridConsumptionData(lastConsumptionFile);
+                final var spotCalculation = calculateSpotElectricityPriceDetails(consumptionData.data, spotMarginField.getValue(), fromDateTimePicker.getValue(), toDateTimePicker.getValue());
                 resultLayout.removeAll();
                 chartLayout.removeAll();
                 final var start = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(fiLocale).format(spotCalculation.start);
@@ -134,41 +178,26 @@ public class PriceCalculatorView extends Div {
                 resultLayout.add(new DoubleLabel("Average spot price (incl. margin)", decimalFormat.format(spotCalculation.totalCost / spotCalculation.totalConsumption * 100) + " c/kWh", true));
                 resultLayout.add(new DoubleLabel("Total spot cost (incl. margin)", decimalFormat.format(spotCalculation.totalCost) + "€", true));
                 resultLayout.add(new DoubleLabel("Total spot cost (without margin)", decimalFormat.format(spotCalculation.totalCostWithoutMargin) + "€", true));
-                resultLayout.add(new DoubleLabel("Fixed price", numberField.getValue() + " c/kWh", true));
-                resultLayout.add(new DoubleLabel("Fixed cost total", decimalFormat.format(fixedCost) + "€", true));
+                if (isCalculatingFixed()) {
+                    resultLayout.add(new DoubleLabel("Fixed price", fixedPriceField.getValue() + " c/kWh", true));
+                    final var fixedCost = calculateFixedElectricityPrice(consumptionData.data, fixedPriceField.getValue(), fromDateTimePicker.getValue(), toDateTimePicker.getValue());
+                    resultLayout.add(new DoubleLabel("Fixed cost total", decimalFormat.format(fixedCost) + "€", true));
+                }
 
-                chartLayout.add(createChart(spotCalculation, numberField.getValue()));
-
+                chartLayout.add(createChart(spotCalculation));
             } catch (IOException | ParseException ex) {
                 throw new RuntimeException(ex);
             }
         });
         button.addClassNames(LumoUtility.Margin.Top.MEDIUM);
 
-        upload.addSucceededListener(event -> {
-            FileData savedFileData = fileBuffer.getFileData();
-            lastFile = savedFileData.getFile().getAbsolutePath();
-            System.out.printf("File saved to: %s%n", lastFile);
-            try {
-                final var consumptionData = getFingridConsumptionData(lastFile);
-                fromDateTimePicker.setMin(consumptionData.start);
-                fromDateTimePicker.setMax(consumptionData.end.minusHours(1));
-                fromDateTimePicker.setValue(consumptionData.start);
-                toDateTimePicker.setMin(consumptionData.start.plusHours(1));
-                toDateTimePicker.setMax(consumptionData.end);
-                toDateTimePicker.setValue(consumptionData.end);
-                updateCalculateButtonState(button, numberField.getValue(), spotMargin.getValue(), fromDateTimePicker, toDateTimePicker);
-                setFieldsEnabled(true, numberField, spotMargin, fromDateTimePicker, toDateTimePicker);
-            } catch (IOException | ParseException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        upload.addFailedListener(e -> setFieldsEnabled(false, numberField, spotMargin, fromDateTimePicker, toDateTimePicker, button));
-        numberField.addValueChangeListener(e -> updateCalculateButtonState(button, numberField.getValue(), spotMargin.getValue(), fromDateTimePicker, toDateTimePicker));
-        spotMargin.addValueChangeListener(e -> updateCalculateButtonState(button, numberField.getValue(), spotMargin.getValue(), fromDateTimePicker, toDateTimePicker));
-        fromDateTimePicker.addValueChangeListener(e -> updateCalculateButtonState(button, numberField.getValue(), spotMargin.getValue(), fromDateTimePicker, toDateTimePicker));
-        toDateTimePicker.addValueChangeListener(e -> updateCalculateButtonState(button, numberField.getValue(), spotMargin.getValue(), fromDateTimePicker, toDateTimePicker));
-        setFieldsEnabled(false, numberField, spotMargin, fromDateTimePicker, toDateTimePicker);
+        addSucceededListener(consumptionFileBuffer, consumptionUpload);
+
+        fixedPriceField.addValueChangeListener(e -> updateCalculateButtonState());
+        spotMarginField.addValueChangeListener(e -> updateCalculateButtonState());
+        fromDateTimePicker.addValueChangeListener(e -> updateCalculateButtonState());
+        toDateTimePicker.addValueChangeListener(e -> updateCalculateButtonState());
+        setFieldsEnabled(false);
         button.setEnabled(false);
         content.add(button);
         add(resultLayout);
@@ -177,7 +206,33 @@ public class PriceCalculatorView extends Div {
         add(new Footer());
     }
 
-    private static Chart createChart(PriceCalculatorService.SpotCalculation spotCalculation, double fixedPrice) {
+    private boolean isCalculatingFixed() {
+        return calculationsCheckboxGroup.getValue().contains(Calculations.FIXED);
+    }
+
+    private void addSucceededListener(FileBuffer fileBuffer, Upload consumptionUpload) {
+        consumptionUpload.addSucceededListener(event -> {
+            FileData savedFileData = fileBuffer.getFileData();
+            lastConsumptionFile = savedFileData.getFile().getAbsolutePath();
+            System.out.printf("File saved to: %s%n", lastConsumptionFile);
+            try {
+                final var consumptionData = getFingridConsumptionData(lastConsumptionFile);
+                fromDateTimePicker.setMin(consumptionData.start);
+                fromDateTimePicker.setMax(consumptionData.end.minusHours(1));
+                fromDateTimePicker.setValue(consumptionData.start);
+                toDateTimePicker.setMin(consumptionData.start.plusHours(1));
+                toDateTimePicker.setMax(consumptionData.end);
+                toDateTimePicker.setValue(consumptionData.end);
+                updateCalculateButtonState();
+                setFieldsEnabled(true);
+            } catch (IOException | ParseException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        consumptionUpload.addFailedListener(e -> setEnabled(false, fixedPriceField, spotMarginField, fromDateTimePicker, toDateTimePicker, button));
+    }
+
+    private Chart createChart(PriceCalculatorService.SpotCalculation spotCalculation) {
         var chart = new Chart(ChartType.COLUMN);
         chart.getConfiguration().setTitle("Consumption / cost per hour");
         chart.getConfiguration().getLegend().setEnabled(true);
@@ -225,6 +280,7 @@ public class PriceCalculatorView extends Div {
         spotYAxis.setOpposite(true);
         chart.getConfiguration().addyAxis(spotYAxis);
 
+        // Consumption series
         final var consumptionHoursSeries = new ListSeries("Consumption");
         for (int i = 0; i < spotCalculation.consumptionHours.length; ++i) {
             consumptionHoursSeries.addData(spotCalculation.consumptionHours[i]);
@@ -235,18 +291,24 @@ public class PriceCalculatorView extends Div {
         consumptionTooltipSpot.setValueSuffix("kWh");
         consumptionPlotOptionsColumn.setTooltip(consumptionTooltipSpot);
         consumptionHoursSeries.setPlotOptions(consumptionPlotOptionsColumn);
+        chart.getConfiguration().addSeries(consumptionHoursSeries);
+        consumptionHoursSeries.setyAxis(consumptionYAxis);
 
-        final var costHoursSeries = new ListSeries("Spot cost");
+        // Spot cost series
+        final var spotCostHoursSeries = new ListSeries("Spot cost");
         for (int i = 0; i < spotCalculation.costHours.length; ++i) {
-            costHoursSeries.addData(spotCalculation.costHours[i]);
+            spotCostHoursSeries.addData(spotCalculation.costHours[i]);
         }
-        final var costHoursPlotOptionsColumn = new PlotOptionsColumn();
-        final var costHoursTooltipSpot = new SeriesTooltip();
-        costHoursTooltipSpot.setValueDecimals(2);
-        costHoursTooltipSpot.setValueSuffix("€");
-        costHoursPlotOptionsColumn.setTooltip(costHoursTooltipSpot);
-        costHoursSeries.setPlotOptions(costHoursPlotOptionsColumn);
+        final var spotCostHoursPlotOptionsColumn = new PlotOptionsColumn();
+        final var spotCostHoursTooltipSpot = new SeriesTooltip();
+        spotCostHoursTooltipSpot.setValueDecimals(2);
+        spotCostHoursTooltipSpot.setValueSuffix("€");
+        spotCostHoursPlotOptionsColumn.setTooltip(spotCostHoursTooltipSpot);
+        spotCostHoursSeries.setPlotOptions(spotCostHoursPlotOptionsColumn);
+        chart.getConfiguration().addSeries(spotCostHoursSeries);
+        spotCostHoursSeries.setyAxis(costYAxis);
 
+        // Spot average series
         final var spotAverageSeries = new ListSeries("Spot average (incl. margin)");
         for (int i = 0; i < spotCalculation.spotAverage.length; ++i) {
             spotAverageSeries.addData(spotCalculation.spotAverage[i]);
@@ -258,24 +320,25 @@ public class PriceCalculatorView extends Div {
         spotAverageTooltipSpot.setValueSuffix("c/kWh");
         spotAveragePlotOptionsColumn.setTooltip(spotAverageTooltipSpot);
         spotAverageSeries.setPlotOptions(spotAveragePlotOptionsColumn);
-
-        // Fixed cost
-        final var fixedCostSeries = new ListSeries("Fixed cost");
-        for (int i = 0; i < spotCalculation.consumptionHours.length; ++i) {
-            fixedCostSeries.addData(spotCalculation.consumptionHours[i] * fixedPrice / 100);
-        }
-        final var fixedCostPlotOptionsColumn = new PlotOptionsColumn();
-        final var fixedCostTooltipSpot = new SeriesTooltip();
-        fixedCostTooltipSpot.setValueDecimals(2);
-        fixedCostTooltipSpot.setValueSuffix("€");
-        fixedCostPlotOptionsColumn.setTooltip(fixedCostTooltipSpot);
-        fixedCostSeries.setPlotOptions(fixedCostPlotOptionsColumn);
-
-        chart.getConfiguration().setSeries(consumptionHoursSeries, costHoursSeries, spotAverageSeries, fixedCostSeries);
-        consumptionHoursSeries.setyAxis(consumptionYAxis);
-        costHoursSeries.setyAxis(costYAxis);
+        chart.getConfiguration().addSeries(spotAverageSeries);
         spotAverageSeries.setyAxis(spotYAxis);
-        fixedCostSeries.setyAxis(costYAxis);
+
+        // Fixed cost series
+        if (isCalculatingFixed()) {
+            final var fixedPrice = fixedPriceField.getValue();
+            final var fixedCostSeries = new ListSeries("Fixed cost");
+            for (int i = 0; i < spotCalculation.consumptionHours.length; ++i) {
+                fixedCostSeries.addData(spotCalculation.consumptionHours[i] * fixedPrice / 100);
+            }
+            final var fixedCostPlotOptionsColumn = new PlotOptionsColumn();
+            final var fixedCostTooltipSpot = new SeriesTooltip();
+            fixedCostTooltipSpot.setValueDecimals(2);
+            fixedCostTooltipSpot.setValueSuffix("€");
+            fixedCostPlotOptionsColumn.setTooltip(fixedCostTooltipSpot);
+            fixedCostSeries.setPlotOptions(fixedCostPlotOptionsColumn);
+            chart.getConfiguration().addSeries(fixedCostSeries);
+            fixedCostSeries.setyAxis(costYAxis);
+        }
 
         return chart;
     }
@@ -312,12 +375,17 @@ public class PriceCalculatorView extends Div {
         return helpLayout;
     }
 
-    private void setFieldsEnabled(boolean isEnabled, HasEnabled... hasEnableds) {
+    private void setEnabled(boolean isEnabled, HasEnabled... hasEnableds) {
         Stream.of(hasEnableds).forEach(field -> field.setEnabled(isEnabled));
     }
 
-    private void updateCalculateButtonState(Button button, Double fixedPrice, Double spotPrice, DateTimePicker fromDateTimePicker, DateTimePicker toDateTimePicker) {
-        button.setEnabled(fixedPrice != null && spotPrice != null && lastFile != null && fromDateTimePicker.getValue() != null && toDateTimePicker.getValue() != null && fromDateTimePicker.getValue().isBefore(toDateTimePicker.getValue()) && !fromDateTimePicker.isInvalid() && !toDateTimePicker.isInvalid());
+    private void setFieldsEnabled(boolean isEnabled) {
+        fields.forEach(field -> field.setEnabled(isEnabled));
+    }
+
+    private void updateCalculateButtonState() {
+        final var isDateValid = fromDateTimePicker.getValue() != null && toDateTimePicker.getValue() != null && fromDateTimePicker.getValue().isBefore(toDateTimePicker.getValue()) && !fromDateTimePicker.isInvalid() && !toDateTimePicker.isInvalid();
+        button.setEnabled(lastConsumptionFile != null && isDateValid);
     }
 
     @Override
@@ -326,6 +394,22 @@ public class PriceCalculatorView extends Div {
         backButton.addClassNames(LumoUtility.Height.MEDIUM, LumoUtility.Margin.NONE, LumoUtility.Margin.Bottom.MEDIUM, LumoUtility.BorderColor.CONTRAST_10, LumoUtility.Border.ALL, LumoUtility.BorderRadius.NONE);
         backButton.addClickListener(e -> attachEvent.getUI().navigate(NordpoolspotView.class));
         addComponentAsFirst(backButton);
+    }
+
+    enum Calculations {
+        SPOT("Spot price"),
+        FIXED("Fixed price"),
+        SPOT_PRODUCTION("Spot production price");
+
+        private String name;
+
+        Calculations(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
     }
 
 }
