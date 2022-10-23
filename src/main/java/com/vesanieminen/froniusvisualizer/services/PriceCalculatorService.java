@@ -48,8 +48,8 @@ public class PriceCalculatorService {
         return spotPriceMap;
     }
 
-    public static ConsumptionData getFingridConsumptionData(String filePath) throws IOException, ParseException {
-        final var consumptionData = new ConsumptionData();
+    public static FingridUsageData getFingridUsageData(String filePath) throws IOException, ParseException {
+        final var consumptionData = new FingridUsageData();
         var start = LocalDateTime.MAX;
         var end = LocalDateTime.MIN;
         final var map = new LinkedHashMap<LocalDateTime, Double>();
@@ -77,7 +77,7 @@ public class PriceCalculatorService {
         return consumptionData;
     }
 
-    public static class ConsumptionData {
+    public static class FingridUsageData {
         public LinkedHashMap<LocalDateTime, Double> data;
         public LocalDateTime start;
         public LocalDateTime end;
@@ -153,9 +153,6 @@ public class PriceCalculatorService {
         spotCalculation.averagePrice = spotCalculation.totalPrice / count;
         spotCalculation.totalCost = spotCalculation.totalCost / 100;
         spotCalculation.totalCostWithoutMargin = spotCalculation.totalCostWithoutMargin / 100;
-        //if (spotCalculation.costHours[0] < 1) {
-        //    divide(spotCalculation.costHours, 100);
-        //}
         divide(spotCalculation.spotAverage, count / 24.0);
         return spotCalculation;
     }
