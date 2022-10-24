@@ -210,9 +210,10 @@ public class PriceCalculatorView extends Div {
                 resultLayout.add(new DoubleLabel("Total spot cost (incl. margin)", decimalFormat.format(spotCalculation.totalCost) + "€", true));
                 resultLayout.add(new DoubleLabel("Total spot cost (without margin)", decimalFormat.format(spotCalculation.totalCostWithoutMargin) + "€", true));
 
+                var fixedCost = 0d;
                 if (isCalculatingFixed()) {
                     resultLayout.add(new DoubleLabel("Fixed price", fixedPriceField.getValue() + " c/kWh", true));
-                    final var fixedCost = calculateFixedElectricityPrice(consumptionData.data, fixedPriceField.getValue(), fromDateTimePicker.getValue(), toDateTimePicker.getValue());
+                    fixedCost = calculateFixedElectricityPrice(consumptionData.data, fixedPriceField.getValue(), fromDateTimePicker.getValue(), toDateTimePicker.getValue());
                     resultLayout.add(new DoubleLabel("Fixed cost total", decimalFormat.format(fixedCost) + "€", true));
                 }
 
@@ -223,8 +224,11 @@ public class PriceCalculatorView extends Div {
                     final var productionData = getFingridUsageData(lastProductionFile);
                     final var spotProductionCalculation = calculateSpotElectricityPriceDetails(productionData.data, -spotProductionMarginField.getValue(), fromDateTimePicker.getValue(), toDateTimePicker.getValue());
                     resultLayout.add(new DoubleLabel("Total production over period", decimalFormat.format(spotProductionCalculation.totalAmount) + "kWh", true));
-                    resultLayout.add(new DoubleLabel("Net cost (production - consumption)", decimalFormat.format(spotProductionCalculation.totalCost - spotCalculation.totalCost) + "€", true));
+                    resultLayout.add(new DoubleLabel("Net spot cost (production - consumption)", decimalFormat.format(spotProductionCalculation.totalCost - spotCalculation.totalCost) + "€", true));
                     resultLayout.add(new DoubleLabel("Net usage (production - consumption)", decimalFormat.format(spotProductionCalculation.totalAmount - spotCalculation.totalAmount) + "kWh", true));
+                    if (isCalculatingFixed()) {
+
+                    }
                     resultLayout.add(new DoubleLabel("Average production price (incl. margin)", decimalFormat.format(spotProductionCalculation.totalCost / spotProductionCalculation.totalAmount * 100) + " c/kWh", true));
                     resultLayout.add(new DoubleLabel("Total production value (incl. margin)", decimalFormat.format(spotProductionCalculation.totalCost) + "€", true));
                     resultLayout.add(new DoubleLabel("Total production value (without margin)", decimalFormat.format(spotProductionCalculation.totalCostWithoutMargin) + "€", true));
