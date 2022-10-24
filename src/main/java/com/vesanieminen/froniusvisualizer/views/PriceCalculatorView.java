@@ -18,6 +18,7 @@ import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.checkbox.CheckboxGroupVariant;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
@@ -133,9 +134,13 @@ public class PriceCalculatorView extends Div {
         productionUpload.setVisible(false);
 
         fromDateTimePicker = new DateTimePicker("Start period");
+        fromDateTimePicker.setWeekNumbersVisible(true);
+        fromDateTimePicker.setDatePickerI18n(new DatePicker.DatePickerI18n().setFirstDayOfWeek(1));
         fromDateTimePicker.setRequiredIndicatorVisible(true);
         fromDateTimePicker.setLocale(fiLocale);
         toDateTimePicker = new DateTimePicker("End period");
+        toDateTimePicker.setWeekNumbersVisible(true);
+        toDateTimePicker.setDatePickerI18n(new DatePicker.DatePickerI18n().setFirstDayOfWeek(1));
         toDateTimePicker.setRequiredIndicatorVisible(true);
         toDateTimePicker.setLocale(fiLocale);
         content.add(fromDateTimePicker);
