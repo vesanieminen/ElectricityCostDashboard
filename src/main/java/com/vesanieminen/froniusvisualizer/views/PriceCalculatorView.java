@@ -23,6 +23,7 @@ import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.FileBuffer;
@@ -115,6 +116,8 @@ public class PriceCalculatorView extends Div {
         FileBuffer consumptionFileBuffer = new FileBuffer();
         final var uploadFingridConsumptionData = new Button("Consumption csv file Upload");
         Upload consumptionUpload = new Upload(consumptionFileBuffer);
+        consumptionUpload.setAcceptedFileTypes("csv");
+        consumptionUpload.setMaxFileSize(1000000);
         consumptionUpload.setDropLabel(new Span("Drop Fingrid consumption csv file here"));
         consumptionUpload.setDropLabel(new Span("Drop Fingrid consumption file here"));
         consumptionUpload.setUploadButton(uploadFingridConsumptionData);
@@ -126,6 +129,8 @@ public class PriceCalculatorView extends Div {
         FileBuffer productionFileBuffer = new FileBuffer();
         final var uploadFingridproductionData = new Button("Production csv file Upload");
         Upload productionUpload = new Upload(productionFileBuffer);
+        productionUpload.setAcceptedFileTypes("csv");
+        productionUpload.setMaxFileSize(1000000);
         productionUpload.setDropLabel(new Span("Drop Fingrid production file here"));
         productionUpload.setUploadButton(uploadFingridproductionData);
         productionUpload.setDropAllowed(true);
@@ -249,6 +254,8 @@ public class PriceCalculatorView extends Div {
 
         addConsumptionSucceededListener(consumptionFileBuffer, consumptionUpload);
         addProductionSucceededListener(productionFileBuffer, productionUpload);
+        addErrorHandling(consumptionUpload);
+        addErrorHandling(productionUpload);
 
         fixedPriceField.addValueChangeListener(e -> updateCalculateButtonState());
         spotMarginField.addValueChangeListener(e -> updateCalculateButtonState());
@@ -261,6 +268,16 @@ public class PriceCalculatorView extends Div {
         add(chartLayout);
         add(new Spacer());
         add(new Footer());
+    }
+
+    private void addErrorHandling(Upload upload) {
+        upload.addFileRejectedListener(e -> {
+            Notification.show("File was rejected: " + e.getErrorMessage());
+        });
+        upload.addFailedListener(e -> {
+            Notification.show("Upload failed: " + e.getReason());
+        });
+
     }
 
     private boolean isCalculatingFixed() {
