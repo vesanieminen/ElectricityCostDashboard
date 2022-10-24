@@ -154,7 +154,7 @@ public class PriceCalculatorView extends Div {
         fixedPriceField = new NumberField("Fixed price");
         fixedPriceField.setRequiredIndicatorVisible(true);
         fixedPriceField.setSuffixComponent(new Span("c/kWh"));
-        fixedPriceField.setPlaceholder("E.g. 12.50");
+        fixedPriceField.setPlaceholder("E.g. 12,68");
         fixedPriceField.addClassNames(LumoUtility.Flex.GROW);
         fixedPriceField.setVisible(false);
         fieldRow.add(fixedPriceField);
@@ -163,7 +163,7 @@ public class PriceCalculatorView extends Div {
         spotMarginField = new NumberField("Spot margin");
         spotMarginField.setRequiredIndicatorVisible(true);
         spotMarginField.setSuffixComponent(new Span("c/kWh"));
-        spotMarginField.setPlaceholder("E.g. 0.38");
+        spotMarginField.setPlaceholder("E.g. 0,38");
         spotMarginField.addClassNames(LumoUtility.Flex.GROW);
         fieldRow.add(spotMarginField);
 
@@ -171,7 +171,7 @@ public class PriceCalculatorView extends Div {
         spotProductionMarginField = new NumberField("Production margin");
         spotProductionMarginField.setRequiredIndicatorVisible(true);
         spotProductionMarginField.setSuffixComponent(new Span("c/kWh"));
-        spotProductionMarginField.setPlaceholder("E.g. 0.38");
+        spotProductionMarginField.setPlaceholder("E.g. 0,30");
         spotProductionMarginField.addClassNames(LumoUtility.Flex.GROW);
         spotProductionMarginField.setVisible(false);
         fieldRow.add(spotProductionMarginField);
