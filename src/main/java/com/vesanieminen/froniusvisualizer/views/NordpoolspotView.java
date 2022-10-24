@@ -154,10 +154,10 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
             chart.getConfiguration().getRangeSelector().setSelected(2);
             if (screenWidth < 1000) {
                 YAxis production = chart.getConfiguration().getyAxis(0);
-                production.setTitle("Production (GWh)");
+                production.setTitle("Production GWh/h");
                 production.getLabels().setFormatter("return this.value/1000");
                 YAxis price = chart.getConfiguration().getyAxis(1);
-                price.setTitle("Price (c/kWh)");
+                price.setTitle("Price c/kWh");
                 price.getLabels().setFormatter(null);
             }
             chart.drawChart(true);
@@ -270,7 +270,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     private static void createFingridYAxis(Chart chart) {
         final var fingridYAxis = new YAxis();
         var labelsFingrid = new Labels();
-        labelsFingrid.setFormatter("return this.value +' MWh'");
+        labelsFingrid.setFormatter("return this.value +' MWh/h'");
         fingridYAxis.setLabels(labelsFingrid);
         fingridYAxis.setTitle("Production");
         fingridYAxis.setOpposite(false);
@@ -316,7 +316,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         chart.getConfiguration().setPlotOptions(plotOptionsLine);
         final var tooltip = new Tooltip();
         tooltip.setValueDecimals(0);
-        tooltip.setValueSuffix(" MWh");
+        tooltip.setValueSuffix(" MWh/h");
         chart.getConfiguration().setTooltip(tooltip);
 
 
@@ -378,7 +378,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     public void setNetToday(FingridResponse fingridResponse, DecimalFormat df, DoubleLabel netToday) {
         final var now = getCurrentTimeWithHourPrecision();
         final var value = fingridResponse.NetImportExport.stream().filter(item -> item.start_time.getDayOfMonth() == now.getDayOfMonth()).map(item -> item.value).reduce(0d, Double::sum);
-        final var formattedValue = df.format(value) + " MWh";
+        final var formattedValue = df.format(value) + " MWh/h";
         netToday.setTitleBottom(formattedValue);
         // The red color isn't looking good yet:
         //if (value < 0) {
