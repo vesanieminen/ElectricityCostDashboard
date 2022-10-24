@@ -142,7 +142,7 @@ public class PriceCalculatorService {
                         i1.totalPrice + i2.totalPrice,
                         i1.totalCost + i2.totalCost,
                         i1.totalCostWithoutMargin + i2.totalCostWithoutMargin,
-                        i1.totalConsumption + i2.totalConsumption,
+                        i1.totalAmount + i2.totalAmount,
                         i1.start.compareTo(i2.start) < 0 ? i1.start : i2.start,
                         i1.end.compareTo(i2.end) > 0 ? i1.end : i2.end,
                         sum(i1.consumptionHours, i2.consumptionHours),
@@ -183,7 +183,7 @@ public class PriceCalculatorService {
         public double totalPrice;
         public double totalCost;
         public double totalCostWithoutMargin;
-        public double totalConsumption;
+        public double totalAmount;
         public double averagePrice;
         public LocalDateTime start;
         public LocalDateTime end;
@@ -191,24 +191,24 @@ public class PriceCalculatorService {
         public double[] costHours = new double[24];
         public double[] spotAverage = new double[24];
 
-        public SpotCalculation(double totalPrice, double totalCost, double totalCostWithoutMargin, double totalConsumption, LocalDateTime start, LocalDateTime end) {
+        public SpotCalculation(double totalPrice, double totalCost, double totalCostWithoutMargin, double totalAmount, LocalDateTime start, LocalDateTime end) {
             this.totalPrice = totalPrice;
             this.totalCost = totalCost;
             this.totalCostWithoutMargin = totalCostWithoutMargin;
-            this.totalConsumption = totalConsumption;
+            this.totalAmount = totalAmount;
             this.start = start;
             this.end = end;
         }
 
-        public SpotCalculation(double totalPrice, double totalCost, double totalCostWithoutMargin, double totalConsumption, LocalDateTime start, LocalDateTime end, HourValue consumption, HourValue cost, HourValue spot) {
-            this(totalPrice, totalCost, totalCostWithoutMargin, totalConsumption, start, end);
+        public SpotCalculation(double totalPrice, double totalCost, double totalCostWithoutMargin, double totalAmount, LocalDateTime start, LocalDateTime end, HourValue consumption, HourValue cost, HourValue spot) {
+            this(totalPrice, totalCost, totalCostWithoutMargin, totalAmount, start, end);
             consumptionHours[consumption.hour] = consumption.value;
             costHours[cost.hour] = cost.value;
             spotAverage[spot.hour] = spot.value;
         }
 
-        public SpotCalculation(double totalPrice, double totalCost, double totalCostWithoutMargin, double totalConsumption, LocalDateTime start, LocalDateTime end, double[] consumptionHours, double[] costHours, double[] spotAverage) {
-            this(totalPrice, totalCost, totalCostWithoutMargin, totalConsumption, start, end);
+        public SpotCalculation(double totalPrice, double totalCost, double totalCostWithoutMargin, double totalAmount, LocalDateTime start, LocalDateTime end, double[] consumptionHours, double[] costHours, double[] spotAverage) {
+            this(totalPrice, totalCost, totalCostWithoutMargin, totalAmount, start, end);
             this.consumptionHours = consumptionHours;
             this.costHours = costHours;
             this.spotAverage = spotAverage;

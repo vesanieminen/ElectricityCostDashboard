@@ -203,10 +203,10 @@ public class PriceCalculatorView extends Div {
 
                 // Total labels
                 resultLayout.add(new DoubleLabel("Calculation period (start times)", start + " - " + end, true));
-                resultLayout.add(new DoubleLabel("Total consumption over period", decimalFormat.format(spotCalculation.totalConsumption) + "kWh", true));
+                resultLayout.add(new DoubleLabel("Total consumption over period", decimalFormat.format(spotCalculation.totalAmount) + "kWh", true));
 
                 // Spot labels
-                resultLayout.add(new DoubleLabel("Average spot price (incl. margin)", decimalFormat.format(spotCalculation.totalCost / spotCalculation.totalConsumption * 100) + " c/kWh", true));
+                resultLayout.add(new DoubleLabel("Average spot price (incl. margin)", decimalFormat.format(spotCalculation.totalCost / spotCalculation.totalAmount * 100) + " c/kWh", true));
                 resultLayout.add(new DoubleLabel("Total spot cost (incl. margin)", decimalFormat.format(spotCalculation.totalCost) + "€", true));
                 resultLayout.add(new DoubleLabel("Total spot cost (without margin)", decimalFormat.format(spotCalculation.totalCostWithoutMargin) + "€", true));
 
@@ -222,7 +222,10 @@ public class PriceCalculatorView extends Div {
                 if (isCalculatingProduction()) {
                     final var productionData = getFingridUsageData(lastProductionFile);
                     final var spotProductionCalculation = calculateSpotElectricityPriceDetails(productionData.data, -spotProductionMarginField.getValue(), fromDateTimePicker.getValue(), toDateTimePicker.getValue());
-                    resultLayout.add(new DoubleLabel("Average production price (incl. margin)", decimalFormat.format(spotProductionCalculation.totalCost / spotProductionCalculation.totalConsumption * 100) + " c/kWh", true));
+                    resultLayout.add(new DoubleLabel("Total production over period", decimalFormat.format(spotProductionCalculation.totalAmount) + "kWh", true));
+                    resultLayout.add(new DoubleLabel("Net cost (production - consumption)", decimalFormat.format(spotProductionCalculation.totalCost - spotCalculation.totalCost) + "€", true));
+                    resultLayout.add(new DoubleLabel("Net usage (production - consumption)", decimalFormat.format(spotProductionCalculation.totalAmount - spotCalculation.totalAmount) + "kWh", true));
+                    resultLayout.add(new DoubleLabel("Average production price (incl. margin)", decimalFormat.format(spotProductionCalculation.totalCost / spotProductionCalculation.totalAmount * 100) + " c/kWh", true));
                     resultLayout.add(new DoubleLabel("Total production value (incl. margin)", decimalFormat.format(spotProductionCalculation.totalCost) + "€", true));
                     resultLayout.add(new DoubleLabel("Total production value (without margin)", decimalFormat.format(spotProductionCalculation.totalCostWithoutMargin) + "€", true));
                     // Create spot production chart
@@ -434,12 +437,16 @@ public class PriceCalculatorView extends Div {
         helpStepsLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Left.LARGE);
         helpLayout.add(helpStepsLayout);
         content.add(helpLayout);
+
+        //final var image = new Image("images/instructions/Fingrid_1.png", "Fingrid instructions 1");
+        //image.addClassNames(LumoUtility.MaxWidth.SCREEN_SMALL);
+        //helpStepsLayout.add(image);
+
         helpStepsLayout.add(new Span(new Span("1) Login to "), new Anchor("https://www.fingrid.fi/en/electricity-market/datahub/sign-in-to-datahub-customer-portal/", "Fingrid Datahub.")));
         helpStepsLayout.add(new Span("2) Download your hourly consumption data csv file."));
         helpStepsLayout.add(new Span("3) Upload the file below."));
         helpStepsLayout.add(new Span("4) Select the date and time range for the calculation (the end of day is 23:00)."));
-        helpStepsLayout.add(new Span("5) Enter your comparative fixed electricity cost in the field below."));
-        helpStepsLayout.add(new Span("6) Enter your spot price margin."));
+        helpStepsLayout.add(new Span("5) (optional) enter your spot price margin. Will become zero if empty is used."));
         helpStepsLayout.add(new Span("7) Click the calculate costs button."));
         helpButton.addClickListener(e -> helpLayout.setVisible(!helpLayout.isVisible()));
 
