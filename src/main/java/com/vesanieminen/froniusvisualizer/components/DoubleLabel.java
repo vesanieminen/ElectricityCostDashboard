@@ -23,6 +23,7 @@ public class DoubleLabel extends Div {
         if (noBorders) {
             removeClassNames(LumoUtility.Border.BOTTOM);
         }
+        getStyle().set("flex-basis", "300px");
     }
 
     public Span getSpanTop() {
