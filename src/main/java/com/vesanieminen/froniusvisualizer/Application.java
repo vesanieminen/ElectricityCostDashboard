@@ -34,6 +34,7 @@ public class Application implements AppShellConfigurator {
 
     public static void main(String[] args) {
         Executor.init();
+        //Locale.setDefault(fiLocale);
         SpringApplication.run(Application.class, args);
     }
 

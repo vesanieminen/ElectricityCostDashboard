@@ -156,7 +156,6 @@ public class PriceCalculatorView extends Div {
 
         // Fixed price field
         fixedPriceField = new NumberField("Fixed price");
-        fixedPriceField.setAllowedCharPattern("[0-9.,]*");
         fixedPriceField.setRequiredIndicatorVisible(true);
         fixedPriceField.setSuffixComponent(new Span("c/kWh"));
         fixedPriceField.setPlaceholder("E.g. 12,68");
@@ -166,7 +165,6 @@ public class PriceCalculatorView extends Div {
 
         // Spot price field
         spotMarginField = new NumberField("Spot margin");
-        spotMarginField.setAllowedCharPattern("[0-9.,]*");
         spotMarginField.setRequiredIndicatorVisible(true);
         spotMarginField.setSuffixComponent(new Span("c/kWh"));
         spotMarginField.setPlaceholder("E.g. 0,38");
@@ -175,7 +173,6 @@ public class PriceCalculatorView extends Div {
 
         // Spot price field
         spotProductionMarginField = new NumberField("Production margin");
-        spotProductionMarginField.setAllowedCharPattern("[0-9.,]*");
         spotProductionMarginField.setRequiredIndicatorVisible(true);
         spotProductionMarginField.setSuffixComponent(new Span("c/kWh"));
         spotProductionMarginField.setPlaceholder("E.g. 0,30");
@@ -218,9 +215,12 @@ public class PriceCalculatorView extends Div {
                 resultLayout.add(new DoubleLabel("Total consumption over period", decimalFormat.format(spotCalculation.totalAmount) + "kWh", true));
 
                 // Spot labels
-                resultLayout.add(new DoubleLabel("Average spot price (incl. margin)", decimalFormat.format(spotCalculation.totalCost / spotCalculation.totalAmount * 100) + " c/kWh", true));
+                final var weightedAverage = spotCalculation.totalCost / spotCalculation.totalAmount * 100;
+                resultLayout.add(new DoubleLabel("Average spot price (incl. margin)", decimalFormat.format(weightedAverage) + " c/kWh", true));
                 resultLayout.add(new DoubleLabel("Total spot cost (incl. margin)", decimalFormat.format(spotCalculation.totalCost) + "€", true));
                 resultLayout.add(new DoubleLabel("Total spot cost (without margin)", decimalFormat.format(spotCalculation.totalCostWithoutMargin) + "€", true));
+                resultLayout.add(new DoubleLabel("Unweighted spot average", decimalFormat.format(spotCalculation.averagePrice) + " c/kWh", true));
+                resultLayout.add(new DoubleLabel("Lowered cost vs average spot", decimalFormat.format((weightedAverage - spotCalculation.averagePrice) / spotCalculation.averagePrice * 100) + "%", true));
 
                 var fixedCost = 0d;
                 if (isCalculatingFixed()) {
@@ -279,7 +279,6 @@ public class PriceCalculatorView extends Div {
         upload.addFailedListener(e -> {
             Notification.show("Upload failed: " + e.getReason());
         });
-
     }
 
     private boolean isCalculatingFixed() {
