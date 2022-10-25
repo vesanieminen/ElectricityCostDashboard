@@ -156,6 +156,7 @@ public class PriceCalculatorView extends Div {
 
         // Fixed price field
         fixedPriceField = new NumberField("Fixed price");
+        fixedPriceField.setAllowedCharPattern("[0-9.,]*");
         fixedPriceField.setRequiredIndicatorVisible(true);
         fixedPriceField.setSuffixComponent(new Span("c/kWh"));
         fixedPriceField.setPlaceholder("E.g. 12,68");
@@ -165,6 +166,7 @@ public class PriceCalculatorView extends Div {
 
         // Spot price field
         spotMarginField = new NumberField("Spot margin");
+        spotMarginField.setAllowedCharPattern("[0-9.,]*");
         spotMarginField.setRequiredIndicatorVisible(true);
         spotMarginField.setSuffixComponent(new Span("c/kWh"));
         spotMarginField.setPlaceholder("E.g. 0,38");
@@ -173,6 +175,7 @@ public class PriceCalculatorView extends Div {
 
         // Spot price field
         spotProductionMarginField = new NumberField("Production margin");
+        spotProductionMarginField.setAllowedCharPattern("[0-9.,]*");
         spotProductionMarginField.setRequiredIndicatorVisible(true);
         spotProductionMarginField.setSuffixComponent(new Span("c/kWh"));
         spotProductionMarginField.setPlaceholder("E.g. 0,30");
