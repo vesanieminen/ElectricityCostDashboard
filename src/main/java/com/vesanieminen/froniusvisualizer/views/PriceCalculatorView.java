@@ -159,27 +159,29 @@ public class PriceCalculatorView extends Div {
 
         // Fixed price field
         fixedPriceField = new SuperDoubleField("Fixed price");
+        fixedPriceField.setLocale(fiLocale);
+        fixedPriceField.setHelperText("E.g. 12,68");
         fixedPriceField.setRequiredIndicatorVisible(true);
         fixedPriceField.setSuffixComponent(new Span("c/kWh"));
-        fixedPriceField.setPlaceholder("E.g. 12,68");
         fixedPriceField.addClassNames(LumoUtility.Flex.GROW);
         fixedPriceField.setVisible(false);
         fieldRow.add(fixedPriceField);
 
         // Spot price field
         spotMarginField = new SuperDoubleField("Spot margin");
-        //spotMarginField.setLocale(fiLocale);
+        spotMarginField.setLocale(fiLocale);
+        spotMarginField.setHelperText("E.g. 0,38");
         spotMarginField.setRequiredIndicatorVisible(true);
         spotMarginField.setSuffixComponent(new Span("c/kWh"));
-        spotMarginField.setPlaceholder("E.g. 0,38");
         spotMarginField.addClassNames(LumoUtility.Flex.GROW);
         fieldRow.add(spotMarginField);
 
         // Spot price field
         spotProductionMarginField = new SuperDoubleField("Production margin");
+        spotProductionMarginField.setLocale(fiLocale);
+        spotProductionMarginField.setHelperText("E.g. 0,30");
         spotProductionMarginField.setRequiredIndicatorVisible(true);
         spotProductionMarginField.setSuffixComponent(new Span("c/kWh"));
-        spotProductionMarginField.setPlaceholder("E.g. 0,30");
         spotProductionMarginField.addClassNames(LumoUtility.Flex.GROW);
         spotProductionMarginField.setVisible(false);
         fieldRow.add(spotProductionMarginField);
