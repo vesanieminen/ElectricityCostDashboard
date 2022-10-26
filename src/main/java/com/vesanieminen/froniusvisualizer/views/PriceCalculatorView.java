@@ -388,7 +388,6 @@ public class PriceCalculatorView extends Div {
         final var spotYAxis = new YAxis();
         spotYAxis.setVisible(false);
         var spotLabels = new Labels();
-        ////spotLabels.setReserveSpace(true);
         spotLabels.setFormatter("return this.value +'c/kWh'");
         spotYAxis.setLabels(spotLabels);
         spotYAxis.setTitle("Spot");
@@ -423,10 +422,12 @@ public class PriceCalculatorView extends Div {
         chart.getConfiguration().addSeries(spotCostHoursSeries);
         spotCostHoursSeries.setyAxis(costYAxis);
 
-        // Spot average series
+        // Weighted spot average series
         final var spotAverageSeries = new ListSeries("Spot average (incl. margin)");
         for (int i = 0; i < spotCalculation.spotAverage.length; ++i) {
-            spotAverageSeries.addData(spotCalculation.spotAverage[i]);
+            final var consumptionHour = spotCalculation.consumptionHours[i];
+            final var costHours = spotCalculation.costHours[i];
+            spotAverageSeries.addData(costHours / consumptionHour * 100);
         }
         final var spotAveragePlotOptionsColumn = new PlotOptionsLine();
         spotAveragePlotOptionsColumn.setMarker(new Marker(false));
@@ -437,6 +438,22 @@ public class PriceCalculatorView extends Div {
         spotAverageSeries.setPlotOptions(spotAveragePlotOptionsColumn);
         chart.getConfiguration().addSeries(spotAverageSeries);
         spotAverageSeries.setyAxis(spotYAxis);
+
+        // Unweighted spot average series
+        final var unweightedSpotAverageSeries = new ListSeries("Unweighted spot average (incl. margin)");
+        for (int i = 0; i < spotCalculation.spotAverage.length; ++i) {
+            unweightedSpotAverageSeries.addData(spotCalculation.spotAverage[i]);
+        }
+        final var unWeightedSpotAveragePlotOptionsColumn = new PlotOptionsLine();
+        unWeightedSpotAveragePlotOptionsColumn.setMarker(new Marker(false));
+        final var unweightedSpotAverageTooltipSpot = new SeriesTooltip();
+        unweightedSpotAverageTooltipSpot.setValueDecimals(2);
+        unweightedSpotAverageTooltipSpot.setValueSuffix("c/kWh");
+        unWeightedSpotAveragePlotOptionsColumn.setTooltip(unweightedSpotAverageTooltipSpot);
+        unweightedSpotAverageSeries.setPlotOptions(unWeightedSpotAveragePlotOptionsColumn);
+        chart.getConfiguration().addSeries(unweightedSpotAverageSeries);
+        unweightedSpotAverageSeries.setyAxis(spotYAxis);
+
 
         // Fixed cost series
         if (isCalculatingFixed) {
