@@ -431,6 +431,7 @@ public class PriceCalculatorView extends Div {
         }
         final var spotAveragePlotOptionsColumn = new PlotOptionsLine();
         spotAveragePlotOptionsColumn.setMarker(new Marker(false));
+        spotAveragePlotOptionsColumn.setColorIndex(4);
         final var spotAverageTooltipSpot = new SeriesTooltip();
         spotAverageTooltipSpot.setValueDecimals(2);
         spotAverageTooltipSpot.setValueSuffix("c/kWh");
@@ -453,7 +454,6 @@ public class PriceCalculatorView extends Div {
         unweightedSpotAverageSeries.setPlotOptions(unWeightedSpotAveragePlotOptionsColumn);
         chart.getConfiguration().addSeries(unweightedSpotAverageSeries);
         unweightedSpotAverageSeries.setyAxis(spotYAxis);
-
 
         // Fixed cost series
         if (isCalculatingFixed) {
