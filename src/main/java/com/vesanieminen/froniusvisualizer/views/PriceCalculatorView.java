@@ -24,7 +24,6 @@ import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.FileBuffer;
 import com.vaadin.flow.component.upload.receivers.FileData;
@@ -34,6 +33,7 @@ import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
 import com.vesanieminen.froniusvisualizer.components.Footer;
 import com.vesanieminen.froniusvisualizer.components.Spacer;
 import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService;
+import org.vaadin.miki.superfields.numbers.SuperDoubleField;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -56,11 +56,14 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
 @Route("price-calculator")
 public class PriceCalculatorView extends Div {
 
+    private static int consumptionFilesUploaded = 0;
+    private static int productionFilesUploaded = 0;
+
     private final DateTimePicker fromDateTimePicker;
     private final DateTimePicker toDateTimePicker;
-    private final NumberField fixedPriceField;
-    private final NumberField spotMarginField;
-    private final NumberField spotProductionMarginField;
+    private final SuperDoubleField fixedPriceField;
+    private final SuperDoubleField spotMarginField;
+    private final SuperDoubleField spotProductionMarginField;
     private final List<HasEnabled> fields;
     private final Button button;
     private final CheckboxGroup<Calculations> calculationsCheckboxGroup;
@@ -155,7 +158,7 @@ public class PriceCalculatorView extends Div {
         content.add(fieldRow);
 
         // Fixed price field
-        fixedPriceField = new NumberField("Fixed price");
+        fixedPriceField = new SuperDoubleField("Fixed price");
         fixedPriceField.setRequiredIndicatorVisible(true);
         fixedPriceField.setSuffixComponent(new Span("c/kWh"));
         fixedPriceField.setPlaceholder("E.g. 12,68");
@@ -164,7 +167,8 @@ public class PriceCalculatorView extends Div {
         fieldRow.add(fixedPriceField);
 
         // Spot price field
-        spotMarginField = new NumberField("Spot margin");
+        spotMarginField = new SuperDoubleField("Spot margin");
+        //spotMarginField.setLocale(fiLocale);
         spotMarginField.setRequiredIndicatorVisible(true);
         spotMarginField.setSuffixComponent(new Span("c/kWh"));
         spotMarginField.setPlaceholder("E.g. 0,38");
@@ -172,7 +176,7 @@ public class PriceCalculatorView extends Div {
         fieldRow.add(spotMarginField);
 
         // Spot price field
-        spotProductionMarginField = new NumberField("Production margin");
+        spotProductionMarginField = new SuperDoubleField("Production margin");
         spotProductionMarginField.setRequiredIndicatorVisible(true);
         spotProductionMarginField.setSuffixComponent(new Span("c/kWh"));
         spotProductionMarginField.setPlaceholder("E.g. 0,30");
@@ -293,7 +297,7 @@ public class PriceCalculatorView extends Div {
         consumptionUpload.addSucceededListener(event -> {
             FileData savedFileData = fileBuffer.getFileData();
             lastConsumptionFile = savedFileData.getFile().getAbsolutePath();
-            System.out.printf("Consumption file saved to: %s%n", lastConsumptionFile);
+            System.out.printf("Consumption files uploaded: " + ++consumptionFilesUploaded);
             try {
                 final var consumptionData = getFingridUsageData(lastConsumptionFile);
                 final var isStartProductionAfter = startProduction != null && startProduction.isAfter(consumptionData.start);
@@ -319,7 +323,7 @@ public class PriceCalculatorView extends Div {
         productionUpload.addSucceededListener(event -> {
             FileData savedFileData = fileBuffer.getFileData();
             lastProductionFile = savedFileData.getFile().getAbsolutePath();
-            System.out.printf("Production file saved to: %s%n", lastProductionFile);
+            System.out.printf("Production files uploaded: " + ++productionFilesUploaded);
             try {
                 final var productionData = getFingridUsageData(lastProductionFile);
                 final var isStartConsumptionAfter = startConsumption != null && startConsumption.isAfter(productionData.start);

@@ -148,6 +148,11 @@
             <artifactId>opencsv</artifactId>
             <version>4.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.vaadin.miki</groupId>
+            <artifactId>superfields</artifactId>
+            <version>0.15.0</version>
+        </dependency>
     </dependencies>
     <build>
         <defaultGoal>spring-boot:run</defaultGoal>
