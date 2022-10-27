@@ -28,6 +28,7 @@ import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.FileBuffer;
 import com.vaadin.flow.component.upload.receivers.FileData;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
 import com.vesanieminen.froniusvisualizer.components.Footer;
@@ -54,6 +55,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.decimalFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
 
 @Route("price-calculator")
+@RouteAlias("hintalaskuri")
 public class PriceCalculatorView extends Div {
 
     private static int consumptionFilesUploaded = 0;

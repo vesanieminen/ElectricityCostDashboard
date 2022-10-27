@@ -7,6 +7,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
@@ -28,6 +29,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.convertNordpoolLocal
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
 
 @Route("price-list")
+@RouteAlias("hintalista")
 public class PriceListView extends Div {
 
     private static final double expensiveLimit = 10;
