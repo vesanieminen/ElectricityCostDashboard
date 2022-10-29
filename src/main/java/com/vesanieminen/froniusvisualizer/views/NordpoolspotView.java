@@ -35,8 +35,8 @@ import com.vesanieminen.froniusvisualizer.components.Footer;
 import com.vesanieminen.froniusvisualizer.components.Spacer;
 import com.vesanieminen.froniusvisualizer.services.FingridService;
 import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
-import com.vesanieminen.froniusvisualizer.services.model.FingridResponse;
-import com.vesanieminen.froniusvisualizer.services.model.FingridWindEstimateResponse;
+import com.vesanieminen.froniusvisualizer.services.model.FingridLiteResponse;
+import com.vesanieminen.froniusvisualizer.services.model.FingridRealtimeResponse;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
 import com.vesanieminen.froniusvisualizer.util.Utils;
 
@@ -167,8 +167,8 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     private Chart renderView() {
         isInitialRender = false;
         NordpoolResponse nordpoolResponse = null;
-        FingridResponse fingridResponse = null;
-        List<FingridWindEstimateResponse> windEstimateResponses = null;
+        FingridRealtimeResponse fingridResponse = null;
+        List<FingridLiteResponse> windEstimateResponses = null;
         try {
             // the TVO OL3 requires some page crawling to work reliably
             //var test = getDayAheadPrediction();
@@ -341,9 +341,9 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         chart.getConfiguration().getxAxis().addPlotLine(plotLine);
     }
 
-    private DataSeries createDataSeries(List<FingridResponse.Data> datasource, String title) {
+    private DataSeries createDataSeries(List<FingridRealtimeResponse.Data> datasource, String title) {
         final var dataSeries = new DataSeries(title);
-        for (FingridResponse.Data data : datasource) {
+        for (FingridRealtimeResponse.Data data : datasource) {
             final var dataSeriesItem = new DataSeriesItem();
             dataSeriesItem.setX(data.start_time.plusHours(3).withMinute(0).toInstant());
             dataSeriesItem.setY(data.value);
@@ -352,7 +352,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         return dataSeries;
     }
 
-    private DataSeries createRenewablesDataSeries(FingridResponse fingridResponse) {
+    private DataSeries createRenewablesDataSeries(FingridRealtimeResponse fingridResponse) {
         final var dataSeries = new DataSeries(totalRenewablesTitle);
         for (int i = 0; i < fingridResponse.WindPower.size() && i < fingridResponse.HydroPower.size() && i < fingridResponse.SolarPower.size(); ++i) {
             final var value = fingridResponse.WindPower.get(i).value + fingridResponse.HydroPower.get(i).value + fingridResponse.SolarPower.get(i).value;
@@ -364,9 +364,9 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         return dataSeries;
     }
 
-    private DataSeries createWindEstimateDataSeries(List<FingridWindEstimateResponse> dataSource) {
+    private DataSeries createWindEstimateDataSeries(List<FingridLiteResponse> dataSource) {
         final var dataSeries = new DataSeries(windProductionEstimateTitle);
-        for (FingridWindEstimateResponse response : dataSource) {
+        for (FingridLiteResponse response : dataSource) {
             final var dataSeriesItem = new DataSeriesItem();
             dataSeriesItem.setX(response.start_time.toInstant().plus(Duration.ofHours(3)));
             dataSeriesItem.setY(response.value);
@@ -375,7 +375,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         return dataSeries;
     }
 
-    public void setNetToday(FingridResponse fingridResponse, DecimalFormat df, DoubleLabel netToday) {
+    public void setNetToday(FingridRealtimeResponse fingridResponse, DecimalFormat df, DoubleLabel netToday) {
         final var now = getCurrentTimeWithHourPrecision();
         final var value = fingridResponse.NetImportExport.stream().filter(item -> item.start_time.getDayOfMonth() == now.getDayOfMonth()).map(item -> item.value).reduce(0d, Double::sum);
         final var formattedValue = df.format(value) + " MWh/h";

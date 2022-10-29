@@ -38,6 +38,10 @@ public class PriceListView extends Div {
     public PriceListView() {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.JustifyContent.CENTER, LumoUtility.Margin.AUTO);
         setMaxWidth(1024, Unit.PIXELS);
+
+        //final var now = currentTimeWithoutMinutesAndSeconds();
+        //final var start = now.minusMonths(1);
+        //final var fingridLiteResponses = FingridService.runQuery(createQuery(consumptionBaseUrl, start, now));
     }
 
     @Override

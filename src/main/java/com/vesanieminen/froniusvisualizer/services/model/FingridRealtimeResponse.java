@@ -3,7 +3,7 @@ package com.vesanieminen.froniusvisualizer.services.model;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-public class FingridResponse implements ResponseValidator {
+public class FingridRealtimeResponse implements ResponseValidator {
 
     public List<Data> HydroPower;
     public List<Data> NuclearPower;

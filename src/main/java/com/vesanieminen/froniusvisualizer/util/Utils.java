@@ -2,6 +2,9 @@ package com.vesanieminen.froniusvisualizer.util;
 
 import org.openjdk.jol.info.GraphLayout;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
@@ -24,7 +27,7 @@ public class Utils {
 
 
     public static LocalDateTime getCurrentTimeWithHourPrecision() {
-        final var now = LocalDateTime.now(ZoneId.of("Europe/Helsinki"));
+        final var now = LocalDateTime.now(fiZoneID);
         return now.minusMinutes(now.getMinute()).minusSeconds(now.getSecond()).minusNanos(now.getNano());
     }
 
@@ -49,6 +52,10 @@ public class Utils {
             final var value = array[i] / divisor;
             array[i] = value;
         }
+    }
+
+    public static String encodeUrl(String url) throws UnsupportedEncodingException {
+        return URLEncoder.encode(url, StandardCharsets.UTF_8);
     }
 
 }
