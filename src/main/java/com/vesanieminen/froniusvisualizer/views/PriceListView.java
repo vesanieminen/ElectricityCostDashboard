@@ -113,7 +113,6 @@ public class PriceListView extends Div {
                         currentTimeDiv = div;
                     }
                 } catch (ParseException e) {
-                    throw new RuntimeException(e);
                 }
             }
             --columnIndex;
