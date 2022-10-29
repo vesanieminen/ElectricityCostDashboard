@@ -485,7 +485,8 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
                         }
                     }
                 } catch (ParseException e) {
-                    throw new RuntimeException(e);
+                    continue;
+                    //throw new RuntimeException(e);
                 }
                 dataSeries.add(dataSeriesItem);
             }

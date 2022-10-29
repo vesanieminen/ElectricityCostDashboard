@@ -35,8 +35,8 @@ public class FingridService {
         DISTRICT(201),
         INDUSTRY(202),
         NET_IMPORT_EXPORT(194),
-        // hourly resolution
         SOLAR(248),
+        // hourly resolution
         CONSUMPTION(124),
         PRODUCTION(74),
         WIND_PREDICTION(245),
