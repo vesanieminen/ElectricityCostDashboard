@@ -89,22 +89,22 @@ public class PriceCalculatorView extends Div {
         content.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Padding.Horizontal.MEDIUM);
         wrapper.add(content);
 
-        final var title = new Span("Spot / fixed electricity price calculator");
+        final var title = new Span(getTranslation("Spot / fixed electricity price calculator"));
         title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
         content.add(title);
         final var spotAverage = PriceCalculatorService.calculateSpotAveragePriceThisYear();
-        final var span = new Span("Spot average this year: " + decimalFormat.format(spotAverage) + " c/kWh");
+        final var span = new Span(getTranslation("Spot average this year") + ": " + decimalFormat.format(spotAverage) + " c/kWh");
         span.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
         content.add(span);
         final var spotAverageMonth = PriceCalculatorService.calculateSpotAveragePriceThisMonth();
-        final var spanMonth = new Span("Spot average this month: " + decimalFormat.format(spotAverageMonth) + " c/kWh");
+        final var spanMonth = new Span(getTranslation("Spot average this month") + ": " + decimalFormat.format(spotAverageMonth) + " c/kWh");
         spanMonth.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
         content.add(spanMonth);
 
-        calculationsCheckboxGroup = new CheckboxGroup<>("Select calculations");
+        calculationsCheckboxGroup = new CheckboxGroup<>(getTranslation("Select calculations"));
         calculationsCheckboxGroup.addThemeVariants(CheckboxGroupVariant.LUMO_VERTICAL);
         calculationsCheckboxGroup.setItems(Calculations.values());
-        calculationsCheckboxGroup.setItemLabelGenerator(Calculations::getName);
+        calculationsCheckboxGroup.setItemLabelGenerator(item -> getTranslation(item.getName()));
         calculationsCheckboxGroup.setItemEnabledProvider(item -> !(Objects.equals(item.getName(), Calculations.SPOT.getName())));
         final var calculations = new HashSet<Calculations>();
         calculations.add(Calculations.SPOT);
@@ -119,11 +119,11 @@ public class PriceCalculatorView extends Div {
 
         // Consumption file
         FileBuffer consumptionFileBuffer = new FileBuffer();
-        final var uploadFingridConsumptionData = new Button("Consumption csv file upload (1MB max)");
+        final var uploadFingridConsumptionData = new Button(getTranslation("Consumption csv file upload (1MB max)"));
         Upload consumptionUpload = new Upload(consumptionFileBuffer);
         //consumptionUpload.setAcceptedFileTypes("csv");
         consumptionUpload.setMaxFileSize(1000000);
-        consumptionUpload.setDropLabel(new Span("Drop Fingrid consumption file here"));
+        consumptionUpload.setDropLabel(new Span(getTranslation("Drop Fingrid consumption file here")));
         consumptionUpload.setUploadButton(uploadFingridConsumptionData);
         consumptionUpload.setDropAllowed(true);
         consumptionUpload.addClassNames(LumoUtility.Margin.Top.XSMALL);
@@ -131,23 +131,23 @@ public class PriceCalculatorView extends Div {
 
         // Consumption file
         FileBuffer productionFileBuffer = new FileBuffer();
-        final var uploadFingridproductionData = new Button("Production csv file upload (1MB max)");
+        final var uploadFingridproductionData = new Button(getTranslation("Production csv file upload (1MB max)"));
         Upload productionUpload = new Upload(productionFileBuffer);
         //productionUpload.setAcceptedFileTypes("csv");
         productionUpload.setMaxFileSize(1000000);
-        productionUpload.setDropLabel(new Span("Drop Fingrid production file here"));
+        productionUpload.setDropLabel(new Span(getTranslation("Drop Fingrid production file here")));
         productionUpload.setUploadButton(uploadFingridproductionData);
         productionUpload.setDropAllowed(true);
         productionUpload.addClassNames(LumoUtility.Margin.Top.XSMALL);
         content.add(productionUpload);
         productionUpload.setVisible(false);
 
-        fromDateTimePicker = new DateTimePicker("Start period");
+        fromDateTimePicker = new DateTimePicker(getTranslation("Start period"));
         fromDateTimePicker.setWeekNumbersVisible(true);
         fromDateTimePicker.setDatePickerI18n(new DatePicker.DatePickerI18n().setFirstDayOfWeek(1));
         fromDateTimePicker.setRequiredIndicatorVisible(true);
         fromDateTimePicker.setLocale(fiLocale);
-        toDateTimePicker = new DateTimePicker("End period");
+        toDateTimePicker = new DateTimePicker(getTranslation("End period"));
         toDateTimePicker.setWeekNumbersVisible(true);
         toDateTimePicker.setDatePickerI18n(new DatePicker.DatePickerI18n().setFirstDayOfWeek(1));
         toDateTimePicker.setRequiredIndicatorVisible(true);
@@ -160,30 +160,30 @@ public class PriceCalculatorView extends Div {
         content.add(fieldRow);
 
         // Fixed price field
-        fixedPriceField = new SuperDoubleField("Fixed price");
+        fixedPriceField = new SuperDoubleField(getTranslation("Fixed price"));
         fixedPriceField.setLocale(fiLocale);
-        fixedPriceField.setHelperText("E.g. 12,68");
+        fixedPriceField.setHelperText(getTranslation("E.g. 12,68"));
         fixedPriceField.setRequiredIndicatorVisible(true);
-        fixedPriceField.setSuffixComponent(new Span("c/kWh"));
+        fixedPriceField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         fixedPriceField.addClassNames(LumoUtility.Flex.GROW);
         fixedPriceField.setVisible(false);
         fieldRow.add(fixedPriceField);
 
         // Spot price field
-        spotMarginField = new SuperDoubleField("Spot margin");
+        spotMarginField = new SuperDoubleField(getTranslation("Spot margin"));
         spotMarginField.setLocale(fiLocale);
-        spotMarginField.setHelperText("E.g. 0,38");
+        spotMarginField.setHelperText(getTranslation("E.g. 0,38"));
         spotMarginField.setRequiredIndicatorVisible(true);
-        spotMarginField.setSuffixComponent(new Span("c/kWh"));
+        spotMarginField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         spotMarginField.addClassNames(LumoUtility.Flex.GROW);
         fieldRow.add(spotMarginField);
 
         // Spot price field
-        spotProductionMarginField = new SuperDoubleField("Production margin");
+        spotProductionMarginField = new SuperDoubleField(getTranslation("Production margin"));
         spotProductionMarginField.setLocale(fiLocale);
-        spotProductionMarginField.setHelperText("E.g. 0,30");
+        spotProductionMarginField.setHelperText(getTranslation("E.g. 0,30"));
         spotProductionMarginField.setRequiredIndicatorVisible(true);
-        spotProductionMarginField.setSuffixComponent(new Span("c/kWh"));
+        spotProductionMarginField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         spotProductionMarginField.addClassNames(LumoUtility.Flex.GROW);
         spotProductionMarginField.setVisible(false);
         fieldRow.add(spotProductionMarginField);
@@ -196,7 +196,7 @@ public class PriceCalculatorView extends Div {
         });
         fields = Arrays.asList(fromDateTimePicker, toDateTimePicker, fixedPriceField, spotMarginField, spotProductionMarginField);
 
-        button = new Button("Calculate costs", e -> {
+        button = new Button(getTranslation("Calculate costs"), e -> {
             try {
                 if (spotMarginField.getValue() == null) {
                     spotMarginField.setValue(0d);
@@ -219,41 +219,41 @@ public class PriceCalculatorView extends Div {
                 final var end = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(fiLocale).format(spotCalculation.end);
 
                 // Total labels
-                resultLayout.add(new DoubleLabel("Calculation period (start times)", start + " - " + end, true));
-                resultLayout.add(new DoubleLabel("Total consumption over period", decimalFormat.format(spotCalculation.totalAmount) + "kWh", true));
+                resultLayout.add(new DoubleLabel(getTranslation("Calculation period (start times)"), start + " - " + end, true));
+                resultLayout.add(new DoubleLabel(getTranslation("Total consumption over period"), decimalFormat.format(spotCalculation.totalAmount) + "kWh", true));
 
                 // Spot labels
                 final var weightedAverage = spotCalculation.totalCost / spotCalculation.totalAmount * 100;
-                resultLayout.add(new DoubleLabel("Average spot price (incl. margin)", decimalFormat.format(weightedAverage) + " c/kWh", true));
-                resultLayout.add(new DoubleLabel("Total spot cost (incl. margin)", decimalFormat.format(spotCalculation.totalCost) + "€", true));
-                resultLayout.add(new DoubleLabel("Total spot cost (without margin)", decimalFormat.format(spotCalculation.totalCostWithoutMargin) + "€", true));
-                resultLayout.add(new DoubleLabel("Unweighted spot average", decimalFormat.format(spotCalculation.averagePrice) + " c/kWh", true));
-                resultLayout.add(new DoubleLabel("Lowered cost vs average spot", decimalFormat.format((weightedAverage - spotCalculation.averagePrice) / spotCalculation.averagePrice * 100) + "%", true));
+                resultLayout.add(new DoubleLabel(getTranslation("Average spot price (incl. margin)"), decimalFormat.format(weightedAverage) + " c/kWh", true));
+                resultLayout.add(new DoubleLabel(getTranslation("Total spot cost (incl. margin)"), decimalFormat.format(spotCalculation.totalCost) + "€", true));
+                resultLayout.add(new DoubleLabel(getTranslation("Total spot cost (without margin)"), decimalFormat.format(spotCalculation.totalCostWithoutMargin) + "€", true));
+                resultLayout.add(new DoubleLabel(getTranslation("Unweighted spot average"), decimalFormat.format(spotCalculation.averagePrice) + " c/kWh", true));
+                resultLayout.add(new DoubleLabel(getTranslation("Lowered cost vs average spot"), decimalFormat.format((weightedAverage - spotCalculation.averagePrice) / spotCalculation.averagePrice * 100) + "%", true));
 
                 var fixedCost = 0d;
                 if (isCalculatingFixed()) {
-                    resultLayout.add(new DoubleLabel("Fixed price", fixedPriceField.getValue() + " c/kWh", true));
+                    resultLayout.add(new DoubleLabel(getTranslation("Fixed price"), fixedPriceField.getValue() + " c/kWh", true));
                     fixedCost = calculateFixedElectricityPrice(consumptionData.data, fixedPriceField.getValue(), fromDateTimePicker.getValue(), toDateTimePicker.getValue());
-                    resultLayout.add(new DoubleLabel("Fixed cost total", decimalFormat.format(fixedCost) + "€", true));
+                    resultLayout.add(new DoubleLabel(getTranslation("Fixed cost total"), decimalFormat.format(fixedCost) + "€", true));
                 }
 
                 // Create spot consumption chart
-                chartLayout.add(createChart(spotCalculation, isCalculatingFixed(), "Consumption / cost per hour", "Consumption", "Spot cost"));
+                chartLayout.add(createChart(spotCalculation, isCalculatingFixed(), getTranslation("Consumption / cost per hour"), getTranslation("Consumption"), getTranslation("Spot cost")));
 
                 if (isCalculatingProduction()) {
                     final var productionData = getFingridUsageData(lastProductionFile);
                     final var spotProductionCalculation = calculateSpotElectricityPriceDetails(productionData.data, -spotProductionMarginField.getValue(), fromDateTimePicker.getValue(), toDateTimePicker.getValue());
-                    resultLayout.add(new DoubleLabel("Total production over period", decimalFormat.format(spotProductionCalculation.totalAmount) + "kWh", true));
-                    resultLayout.add(new DoubleLabel("Net spot cost (consumption - production)", decimalFormat.format(spotCalculation.totalCost - spotProductionCalculation.totalCost) + "€", true));
-                    resultLayout.add(new DoubleLabel("Net usage (consumption - production)", decimalFormat.format(spotCalculation.totalAmount - spotProductionCalculation.totalAmount) + "kWh", true));
+                    resultLayout.add(new DoubleLabel(getTranslation("Total production over period"), decimalFormat.format(spotProductionCalculation.totalAmount) + "kWh", true));
+                    resultLayout.add(new DoubleLabel(getTranslation("Net spot cost (consumption - production)"), decimalFormat.format(spotCalculation.totalCost - spotProductionCalculation.totalCost) + "€", true));
+                    resultLayout.add(new DoubleLabel(getTranslation("Net usage (consumption - production)"), decimalFormat.format(spotCalculation.totalAmount - spotProductionCalculation.totalAmount) + "kWh", true));
                     if (isCalculatingFixed()) {
 
                     }
-                    resultLayout.add(new DoubleLabel("Average production price (incl. margin)", decimalFormat.format(spotProductionCalculation.totalCost / spotProductionCalculation.totalAmount * 100) + " c/kWh", true));
-                    resultLayout.add(new DoubleLabel("Total production value (incl. margin)", decimalFormat.format(spotProductionCalculation.totalCost) + "€", true));
-                    resultLayout.add(new DoubleLabel("Total production value (without margin)", decimalFormat.format(spotProductionCalculation.totalCostWithoutMargin) + "€", true));
+                    resultLayout.add(new DoubleLabel(getTranslation("Average production price (incl. margin)"), decimalFormat.format(spotProductionCalculation.totalCost / spotProductionCalculation.totalAmount * 100) + getTranslation("c/kWh"), true));
+                    resultLayout.add(new DoubleLabel(getTranslation("Total production value (incl. margin)"), decimalFormat.format(spotProductionCalculation.totalCost) + "€", true));
+                    resultLayout.add(new DoubleLabel(getTranslation("Total production value (without margin)"), decimalFormat.format(spotProductionCalculation.totalCostWithoutMargin) + "€", true));
                     // Create spot production chart
-                    chartLayout.add(createChart(spotProductionCalculation, false, "Production / value per hour", "Production", "Production value"));
+                    chartLayout.add(createChart(spotProductionCalculation, false, getTranslation("Production / value per hour"), "Production", "Production value"));
                 }
 
             } catch (IOException | ParseException ex) {
@@ -282,10 +282,10 @@ public class PriceCalculatorView extends Div {
 
     private void addErrorHandling(Upload upload) {
         upload.addFileRejectedListener(e -> {
-            Notification.show("File was rejected: " + e.getErrorMessage());
+            Notification.show(getTranslation("File was rejected") + ": " + e.getErrorMessage());
         });
         upload.addFailedListener(e -> {
-            Notification.show("Upload failed: " + e.getReason());
+            Notification.show(getTranslation("Upload failed") + ": " + e.getReason());
         });
     }
 
@@ -382,7 +382,7 @@ public class PriceCalculatorView extends Div {
         labels.setReserveSpace(true);
         labels.setFormatter("return this.value +'€'");
         costYAxis.setLabels(labels);
-        costYAxis.setTitle("Price");
+        costYAxis.setTitle(getTranslation("Price"));
         costYAxis.setOpposite(true);
         chart.getConfiguration().addyAxis(costYAxis);
 
@@ -392,7 +392,7 @@ public class PriceCalculatorView extends Div {
         var spotLabels = new Labels();
         spotLabels.setFormatter("return this.value +'c/kWh'");
         spotYAxis.setLabels(spotLabels);
-        spotYAxis.setTitle("Spot");
+        spotYAxis.setTitle(getTranslation("Spot"));
         spotYAxis.setOpposite(true);
         chart.getConfiguration().addyAxis(spotYAxis);
 
@@ -425,7 +425,7 @@ public class PriceCalculatorView extends Div {
         spotCostHoursSeries.setyAxis(costYAxis);
 
         // Weighted spot average series
-        final var spotAverageSeries = new ListSeries("Spot average (incl. margin)");
+        final var spotAverageSeries = new ListSeries(getTranslation("Spot average (incl. margin)"));
         for (int i = 0; i < spotCalculation.spotAverage.length; ++i) {
             final var consumptionHour = spotCalculation.consumptionHours[i];
             final var costHours = spotCalculation.costHours[i];
@@ -443,7 +443,7 @@ public class PriceCalculatorView extends Div {
         spotAverageSeries.setyAxis(spotYAxis);
 
         // Unweighted spot average series
-        final var unweightedSpotAverageSeries = new ListSeries("Unweighted spot average (incl. margin)");
+        final var unweightedSpotAverageSeries = new ListSeries(getTranslation("Unweighted spot average (incl. margin)"));
         for (int i = 0; i < spotCalculation.spotAverage.length; ++i) {
             unweightedSpotAverageSeries.addData(spotCalculation.spotAverage[i]);
         }
@@ -451,7 +451,7 @@ public class PriceCalculatorView extends Div {
         unWeightedSpotAveragePlotOptionsColumn.setMarker(new Marker(false));
         final var unweightedSpotAverageTooltipSpot = new SeriesTooltip();
         unweightedSpotAverageTooltipSpot.setValueDecimals(2);
-        unweightedSpotAverageTooltipSpot.setValueSuffix("c/kWh");
+        unweightedSpotAverageTooltipSpot.setValueSuffix(getTranslation("c/kWh"));
         unWeightedSpotAveragePlotOptionsColumn.setTooltip(unweightedSpotAverageTooltipSpot);
         unweightedSpotAverageSeries.setPlotOptions(unWeightedSpotAveragePlotOptionsColumn);
         chart.getConfiguration().addSeries(unweightedSpotAverageSeries);
@@ -460,7 +460,7 @@ public class PriceCalculatorView extends Div {
         // Fixed cost series
         if (isCalculatingFixed) {
             final var fixedPrice = fixedPriceField.getValue();
-            final var fixedCostSeries = new ListSeries("Fixed cost");
+            final var fixedCostSeries = new ListSeries(getTranslation("Fixed cost"));
             for (int i = 0; i < spotCalculation.consumptionHours.length; ++i) {
                 fixedCostSeries.addData(spotCalculation.consumptionHours[i] * fixedPrice / 100);
             }
@@ -477,36 +477,33 @@ public class PriceCalculatorView extends Div {
         return chart;
     }
 
-    private static Div createHelpLayout(Div content) {
-        final var helpButton = new Button("Click to show/hide help");
+    private Div createHelpLayout(Div content) {
+        final var helpButton = new Button(getTranslation("Click to show/hide help"));
         helpButton.addClassNames(LumoUtility.Margin.Top.SMALL, LumoUtility.Background.BASE);
         content.add(helpButton);
         final var helpLayout = new Div();
         helpLayout.setVisible(false);
-        helpLayout.add(new Span("Usage:"));
+        helpLayout.add(new Span(getTranslation("Usage:")));
         helpLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
         final var helpStepsLayout = new Div();
         helpStepsLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Left.LARGE);
         helpLayout.add(helpStepsLayout);
         content.add(helpLayout);
 
-        //final var image = new Image("images/instructions/Fingrid_1.png", "Fingrid instructions 1");
-        //image.addClassNames(LumoUtility.MaxWidth.SCREEN_SMALL);
-        //helpStepsLayout.add(image);
-
-        helpStepsLayout.add(new Span(new Span("1) Login to "), new Anchor("https://www.fingrid.fi/en/electricity-market/datahub/sign-in-to-datahub-customer-portal/", "Fingrid Datahub.")));
-        helpStepsLayout.add(new Span("2) Download your hourly consumption data csv file."));
-        helpStepsLayout.add(new Span("3) Upload the file below."));
-        helpStepsLayout.add(new Span("4) Select the date and time range for the calculation (the end of day is 23:00)."));
-        helpStepsLayout.add(new Span("5) (optional) enter your spot price margin. Will become zero if empty is used."));
-        helpStepsLayout.add(new Span("7) Click the calculate costs button."));
+        helpStepsLayout.add(new Span(new Span(getTranslation("1) Login to ")), new Anchor("https://www.fingrid.fi/en/electricity-market/datahub/sign-in-to-datahub-customer-portal/", getTranslation("Fingrid Datahub."))));
+        helpStepsLayout.add(new Span(getTranslation("2) Download your hourly consumption data csv file.")));
+        helpStepsLayout.add(new Span(getTranslation("3) Upload the file below.")));
+        helpStepsLayout.add(new Span(getTranslation("4) Select the date and time range for the calculation (the end of day is 23:00).")));
+        helpStepsLayout.add(new Span(getTranslation("5) (optional) enter your spot price margin. Will become zero if empty is used.")));
+        helpStepsLayout.add(new Span(getTranslation("7) Click the calculate costs button.")));
         helpButton.addClickListener(e -> helpLayout.setVisible(!helpLayout.isVisible()));
 
-        final var anchor = new Anchor("https://raw.githubusercontent.com/vesanieminen/ElectricityCostDashboard/main/src/main/resources/META-INF/resources/data/consumption.csv", "Download example csv file here");
+        final var anchor = new Anchor("https://raw.githubusercontent.com/vesanieminen/ElectricityCostDashboard/main/src/main/resources/META-INF/resources/data/consumption.csv", getTranslation("Download example csv file here"));
         anchor.addClassNames(LumoUtility.Margin.Top.MEDIUM);
         helpLayout.add(anchor);
+        //
 
-        final var additionalInfo = new Span("Do note that the Fingrid csv data is in UTC timezone which is currently 3h earlier than the Finnish timezone. E.g. to calculate costs for August 2022 you need to have 3h from end of July in the csv file as well.");
+        final var additionalInfo = new Span(getTranslation("calculator.help.notice"));
         additionalInfo.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
         helpLayout.add(additionalInfo);
 
@@ -529,7 +526,7 @@ public class PriceCalculatorView extends Div {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        final var backButton = new Button("Back to electricity price graph");
+        final var backButton = new Button(getTranslation("Back to electricity price graph"));
         backButton.addClassNames(LumoUtility.Height.MEDIUM, LumoUtility.Margin.NONE, LumoUtility.Margin.Bottom.MEDIUM, LumoUtility.BorderColor.CONTRAST_10, LumoUtility.Border.ALL, LumoUtility.BorderRadius.NONE);
         backButton.addClickListener(e -> attachEvent.getUI().navigate(NordpoolspotView.class));
         addComponentAsFirst(backButton);

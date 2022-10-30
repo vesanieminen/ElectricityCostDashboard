@@ -50,7 +50,7 @@ public class PriceListView extends Div {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        final var button = new Button("Back to electricity price graph");
+        final var button = new Button(getTranslation("Back to electricity price graph"));
         button.addClassNames(LumoUtility.Height.MEDIUM, "sticky-button", LumoUtility.Background.BASE, LumoUtility.Margin.NONE);
         button.addClickListener(e -> attachEvent.getUI().navigate(NordpoolspotView.class));
         add(button);
@@ -170,7 +170,7 @@ public class PriceListView extends Div {
                 final var dataLocalDataTime = LocalDateTime.parse(dateTimeString, dateTimeFormatter);
                 // Convert the Nordpool timezone (Norwegian) to Finnish time zone
                 final var localDateTime = convertNordpoolLocalDateTimeToFinnish(dataLocalDataTime);
-                daySpan.setText(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).format(dataLocalDataTime));
+                daySpan.setText(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale).format(dataLocalDataTime));
                 try {
                     final var price = format.parse(column.Value).doubleValue() * 1.24 / 10;
                     final var div = new Div();

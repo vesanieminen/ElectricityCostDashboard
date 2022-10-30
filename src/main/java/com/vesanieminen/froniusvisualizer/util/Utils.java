@@ -25,6 +25,7 @@ public class Utils {
     public static final ZoneId fiZoneID = ZoneId.of("Europe/Helsinki");
     public static final ZoneId nordpoolZoneID = ZoneId.of("Europe/Oslo");
     public static final Locale fiLocale = new Locale("fi", "FI");
+    public static final Locale enLocale = new Locale("en", "GB");
     public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
 

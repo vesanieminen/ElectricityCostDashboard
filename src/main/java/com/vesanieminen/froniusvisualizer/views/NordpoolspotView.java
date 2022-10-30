@@ -68,15 +68,15 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     private final DoubleLabel averagePrice;
 
     private final DoubleLabel nextPrice;
-    private static final String fiElectricityPriceTitle = "FI electricity price";
-    private static final String hydroPowerProductionTitle = "Hydro production";
-    private static final String windPowerProductionTitle = "Wind production";
-    private static final String nuclearPowerProductionTitle = "Nuclear production";
-    private static final String solarPowerProductionTitle = "Solar power";
-    private static final String consumptionTitle = "Consumption";
-    private static final String importExportTitle = "Net export - import";
-    private final String windProductionEstimateTitle = "Wind production estimate";
-    private final String totalRenewablesTitle = "Total renewables";
+    private final String fiElectricityPriceTitle;
+    private final String hydroPowerProductionTitle;
+    private final String windPowerProductionTitle;
+    private final String nuclearPowerProductionTitle;
+    private final String solarPowerProductionTitle;
+    private final String consumptionTitle;
+    private final String importExportTitle;
+    private final String windProductionEstimateTitle;
+    private final String totalRenewablesTitle;
     private final String vat10 = "vat=10";
     private final String vat0 = "vat=0";
     private final double vat24Value = 1.24d;
@@ -97,13 +97,23 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.CENTER, LumoUtility.TextColor.PRIMARY_CONTRAST);
         setHeightFull();
 
-        priceNow = new DoubleLabel("Price now", "");
-        //priceNow.addClassNamesToSpans("color-yellow");
-        lowestAndHighest = new DoubleLabel("Lowest / highest today", "");
-        averagePrice = new DoubleLabel("7 day average", "");
-        nextPrice = new DoubleLabel("Price in 1h", "");
+        fiElectricityPriceTitle = getTranslation("FI electricity price");
+        hydroPowerProductionTitle = getTranslation("Hydro production");
+        windPowerProductionTitle = getTranslation("Wind production");
+        nuclearPowerProductionTitle = getTranslation("Nuclear production");
+        solarPowerProductionTitle = getTranslation("Solar power");
+        consumptionTitle = getTranslation("Consumption");
+        importExportTitle = getTranslation("Net export - import");
+        windProductionEstimateTitle = getTranslation("Wind production estimate");
+        totalRenewablesTitle = getTranslation("Total renewables");
 
-        fullScreenButton = createButton("Fullscreen");
+        priceNow = new DoubleLabel(getTranslation("Price now"), "");
+        //priceNow.addClassNamesToSpans("color-yellow");
+        lowestAndHighest = new DoubleLabel(getTranslation("Lowest / highest today"), "");
+        averagePrice = new DoubleLabel(getTranslation("7 day average"), "");
+        nextPrice = new DoubleLabel(getTranslation("Price in 1h"), "");
+
+        fullScreenButton = createButton(getTranslation("Fullscreen"));
         fullScreenButton.setVisible(false);
         if (isFullscreen) {
             fullScreenButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -154,10 +164,10 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
             chart.getConfiguration().getRangeSelector().setSelected(2);
             if (screenWidth < 1000) {
                 YAxis production = chart.getConfiguration().getyAxis(0);
-                production.setTitle("Production GWh/h");
+                production.setTitle(getTranslation("Production") + "GWh/h");
                 production.getLabels().setFormatter("return this.value/1000");
                 YAxis price = chart.getConfiguration().getyAxis(1);
-                price.setTitle("Price c/kWh");
+                price.setTitle(getTranslation("Price") + " c/kWh");
                 price.getLabels().setFormatter(null);
             }
             chart.drawChart(true);
@@ -184,9 +194,9 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         var pricesLayout = new Div(priceNow, nextPrice, lowestAndHighest, averagePrice);
         try {
             final var averagePriceThisMonth = calculateSpotAveragePriceThisMonth();
-            pricesLayout.add(new DoubleLabel("Average this month", decimalFormat.format(averagePriceThisMonth) + " c/kWh"));
+            pricesLayout.add(new DoubleLabel(getTranslation("Average this month"), decimalFormat.format(averagePriceThisMonth) + " c/kWh"));
             final var averagePriceThisYear = calculateSpotAveragePriceThisYear();
-            pricesLayout.add(new DoubleLabel("Average this year", decimalFormat.format(averagePriceThisYear) + " c/kWh"));
+            pricesLayout.add(new DoubleLabel(getTranslation("Average this year"), decimalFormat.format(averagePriceThisYear) + " c/kWh"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -233,18 +243,18 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
             configureChartTooltips(chart, hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, spotPriceDataSeries, windEstimateDataSeries, renewablesSeries);
             //setNetToday(fingridResponse, df, netToday);
         } else {
-            add(new Span("Fingrid API is down currently ;~("));
+            add(new Span(getTranslation("Fingrid API is down currently ;~(")));
             final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, dateTimeFormatter, new ArrayList<>());
             configureChartTooltips(chart, null, null, null, null, null, null, spotPriceDataSeries, null, null);
         }
 
         final var rangeSelector = new RangeSelector();
         rangeSelector.setButtons(
-                new RangeSelectorButton(RangeSelectorTimespan.DAY, 1, "1d"),
-                new RangeSelectorButton(RangeSelectorTimespan.DAY, 2, "2d"),
-                new RangeSelectorButton(RangeSelectorTimespan.DAY, 3, "3d"),
-                new RangeSelectorButton(RangeSelectorTimespan.DAY, 5, "5d"),
-                new RangeSelectorButton(RangeSelectorTimespan.ALL, "7d")
+                new RangeSelectorButton(RangeSelectorTimespan.DAY, 1, getTranslation("1d")),
+                new RangeSelectorButton(RangeSelectorTimespan.DAY, 2, getTranslation("2d")),
+                new RangeSelectorButton(RangeSelectorTimespan.DAY, 3, getTranslation("3d")),
+                new RangeSelectorButton(RangeSelectorTimespan.DAY, 5, getTranslation("5d")),
+                new RangeSelectorButton(RangeSelectorTimespan.ALL, getTranslation("7d"))
         );
         rangeSelector.setButtonSpacing(12);
         rangeSelector.setSelected(isTouchDevice ? 2 : 4);
@@ -267,17 +277,17 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         return chart;
     }
 
-    private static void createFingridYAxis(Chart chart) {
+    private void createFingridYAxis(Chart chart) {
         final var fingridYAxis = new YAxis();
         var labelsFingrid = new Labels();
         labelsFingrid.setFormatter("return this.value +' MWh/h'");
         fingridYAxis.setLabels(labelsFingrid);
-        fingridYAxis.setTitle("Production");
+        fingridYAxis.setTitle(getTranslation("Production"));
         fingridYAxis.setOpposite(false);
         chart.getConfiguration().addyAxis(fingridYAxis);
     }
 
-    private static void createSpotPriceYAxis(Chart chart) {
+    private void createSpotPriceYAxis(Chart chart) {
         final var yAxisSpot = new YAxis();
         var labels = new Labels();
         //labels.setAlign(HorizontalAlign.RIGHT);
@@ -286,14 +296,14 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         yAxisSpot.setLabels(labels);
         yAxisSpot.setMin(0);
         //yAxisSpot.setMinRange(-1);
-        yAxisSpot.setTitle("Price");
+        yAxisSpot.setTitle(getTranslation("Price"));
         yAxisSpot.setOpposite(true);
         chart.getConfiguration().addyAxis(yAxisSpot);
     }
 
-    private static void createXAxis(Chart chart) {
+    private void createXAxis(Chart chart) {
         final var xAxis = new XAxis();
-        xAxis.setTitle("Time");
+        xAxis.setTitle(getTranslation("Time"));
         xAxis.setType(AxisType.DATETIME);
         chart.getConfiguration().addxAxis(xAxis);
     }
@@ -420,9 +430,9 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         if (vat == vat0Value) {
             vatComboBox.setValue(VAT.VAT0);
         }
-        vatComboBox.setItemLabelGenerator(VAT::getVatName);
-        Button priceListButton = createButton("List");
-        Button priceCalculationButton = createButton("Calculator");
+        vatComboBox.setItemLabelGenerator(item -> getTranslation(item.getVatName()));
+        final var priceListButton = createButton(getTranslation("List"));
+        final var priceCalculationButton = createButton(getTranslation("Calculator"));
         final var menuLayout = new Div(vatComboBox, priceListButton, priceCalculationButton, fullScreenButton);
         menuLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Width.FULL);
         add(menuLayout);
