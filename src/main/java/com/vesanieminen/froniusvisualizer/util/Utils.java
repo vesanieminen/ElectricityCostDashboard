@@ -31,8 +31,8 @@ public class Utils {
         return now.minusMinutes(now.getMinute()).minusSeconds(now.getSecond()).minusNanos(now.getNano());
     }
 
-    public static LocalDateTime convertNordpoolLocalDateTimeToFinnish(LocalDateTime dataLocalDataTime) {
-        return dataLocalDataTime.atZone(nordpoolZoneID).withZoneSameInstant(fiZoneID).toLocalDateTime();
+    public static LocalDateTime convertNordpoolLocalDateTimeToFinnish(LocalDateTime localDateTime) {
+        return localDateTime.atZone(nordpoolZoneID).withZoneSameInstant(fiZoneID).toLocalDateTime();
     }
 
     public static void printSizeOf(Object object) {

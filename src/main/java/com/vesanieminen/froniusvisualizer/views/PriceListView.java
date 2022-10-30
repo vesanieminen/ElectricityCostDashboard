@@ -42,6 +42,8 @@ public class PriceListView extends Div {
         //final var now = currentTimeWithoutMinutesAndSeconds();
         //final var start = now.minusMonths(1);
         //final var fingridLiteResponses = FingridService.runQuery(createQuery(consumptionBaseUrl, start, now));
+        //PakastinSpotService.updateData();
+        //final var latest = PakastinSpotService.getLatest();
     }
 
     @Override
@@ -105,7 +107,6 @@ public class PriceListView extends Div {
                     div.add(timeSpan, priceSpan);
                     dayDiv.add(div);
                     if (Objects.equals(localDateTime, now)) {
-                        //currentTimeDiv = div;
                         div.addClassNames(LumoUtility.Background.CONTRAST_10);
                     }
                     // Due to the sticky position of some elements we need to scroll to the position of -2h

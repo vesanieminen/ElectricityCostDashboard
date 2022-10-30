@@ -485,8 +485,8 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
                         }
                     }
                 } catch (ParseException e) {
+                    // skip when the time is "-": changing from or to summer time.
                     continue;
-                    //throw new RuntimeException(e);
                 }
                 dataSeries.add(dataSeriesItem);
             }
