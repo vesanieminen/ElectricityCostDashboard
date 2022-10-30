@@ -38,6 +38,7 @@ public class PakastinSpotService {
     }
 
     public static List<PakastinResponse.Price> getLatest() {
+        updateData();
         return pakastinResponse.prices;
     }
 

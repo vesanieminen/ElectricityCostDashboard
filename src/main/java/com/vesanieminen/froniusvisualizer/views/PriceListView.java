@@ -56,6 +56,11 @@ public class PriceListView extends Div {
         add(button);
         renderView(attachEvent.getUI().getLocale());
         //renderViewPakastin(attachEvent.getUI().getLocale());
+
+        //final var realtimeDataForMonth = getRealtimeDataForMonth();
+
+        //final var saveCsv = new Button("Save csv", e -> writeToCSVFile());
+        //add(saveCsv);
     }
 
     void renderView(Locale locale) {

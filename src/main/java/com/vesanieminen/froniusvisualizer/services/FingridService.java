@@ -2,10 +2,12 @@ package com.vesanieminen.froniusvisualizer.services;
 
 import com.fatboyindustrial.gsonjavatime.Converters;
 import com.google.gson.GsonBuilder;
+import com.opencsv.CSVWriter;
 import com.vesanieminen.froniusvisualizer.services.model.FingridLiteResponse;
 import com.vesanieminen.froniusvisualizer.services.model.FingridRealtimeResponse;
 import com.vesanieminen.froniusvisualizer.util.Utils;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -13,16 +15,21 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
 import static com.vesanieminen.froniusvisualizer.util.Properties.getFingridAPIKey;
+import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
+import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
 import static java.util.stream.Collectors.joining;
 
@@ -64,9 +71,9 @@ public class FingridService {
         }
     }
 
-    private static final ZoneId fiZoneID = ZoneId.of("Europe/Helsinki");
-    private static FingridRealtimeResponse finGridRealtimeResponse;
-    private static List<FingridLiteResponse> windEstimateResponses;
+    private static FingridRealtimeResponse cachedFingridRealtimeResponse;
+    private static FingridRealtimeResponse cachedFingridRealtimeResponseForMonth;
+    private static List<FingridLiteResponse> cachedWindEstimateResponses;
 
     // The final target for the basic fingrid query is:
     // https://www.fingrid.fi/api/graph/power-system-production?start=2022-10-04&end=2022-10-10
@@ -77,31 +84,34 @@ public class FingridService {
     private static final String fingridHourlyBaseUrl = "https://api.fingrid.fi/v1/variable/";
     private static final String fingridHourlyUrlPostfix = "/events/json?";
 
-    public static void updateFingridRealtimeData() {
+    public static void updateRealtimeData() {
+        final var newFingridRealtimeResponse = runRealtimeDataQuery(createFingridRealtimeQuery());
+        if (!newFingridRealtimeResponse.isValid()) {
+            return;
+        }
+        cachedFingridRealtimeResponse = newFingridRealtimeResponse;
+        cachedFingridRealtimeResponse.HydroPower = keepEveryNthItem(cachedFingridRealtimeResponse.HydroPower, 20);
+        cachedFingridRealtimeResponse.NuclearPower = keepEveryNthItem(cachedFingridRealtimeResponse.NuclearPower, 20);
+        cachedFingridRealtimeResponse.WindPower = keepEveryNthItem(cachedFingridRealtimeResponse.WindPower, 20);
+        cachedFingridRealtimeResponse.SolarPower = keepEveryNthItem(cachedFingridRealtimeResponse.SolarPower, 20);
+        cachedFingridRealtimeResponse.Consumption = keepEveryNthItem(cachedFingridRealtimeResponse.Consumption, 20);
+        cachedFingridRealtimeResponse.NetImportExport = keepEveryNthItem(cachedFingridRealtimeResponse.NetImportExport, 20);
+    }
+
+    public static FingridRealtimeResponse runRealtimeDataQuery(String query) {
         final HttpRequest request;
         final HttpResponse<String> response;
         try {
-            request = HttpRequest.newBuilder().uri(new URI(createFingridRealtimeQuery())).GET().build();
+            request = HttpRequest.newBuilder().uri(new URI(query)).GET().build();
             response = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build().send(request, HttpResponse.BodyHandlers.ofString());
         } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
         final var gson = Converters.registerAll(new GsonBuilder()).create();
-        final var newFingridRealtimeResponse = gson.fromJson(response.body(), FingridRealtimeResponse.class);
-        // If data is missing do not overwrite the previous values
-        if (!newFingridRealtimeResponse.isValid()) {
-            return;
-        }
-        finGridRealtimeResponse = newFingridRealtimeResponse;
-        finGridRealtimeResponse.HydroPower = keepEveryNthItem(finGridRealtimeResponse.HydroPower, 20);
-        finGridRealtimeResponse.NuclearPower = keepEveryNthItem(finGridRealtimeResponse.NuclearPower, 20);
-        finGridRealtimeResponse.WindPower = keepEveryNthItem(finGridRealtimeResponse.WindPower, 20);
-        finGridRealtimeResponse.SolarPower = keepEveryNthItem(finGridRealtimeResponse.SolarPower, 20);
-        finGridRealtimeResponse.Consumption = keepEveryNthItem(finGridRealtimeResponse.Consumption, 20);
-        finGridRealtimeResponse.NetImportExport = keepEveryNthItem(finGridRealtimeResponse.NetImportExport, 20);
+        return gson.fromJson(response.body(), FingridRealtimeResponse.class);
     }
 
-    private static String createFingridRealtimeQuery() {
+    public static String createFingridRealtimeQuery() {
         Map<String, String> requestParams = new HashMap<>();
         final var now = getCurrentTimeWithHourPrecision();
         // Nordpool gives data for the next day at 14:00. Before that we need to retrieve 6 days back and after 5 to match the amount of Fingrid and Nordpool history
@@ -111,19 +121,34 @@ public class FingridService {
         return requestParams.keySet().stream().map(key -> key + "=" + requestParams.get(key)).collect(joining("&", fingridRealtimeBaseUrl, ""));
     }
 
+    public static FingridRealtimeResponse getRealtimeDataForMonth() {
+        if (cachedFingridRealtimeResponseForMonth == null) {
+            final var now = getCurrentTimeWithHourPrecision();
+            cachedFingridRealtimeResponseForMonth = runRealtimeDataQuery(createFingridRealtimeQuery(now.minusMonths(4), now.truncatedTo(ChronoUnit.DAYS)));
+        }
+        return cachedFingridRealtimeResponseForMonth;
+    }
+
+    public static String createFingridRealtimeQuery(LocalDateTime start, LocalDateTime end) {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put("start", createFingridDateTimeString(start));
+        requestParams.put("end", createFingridDateTimeString(end));
+        return requestParams.keySet().stream().map(key -> key + "=" + requestParams.get(key)).collect(joining("&", fingridRealtimeBaseUrl, ""));
+    }
+
     public static List<FingridRealtimeResponse.Data> keepEveryNthItem(List<FingridRealtimeResponse.Data> input, int n) {
         return IntStream.range(0, input.size()).filter(item -> item % n == 0).mapToObj(input::get).toList();
     }
 
     public static FingridRealtimeResponse getLatest7Days() throws URISyntaxException, IOException, InterruptedException {
-        return finGridRealtimeResponse;
+        return cachedFingridRealtimeResponse;
     }
 
     public static void updateWindEstimateData() {
         final var start = getCurrentTimeWithHourPrecision();
         final var newWindEstimateResponses = runQuery(createHourlyQuery(QueryType.WIND_PREDICTION, start, start.plusDays(2)));
         if (newWindEstimateResponses.size() > 0) {
-            windEstimateResponses = newWindEstimateResponses;
+            cachedWindEstimateResponses = newWindEstimateResponses;
         }
     }
 
@@ -142,7 +167,7 @@ public class FingridService {
     }
 
     public static List<FingridLiteResponse> getWindEstimate() throws URISyntaxException, IOException, InterruptedException {
-        return windEstimateResponses;
+        return cachedWindEstimateResponses;
     }
 
     public static String createHourlyQuery(QueryType queryType, LocalDateTime start, LocalDateTime end) {
@@ -165,6 +190,53 @@ public class FingridService {
 
     private static String createDateTimeString(LocalDateTime localDateTime) {
         return DateTimeFormatter.ofPattern("yyyy-MM-dd").format(localDateTime) + "T" + DateTimeFormatter.ofPattern("HH:mm:ss").format(localDateTime) + "+0300";
+    }
+
+    public static void writeToCSVFile() {
+        final var realtimeDataForMonth = getRealtimeDataForMonth();
+        final var lowestDay = realtimeDataForMonth.WindPower.stream().min(Comparator.comparing(item -> item.start_time)).get().start_time.truncatedTo(ChronoUnit.DAYS);
+        final var highestDay = realtimeDataForMonth.WindPower.stream().max(Comparator.comparing(item -> item.start_time)).get().start_time.truncatedTo(ChronoUnit.DAYS);
+        final var prices = PakastinSpotService.getLatest().stream().filter(item -> !item.date.atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS).isBefore(lowestDay)).toList();
+
+        try {
+            final var low = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(fiLocale).format(lowestDay);
+            final var high = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(fiLocale).format(highestDay);
+            Path path = Path.of("/Users/vesanieminen/Desktop/spot+fingrid export " + low + "-" + high + ".csv");
+            CSVWriter writer = new CSVWriter(new FileWriter(path.toString()));
+            writer.writeNext(new String[]{
+                    "spot-datetime",
+                    "fingrid-datetime",
+                    "spothinta",
+                    "windprod",
+                    "hydroprod",
+                    "nucprod",
+                    "solar",
+                    "consumption",
+                    "netexport"
+            });
+            for (int i = 0; i < realtimeDataForMonth.WindPower.size(); ++i) {
+                final var windprod = realtimeDataForMonth.WindPower.get(i);
+                final var hydroprod = realtimeDataForMonth.HydroPower.get(i);
+                final var nucprod = realtimeDataForMonth.NuclearPower.get(i);
+                final var solar = realtimeDataForMonth.SolarPower.get(i);
+                final var consumption = realtimeDataForMonth.Consumption.get(i);
+                final var netexport = realtimeDataForMonth.NetImportExport.get(i);
+                writer.writeNext(new String[]{
+                        prices.get(i).date.toString(),
+                        windprod.start_time.toInstant().toString(),
+                        String.valueOf(prices.get(i).value),
+                        String.valueOf(windprod.value),
+                        String.valueOf(hydroprod.value),
+                        String.valueOf(nucprod.value),
+                        String.valueOf(solar.value),
+                        String.valueOf(consumption.value),
+                        String.valueOf(netexport.value),
+                });
+            }
+            writer.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
