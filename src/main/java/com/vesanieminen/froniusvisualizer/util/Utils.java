@@ -7,8 +7,11 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
@@ -17,9 +20,13 @@ public class Utils {
 
     public static final NumberFormat numberFormat = NumberFormat.getInstance(Locale.FRANCE);
     public static final DecimalFormat decimalFormat = new DecimalFormat("#0.00");
+    public static final DecimalFormat threeDecimals = new DecimalFormat("#0.000");
+
     public static final ZoneId fiZoneID = ZoneId.of("Europe/Helsinki");
     public static final ZoneId nordpoolZoneID = ZoneId.of("Europe/Oslo");
     public static final Locale fiLocale = new Locale("fi", "FI");
+    public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+
 
     public static boolean notNull(Object... objects) {
         return Arrays.stream(objects).allMatch(Objects::nonNull);
@@ -29,6 +36,18 @@ public class Utils {
     public static LocalDateTime getCurrentTimeWithHourPrecision() {
         final var now = LocalDateTime.now(fiZoneID);
         return now.minusMinutes(now.getMinute()).minusSeconds(now.getSecond()).minusNanos(now.getNano());
+    }
+
+    public static Instant getCurrentInstantHourPrecision() {
+        return Instant.now().truncatedTo(ChronoUnit.HOURS);
+    }
+
+    public static LocalDateTime getCurrentInstantHourPrecisionFinnishZone() {
+        return Instant.now().truncatedTo(ChronoUnit.HOURS).atZone(fiZoneID).toLocalDateTime();
+    }
+
+    public static Instant getCurrentInstantDayPrecisionFinnishZone() {
+        return Instant.now().atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS).toInstant();
     }
 
     public static LocalDateTime convertNordpoolLocalDateTimeToFinnish(LocalDateTime localDateTime) {

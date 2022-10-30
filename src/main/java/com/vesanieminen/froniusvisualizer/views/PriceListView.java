@@ -10,7 +10,9 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
+import com.vesanieminen.froniusvisualizer.services.PakastinSpotService;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
+import com.vesanieminen.froniusvisualizer.services.model.PakastinResponse;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -20,13 +22,19 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.getLatest7Days;
 import static com.vesanieminen.froniusvisualizer.util.Utils.convertNordpoolLocalDateTimeToFinnish;
+import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentInstantHourPrecisionFinnishZone;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
+import static com.vesanieminen.froniusvisualizer.util.Utils.threeDecimals;
 
 @Route("price-list")
 @RouteAlias("hintalista")
@@ -38,12 +46,6 @@ public class PriceListView extends Div {
     public PriceListView() {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.JustifyContent.CENTER, LumoUtility.Margin.AUTO);
         setMaxWidth(1024, Unit.PIXELS);
-
-        //final var now = currentTimeWithoutMinutesAndSeconds();
-        //final var start = now.minusMonths(1);
-        //final var fingridLiteResponses = FingridService.runQuery(createQuery(consumptionBaseUrl, start, now));
-        //PakastinSpotService.updateData();
-        //final var latest = PakastinSpotService.getLatest();
     }
 
     @Override
@@ -53,6 +55,7 @@ public class PriceListView extends Div {
         button.addClickListener(e -> attachEvent.getUI().navigate(NordpoolspotView.class));
         add(button);
         renderView(attachEvent.getUI().getLocale());
+        //renderViewPakastin(attachEvent.getUI().getLocale());
     }
 
     void renderView(Locale locale) {
@@ -61,6 +64,81 @@ public class PriceListView extends Div {
             return;
         }
         addRows(data, locale);
+    }
+
+    void renderViewPakastin(Locale locale) {
+        PakastinSpotService.updateData();
+        var data = getLatest7Days();
+        if (data == null || data.isEmpty()) {
+            return;
+        }
+        addRows(data, locale);
+    }
+
+    private void addRows(List<PakastinResponse.Price> data, Locale locale) {
+        Collection<Component> containerList = new ArrayList<>();
+        Div currentTimeDiv = null;
+        final var nowLocalDateTime = getCurrentInstantHourPrecisionFinnishZone();
+        Div dayDiv = null;
+        Span daySpan;
+        var day = data.get(0).date;
+        boolean first = true;
+        for (PakastinResponse.Price price : data) {
+            var currentDay = price.date;
+            if (currentDay.atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS).isAfter(day.atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS)) || first) {
+                first = false;
+                day = currentDay;
+                dayDiv = createDayDiv();
+                daySpan = createDaySpan();
+                daySpan.setText(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale).format(price.date.atZone(fiZoneID)));
+                dayDiv.add(daySpan);
+                containerList.add(dayDiv);
+            }
+            final var timeDiv = createTimeDiv();
+            final var localDateTime = price.date.atZone(fiZoneID).toLocalDateTime();
+            final var timeSpan = new Span(DateTimeFormatter.ofPattern("HH:mm").format(localDateTime));
+            final var vatPrice = price.value * 1.24 / 10;
+            final var priceSpan = new Span(threeDecimals.format(vatPrice) + "¢");
+            timeDiv.add(timeSpan, priceSpan);
+            dayDiv.add(timeDiv);
+            if (vatPrice <= cheapLimit) {
+                priceSpan.addClassName("color-green");
+            }
+            if (vatPrice > cheapLimit && vatPrice < expensiveLimit) {
+                priceSpan.addClassName("list-blue");
+            }
+            if (vatPrice >= expensiveLimit) {
+                priceSpan.addClassName("list-red");
+            }
+            if (Objects.equals(localDateTime, nowLocalDateTime)) {
+                timeDiv.addClassNames(LumoUtility.Background.CONTRAST_10);
+            }
+            // Due to the sticky position of some elements we need to scroll to the position of -2h
+            if (Objects.equals(localDateTime, nowLocalDateTime.minusHours(2))) {
+                currentTimeDiv = timeDiv;
+            }
+        }
+        add(containerList);
+        currentTimeDiv.scrollIntoView();
+    }
+
+    private Div createDayDiv() {
+        final var dayDiv = new Div();
+        dayDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.JustifyContent.CENTER);
+        return dayDiv;
+    }
+
+    private Span createDaySpan() {
+        final var daySpan = new Span();
+        daySpan.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER, LumoUtility.Padding.MEDIUM, LumoUtility.Background.BASE);
+        daySpan.addClassNames(LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL, LumoUtility.Border.BOTTOM, LumoUtility.BorderColor.CONTRAST_10, "sticky-date");
+        return daySpan;
+    }
+
+    private Div createTimeDiv() {
+        final var div = new Div();
+        div.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.BETWEEN, LumoUtility.Border.BOTTOM, LumoUtility.BorderColor.CONTRAST_10, LumoUtility.Padding.SMALL, LumoUtility.Padding.Horizontal.MEDIUM);
+        return div;
     }
 
     private void addRows(NordpoolResponse data, Locale locale) {

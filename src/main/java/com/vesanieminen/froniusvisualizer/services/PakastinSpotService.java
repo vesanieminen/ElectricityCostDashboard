@@ -10,6 +10,11 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentInstantDayPrecisionFinnishZone;
 
 public class PakastinSpotService {
 
@@ -32,8 +37,13 @@ public class PakastinSpotService {
         }
     }
 
-    public static PakastinResponse getLatest() {
-        return pakastinResponse;
+    public static List<PakastinResponse.Price> getLatest() {
+        return pakastinResponse.prices;
+    }
+
+    public static List<PakastinResponse.Price> getLatest7Days() {
+        final var oneWeekBack = getCurrentInstantDayPrecisionFinnishZone().minus(7, ChronoUnit.DAYS);
+        return pakastinResponse.prices.stream().filter(item -> oneWeekBack.isBefore(item.date)).collect(Collectors.toList());
     }
 
 }

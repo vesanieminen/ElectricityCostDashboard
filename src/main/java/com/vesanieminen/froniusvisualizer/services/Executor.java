@@ -11,6 +11,7 @@ public class Executor {
         executorService.scheduleAtFixedRate(FingridService::updateFingridRealtimeData, 0, 30, TimeUnit.MINUTES);
         executorService.scheduleAtFixedRate(FingridService::updateWindEstimateData, 0, 30, TimeUnit.MINUTES);
         executorService.scheduleAtFixedRate(NordpoolSpotService::updateNordpoolData, 0, 30, TimeUnit.MINUTES);
+        //executorService.scheduleAtFixedRate(PakastinSpotService::updateData, 0, 30, TimeUnit.MINUTES);
     }
 
     public static void init() {
