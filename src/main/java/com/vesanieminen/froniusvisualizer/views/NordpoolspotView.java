@@ -167,7 +167,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
                 production.setTitle(getTranslation("Production") + "GWh/h");
                 production.getLabels().setFormatter("return this.value/1000");
                 YAxis price = chart.getConfiguration().getyAxis(1);
-                price.setTitle(getTranslation("Price") + " c/kWh");
+                price.setTitle(getTranslation("Price") + " " + getTranslation("c/kWh"));
                 price.getLabels().setFormatter(null);
             }
             chart.drawChart(true);
@@ -194,9 +194,9 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         var pricesLayout = new Div(priceNow, nextPrice, lowestAndHighest, averagePrice);
         try {
             final var averagePriceThisMonth = calculateSpotAveragePriceThisMonth();
-            pricesLayout.add(new DoubleLabel(getTranslation("Average this month"), decimalFormat.format(averagePriceThisMonth) + " c/kWh"));
+            pricesLayout.add(new DoubleLabel(getTranslation("Average this month"), decimalFormat.format(averagePriceThisMonth) + " " + getTranslation("c/kWh")));
             final var averagePriceThisYear = calculateSpotAveragePriceThisYear();
-            pricesLayout.add(new DoubleLabel(getTranslation("Average this year"), decimalFormat.format(averagePriceThisYear) + " c/kWh"));
+            pricesLayout.add(new DoubleLabel(getTranslation("Average this year"), decimalFormat.format(averagePriceThisYear) + " " + getTranslation("c/kWh")));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -481,10 +481,10 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
                     ++amount;
                     dataSeriesItem.setY(y);
                     if (Objects.equals(localDateTime, now)) {
-                        priceNow.setTitleBottom(Utils.decimalFormat.format(y) + " c/kWh");
+                        priceNow.setTitleBottom(Utils.decimalFormat.format(y) + " " + getTranslation("c/kWh"));
                     }
                     if (Objects.equals(localDateTime, now.plusHours(1))) {
-                        nextPrice.setTitleBottom(Utils.decimalFormat.format(y) + " c/kWh");
+                        nextPrice.setTitleBottom(Utils.decimalFormat.format(y) + " " + getTranslation("c/kWh"));
                     }
                     if (localDateTime.getDayOfMonth() == now.getDayOfMonth()) {
                         if (y > highest) {
@@ -502,8 +502,8 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
             }
             --columnIndex;
         }
-        lowestAndHighest.setTitleBottom(Utils.decimalFormat.format(lowest) + " / " + Utils.decimalFormat.format(highest) + " c/kWh");
-        averagePrice.setTitleBottom(Utils.decimalFormat.format(total / amount) + " c/kWh");
+        lowestAndHighest.setTitleBottom(Utils.decimalFormat.format(lowest) + " / " + Utils.decimalFormat.format(highest) + " " + getTranslation("c/kWh"));
+        averagePrice.setTitleBottom(Utils.decimalFormat.format(total / amount) + " " + getTranslation("c/kWh"));
         series.add(0, dataSeries);
         chart.getConfiguration().setSeries(series);
         return dataSeries;
