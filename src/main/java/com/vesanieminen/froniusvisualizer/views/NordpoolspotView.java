@@ -308,13 +308,13 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         chart.getConfiguration().addxAxis(xAxis);
     }
 
-    private static void configureChartTooltips(Chart chart, DataSeries hydroPowerSeries, DataSeries windPowerSeries, DataSeries nuclearPowerSeries, DataSeries solarPowerSeries, DataSeries consumptionSeries, DataSeries importExportSeries, DataSeries spotPriceDataSeries, DataSeries windEstimateDataSeries, DataSeries renewablesSeries) {
+    private void configureChartTooltips(Chart chart, DataSeries hydroPowerSeries, DataSeries windPowerSeries, DataSeries nuclearPowerSeries, DataSeries solarPowerSeries, DataSeries consumptionSeries, DataSeries importExportSeries, DataSeries spotPriceDataSeries, DataSeries windEstimateDataSeries, DataSeries renewablesSeries) {
         final var plotOptionsLineSpot = new PlotOptionsLine();
         plotOptionsLineSpot.setStickyTracking(true);
         plotOptionsLineSpot.setMarker(new Marker(false));
         final var seriesTooltipSpot = new SeriesTooltip();
         seriesTooltipSpot.setValueDecimals(2);
-        seriesTooltipSpot.setValueSuffix(" c/kWh");
+        seriesTooltipSpot.setValueSuffix(" " + getTranslation("c/kWh"));
         final var dateTimeLabelFormats = new DateTimeLabelFormats();
         seriesTooltipSpot.setDateTimeLabelFormats(dateTimeLabelFormats);
         plotOptionsLineSpot.setTooltip(seriesTooltipSpot);

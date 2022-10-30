@@ -36,8 +36,8 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentInstantHou
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
 import static com.vesanieminen.froniusvisualizer.util.Utils.threeDecimals;
 
-@Route("price-list")
-@RouteAlias("hintalista")
+@Route("hintalista")
+@RouteAlias("price-list")
 public class PriceListView extends Div {
 
     private static final double expensiveLimit = 10;

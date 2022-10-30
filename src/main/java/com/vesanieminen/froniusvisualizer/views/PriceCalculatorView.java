@@ -54,8 +54,8 @@ import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService
 import static com.vesanieminen.froniusvisualizer.util.Utils.decimalFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
 
-@Route("price-calculator")
-@RouteAlias("hintalaskuri")
+@Route("hintalaskuri")
+@RouteAlias("price-calculator")
 public class PriceCalculatorView extends Div {
 
     private static int consumptionFilesUploaded = 0;
