@@ -174,10 +174,10 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
             chart.getConfiguration().getRangeSelector().setSelected(2);
             if (screenWidth < 1000) {
                 YAxis production = chart.getConfiguration().getyAxis(0);
-                production.setTitle(getTranslation("Production") + "GWh/h");
+                production.setTitle(getTranslation("Production") + " (GWh/h)");
                 production.getLabels().setFormatter("return this.value/1000");
                 YAxis price = chart.getConfiguration().getyAxis(1);
-                price.setTitle(getTranslation("Price") + " " + getTranslation("c/kWh"));
+                price.setTitle(getTranslation("Price") + " (" + getTranslation("c/kWh") + ")");
                 price.getLabels().setFormatter(null);
             }
             chart.drawChart(true);
