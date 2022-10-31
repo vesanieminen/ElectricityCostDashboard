@@ -301,7 +301,7 @@ public class PriceCalculatorView extends Div {
         consumptionUpload.addSucceededListener(event -> {
             FileData savedFileData = fileBuffer.getFileData();
             lastConsumptionFile = savedFileData.getFile().getAbsolutePath();
-            System.out.printf("Consumption files uploaded: " + ++consumptionFilesUploaded);
+            System.out.println("Consumption files uploaded: " + ++consumptionFilesUploaded);
             try {
                 final var consumptionData = getFingridUsageData(lastConsumptionFile);
                 final var isStartProductionAfter = startProduction != null && startProduction.isAfter(consumptionData.start);
@@ -327,7 +327,7 @@ public class PriceCalculatorView extends Div {
         productionUpload.addSucceededListener(event -> {
             FileData savedFileData = fileBuffer.getFileData();
             lastProductionFile = savedFileData.getFile().getAbsolutePath();
-            System.out.printf("Production files uploaded: " + ++productionFilesUploaded);
+            System.out.println("Production files uploaded: " + ++productionFilesUploaded);
             try {
                 final var productionData = getFingridUsageData(lastProductionFile);
                 final var isStartConsumptionAfter = startConsumption != null && startConsumption.isAfter(productionData.start);
