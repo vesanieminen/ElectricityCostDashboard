@@ -8,7 +8,6 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.services.FroniusService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -20,10 +19,9 @@ public class FroniusLiveView extends Div {
     private final Span productionSpan;
     private final Span yieldSpan;
     private final Span yearSpan;
-    private FroniusService froniusService;
+    private FroniusService froniusService = new FroniusService();
 
-    public FroniusLiveView(@Autowired FroniusService froniusService) throws ExecutionException, InterruptedException {
-        this.froniusService = froniusService;
+    public FroniusLiveView() throws ExecutionException, InterruptedException {
 
         addClassNames(LumoUtility.FlexDirection.ROW, LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.JustifyContent.CENTER);
 

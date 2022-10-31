@@ -1,7 +1,5 @@
 package com.vesanieminen.froniusvisualizer.services;
 
-import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -9,7 +7,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-@Service
 public class QueryService {
 
     public HttpResponse<String> getTVOPage() throws URISyntaxException, IOException, InterruptedException {

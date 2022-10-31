@@ -2,7 +2,6 @@ package com.vesanieminen.froniusvisualizer.services;
 
 import com.google.gson.Gson;
 import com.vesanieminen.froniusvisualizer.services.model.APIVersion;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URI;
@@ -13,7 +12,6 @@ import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-@Service
 public class FroniusService {
 
     private final String IP_ADDRESS = "http://192.168.1.79";
