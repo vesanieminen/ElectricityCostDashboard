@@ -37,6 +37,7 @@ import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService;
 import org.vaadin.miki.superfields.numbers.SuperDoubleField;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -228,7 +229,10 @@ public class PriceCalculatorView extends Div {
                 resultLayout.add(new DoubleLabel(getTranslation("Total spot cost (incl. margin)"), decimalFormat.format(spotCalculation.totalCost) + "€", true));
                 resultLayout.add(new DoubleLabel(getTranslation("Total spot cost (without margin)"), decimalFormat.format(spotCalculation.totalCostWithoutMargin) + "€", true));
                 resultLayout.add(new DoubleLabel(getTranslation("Unweighted spot average"), decimalFormat.format(spotCalculation.averagePrice) + " c/kWh", true));
-                resultLayout.add(new DoubleLabel(getTranslation("Lowered cost vs average spot"), decimalFormat.format((weightedAverage - spotCalculation.averagePrice) / spotCalculation.averagePrice * 100) + "%", true));
+                final var loweredCost = (weightedAverage - spotCalculation.averagePrice) / spotCalculation.averagePrice * 100;
+                final var df = new DecimalFormat("#0.00");
+                df.setPositivePrefix("+");
+                resultLayout.add(new DoubleLabel(getTranslation("Lowered cost vs average spot"), df.format(loweredCost) + "%", true));
 
                 var fixedCost = 0d;
                 if (isCalculatingFixed()) {
