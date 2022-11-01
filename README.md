@@ -1,5 +1,8 @@
 # ElectricityCostDashboard
 
+<img width="910" alt="Screenshot 2022-11-01 at 22 53 53" src="https://user-images.githubusercontent.com/108755/199339058-91df53c0-cca2-4185-9a28-850b05004b7c.png">
+
+
 This is a simple web app visualizing the current electricity prices and sources, inspired by exceptionally high electricity prices in 2022. 
 Built using [Vaadin](https://vaadin.com/) & [Spring Boot](https://spring.io/). A hosted version is available at [sahko.vesanieminen.com](http://sahko.vesanieminen.com).
 
