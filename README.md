@@ -1,10 +1,22 @@
 # ElectricityCostDashboard
 
+This is a web app visualizing the current electricity prices and sources, inspired by exceptionally high electricity prices in 2022. In addition it also features an electricity cost calculator with which you can determine how much your electricity consumption in Finland has cost based on real Fingrid datahub exported data.
+Built using [Vaadin](https://vaadin.com/) & [Spring Boot](https://spring.io/). A hosted version is available at [sahko.vesanieminen.com](http://sahko.vesanieminen.com).
+
+## Visualizer
+Inspired by sahko.tk. Added my own twist to it with Fingrid public data to see e.g. the current wind production and production estimate in order to see its correlation to the price.
+
 <img width="910" alt="Screenshot 2022-11-01 at 22 53 53" src="https://user-images.githubusercontent.com/108755/199339058-91df53c0-cca2-4185-9a28-850b05004b7c.png">
 
+## Calculator
+With this you can calculate the true costs of your electricity sale contract. Also you can compare the market spot price to a fixed on in order to see which one would have been the cheaper option for you.
 
-This is a simple web app visualizing the current electricity prices and sources, inspired by exceptionally high electricity prices in 2022. 
-Built using [Vaadin](https://vaadin.com/) & [Spring Boot](https://spring.io/). A hosted version is available at [sahko.vesanieminen.com](http://sahko.vesanieminen.com).
+![Screenshot 2022-10-28 at 21 34 32](https://user-images.githubusercontent.com/108755/199401516-603172ab-e833-43c9-9d40-e51bbcb861e0.png)
+
+## List
+The UI is inspired by Fingrid Tuntihinta app.
+
+<img width="496" alt="Screenshot 2022-11-02 at 6 55 51" src="https://user-images.githubusercontent.com/108755/199401633-098ef27b-c135-4580-a972-ef791528878e.png">
 
 ## Running the application
 
