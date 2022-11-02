@@ -7,6 +7,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -82,4 +83,11 @@ public class Utils {
     public static ZonedDateTime getNextHour() {
         return ZonedDateTime.now(fiZoneID).withMinute(0).withSecond(0).plusHours(1);
     }
+
+    public static long getSecondsToNextEvenHour() {
+        ZonedDateTime now = ZonedDateTime.now(Utils.fiZoneID);
+        ZonedDateTime nextHour = Utils.getNextHour();
+        return Duration.between(now, nextHour).getSeconds();
+    }
+
 }
