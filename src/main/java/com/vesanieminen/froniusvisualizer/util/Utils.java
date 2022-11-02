@@ -10,6 +10,7 @@ import java.text.NumberFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
@@ -36,7 +37,7 @@ public class Utils {
 
     public static LocalDateTime getCurrentTimeWithHourPrecision() {
         final var now = LocalDateTime.now(fiZoneID);
-        return now.minusMinutes(now.getMinute()).minusSeconds(now.getSecond()).minusNanos(now.getNano());
+        return now.withMinute(0).withSecond(0).withNano(0);
     }
 
     public static Instant getCurrentInstantHourPrecision() {
@@ -78,4 +79,7 @@ public class Utils {
         return URLEncoder.encode(url, StandardCharsets.UTF_8);
     }
 
+    public static ZonedDateTime getNextHour() {
+        return ZonedDateTime.now(fiZoneID).withMinute(0).withSecond(0).plusHours(1);
+    }
 }
