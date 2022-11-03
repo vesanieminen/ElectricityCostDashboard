@@ -58,8 +58,8 @@ public class Utils {
         return localDateTime.atZone(nordpoolZoneID).withZoneSameInstant(fiZoneID).toLocalDateTime();
     }
 
-    public static void printSizeOf(Object object) {
-        System.out.println(GraphLayout.parseInstance(object).toFootprint());
+    public static String sizeOf(Object object) {
+        return GraphLayout.parseInstance(object).toFootprint();
     }
 
     public static double[] sum(double[] first, double[] second) {

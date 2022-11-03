@@ -34,6 +34,7 @@ import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
 import com.vesanieminen.froniusvisualizer.components.Footer;
 import com.vesanieminen.froniusvisualizer.components.Spacer;
 import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService;
+import lombok.extern.slf4j.Slf4j;
 import org.vaadin.miki.superfields.numbers.SuperDoubleField;
 
 import java.io.IOException;
@@ -57,6 +58,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
 
 @Route("hintalaskuri")
 @RouteAlias("price-calculator")
+@Slf4j
 public class PriceCalculatorView extends Div {
 
     private static int consumptionFilesUploaded = 0;
@@ -213,7 +215,7 @@ public class PriceCalculatorView extends Div {
                     }
                 }
                 final var consumptionData = getFingridUsageData(lastConsumptionFile);
-                final var spotCalculation = calculateSpotElectricityPriceDetails(consumptionData.data, spotMarginField.getValue(), fromDateTimePicker.getValue(), toDateTimePicker.getValue());
+                final var spotCalculation = calculateSpotElectricityPriceDetails(consumptionData.data, spotMarginField.getValue(), 1.24, fromDateTimePicker.getValue(), toDateTimePicker.getValue());
                 resultLayout.removeAll();
                 chartLayout.removeAll();
                 final var start = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(fiLocale).format(spotCalculation.start);
@@ -246,7 +248,7 @@ public class PriceCalculatorView extends Div {
 
                 if (isCalculatingProduction()) {
                     final var productionData = getFingridUsageData(lastProductionFile);
-                    final var spotProductionCalculation = calculateSpotElectricityPriceDetails(productionData.data, -spotProductionMarginField.getValue(), fromDateTimePicker.getValue(), toDateTimePicker.getValue());
+                    final var spotProductionCalculation = calculateSpotElectricityPriceDetails(productionData.data, -spotProductionMarginField.getValue(), 1.24, fromDateTimePicker.getValue(), toDateTimePicker.getValue());
                     resultLayout.add(new DoubleLabel(getTranslation("Total production over period"), decimalFormat.format(spotProductionCalculation.totalAmount) + "kWh", true));
                     resultLayout.add(new DoubleLabel(getTranslation("Net spot cost (consumption - production)"), decimalFormat.format(spotCalculation.totalCost - spotProductionCalculation.totalCost) + "€", true));
                     resultLayout.add(new DoubleLabel(getTranslation("Net usage (consumption - production)"), decimalFormat.format(spotCalculation.totalAmount - spotProductionCalculation.totalAmount) + "kWh", true));
@@ -305,7 +307,7 @@ public class PriceCalculatorView extends Div {
         consumptionUpload.addSucceededListener(event -> {
             FileData savedFileData = fileBuffer.getFileData();
             lastConsumptionFile = savedFileData.getFile().getAbsolutePath();
-            System.out.println("Consumption files uploaded: " + ++consumptionFilesUploaded);
+            log.info("Consumption files uploaded: " + ++consumptionFilesUploaded);
             try {
                 final var consumptionData = getFingridUsageData(lastConsumptionFile);
                 final var isStartProductionAfter = startProduction != null && startProduction.isAfter(consumptionData.start);
@@ -331,7 +333,7 @@ public class PriceCalculatorView extends Div {
         productionUpload.addSucceededListener(event -> {
             FileData savedFileData = fileBuffer.getFileData();
             lastProductionFile = savedFileData.getFile().getAbsolutePath();
-            System.out.println("Production files uploaded: " + ++productionFilesUploaded);
+            log.info("Production files uploaded: " + ++productionFilesUploaded);
             try {
                 final var productionData = getFingridUsageData(lastProductionFile);
                 final var isStartConsumptionAfter = startConsumption != null && startConsumption.isAfter(productionData.start);
