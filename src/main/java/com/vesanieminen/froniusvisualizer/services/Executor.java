@@ -14,7 +14,7 @@ public class Executor {
     static {
         ScheduledExecutorService executorService = Executors.newScheduledThreadPool(2);
         executorService.schedule(Executor::updateAll, 0, TimeUnit.SECONDS);
-        executorService.scheduleAtFixedRate(Executor::updateAll, getSecondsToNextEvenHour(), TimeUnit.MINUTES.toSeconds(1), TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(Executor::updateAll, getSecondsToNextEvenHour(), TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS);
     }
 
     private static void updateAll() {
