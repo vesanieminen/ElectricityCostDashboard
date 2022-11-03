@@ -101,6 +101,7 @@ public class PakastinSpotService {
     public static void getAndWriteToFile2YearData() {
         final var stringHttpResponse = runQuery(createQuery(getStartOfDay(2021, 1, 1), Instant.now().plus(10, ChronoUnit.DAYS)));
         try {
+            log.info("Writing file: " + Paths.get(pakastin2YearFile).getFileName());
             Files.write(Paths.get(pakastin2YearFile), stringHttpResponse.body().getBytes());
         } catch (IOException e) {
             log.error("Error writing to file", e);
