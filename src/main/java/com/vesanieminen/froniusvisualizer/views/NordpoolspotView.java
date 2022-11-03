@@ -48,7 +48,6 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -61,6 +60,7 @@ import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService
 import static com.vesanieminen.froniusvisualizer.util.Utils.decimalFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
+import static com.vesanieminen.froniusvisualizer.util.Utils.utcZone;
 
 @Route("")
 public class NordpoolspotView extends Div implements HasUrlParameter<String> {
@@ -483,7 +483,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
                 final var dateTimeString = column.Name + " " + time;
                 final var dataLocalDataTime = LocalDateTime.parse(dateTimeString, dateTimeFormatter);
                 final var instant = dataLocalDataTime.toInstant(ZoneOffset.of("-01:00"));
-                final var localDateTime = LocalDateTime.ofInstant(instant, ZoneId.of("UTC"));
+                final var localDateTime = LocalDateTime.ofInstant(instant, utcZone);
                 dataSeriesItem.setX(instant);
                 try {
                     final var y = numberFormat.parse(column.Value).doubleValue() * vat / 10;

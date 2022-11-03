@@ -26,6 +26,7 @@ public class Utils {
 
     public static final ZoneId fiZoneID = ZoneId.of("Europe/Helsinki");
     public static final ZoneId nordpoolZoneID = ZoneId.of("Europe/Oslo");
+    public static final ZoneId utcZone = ZoneId.of("UTC");
     public static final Locale fiLocale = new Locale("fi", "FI");
     public static final Locale enLocale = new Locale("en", "GB");
     public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
@@ -88,6 +89,14 @@ public class Utils {
         ZonedDateTime now = ZonedDateTime.now(Utils.fiZoneID);
         ZonedDateTime nextHour = Utils.getNextHour();
         return Duration.between(now, nextHour).getSeconds();
+    }
+
+    public static Instant getStartOfDay(int year, int month, int day) {
+        return ZonedDateTime.of(year, month, day, 0, 00, 0, 0, fiZoneID).withZoneSameInstant(utcZone).toInstant();
+    }
+
+    public static Instant getEndOfDay(int year, int month, int day) {
+        return ZonedDateTime.of(year, month, day, 23, 59, 0, 0, fiZoneID).withZoneSameInstant(utcZone).toInstant();
     }
 
 }
