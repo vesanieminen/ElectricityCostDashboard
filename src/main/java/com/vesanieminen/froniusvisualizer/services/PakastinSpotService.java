@@ -31,6 +31,7 @@ public class PakastinSpotService {
     private static final String url = "https://pakastin.fi/hinnat/prices?";
     public static final String pakastinFile = "pakastin.json";
     public static final String pakastin2YearFile = "pakastin-2-year.json";
+    public static final String pakastinTempFile = "src/main/resources/data/pakastin/spot.json";
 
     // Format with timestamps
     // https://pakastin.fi/hinnat/prices?start=2022-10-01T00:00:00.000Z&end=2022-10-31T23:59:00.000Z

@@ -19,7 +19,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.mapToResponse;
-import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.pakastin2YearFile;
+import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.pakastinTempFile;
 import static com.vesanieminen.froniusvisualizer.util.Utils.divide;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
@@ -29,7 +29,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.sum;
 @Slf4j
 public class PriceCalculatorService {
 
-    public static final String spotPriceDataFile = "src/main/resources/data/sahko.tk/chart.csv";
+    public static final String spotPriceDataFile = "src/main/resources/data/sahko.tk/chart-alv0.csv";
 
     public static final DateTimeFormatter datetimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static LinkedHashMap<LocalDateTime, Double> spotPriceMap;
@@ -63,7 +63,7 @@ public class PriceCalculatorService {
         spotPriceMapPakastin = new LinkedHashMap<>();
         final String file;
         try {
-            file = Files.readString(Path.of(pakastin2YearFile));
+            file = Files.readString(Path.of(pakastinTempFile));
         } catch (IOException e) {
             log.error("Could not load the spot price file", e);
             throw new RuntimeException(e);
