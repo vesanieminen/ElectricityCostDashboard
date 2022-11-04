@@ -14,7 +14,7 @@ With this you can calculate the true costs of your electricity sale contract. Al
 ![Screenshot 2022-10-28 at 21 34 32](https://user-images.githubusercontent.com/108755/199401516-603172ab-e833-43c9-9d40-e51bbcb861e0.png)
 
 ## List
-The UI is inspired by Fingrid Tuntihinta app.
+The UI is inspired by Fingrid Tuntihinta app. (My wife hates graphs so I built this for her 😉)
 
 <img width="496" alt="Screenshot 2022-11-02 at 6 55 51" src="https://user-images.githubusercontent.com/108755/199401633-098ef27b-c135-4580-a972-ef791528878e.png">
 
