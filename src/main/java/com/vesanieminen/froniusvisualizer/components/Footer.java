@@ -38,7 +38,13 @@ public class Footer extends Div {
         githubLink.add(githubIcon);
         githubIcon.addClassNames(LumoUtility.IconSize.MEDIUM, LumoUtility.TextColor.PRIMARY, LumoUtility.Margin.Left.SMALL);
 
-        add(vaadinLink, kofiLink, githubLink);
+        final var discordIcon = new Image("icons/discord-mark-blue.png", "Discord icon");
+        final var discordLink = new Anchor("https://discord.com/invite/WHcY2UkWVp", getTranslation("Join Discord"));
+        discordLink.addClassNames(LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER);
+        discordLink.add(discordIcon);
+        discordIcon.addClassNames(LumoUtility.IconSize.MEDIUM, LumoUtility.TextColor.PRIMARY, LumoUtility.Margin.Left.SMALL);
+
+        add(vaadinLink, kofiLink, githubLink, discordLink);
     }
 
 }
