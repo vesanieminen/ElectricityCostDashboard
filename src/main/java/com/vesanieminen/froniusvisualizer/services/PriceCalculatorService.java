@@ -19,7 +19,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.mapToResponse;
-import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.pakastinTempFile;
+import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.pakastin2YearFile;
 import static com.vesanieminen.froniusvisualizer.util.Utils.divide;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
@@ -63,7 +63,7 @@ public class PriceCalculatorService {
         spotPriceMapPakastin = new LinkedHashMap<>();
         final String file;
         try {
-            file = Files.readString(Path.of(pakastinTempFile));
+            file = Files.readString(Path.of(pakastin2YearFile));
         } catch (IOException e) {
             log.error("Could not load the spot price file", e);
             throw new RuntimeException(e);
@@ -142,7 +142,7 @@ public class PriceCalculatorService {
         return fingridConsumptionData.keySet().stream().filter(spotData::containsKey).map(item -> (spotData.get(item) + margin) * fingridConsumptionData.get(item)).reduce(0d, Double::sum) / 100;
     }
 
-    public static SpotCalculation calculateSpotElectricityPriceDetails(LinkedHashMap<LocalDateTime, Double> fingridConsumptionData, double margin, double vat) throws IOException {
+    public static SpotCalculation calculateSpotElectricityPriceDetails(LinkedHashMap<LocalDateTime, Double> fingridConsumptionData, double margin, double vat) {
         final var spotData = getSpotData();
         final var spotCalculation = fingridConsumptionData.keySet().stream().filter(spotData::containsKey)
                 .map(item -> new SpotCalculation(
