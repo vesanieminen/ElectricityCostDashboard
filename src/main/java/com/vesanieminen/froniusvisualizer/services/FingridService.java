@@ -72,6 +72,7 @@ public class FingridService {
     }
 
     private static FingridRealtimeResponse cachedFingridRealtimeResponse;
+    public static LocalDateTime fingridDataUpdated;
     private static FingridRealtimeResponse cachedFingridRealtimeResponseForMonth;
     private static List<FingridLiteResponse> cachedWindEstimateResponses;
 
@@ -114,6 +115,7 @@ public class FingridService {
     public static String createFingridRealtimeQuery() {
         Map<String, String> requestParams = new HashMap<>();
         final var now = getCurrentTimeWithHourPrecision();
+        fingridDataUpdated = now;
         // Nordpool gives data for the next day at 14:00. Before that we need to retrieve 6 days back and after 5 to match the amount of Fingrid and Nordpool history
         var daysBack = now.getHour() < 14 ? 6 : 5;
         requestParams.put("start", createFingridDateTimeString(now.minusDays(daysBack)));

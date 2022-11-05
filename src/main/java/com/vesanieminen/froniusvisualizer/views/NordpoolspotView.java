@@ -55,6 +55,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import static com.vesanieminen.froniusvisualizer.services.FingridService.fingridDataUpdated;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisYear;
 import static com.vesanieminen.froniusvisualizer.util.Utils.decimalFormat;
@@ -215,10 +216,16 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         add(pricesLayout);
 
         if (nordpoolResponse != null && nordpoolResponse.isValid()) {
-            final var dateUpdated = format(nordpoolResponse.data.DateUpdated, getLocale());
-            final var span = new Span(getTranslation("spot.data.updated") + ": " + dateUpdated);
-            span.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
-            add(span);
+            final var spotDataUpdated = format(nordpoolResponse.data.DateUpdated, getLocale());
+            final var spotDataUpdatedSpan = new Span(getTranslation("spot.data.updated") + ": " + spotDataUpdated + ", ");
+            spotDataUpdatedSpan.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
+
+            final var fingridDataUpdatedFormatted = format(fingridDataUpdated, getLocale());
+            final var fingridDataUpdatedSpan = new Span(getTranslation("fingrid.data.updated") + ": " + fingridDataUpdatedFormatted);
+            fingridDataUpdatedSpan.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
+            final var div = new Div(spotDataUpdatedSpan, fingridDataUpdatedSpan);
+            div.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Gap.Column.XSMALL, LumoUtility.Margin.Horizontal.MEDIUM, LumoUtility.JustifyContent.CENTER);
+            add(div);
         }
 
         var chart = new Chart(ChartType.LINE);
