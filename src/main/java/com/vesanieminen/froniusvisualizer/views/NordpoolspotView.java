@@ -58,6 +58,7 @@ import java.util.Objects;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisYear;
 import static com.vesanieminen.froniusvisualizer.util.Utils.decimalFormat;
+import static com.vesanieminen.froniusvisualizer.util.Utils.format;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.utcZone;
@@ -212,6 +213,13 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         }
         pricesLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Width.FULL);
         add(pricesLayout);
+
+        if (nordpoolResponse != null && nordpoolResponse.isValid()) {
+            final var dateUpdated = format(nordpoolResponse.data.DateUpdated, getLocale());
+            final var span = new Span(getTranslation("spot.data.updated") + ": " + dateUpdated);
+            span.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
+            add(span);
+        }
 
         var chart = new Chart(ChartType.LINE);
         // Buggy still and cannot be enabled yet:

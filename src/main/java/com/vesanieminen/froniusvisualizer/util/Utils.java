@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Locale;
@@ -98,5 +99,11 @@ public class Utils {
     public static Instant getEndOfDay(int year, int month, int day) {
         return ZonedDateTime.of(year, month, day, 23, 59, 0, 0, fiZoneID).withZoneSameInstant(utcZone).toInstant();
     }
+
+
+    public static String format(LocalDateTime localDateTime, Locale locale) {
+        return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(locale).format(localDateTime);
+    }
+
 
 }

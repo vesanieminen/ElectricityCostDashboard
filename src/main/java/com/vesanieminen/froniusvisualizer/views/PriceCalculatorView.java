@@ -41,8 +41,6 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -56,7 +54,7 @@ import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataEnd;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataStart;
 import static com.vesanieminen.froniusvisualizer.util.Utils.decimalFormat;
-import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
+import static com.vesanieminen.froniusvisualizer.util.Utils.format;
 
 @Route("hintalaskuri")
 @RouteAlias("price-calculator")
@@ -106,11 +104,9 @@ public class PriceCalculatorView extends Div {
         spanMonth.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
         content.add(spanMonth);
 
-        final var spotDataAvailableStart = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(fiLocale).format(spotDataStart);
-        final var spotDataAvailableEnd = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(fiLocale).format(spotDataEnd);
         final var timeRangeSpanCaption = new Span(getTranslation("spot.data.available") + ":");
         timeRangeSpanCaption.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
-        final var timeRangeSpan = new Span(spotDataAvailableStart + " - " + spotDataAvailableEnd);
+        final var timeRangeSpan = new Span(format(spotDataStart, getLocale()) + " - " + format(spotDataEnd, getLocale()));
         timeRangeSpan.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
         final var spotDataDiv = new Div(timeRangeSpanCaption, timeRangeSpan);
         spotDataDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Gap.Column.XSMALL);
@@ -161,12 +157,12 @@ public class PriceCalculatorView extends Div {
         fromDateTimePicker.setWeekNumbersVisible(true);
         fromDateTimePicker.setDatePickerI18n(new DatePicker.DatePickerI18n().setFirstDayOfWeek(1));
         fromDateTimePicker.setRequiredIndicatorVisible(true);
-        fromDateTimePicker.setLocale(fiLocale);
+        fromDateTimePicker.setLocale(getLocale());
         toDateTimePicker = new DateTimePicker(getTranslation("End period"));
         toDateTimePicker.setWeekNumbersVisible(true);
         toDateTimePicker.setDatePickerI18n(new DatePicker.DatePickerI18n().setFirstDayOfWeek(1));
         toDateTimePicker.setRequiredIndicatorVisible(true);
-        toDateTimePicker.setLocale(fiLocale);
+        toDateTimePicker.setLocale(getLocale());
         content.add(fromDateTimePicker);
         content.add(toDateTimePicker);
 
@@ -176,7 +172,7 @@ public class PriceCalculatorView extends Div {
 
         // Fixed price field
         fixedPriceField = new SuperDoubleField(getTranslation("Fixed price"));
-        fixedPriceField.setLocale(fiLocale);
+        fixedPriceField.setLocale(getLocale());
         fixedPriceField.setHelperText(getTranslation("E.g. 12,68"));
         fixedPriceField.setRequiredIndicatorVisible(true);
         fixedPriceField.setSuffixComponent(new Span(getTranslation("c/kWh")));
@@ -186,7 +182,7 @@ public class PriceCalculatorView extends Div {
 
         // Spot price field
         spotMarginField = new SuperDoubleField(getTranslation("Spot margin"));
-        spotMarginField.setLocale(fiLocale);
+        spotMarginField.setLocale(getLocale());
         spotMarginField.setHelperText(getTranslation("E.g. 0,38"));
         spotMarginField.setRequiredIndicatorVisible(true);
         spotMarginField.setSuffixComponent(new Span(getTranslation("c/kWh")));
@@ -195,7 +191,7 @@ public class PriceCalculatorView extends Div {
 
         // Spot price field
         spotProductionMarginField = new SuperDoubleField(getTranslation("Production margin"));
-        spotProductionMarginField.setLocale(fiLocale);
+        spotProductionMarginField.setLocale(getLocale());
         spotProductionMarginField.setHelperText(getTranslation("E.g. 0,30"));
         spotProductionMarginField.setRequiredIndicatorVisible(true);
         spotProductionMarginField.setSuffixComponent(new Span(getTranslation("c/kWh")));
@@ -230,8 +226,9 @@ public class PriceCalculatorView extends Div {
                 final var spotCalculation = calculateSpotElectricityPriceDetails(consumptionData.data, spotMarginField.getValue(), 1.24, fromDateTimePicker.getValue(), toDateTimePicker.getValue());
                 resultLayout.removeAll();
                 chartLayout.removeAll();
-                final var start = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(fiLocale).format(spotCalculation.start);
-                final var end = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(fiLocale).format(spotCalculation.end);
+
+                final var start = format(spotCalculation.start, getLocale());
+                final var end = format(spotCalculation.end, getLocale());
 
                 // Total labels
                 resultLayout.add(new DoubleLabel(getTranslation("Calculation period (start times)"), start + " - " + end, true));
@@ -246,7 +243,7 @@ public class PriceCalculatorView extends Div {
                 final var loweredCost = (weightedAverage - spotCalculation.averagePrice) / spotCalculation.averagePrice * 100;
                 final var df = new DecimalFormat("#0.00");
                 df.setPositivePrefix("+");
-                resultLayout.add(new DoubleLabel(getTranslation("Lowered cost vs average spot"), df.format(loweredCost) + "%", true));
+                resultLayout.add(new DoubleLabel(getTranslation("calculator.own.spot.vs.average"), df.format(loweredCost) + "%", true));
 
                 var fixedCost = 0d;
                 if (isCalculatingFixed()) {
