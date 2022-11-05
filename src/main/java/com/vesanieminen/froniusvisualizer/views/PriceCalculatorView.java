@@ -38,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.vaadin.miki.superfields.numbers.SuperDoubleField;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -53,8 +53,9 @@ import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getFingridUsageData;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataEnd;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataStart;
-import static com.vesanieminen.froniusvisualizer.util.Utils.decimalFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.format;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormatMaxTwoDecimals;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormatMaxTwoDecimalsWithPlusPrefix;
 
 @Route("hintalaskuri")
 @RouteAlias("price-calculator")
@@ -92,15 +93,17 @@ public class PriceCalculatorView extends Div {
         content.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Padding.Horizontal.MEDIUM);
         wrapper.add(content);
 
+        final NumberFormat numberFormat = getNumberFormatMaxTwoDecimals(getLocale());
+
         final var title = new Span(getTranslation("Spot / fixed electricity price calculator"));
         title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
         content.add(title);
         final var spotAverage = PriceCalculatorService.calculateSpotAveragePriceThisYear();
-        final var span = new Span(getTranslation("Spot average this year") + ": " + decimalFormat.format(spotAverage) + " c/kWh");
+        final var span = new Span(getTranslation("Spot average this year") + ": " + numberFormat.format(spotAverage) + " c/kWh");
         span.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
         content.add(span);
         final var spotAverageMonth = PriceCalculatorService.calculateSpotAveragePriceThisMonth();
-        final var spanMonth = new Span(getTranslation("Spot average this month") + ": " + decimalFormat.format(spotAverageMonth) + " c/kWh");
+        final var spanMonth = new Span(getTranslation("Spot average this month") + ": " + numberFormat.format(spotAverageMonth) + " c/kWh");
         spanMonth.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
         content.add(spanMonth);
 
@@ -173,7 +176,7 @@ public class PriceCalculatorView extends Div {
         // Fixed price field
         fixedPriceField = new SuperDoubleField(getTranslation("Fixed price"));
         fixedPriceField.setLocale(getLocale());
-        fixedPriceField.setHelperText(getTranslation("E.g. 12,68"));
+        fixedPriceField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(12.68));
         fixedPriceField.setRequiredIndicatorVisible(true);
         fixedPriceField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         fixedPriceField.addClassNames(LumoUtility.Flex.GROW);
@@ -183,7 +186,7 @@ public class PriceCalculatorView extends Div {
         // Spot price field
         spotMarginField = new SuperDoubleField(getTranslation("Spot margin"));
         spotMarginField.setLocale(getLocale());
-        spotMarginField.setHelperText(getTranslation("E.g. 0,38"));
+        spotMarginField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(0.38));
         spotMarginField.setRequiredIndicatorVisible(true);
         spotMarginField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         spotMarginField.addClassNames(LumoUtility.Flex.GROW);
@@ -192,7 +195,7 @@ public class PriceCalculatorView extends Div {
         // Spot price field
         spotProductionMarginField = new SuperDoubleField(getTranslation("Production margin"));
         spotProductionMarginField.setLocale(getLocale());
-        spotProductionMarginField.setHelperText(getTranslation("E.g. 0,30"));
+        spotProductionMarginField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(0.3));
         spotProductionMarginField.setRequiredIndicatorVisible(true);
         spotProductionMarginField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         spotProductionMarginField.addClassNames(LumoUtility.Flex.GROW);
@@ -232,24 +235,23 @@ public class PriceCalculatorView extends Div {
 
                 // Total labels
                 resultLayout.add(new DoubleLabel(getTranslation("Calculation period (start times)"), start + " - " + end, true));
-                resultLayout.add(new DoubleLabel(getTranslation("Total consumption over period"), decimalFormat.format(spotCalculation.totalAmount) + "kWh", true));
+                resultLayout.add(new DoubleLabel(getTranslation("Total consumption over period"), numberFormat.format(spotCalculation.totalAmount) + "kWh", true));
 
                 // Spot labels
                 final var weightedAverage = spotCalculation.totalCost / spotCalculation.totalAmount * 100;
-                resultLayout.add(new DoubleLabel(getTranslation("Average spot price (incl. margin)"), decimalFormat.format(weightedAverage) + " c/kWh", true));
-                resultLayout.add(new DoubleLabel(getTranslation("Total spot cost (incl. margin)"), decimalFormat.format(spotCalculation.totalCost) + "€", true));
-                resultLayout.add(new DoubleLabel(getTranslation("Total spot cost (without margin)"), decimalFormat.format(spotCalculation.totalCostWithoutMargin) + "€", true));
-                resultLayout.add(new DoubleLabel(getTranslation("Unweighted spot average"), decimalFormat.format(spotCalculation.averagePrice) + " c/kWh", true));
+                resultLayout.add(new DoubleLabel(getTranslation("Average spot price (incl. margin)"), numberFormat.format(weightedAverage) + " c/kWh", true));
+                resultLayout.add(new DoubleLabel(getTranslation("Total spot cost (incl. margin)"), numberFormat.format(spotCalculation.totalCost) + "€", true));
+                resultLayout.add(new DoubleLabel(getTranslation("Total spot cost (without margin)"), numberFormat.format(spotCalculation.totalCostWithoutMargin) + "€", true));
+                resultLayout.add(new DoubleLabel(getTranslation("Unweighted spot average"), numberFormat.format(spotCalculation.averagePrice) + " c/kWh", true));
                 final var loweredCost = (weightedAverage - spotCalculation.averagePrice) / spotCalculation.averagePrice * 100;
-                final var df = new DecimalFormat("#0.00");
-                df.setPositivePrefix("+");
-                resultLayout.add(new DoubleLabel(getTranslation("calculator.own.spot.vs.average"), df.format(loweredCost) + "%", true));
+                final var formattedOwnSpotVsAverage = getNumberFormatMaxTwoDecimalsWithPlusPrefix(getLocale()).format(loweredCost);
+                resultLayout.add(new DoubleLabel(getTranslation("calculator.own.spot.vs.average"), formattedOwnSpotVsAverage + "%", true));
 
                 var fixedCost = 0d;
                 if (isCalculatingFixed()) {
                     resultLayout.add(new DoubleLabel(getTranslation("Fixed price"), fixedPriceField.getValue() + " c/kWh", true));
                     fixedCost = calculateFixedElectricityPrice(consumptionData.data, fixedPriceField.getValue(), fromDateTimePicker.getValue(), toDateTimePicker.getValue());
-                    resultLayout.add(new DoubleLabel(getTranslation("Fixed cost total"), decimalFormat.format(fixedCost) + "€", true));
+                    resultLayout.add(new DoubleLabel(getTranslation("Fixed cost total"), numberFormat.format(fixedCost) + "€", true));
                 }
 
                 // Create spot consumption chart
@@ -258,15 +260,15 @@ public class PriceCalculatorView extends Div {
                 if (isCalculatingProduction()) {
                     final var productionData = getFingridUsageData(lastProductionFile);
                     final var spotProductionCalculation = calculateSpotElectricityPriceDetails(productionData.data, -spotProductionMarginField.getValue(), 1.24, fromDateTimePicker.getValue(), toDateTimePicker.getValue());
-                    resultLayout.add(new DoubleLabel(getTranslation("Total production over period"), decimalFormat.format(spotProductionCalculation.totalAmount) + "kWh", true));
-                    resultLayout.add(new DoubleLabel(getTranslation("Net spot cost (consumption - production)"), decimalFormat.format(spotCalculation.totalCost - spotProductionCalculation.totalCost) + "€", true));
-                    resultLayout.add(new DoubleLabel(getTranslation("Net usage (consumption - production)"), decimalFormat.format(spotCalculation.totalAmount - spotProductionCalculation.totalAmount) + "kWh", true));
+                    resultLayout.add(new DoubleLabel(getTranslation("Total production over period"), numberFormat.format(spotProductionCalculation.totalAmount) + "kWh", true));
+                    resultLayout.add(new DoubleLabel(getTranslation("Net spot cost (consumption - production)"), numberFormat.format(spotCalculation.totalCost - spotProductionCalculation.totalCost) + "€", true));
+                    resultLayout.add(new DoubleLabel(getTranslation("Net usage (consumption - production)"), numberFormat.format(spotCalculation.totalAmount - spotProductionCalculation.totalAmount) + "kWh", true));
                     if (isCalculatingFixed()) {
 
                     }
-                    resultLayout.add(new DoubleLabel(getTranslation("Average production price (incl. margin)"), decimalFormat.format(spotProductionCalculation.totalCost / spotProductionCalculation.totalAmount * 100) + getTranslation("c/kWh"), true));
-                    resultLayout.add(new DoubleLabel(getTranslation("Total production value (incl. margin)"), decimalFormat.format(spotProductionCalculation.totalCost) + "€", true));
-                    resultLayout.add(new DoubleLabel(getTranslation("Total production value (without margin)"), decimalFormat.format(spotProductionCalculation.totalCostWithoutMargin) + "€", true));
+                    resultLayout.add(new DoubleLabel(getTranslation("Average production price (incl. margin)"), numberFormat.format(spotProductionCalculation.totalCost / spotProductionCalculation.totalAmount * 100) + getTranslation("c/kWh"), true));
+                    resultLayout.add(new DoubleLabel(getTranslation("Total production value (incl. margin)"), numberFormat.format(spotProductionCalculation.totalCost) + "€", true));
+                    resultLayout.add(new DoubleLabel(getTranslation("Total production value (without margin)"), numberFormat.format(spotProductionCalculation.totalCostWithoutMargin) + "€", true));
                     // Create spot production chart
                     chartLayout.add(createChart(spotProductionCalculation, false, getTranslation("Production / value per hour"), "Production", "Production value"));
                 }

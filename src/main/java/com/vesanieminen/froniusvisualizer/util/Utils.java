@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.time.Duration;
 import java.time.Instant;
@@ -105,5 +106,23 @@ public class Utils {
         return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(locale).format(localDateTime);
     }
 
+    public static NumberFormat getNumberFormatMaxTwoDecimals(Locale locale) {
+        final var numberFormat = NumberFormat.getInstance(locale);
+        numberFormat.setMaximumFractionDigits(2);
+        return numberFormat;
+    }
+
+    public static NumberFormat getNumberFormatMaxThreeDecimals(Locale locale) {
+        final var numberFormat = NumberFormat.getInstance(locale);
+        numberFormat.setMaximumFractionDigits(3);
+        return numberFormat;
+    }
+
+    public static DecimalFormat getNumberFormatMaxTwoDecimalsWithPlusPrefix(Locale locale) {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(locale);
+        DecimalFormat format = new DecimalFormat("#.##", symbols);
+        format.setPositivePrefix("+");
+        return format;
+    }
 
 }
