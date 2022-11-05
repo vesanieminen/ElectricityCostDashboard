@@ -33,10 +33,12 @@ public class PriceCalculatorService {
 
     public static final DateTimeFormatter datetimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static LinkedHashMap<LocalDateTime, Double> spotPriceMap;
-    private static LinkedHashMap<LocalDateTime, Double> spotPriceMapPakastin;
+    public static LocalDateTime spotDataStart;
+    public static LocalDateTime spotDataEnd;
     private static Double spotAverageThisYear;
     private static Double spotAverageThisMonth;
 
+    // Old sahko.tk export file reading - requires manual work
     //public static LinkedHashMap<LocalDateTime, Double> getSpotData() throws IOException {
     //    if (spotPriceMap == null) {
     //        spotPriceMap = new LinkedHashMap<>();
@@ -53,14 +55,14 @@ public class PriceCalculatorService {
     //}
 
     public static LinkedHashMap<LocalDateTime, Double> getSpotData() {
-        if (spotPriceMapPakastin == null) {
-            spotPriceMapPakastin = updateSpotData();
+        if (spotPriceMap == null) {
+            spotPriceMap = updateSpotData();
         }
-        return spotPriceMapPakastin;
+        return spotPriceMap;
     }
 
     public static LinkedHashMap<LocalDateTime, Double> updateSpotData() {
-        spotPriceMapPakastin = new LinkedHashMap<>();
+        spotPriceMap = new LinkedHashMap<>();
         final String file;
         try {
             file = Files.readString(Path.of(pakastin2YearFile));
@@ -69,9 +71,11 @@ public class PriceCalculatorService {
             throw new RuntimeException(e);
         }
         final var pakastinResponse = mapToResponse(file);
-        pakastinResponse.prices.forEach(price -> spotPriceMapPakastin.put(price.date.atZone(fiZoneID).toLocalDateTime(), price.value / 10));
+        pakastinResponse.prices.forEach(price -> spotPriceMap.put(price.date.atZone(fiZoneID).toLocalDateTime(), price.value / 10));
+        spotDataStart = pakastinResponse.prices.get(0).date.atZone(fiZoneID).toLocalDateTime();
+        spotDataEnd = pakastinResponse.prices.get(pakastinResponse.prices.size() - 1).date.atZone(fiZoneID).toLocalDateTime();
         log.info("updated spot data");
-        return spotPriceMapPakastin;
+        return spotPriceMap;
     }
 
     public static FingridUsageData getFingridUsageData(String filePath) throws IOException, ParseException {

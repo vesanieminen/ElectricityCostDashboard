@@ -53,6 +53,8 @@ import java.util.stream.Stream;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateFixedElectricityPrice;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotElectricityPriceDetails;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getFingridUsageData;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataEnd;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataStart;
 import static com.vesanieminen.froniusvisualizer.util.Utils.decimalFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
 
@@ -103,6 +105,16 @@ public class PriceCalculatorView extends Div {
         final var spanMonth = new Span(getTranslation("Spot average this month") + ": " + decimalFormat.format(spotAverageMonth) + " c/kWh");
         spanMonth.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
         content.add(spanMonth);
+
+        final var spotDataAvailableStart = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(fiLocale).format(spotDataStart);
+        final var spotDataAvailableEnd = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(fiLocale).format(spotDataEnd);
+        final var timeRangeSpanCaption = new Span(getTranslation("spot.data.available") + ":");
+        timeRangeSpanCaption.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
+        final var timeRangeSpan = new Span(spotDataAvailableStart + " - " + spotDataAvailableEnd);
+        timeRangeSpan.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
+        final var spotDataDiv = new Div(timeRangeSpanCaption, timeRangeSpan);
+        spotDataDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Gap.Column.XSMALL);
+        content.add(spotDataDiv);
 
         calculationsCheckboxGroup = new CheckboxGroup<>(getTranslation("Select calculations"));
         calculationsCheckboxGroup.addThemeVariants(CheckboxGroupVariant.LUMO_VERTICAL);
