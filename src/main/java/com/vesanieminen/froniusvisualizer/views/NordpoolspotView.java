@@ -58,6 +58,7 @@ import java.util.Objects;
 import static com.vesanieminen.froniusvisualizer.services.FingridService.fingridDataUpdated;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisYear;
+import static com.vesanieminen.froniusvisualizer.util.Utils.convertNordpoolLocalDateTimeToFinnish;
 import static com.vesanieminen.froniusvisualizer.util.Utils.decimalFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.format;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
@@ -216,8 +217,9 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         add(pricesLayout);
 
         if (nordpoolResponse != null && nordpoolResponse.isValid()) {
-            final var spotDataUpdated = format(nordpoolResponse.data.DateUpdated, getLocale());
-            final var spotDataUpdatedSpan = new Span(getTranslation("spot.data.from") + ": " + spotDataUpdated + ", ");
+            final var spotDataUpdatedTime = convertNordpoolLocalDateTimeToFinnish(nordpoolResponse.data.DateUpdated);
+            final var spotDataUpdated = format(spotDataUpdatedTime, getLocale());
+            final var spotDataUpdatedSpan = new Span(getTranslation("price.data.from") + ": " + spotDataUpdated + ", ");
             spotDataUpdatedSpan.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
 
             final var fingridDataUpdatedFormatted = format(fingridDataUpdated, getLocale());
