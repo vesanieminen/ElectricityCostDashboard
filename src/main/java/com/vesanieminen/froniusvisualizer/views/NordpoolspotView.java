@@ -219,7 +219,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         if (nordpoolResponse != null && nordpoolResponse.isValid()) {
             final var spotDataUpdatedTime = convertNordpoolLocalDateTimeToFinnish(nordpoolResponse.data.DateUpdated);
             final var spotDataUpdated = format(spotDataUpdatedTime, getLocale());
-            final var spotDataUpdatedSpan = new Span(getTranslation("price.data.from") + ": " + spotDataUpdated + ", ");
+            final var spotDataUpdatedSpan = new Span(getTranslation("price.data.updated") + ": " + spotDataUpdated + ", ");
             spotDataUpdatedSpan.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
 
             final var fingridDataUpdatedFormatted = format(fingridDataUpdated, getLocale());
