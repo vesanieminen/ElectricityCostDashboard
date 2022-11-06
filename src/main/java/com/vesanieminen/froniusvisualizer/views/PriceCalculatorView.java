@@ -55,6 +55,7 @@ import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getFingridUsageData;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataEnd;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataStart;
+import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.format;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormatMaxTwoDecimalsWithPlusPrefix;
@@ -228,7 +229,7 @@ public class PriceCalculatorView extends Div {
                     }
                 }
                 final var consumptionData = getFingridUsageData(lastConsumptionFile);
-                final var spotCalculation = calculateSpotElectricityPriceDetails(consumptionData.data, spotMarginField.getValue(), 1.24, fromDateTimePicker.getValue(), toDateTimePicker.getValue());
+                final var spotCalculation = calculateSpotElectricityPriceDetails(consumptionData.data(), spotMarginField.getValue(), 1.24, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                 resultLayout.removeAll();
                 chartLayout.removeAll();
 
@@ -255,7 +256,7 @@ public class PriceCalculatorView extends Div {
                 var fixedCost = 0d;
                 if (isCalculatingFixed()) {
                     resultLayout.add(new DoubleLabel(getTranslation("Fixed price"), fixedPriceField.getValue() + " c/kWh", true));
-                    fixedCost = calculateFixedElectricityPrice(consumptionData.data, fixedPriceField.getValue(), fromDateTimePicker.getValue(), toDateTimePicker.getValue());
+                    fixedCost = calculateFixedElectricityPrice(consumptionData.data(), fixedPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     resultLayout.add(new DoubleLabel(getTranslation("Fixed cost total"), numberFormat.format(fixedCost) + "€", true));
                 }
 
@@ -264,7 +265,7 @@ public class PriceCalculatorView extends Div {
 
                 if (isCalculatingProduction()) {
                     final var productionData = getFingridUsageData(lastProductionFile);
-                    final var spotProductionCalculation = calculateSpotElectricityPriceDetails(productionData.data, -spotProductionMarginField.getValue(), 1.24, fromDateTimePicker.getValue(), toDateTimePicker.getValue());
+                    final var spotProductionCalculation = calculateSpotElectricityPriceDetails(productionData.data(), -spotProductionMarginField.getValue(), 1.24, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     resultLayout.add(new DoubleLabel(getTranslation("Total production over period"), numberFormat.format(spotProductionCalculation.totalAmount) + "kWh", true));
                     resultLayout.add(new DoubleLabel(getTranslation("Net spot cost (consumption - production)"), numberFormat.format(spotCalculation.totalCost - spotProductionCalculation.totalCost) + "€", true));
                     resultLayout.add(new DoubleLabel(getTranslation("Net usage (consumption - production)"), numberFormat.format(spotCalculation.totalAmount - spotProductionCalculation.totalAmount) + "kWh", true));
@@ -326,16 +327,18 @@ public class PriceCalculatorView extends Div {
             log.info("Consumption files uploaded: " + ++consumptionFilesUploaded);
             try {
                 final var consumptionData = getFingridUsageData(lastConsumptionFile);
-                final var isStartProductionAfter = startProduction != null && startProduction.isAfter(consumptionData.start);
-                final var isEndProductionBefore = endProduction != null && endProduction.isBefore(consumptionData.end);
-                fromDateTimePicker.setMin(isStartProductionAfter ? startProduction : consumptionData.start);
-                fromDateTimePicker.setMax(isEndProductionBefore ? endConsumption.minusHours(1) : consumptionData.end.minusHours(1));
-                fromDateTimePicker.setValue(isStartProductionAfter ? startProduction : consumptionData.start);
-                toDateTimePicker.setMin(isStartProductionAfter ? startProduction.plusHours(1) : consumptionData.start.plusHours(1));
-                toDateTimePicker.setMax(isEndProductionBefore ? endConsumption : consumptionData.end);
-                toDateTimePicker.setValue(isEndProductionBefore ? endConsumption : consumptionData.end);
-                startConsumption = consumptionData.start;
-                endConsumption = consumptionData.end;
+                final var consumptionDataStart = consumptionData.start().atZone(fiZoneID).toLocalDateTime();
+                final var consumptionDataEnd = consumptionData.end().atZone(fiZoneID).toLocalDateTime();
+                final var isStartProductionAfter = startProduction != null && startProduction.isAfter(consumptionDataStart);
+                final var isEndProductionBefore = endProduction != null && endProduction.isBefore(consumptionDataEnd);
+                fromDateTimePicker.setMin(isStartProductionAfter ? startProduction : consumptionDataStart);
+                fromDateTimePicker.setMax(isEndProductionBefore ? endConsumption.minusHours(1) : consumptionDataEnd.minusHours(1));
+                fromDateTimePicker.setValue(isStartProductionAfter ? startProduction : consumptionDataStart);
+                toDateTimePicker.setMin(isStartProductionAfter ? startProduction.plusHours(1) : consumptionDataStart.plusHours(1));
+                toDateTimePicker.setMax(isEndProductionBefore ? endConsumption : consumptionDataEnd);
+                toDateTimePicker.setValue(isEndProductionBefore ? endConsumption : consumptionDataEnd);
+                startConsumption = consumptionDataStart;
+                endConsumption = consumptionDataEnd;
                 updateCalculateButtonState();
                 setFieldsEnabled(true);
             } catch (IOException | ParseException e) {
@@ -352,16 +355,18 @@ public class PriceCalculatorView extends Div {
             log.info("Production files uploaded: " + ++productionFilesUploaded);
             try {
                 final var productionData = getFingridUsageData(lastProductionFile);
-                final var isStartConsumptionAfter = startConsumption != null && startConsumption.isAfter(productionData.start);
-                final var isEndConsumptionBefore = endConsumption != null && endConsumption.isBefore(productionData.end);
-                fromDateTimePicker.setMin(isStartConsumptionAfter ? startConsumption : productionData.start);
-                fromDateTimePicker.setMax(isEndConsumptionBefore ? endConsumption.minusHours(1) : productionData.end.minusHours(1));
-                fromDateTimePicker.setValue(isStartConsumptionAfter ? startConsumption : productionData.start);
-                toDateTimePicker.setMin(isStartConsumptionAfter ? startConsumption.plusHours(1) : productionData.start.plusHours(1));
-                toDateTimePicker.setMax(isEndConsumptionBefore ? endConsumption : productionData.end);
-                toDateTimePicker.setValue(isEndConsumptionBefore ? endConsumption : productionData.end);
-                startProduction = productionData.start;
-                endProduction = productionData.end;
+                final var productionDataStart = productionData.start().atZone(fiZoneID).toLocalDateTime();
+                final var productionDataEnd = productionData.end().atZone(fiZoneID).toLocalDateTime();
+                final var isStartConsumptionAfter = startConsumption != null && startConsumption.isAfter(productionDataStart);
+                final var isEndConsumptionBefore = endConsumption != null && endConsumption.isBefore(productionDataEnd);
+                fromDateTimePicker.setMin(isStartConsumptionAfter ? startConsumption : productionDataStart);
+                fromDateTimePicker.setMax(isEndConsumptionBefore ? endConsumption.minusHours(1) : productionDataEnd.minusHours(1));
+                fromDateTimePicker.setValue(isStartConsumptionAfter ? startConsumption : productionDataStart);
+                toDateTimePicker.setMin(isStartConsumptionAfter ? startConsumption.plusHours(1) : productionDataStart.plusHours(1));
+                toDateTimePicker.setMax(isEndConsumptionBefore ? endConsumption : productionDataEnd);
+                toDateTimePicker.setValue(isEndConsumptionBefore ? endConsumption : productionDataEnd);
+                startProduction = productionDataStart;
+                endProduction = productionDataEnd;
                 updateCalculateButtonState();
                 setFieldsEnabled(true);
             } catch (IOException | ParseException e) {

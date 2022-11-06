@@ -106,6 +106,10 @@ public class Utils {
         return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(locale).format(localDateTime);
     }
 
+    public static String format(Instant instant, Locale locale) {
+        return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(locale).format(instant.atZone(fiZoneID));
+    }
+
     public static NumberFormat getNumberFormat(Locale locale, int decimals) {
         final var numberFormat = NumberFormat.getInstance(locale);
         numberFormat.setMaximumFractionDigits(decimals);
