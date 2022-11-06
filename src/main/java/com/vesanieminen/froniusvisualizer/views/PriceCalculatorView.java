@@ -38,6 +38,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.vaadin.miki.superfields.numbers.SuperDoubleField;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDateTime;
@@ -54,7 +56,7 @@ import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataEnd;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataStart;
 import static com.vesanieminen.froniusvisualizer.util.Utils.format;
-import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormatMaxTwoDecimals;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormatMaxTwoDecimalsWithPlusPrefix;
 
 @Route("hintalaskuri")
@@ -93,7 +95,7 @@ public class PriceCalculatorView extends Div {
         content.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Padding.Horizontal.MEDIUM);
         wrapper.add(content);
 
-        final NumberFormat numberFormat = getNumberFormatMaxTwoDecimals(getLocale());
+        final NumberFormat numberFormat = getNumberFormat(getLocale(), 2);
 
         final var title = new Span(getTranslation("Spot / fixed electricity price calculator"));
         title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
@@ -233,13 +235,16 @@ public class PriceCalculatorView extends Div {
                 final var start = format(spotCalculation.start, getLocale());
                 final var end = format(spotCalculation.end, getLocale());
 
+                final NumberFormat sixDecimals = getNumberFormat(getLocale(), 6);
+
                 // Total labels
                 resultLayout.add(new DoubleLabel(getTranslation("Calculation period (start times)"), start + " - " + end, true));
                 resultLayout.add(new DoubleLabel(getTranslation("Total consumption over period"), numberFormat.format(spotCalculation.totalAmount) + "kWh", true));
 
                 // Spot labels
-                final var weightedAverage = spotCalculation.totalCost / spotCalculation.totalAmount * 100;
-                resultLayout.add(new DoubleLabel(getTranslation("Average spot price (incl. margin)"), numberFormat.format(weightedAverage) + " c/kWh", true));
+                final var totalCost = new BigDecimal(spotCalculation.totalCost).setScale(2, RoundingMode.HALF_UP).doubleValue();
+                final var weightedAverage = totalCost / ((int) spotCalculation.totalAmount) * 100;
+                resultLayout.add(new DoubleLabel(getTranslation("Average spot price (incl. margin)"), sixDecimals.format(weightedAverage) + " c/kWh", true));
                 resultLayout.add(new DoubleLabel(getTranslation("Total spot cost (incl. margin)"), numberFormat.format(spotCalculation.totalCost) + "€", true));
                 resultLayout.add(new DoubleLabel(getTranslation("Total spot cost (without margin)"), numberFormat.format(spotCalculation.totalCostWithoutMargin) + "€", true));
                 resultLayout.add(new DoubleLabel(getTranslation("Unweighted spot average"), numberFormat.format(spotCalculation.averagePrice) + " c/kWh", true));

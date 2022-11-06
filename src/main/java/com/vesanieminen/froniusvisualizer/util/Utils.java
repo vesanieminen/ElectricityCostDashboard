@@ -106,15 +106,9 @@ public class Utils {
         return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(locale).format(localDateTime);
     }
 
-    public static NumberFormat getNumberFormatMaxTwoDecimals(Locale locale) {
+    public static NumberFormat getNumberFormat(Locale locale, int decimals) {
         final var numberFormat = NumberFormat.getInstance(locale);
-        numberFormat.setMaximumFractionDigits(2);
-        return numberFormat;
-    }
-
-    public static NumberFormat getNumberFormatMaxThreeDecimals(Locale locale) {
-        final var numberFormat = NumberFormat.getInstance(locale);
-        numberFormat.setMaximumFractionDigits(3);
+        numberFormat.setMaximumFractionDigits(decimals);
         return numberFormat;
     }
 
