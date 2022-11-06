@@ -195,11 +195,10 @@ public class PriceCalculatorService {
     }
 
     private static LinkedHashMap<LocalDateTime, Double> getDateTimeRange(LinkedHashMap<LocalDateTime, Double> fingridConsumptionData, LocalDateTime start, LocalDateTime end) {
-        final var filtered = fingridConsumptionData.entrySet().stream().filter(item ->
+        return fingridConsumptionData.entrySet().stream().filter(item ->
                 (start.isBefore(item.getKey()) || start.isEqual(item.getKey())) &&
                         (end.isAfter(item.getKey()) || end.isEqual(item.getKey()))
         ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
-        return filtered;
     }
 
     public static double calculateFixedElectricityPrice(LinkedHashMap<LocalDateTime, Double> fingridConsumptionData, double fixed) {
