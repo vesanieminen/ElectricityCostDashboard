@@ -6,6 +6,10 @@ body, #outlet {
     margin: 0;
 }
 
+html[theme=dark] .footer-icon {
+    filter: invert(1);
+}
+
 html {
     --lumo-size-xl: 6rem;
     --yellow-50: #FFFBEF;

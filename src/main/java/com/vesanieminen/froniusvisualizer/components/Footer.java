@@ -33,12 +33,14 @@ public class Footer extends Div {
 
         // GitHub link
         final var githubIcon = new Image("images/GitHub-Mark-32px.png", "GitHub icon");
+        githubIcon.addClassNames("footer-icon");
         final var githubLink = new Anchor("https://github.com/vesanieminen/ElectricityCostDashboard", getTranslation("Fork me on GitHub"));
         githubLink.addClassNames(LumoUtility.Display.FLEX);
         githubLink.add(githubIcon);
         githubIcon.addClassNames(LumoUtility.IconSize.MEDIUM, LumoUtility.TextColor.PRIMARY, LumoUtility.Margin.Left.SMALL);
 
-        final var discordIcon = new Image("icons/discord-mark-blue.png", "Discord icon");
+        final var discordIcon = new Image("icons/discord-mark-black.png", "Discord icon");
+        discordIcon.addClassNames("footer-icon");
         final var discordLink = new Anchor("https://discord.com/invite/WHcY2UkWVp", getTranslation("Join Discord"));
         discordLink.addClassNames(LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER);
         discordLink.add(discordIcon);
