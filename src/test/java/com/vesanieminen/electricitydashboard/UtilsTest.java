@@ -1,15 +1,22 @@
 package com.vesanieminen.electricitydashboard;
 
 import com.vesanieminen.froniusvisualizer.util.Utils;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.concurrent.TimeUnit;
 
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateFixedElectricityPrice;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getFingridUsageData;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getSpotData;
 import static com.vesanieminen.froniusvisualizer.util.Utils.dateTimeFormatter;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentInstantDayPrecisionFinnishZone;
+import static com.vesanieminen.froniusvisualizer.util.Utils.sizeOf;
 import static org.junit.Assert.assertEquals;
 
 public class UtilsTest {
@@ -30,6 +37,22 @@ public class UtilsTest {
         final var between = Duration.between(now, nextHour);
         final var seconds = between.getSeconds();
         final var l = TimeUnit.HOURS.toSeconds(1);
+    }
+
+    @Test
+    @Ignore
+    public void printSpotdataSizes() throws IOException {
+        //getSpotDataSahkoTK();
+        final var spotData = getSpotData();
+        System.out.println("sizeof spotdata: " + sizeOf(spotData));
+    }
+
+    @Test
+    @Ignore
+    public void testReadFileWithNulls() throws IOException, ParseException {
+        //final var fingridUsageData = getFingridUsageData("src/main/resources/META-INF/resources/data/consumption.csv");
+        final var fingridUsageData1 = getFingridUsageData("src/main/resources/META-INF/resources/data/consumption-with-null-only.csv");
+        final var cost = calculateFixedElectricityPrice(fingridUsageData1.data(), 36);
     }
 
 }

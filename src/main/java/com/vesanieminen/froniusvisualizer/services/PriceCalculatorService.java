@@ -24,6 +24,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.divide;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
+import static com.vesanieminen.froniusvisualizer.util.Utils.sizeOf;
 import static com.vesanieminen.froniusvisualizer.util.Utils.sum;
 
 @Slf4j
@@ -39,20 +40,18 @@ public class PriceCalculatorService {
     private static Double spotAverageThisMonth;
 
     // Old sahko.tk export file reading - requires manual work
-    //public static LinkedHashMap<LocalDateTime, Double> getSpotData() throws IOException {
-    //    if (spotPriceMap == null) {
-    //        spotPriceMap = new LinkedHashMap<>();
-    //        final var reader = Files.newBufferedReader(Path.of(spotPriceDataFile));
-    //        final var csvReader = new CSVReader(reader);
-    //        csvReader.readNext(); // skip header
-    //        String[] line;
-    //        while ((line = csvReader.readNext()) != null) {
-    //            final var dateTime = LocalDateTime.parse(line[0], datetimeFormatter);
-    //            spotPriceMap.put(dateTime, Double.valueOf(line[1]));
-    //        }
-    //    }
-    //    return spotPriceMap;
-    //}
+    public static void getSpotDataSahkoTK() throws IOException {
+        var map = new LinkedHashMap<>();
+        final var reader = Files.newBufferedReader(Path.of(spotPriceDataFile));
+        final var csvReader = new CSVReader(reader);
+        csvReader.readNext(); // skip header
+        String[] line;
+        while ((line = csvReader.readNext()) != null) {
+            final var dateTime = LocalDateTime.parse(line[0], datetimeFormatter);
+            map.put(dateTime, Double.valueOf(line[1]));
+        }
+        log.info("size of Sahko.tk map: " + sizeOf(map));
+    }
 
     public static LinkedHashMap<Instant, Double> getSpotData() {
         if (spotPriceMap == null) {
@@ -75,6 +74,7 @@ public class PriceCalculatorService {
         spotDataStart = pakastinResponse.prices.get(0).date;
         spotDataEnd = pakastinResponse.prices.get(pakastinResponse.prices.size() - 1).date;
         log.info("updated spot data");
+        log.info("size of pakastin map: " + sizeOf(spotPriceMap));
         return spotPriceMap;
     }
 
