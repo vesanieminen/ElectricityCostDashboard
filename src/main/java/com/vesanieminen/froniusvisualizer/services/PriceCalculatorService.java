@@ -74,7 +74,7 @@ public class PriceCalculatorService {
         spotDataStart = pakastinResponse.prices.get(0).date;
         spotDataEnd = pakastinResponse.prices.get(pakastinResponse.prices.size() - 1).date;
         log.info("updated spot data");
-        log.info("size of pakastin map: " + sizeOf(spotPriceMap));
+        //log.info("size of pakastin map: " + sizeOf(spotPriceMap));
         return spotPriceMap;
     }
 

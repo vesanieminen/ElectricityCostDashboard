@@ -5,6 +5,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.time.Duration;
 import java.time.ZonedDateTime;
@@ -12,11 +13,9 @@ import java.util.concurrent.TimeUnit;
 
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateFixedElectricityPrice;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getFingridUsageData;
-import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getSpotData;
 import static com.vesanieminen.froniusvisualizer.util.Utils.dateTimeFormatter;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentInstantDayPrecisionFinnishZone;
-import static com.vesanieminen.froniusvisualizer.util.Utils.sizeOf;
 import static org.junit.Assert.assertEquals;
 
 public class UtilsTest {
@@ -41,10 +40,18 @@ public class UtilsTest {
 
     @Test
     @Ignore
-    public void printSpotdataSizes() throws IOException {
+    public void printSpotdataSizes() throws IOException, URISyntaxException, InterruptedException {
         //getSpotDataSahkoTK();
-        final var spotData = getSpotData();
-        System.out.println("sizeof spotdata: " + sizeOf(spotData));
+        // final var spotData = getSpotData();
+        // System.out.println("sizeof spotdata: " + sizeOf(spotData));
+
+        //updateRealtimeData();
+        //final var latest7Days = getLatest7Days();
+        //System.out.println("sizeof fingrid data: " + sizeOf(latest7Days));
+
+        //updateNordpoolData();
+        //final var latest7Days = NordpoolSpotService.getLatest7Days();
+        //System.out.println("sizeof nordpool data: " + sizeOf(latest7Days));
     }
 
     @Test
