@@ -31,8 +31,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
-import com.vesanieminen.froniusvisualizer.components.Footer;
-import com.vesanieminen.froniusvisualizer.components.Spacer;
 import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService;
 import lombok.extern.slf4j.Slf4j;
 import org.vaadin.miki.superfields.numbers.SuperDoubleField;
@@ -60,7 +58,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.format;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormatMaxTwoDecimalsWithPlusPrefix;
 
-@Route("hintalaskuri")
+@Route(value = "hintalaskuri", layout = MainLayout.class)
 @RouteAlias("price-calculator")
 @Slf4j
 public class PriceCalculatorView extends Div {
@@ -86,7 +84,6 @@ public class PriceCalculatorView extends Div {
 
     public PriceCalculatorView() throws IOException {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
-        setHeightFull();
         final var wrapper = new Div();
         wrapper.addClassNames(LumoUtility.Margin.AUTO);
         wrapper.setWidthFull();
@@ -299,8 +296,6 @@ public class PriceCalculatorView extends Div {
         content.add(button);
         add(resultLayout);
         add(chartLayout);
-        add(new Spacer());
-        add(new Footer());
     }
 
     private void addErrorHandling(Upload upload) {

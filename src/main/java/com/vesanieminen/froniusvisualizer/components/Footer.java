@@ -12,7 +12,6 @@ public class Footer extends Div {
     public Footer() {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.Background.CONTRAST_5, LumoUtility.Padding.Vertical.SMALL, LumoUtility.FlexWrap.WRAP);
         addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.CENTER, LumoUtility.Gap.MEDIUM);
-        setWidthFull();
 
         // Vaadin link
         final var icon = new Icon(VaadinIcon.VAADIN_H);

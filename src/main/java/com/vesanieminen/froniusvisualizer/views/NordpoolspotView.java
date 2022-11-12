@@ -33,8 +33,6 @@ import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
-import com.vesanieminen.froniusvisualizer.components.Footer;
-import com.vesanieminen.froniusvisualizer.components.Spacer;
 import com.vesanieminen.froniusvisualizer.services.FingridService;
 import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
 import com.vesanieminen.froniusvisualizer.services.model.FingridLiteResponse;
@@ -65,7 +63,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHo
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.utcZone;
 
-@Route("")
+@Route(value = "", layout = MainLayout.class)
 public class NordpoolspotView extends Div implements HasUrlParameter<String> {
 
     private final DoubleLabel priceNow;
@@ -100,7 +98,6 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
 
     public NordpoolspotView() {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.CENTER, LumoUtility.TextColor.PRIMARY_CONTRAST);
-        setHeightFull();
 
         fiElectricityPriceTitle = getTranslation("FI electricity price");
         hydroPowerProductionTitle = getTranslation("Hydro production");
@@ -299,8 +296,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         setTouchDeviceConfiguration(chart);
 
         add(chart);
-        add(new Spacer());
-        add(new Footer());
+        //add(new Spacer());
         return chart;
     }
 
@@ -355,7 +351,6 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         tooltip.setValueDecimals(0);
         tooltip.setValueSuffix(" MWh/h");
         chart.getConfiguration().setTooltip(tooltip);
-
 
         if (hydroPowerSeries != null) {
             // Change the fingrid series to use the 2nd y-axis
