@@ -188,7 +188,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
 
     private void setMobileDeviceChartHeight(Chart chart) {
         setHeight("auto");
-        chart.setHeight("580px");
+        chart.setHeight("500px");
     }
 
     private Chart renderView() {
