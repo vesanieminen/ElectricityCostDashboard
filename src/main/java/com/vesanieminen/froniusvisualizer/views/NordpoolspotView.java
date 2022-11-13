@@ -153,7 +153,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         e.getUI().getPage().retrieveExtendedClientDetails(details -> {
             if (details.isTouchDevice()) {
                 isTouchDevice = true;
-                screenWidth = details.getScreenWidth();
+                screenWidth = details.getBodyClientWidth();
                 setTouchDeviceConfiguration(chart);
             }
             fullScreenButton.setVisible(!details.isTouchDevice());
@@ -180,6 +180,9 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
                 YAxis price = chart.getConfiguration().getyAxis(1);
                 price.setTitle(getTranslation("Price") + " (" + getTranslation("c/kWh") + ")");
                 price.getLabels().setFormatter(null);
+            }
+            if (screenWidth < 600) {
+                chart.getConfiguration().getRangeSelector().setInputEnabled(false);
             }
             setMobileDeviceChartHeight(chart);
             chart.drawChart(true);
@@ -289,7 +292,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         rangeSelector.setSelected(isTouchDevice ? 2 : 4);
         chart.getConfiguration().setRangeSelector(rangeSelector);
         rangeSelector.setEnabled(true);
-        rangeSelector.setInputEnabled(false);
+        rangeSelector.setInputEnabled(true);
 
         // TODO: bring back the average price per day?
         //final var averageValue = mapToPrice(format, nordpoolResponse.data.Rows.get(26));
@@ -301,7 +304,6 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         setTouchDeviceConfiguration(chart);
 
         add(chart);
-        //add(new Spacer());
         return chart;
     }
 
