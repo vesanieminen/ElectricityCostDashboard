@@ -85,7 +85,7 @@ public class PriceCalculatorView extends Div {
     public PriceCalculatorView() throws IOException {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
         final var wrapper = new Div();
-        wrapper.addClassNames(LumoUtility.Margin.AUTO);
+        wrapper.addClassNames(LumoUtility.Margin.Horizontal.AUTO);
         wrapper.setWidthFull();
         wrapper.setMaxWidth(1024, Unit.PIXELS);
         add(wrapper);

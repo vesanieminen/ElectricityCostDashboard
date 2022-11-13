@@ -98,6 +98,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
 
     public NordpoolspotView() {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.CENTER, LumoUtility.TextColor.PRIMARY_CONTRAST);
+        setHeightFull();
 
         fiElectricityPriceTitle = getTranslation("FI electricity price");
         hydroPowerProductionTitle = getTranslation("Hydro production");
@@ -155,9 +156,8 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
                 screenWidth = details.getScreenWidth();
                 setTouchDeviceConfiguration(chart);
             }
-            //fullScreenButton.setVisible(!details.isTouchDevice());
+            fullScreenButton.setVisible(!details.isTouchDevice());
         });
-        fullScreenButton.setVisible(false);
         // Scroll to the top after navigation
         e.getUI().scrollIntoView();
         if ("fi".equals(e.getUI().getLocale().getLanguage())) {
@@ -181,8 +181,14 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
                 price.setTitle(getTranslation("Price") + " (" + getTranslation("c/kWh") + ")");
                 price.getLabels().setFormatter(null);
             }
+            setMobileDeviceChartHeight(chart);
             chart.drawChart(true);
         }
+    }
+
+    private void setMobileDeviceChartHeight(Chart chart) {
+        setHeight("auto");
+        chart.setHeight("500px");
     }
 
     private Chart renderView() {
@@ -242,10 +248,8 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         if (isFullscreen) {
             chart.setHeightFull();
         } else {
-            chart.setMinHeight("500px");
             chart.setHeight("580px");
             chart.setMaxWidth("1320px");
-            //chart.setHeightFull();
         }
 
         // create x and y-axis
