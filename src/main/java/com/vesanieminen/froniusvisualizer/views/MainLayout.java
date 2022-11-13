@@ -21,7 +21,7 @@ public class MainLayout extends Div implements RouterLayout {
     public void showRouterLayoutContent(HasElement content) {
         Component target = null;
         if (content != null) {
-            target = content.getElement().getComponent().orElseThrow(() -> new IllegalArgumentException("AppLayout content must be a Component"));
+            target = content.getElement().getComponent().orElseThrow(() -> new IllegalArgumentException("Content must be a Component"));
         }
         addComponentAsFirst(target);
     }

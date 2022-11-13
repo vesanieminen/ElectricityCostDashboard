@@ -155,8 +155,9 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
                 screenWidth = details.getScreenWidth();
                 setTouchDeviceConfiguration(chart);
             }
-            fullScreenButton.setVisible(!details.isTouchDevice());
+            //fullScreenButton.setVisible(!details.isTouchDevice());
         });
+        fullScreenButton.setVisible(false);
         // Scroll to the top after navigation
         e.getUI().scrollIntoView();
         if ("fi".equals(e.getUI().getLocale().getLanguage())) {
