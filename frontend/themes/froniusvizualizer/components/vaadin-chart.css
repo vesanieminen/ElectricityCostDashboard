@@ -10,3 +10,7 @@
     stroke-width: 4px;
     stroke-dasharray: 0, 0;
 }
+
+:where([styled-mode]) .highcharts-label text {
+    fill: var(--lumo-primary-text-color);
+}
