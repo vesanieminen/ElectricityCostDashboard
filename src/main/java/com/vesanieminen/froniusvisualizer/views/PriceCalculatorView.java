@@ -241,7 +241,10 @@ public class PriceCalculatorView extends Div {
 
                 // Spot labels
                 final var totalCost = new BigDecimal(spotCalculation.totalCost).setScale(2, RoundingMode.HALF_UP).doubleValue();
-                final var weightedAverage = totalCost / ((int) spotCalculation.totalAmount) * 100;
+                // Accurate:
+                final var weightedAverage = totalCost / spotCalculation.totalAmount * 100;
+                // Helen:
+                //final var weightedAverage = totalCost / ((int) spotCalculation.totalAmount) * 100;
                 resultLayout.add(new DoubleLabel(getTranslation("Average spot price (incl. margin)"), sixDecimals.format(weightedAverage) + " c/kWh", true));
                 resultLayout.add(new DoubleLabel(getTranslation("Total spot cost (incl. margin)"), numberFormat.format(spotCalculation.totalCost) + "€", true));
                 resultLayout.add(new DoubleLabel(getTranslation("Total spot cost (without margin)"), numberFormat.format(spotCalculation.totalCostWithoutMargin) + "€", true));
