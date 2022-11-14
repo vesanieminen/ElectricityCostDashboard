@@ -27,6 +27,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.FileBuffer;
 import com.vaadin.flow.component.upload.receivers.FileData;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility;
@@ -60,6 +61,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormatMaxTw
 
 @Route(value = "hintalaskuri", layout = MainLayout.class)
 @RouteAlias("price-calculator")
+@PageTitle("Calculator")
 @Slf4j
 public class PriceCalculatorView extends Div {
 
