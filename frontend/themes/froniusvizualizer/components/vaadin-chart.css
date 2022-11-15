@@ -11,6 +11,6 @@
     stroke-dasharray: 0, 0;
 }
 
-:where([styled-mode]) .highcharts-label text {
+:where([styled-mode]) .highcharts-range-selector-buttons .highcharts-label text {
     fill: var(--lumo-primary-text-color);
 }
