@@ -135,7 +135,6 @@ public class PriceCalculatorView extends Div {
         FileBuffer consumptionFileBuffer = new FileBuffer();
         final var uploadFingridConsumptionData = new Button(getTranslation("Consumption csv file upload (1MB max)"));
         Upload consumptionUpload = new Upload(consumptionFileBuffer);
-        //consumptionUpload.setAcceptedFileTypes("csv");
         consumptionUpload.setMaxFileSize(1000000);
         consumptionUpload.setDropLabel(new Span(getTranslation("Drop Fingrid consumption file here")));
         consumptionUpload.setUploadButton(uploadFingridConsumptionData);
@@ -147,7 +146,6 @@ public class PriceCalculatorView extends Div {
         FileBuffer productionFileBuffer = new FileBuffer();
         final var uploadFingridproductionData = new Button(getTranslation("Production csv file upload (1MB max)"));
         Upload productionUpload = new Upload(productionFileBuffer);
-        //productionUpload.setAcceptedFileTypes("csv");
         productionUpload.setMaxFileSize(1000000);
         productionUpload.setDropLabel(new Span(getTranslation("Drop Fingrid production file here")));
         productionUpload.setUploadButton(uploadFingridproductionData);
