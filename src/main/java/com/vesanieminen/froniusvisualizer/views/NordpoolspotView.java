@@ -25,6 +25,7 @@ import com.vaadin.flow.component.charts.model.Tooltip;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.BeforeEvent;
@@ -33,6 +34,7 @@ import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
+import com.vesanieminen.froniusvisualizer.components.Spacer;
 import com.vesanieminen.froniusvisualizer.services.FingridService;
 import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
 import com.vesanieminen.froniusvisualizer.services.model.FingridLiteResponse;
@@ -304,7 +306,23 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         setTouchDeviceConfiguration(chart);
 
         add(chart);
+        add(new Spacer());
+        final Span fingridFooter = createFingridLicenseSpan();
+        add(fingridFooter);
         return chart;
+    }
+
+    private Span createFingridLicenseSpan() {
+        final var fingridLink = new Anchor("http://data.fingrid.fi", "data.fingrid.fi");
+        final var fingridCCLicenseLink = new Anchor("https://creativecommons.org/licenses/by/4.0/", "CC 4.0 B");
+        final var fingridSourceSpan = new Span(getTranslation("fingrid.source"));
+        final var fingridMainLink = new Anchor("http://fingrid.fi", "Fingrid");
+        final var licenseSpan = new Span(getTranslation("fingrid.license"));
+        final var dividerSpan = new Span(" / ");
+        final var commaSpan = new Span(", ");
+        final var fingridFooter = new Span(fingridSourceSpan, fingridMainLink, dividerSpan, fingridLink, commaSpan, licenseSpan, fingridCCLicenseLink);
+        fingridFooter.addClassNames(LumoUtility.Display.FLEX, LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL, LumoUtility.Margin.Bottom.XSMALL, LumoUtility.Gap.XSMALL);
+        return fingridFooter;
     }
 
     private void createFingridYAxis(Chart chart) {
