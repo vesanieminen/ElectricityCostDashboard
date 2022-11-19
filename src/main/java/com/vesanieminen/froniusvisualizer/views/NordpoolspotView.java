@@ -235,7 +235,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
             final var spotDataUpdatedSpan = new Span(getTranslation("price.data.updated") + ": " + spotDataUpdated + ", ");
             spotDataUpdatedSpan.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
 
-            final var fingridDataUpdatedFormatted = format(fingridDataUpdated, getLocale());
+            final var fingridDataUpdatedFormatted = fingridDataUpdated != null ? format(fingridDataUpdated, getLocale()) : "";
             final var fingridDataUpdatedSpan = new Span(getTranslation("fingrid.data.updated") + ": " + fingridDataUpdatedFormatted);
             fingridDataUpdatedSpan.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
             final var div = new Div(spotDataUpdatedSpan, fingridDataUpdatedSpan);
