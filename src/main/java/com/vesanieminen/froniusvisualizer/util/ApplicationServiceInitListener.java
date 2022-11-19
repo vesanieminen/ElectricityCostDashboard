@@ -20,6 +20,7 @@ public class ApplicationServiceInitListener implements VaadinServiceInitListener
         serviceInitEvent.getSource().addUIInitListener(uiInitEvent -> {
             // Whenever a new user arrives, determine locale
             //initLanguage(uiInitEvent.getUI());
+            //uiInitEvent.getUI().setLocale(fiLocale);
         });
     }
 
