@@ -24,6 +24,8 @@ public class Executor {
         final var startTime = System.currentTimeMillis();
         NordpoolSpotService.updateNordpoolData();
         FingridService.updateWindEstimateData();
+        FingridService.updateProductionEstimateData();
+        FingridService.updateConsumptionEstimateData();
         writeMarketPriceFile();
         updateSpotData();
         FingridService.updateRealtimeData();

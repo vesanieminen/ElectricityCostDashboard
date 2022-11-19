@@ -47,7 +47,9 @@ public class FingridService {
         CONSUMPTION(124),
         PRODUCTION(74),
         WIND_PREDICTION(245),
-        WIND(75);
+        WIND(75),
+        CONSUMPTION_ESTIMATE(166),
+        PRODUCTION_ESTIMATE(241);
         public int id;
 
         /*
@@ -65,6 +67,9 @@ public class FingridService {
                     - consumption: 124
                     - wind: 75
                     - wind-prediction: 245
+                    - consumption estimate: 166
+                    - production estimate: 241
+
         */
         QueryType(int id) {
             this.id = id;
@@ -75,6 +80,8 @@ public class FingridService {
     public static LocalDateTime fingridDataUpdated;
     private static FingridRealtimeResponse cachedFingridRealtimeResponseForMonth;
     private static List<FingridLiteResponse> cachedWindEstimateResponses;
+    private static List<FingridLiteResponse> cachedProductionEstimateResponses;
+    private static List<FingridLiteResponse> cachedConsumptionEstimateResponses;
 
     // The final target for the basic fingrid query is:
     // https://www.fingrid.fi/api/graph/power-system-production?start=2022-10-04&end=2022-10-10
@@ -138,7 +145,7 @@ public class FingridService {
         return requestParams.keySet().stream().map(key -> key + "=" + requestParams.get(key)).collect(joining("&", fingridRealtimeBaseUrl, ""));
     }
 
-    public static List<FingridRealtimeResponse.Data> keepEveryNthItem(List<FingridRealtimeResponse.Data> input, int n) {
+    public static <T> List<T> keepEveryNthItem(List<T> input, int n) {
         return IntStream.range(0, input.size()).filter(item -> item % n == 0).mapToObj(input::get).toList();
     }
 
@@ -151,6 +158,22 @@ public class FingridService {
         final var newWindEstimateResponses = runQuery(createHourlyQuery(QueryType.WIND_PREDICTION, start, start.plusDays(2)));
         if (newWindEstimateResponses.size() > 0) {
             cachedWindEstimateResponses = newWindEstimateResponses;
+        }
+    }
+
+    public static void updateProductionEstimateData() {
+        final var start = getCurrentTimeWithHourPrecision();
+        final var newProductionEstimateResponses = runQuery(createHourlyQuery(QueryType.PRODUCTION_ESTIMATE, start, start.plusDays(2)));
+        if (newProductionEstimateResponses.size() > 0) {
+            cachedProductionEstimateResponses = newProductionEstimateResponses;
+        }
+    }
+
+    public static void updateConsumptionEstimateData() {
+        final var start = getCurrentTimeWithHourPrecision();
+        final var newConsumptionEstimateResponses = runQuery(createHourlyQuery(QueryType.CONSUMPTION_ESTIMATE, start, start.plusDays(2)));
+        if (newConsumptionEstimateResponses.size() > 0) {
+            cachedConsumptionEstimateResponses = keepEveryNthItem(newConsumptionEstimateResponses, 12);
         }
     }
 
@@ -168,8 +191,16 @@ public class FingridService {
         return Arrays.stream(gson.fromJson(response.body(), FingridLiteResponse[].class)).toList();
     }
 
-    public static List<FingridLiteResponse> getWindEstimate() throws URISyntaxException, IOException, InterruptedException {
+    public static List<FingridLiteResponse> getWindEstimate() {
         return cachedWindEstimateResponses;
+    }
+
+    public static List<FingridLiteResponse> getProductionEstimate() {
+        return cachedProductionEstimateResponses;
+    }
+
+    public static List<FingridLiteResponse> getConsumptionEstimate() {
+        return cachedConsumptionEstimateResponses;
     }
 
     public static String createHourlyQuery(QueryType queryType, LocalDateTime start, LocalDateTime end) {

@@ -82,7 +82,6 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     private final String solarPowerProductionTitle;
     private final String consumptionTitle;
     private final String importExportTitle;
-    private final String windProductionEstimateTitle;
     private final String totalRenewablesTitle;
     private final String vat10 = "vat=10";
     private final String vat0 = "vat=0";
@@ -111,7 +110,6 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         solarPowerProductionTitle = getTranslation("Solar power");
         consumptionTitle = getTranslation("Consumption");
         importExportTitle = getTranslation("Net export - import");
-        windProductionEstimateTitle = getTranslation("Wind production estimate");
         totalRenewablesTitle = getTranslation("Total renewables");
 
         priceNow = new DoubleLabel(getTranslation("Price now"), "");
@@ -203,12 +201,16 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         NordpoolResponse nordpoolResponse = null;
         FingridRealtimeResponse fingridResponse = null;
         List<FingridLiteResponse> windEstimateResponses = null;
+        List<FingridLiteResponse> productionEstimateResponses = null;
+        List<FingridLiteResponse> consumptionEstimateResponses = null;
         try {
             // the TVO OL3 requires some page crawling to work reliably
             //var test = getDayAheadPrediction();
             nordpoolResponse = NordpoolSpotService.getLatest7Days();
             fingridResponse = FingridService.getLatest7Days();
             windEstimateResponses = FingridService.getWindEstimate();
+            productionEstimateResponses = FingridService.getProductionEstimate();
+            consumptionEstimateResponses = FingridService.getConsumptionEstimate();
         } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -274,14 +276,18 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
             final var consumptionSeries = createDataSeries(fingridResponse.Consumption, consumptionTitle);
             final var importExportSeries = createDataSeries(fingridResponse.NetImportExport, importExportTitle);
             final var renewablesSeries = createRenewablesDataSeries(fingridResponse);
-            final var windEstimateDataSeries = createWindEstimateDataSeries(windEstimateResponses);
-            final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, dateTimeFormatter, new ArrayList<>(Arrays.asList(hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, windEstimateDataSeries, renewablesSeries)));
-            configureChartTooltips(chart, hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, spotPriceDataSeries, windEstimateDataSeries, renewablesSeries);
+            final var windEstimateDataSeries = createEstimateDataSeries(windEstimateResponses, getTranslation("Wind production estimate"));
+            final var productionEstimateDataSeries = createEstimateDataSeries(productionEstimateResponses, getTranslation("Production estimate"));
+            productionEstimateDataSeries.setVisible(false);
+            final var consumptionEstimateDataSeries = createEstimateDataSeries(consumptionEstimateResponses, getTranslation("Consumption estimate"));
+            consumptionEstimateDataSeries.setVisible(false);
+            final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, dateTimeFormatter, new ArrayList<>(Arrays.asList(hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, windEstimateDataSeries, consumptionEstimateDataSeries, productionEstimateDataSeries, renewablesSeries)));
+            configureChartTooltips(chart, hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, spotPriceDataSeries, renewablesSeries);
             //setNetToday(fingridResponse, df, netToday);
         } else {
             add(new Span(getTranslation("Fingrid API is down currently ;~(")));
             final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, dateTimeFormatter, new ArrayList<>());
-            configureChartTooltips(chart, null, null, null, null, null, null, spotPriceDataSeries, null, null);
+            configureChartTooltips(chart, null, null, null, null, null, null, spotPriceDataSeries, null);
         }
 
         final var rangeSelector = new RangeSelector();
@@ -355,7 +361,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         chart.getConfiguration().addxAxis(xAxis);
     }
 
-    private void configureChartTooltips(Chart chart, DataSeries hydroPowerSeries, DataSeries windPowerSeries, DataSeries nuclearPowerSeries, DataSeries solarPowerSeries, DataSeries consumptionSeries, DataSeries importExportSeries, DataSeries spotPriceDataSeries, DataSeries windEstimateDataSeries, DataSeries renewablesSeries) {
+    private void configureChartTooltips(Chart chart, DataSeries hydroPowerSeries, DataSeries windPowerSeries, DataSeries nuclearPowerSeries, DataSeries solarPowerSeries, DataSeries consumptionSeries, DataSeries importExportSeries, DataSeries spotPriceDataSeries, DataSeries renewablesSeries) {
         final var plotOptionsLineSpot = new PlotOptionsLine();
         plotOptionsLineSpot.setStickyTracking(true);
         plotOptionsLineSpot.setMarker(new Marker(false));
@@ -384,7 +390,6 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
             solarPowerSeries.setVisible(false);
             consumptionSeries.setVisible(false);
             importExportSeries.setVisible(false);
-            windEstimateDataSeries.setVisible(true);
             renewablesSeries.setVisible(false);
         }
         spotPriceDataSeries.setyAxis(1);
@@ -420,8 +425,8 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         return dataSeries;
     }
 
-    private DataSeries createWindEstimateDataSeries(List<FingridLiteResponse> dataSource) {
-        final var dataSeries = new DataSeries(windProductionEstimateTitle);
+    private DataSeries createEstimateDataSeries(List<FingridLiteResponse> dataSource, String title) {
+        final var dataSeries = new DataSeries(title);
         for (FingridLiteResponse response : dataSource) {
             final var dataSeriesItem = new DataSeriesItem();
             dataSeriesItem.setX(response.start_time.toInstant().plus(Duration.ofHours(3)));
