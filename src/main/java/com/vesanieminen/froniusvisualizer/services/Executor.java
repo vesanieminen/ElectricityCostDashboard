@@ -23,12 +23,19 @@ public class Executor {
         log.info("Started updateAll");
         final var startTime = System.currentTimeMillis();
         NordpoolSpotService.updateNordpoolData();
-        FingridService.updateWindEstimateData();
-        FingridService.updateProductionEstimateData();
-        FingridService.updateConsumptionEstimateData();
-        writeMarketPriceFile();
-        updateSpotData();
-        FingridService.updateRealtimeData();
+        try {
+            FingridService.updateWindEstimateData();
+            TimeUnit.MILLISECONDS.sleep(500);
+            FingridService.updateProductionEstimateData();
+            TimeUnit.MILLISECONDS.sleep(500);
+            FingridService.updateConsumptionEstimateData();
+            writeMarketPriceFile();
+            updateSpotData();
+            TimeUnit.MILLISECONDS.sleep(500);
+            FingridService.updateRealtimeData();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         log.info("Ended updateAll in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
     }
 
