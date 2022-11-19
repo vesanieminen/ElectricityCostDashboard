@@ -320,9 +320,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         final var fingridSourceSpan = new Span(getTranslation("fingrid.source"));
         final var fingridMainLink = new Anchor("http://fingrid.fi", "Fingrid");
         final var licenseSpan = new Span(getTranslation("fingrid.license"));
-        final var dividerSpan = new Span(" / ");
-        final var dividerSpan2 = new Span(" / ");
-        final var fingridFooter = new Span(fingridSourceSpan, fingridMainLink, dividerSpan, fingridLink, dividerSpan2, licenseSpan, fingridCCLicenseLink);
+        final var fingridFooter = new Span(fingridSourceSpan, fingridMainLink, new Span(" / "), fingridLink, new Span(" / "), licenseSpan, fingridCCLicenseLink);
         fingridFooter.addClassNames(LumoUtility.Display.FLEX, LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL, LumoUtility.Margin.Bottom.XSMALL, LumoUtility.Gap.XSMALL);
         return fingridFooter;
     }
