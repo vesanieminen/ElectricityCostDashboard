@@ -36,8 +36,9 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentInstantHou
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
 import static com.vesanieminen.froniusvisualizer.util.Utils.threeDecimals;
 
-@Route(value = "hintalista", layout = MainLayout.class)
-@RouteAlias("price-list")
+@Route(value = "lista", layout = MainLayout.class)
+@RouteAlias(value = "hintalista", layout = MainLayout.class)
+@RouteAlias(value = "price-list", layout = MainLayout.class)
 @PageTitle("List")
 public class PriceListView extends Div {
 

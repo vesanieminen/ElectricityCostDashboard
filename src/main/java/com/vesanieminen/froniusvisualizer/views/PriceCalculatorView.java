@@ -28,6 +28,7 @@ import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.FileBuffer;
 import com.vaadin.flow.component.upload.receivers.FileData;
 import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility;
@@ -59,9 +60,10 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.format;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormatMaxTwoDecimalsWithPlusPrefix;
 
-@Route(value = "hintalaskuri", layout = MainLayout.class)
-@RouteAlias("price-calculator")
-@PageTitle("Calculator")
+@Route(value = "laskuri", layout = MainLayout.class)
+@RouteAlias(value = "hintalaskuri", layout = MainLayout.class)
+@RouteAlias(value = "price-calculator", layout = MainLayout.class)
+@PageTitle("Laskuri")
 @Slf4j
 public class PriceCalculatorView extends Div {
 
