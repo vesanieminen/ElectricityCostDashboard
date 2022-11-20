@@ -278,16 +278,24 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
             final var renewablesSeries = createRenewablesDataSeries(fingridResponse);
             final var windEstimateDataSeries = createEstimateDataSeries(windEstimateResponses, getTranslation("Wind production estimate"));
             final var productionEstimateDataSeries = createEstimateDataSeries(productionEstimateResponses, getTranslation("Production estimate"));
-            productionEstimateDataSeries.setVisible(false);
             final var consumptionEstimateDataSeries = createEstimateDataSeries(consumptionEstimateResponses, getTranslation("Consumption estimate"));
+            // set the default visibility for the series
+            hydroPowerSeries.setVisible(false);
+            windPowerSeries.setVisible(true);
+            nuclearPowerSeries.setVisible(false);
+            solarPowerSeries.setVisible(false);
+            consumptionSeries.setVisible(false);
+            importExportSeries.setVisible(false);
+            renewablesSeries.setVisible(false);
+            productionEstimateDataSeries.setVisible(false);
             consumptionEstimateDataSeries.setVisible(false);
             final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, dateTimeFormatter, new ArrayList<>(Arrays.asList(hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, windEstimateDataSeries, consumptionEstimateDataSeries, productionEstimateDataSeries, renewablesSeries)));
-            configureChartTooltips(chart, hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, spotPriceDataSeries, renewablesSeries);
+            configureChartTooltips(chart, spotPriceDataSeries);
             //setNetToday(fingridResponse, df, netToday);
         } else {
             add(new Span(getTranslation("Fingrid API is down currently ;~(")));
             final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, dateTimeFormatter, new ArrayList<>());
-            configureChartTooltips(chart, null, null, null, null, null, null, spotPriceDataSeries, null);
+            configureChartTooltips(chart, spotPriceDataSeries);
         }
 
         final var rangeSelector = new RangeSelector();
@@ -361,7 +369,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         chart.getConfiguration().addxAxis(xAxis);
     }
 
-    private void configureChartTooltips(Chart chart, DataSeries hydroPowerSeries, DataSeries windPowerSeries, DataSeries nuclearPowerSeries, DataSeries solarPowerSeries, DataSeries consumptionSeries, DataSeries importExportSeries, DataSeries spotPriceDataSeries, DataSeries renewablesSeries) {
+    private void configureChartTooltips(Chart chart, DataSeries spotPriceDataSeries) {
         final var plotOptionsLineSpot = new PlotOptionsLine();
         plotOptionsLineSpot.setStickyTracking(true);
         plotOptionsLineSpot.setMarker(new Marker(false));
@@ -382,16 +390,6 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         tooltip.setValueSuffix(" MWh/h");
         chart.getConfiguration().setTooltip(tooltip);
 
-        if (hydroPowerSeries != null) {
-            // Change the fingrid series to use the 2nd y-axis
-            hydroPowerSeries.setVisible(false);
-            windPowerSeries.setVisible(true);
-            nuclearPowerSeries.setVisible(false);
-            solarPowerSeries.setVisible(false);
-            consumptionSeries.setVisible(false);
-            importExportSeries.setVisible(false);
-            renewablesSeries.setVisible(false);
-        }
         spotPriceDataSeries.setyAxis(1);
 
         // Add plotline to point the current time:
