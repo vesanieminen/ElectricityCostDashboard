@@ -480,12 +480,9 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
             vatComboBox.setValue(VAT.VAT0);
         }
         vatComboBox.setItemLabelGenerator(item -> getTranslation(item.getVatName()));
-        final var priceListButton = createButton(getTranslation("List"));
-        final var priceCalculationButton = createButton(getTranslation("Calculator"));
-        final var menuLayout = new Div(vatComboBox, priceListButton, priceCalculationButton, fullScreenButton);
+        final var menuLayout = new Div(vatComboBox, fullScreenButton);
         menuLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Width.FULL);
         add(menuLayout);
-
         // Add event listeners
         vatComboBox.addValueChangeListener(e -> getUI().ifPresent(ui -> {
             switch (e.getValue()) {
@@ -494,8 +491,6 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
                 case VAT0 -> ui.navigate(NordpoolspotView.class, vat0);
             }
         }));
-        priceListButton.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(PriceListView.class)));
-        priceCalculationButton.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(PriceCalculatorView.class)));
     }
 
     private static Button createButton(String text) {

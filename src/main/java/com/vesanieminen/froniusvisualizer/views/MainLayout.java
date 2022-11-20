@@ -6,6 +6,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.Footer;
+import com.vesanieminen.froniusvisualizer.components.Header;
 import com.vesanieminen.froniusvisualizer.components.Spacer;
 import org.vaadin.googleanalytics.tracking.EnableGoogleAnalytics;
 import org.vaadin.googleanalytics.tracking.TrackerConfiguration;
@@ -17,6 +18,7 @@ public class MainLayout extends Div implements RouterLayout, TrackerConfigurator
     public MainLayout() {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
         setHeightFull();
+        add(new Header());
         add(new Spacer());
         add(new Footer());
     }
@@ -27,7 +29,7 @@ public class MainLayout extends Div implements RouterLayout, TrackerConfigurator
         if (content != null) {
             target = content.getElement().getComponent().orElseThrow(() -> new IllegalArgumentException("Content must be a Component"));
         }
-        addComponentAsFirst(target);
+        addComponentAtIndex(1, target);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.vesanieminen.froniusvisualizer.views;
 
-import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
@@ -85,7 +84,7 @@ public class PriceCalculatorView extends Div {
     private LocalDateTime endProduction;
 
     public PriceCalculatorView() throws IOException {
-        addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
+        addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Top.MEDIUM);
         final var wrapper = new Div();
         wrapper.addClassNames(LumoUtility.Margin.Horizontal.AUTO);
         wrapper.setWidthFull();
@@ -547,14 +546,6 @@ public class PriceCalculatorView extends Div {
         final var isDateValid = fromDateTimePicker.getValue() != null && toDateTimePicker.getValue() != null && fromDateTimePicker.getValue().isBefore(toDateTimePicker.getValue()) && !fromDateTimePicker.isInvalid() && !toDateTimePicker.isInvalid();
         final var isCalculatingProductionValid = (isCalculatingProduction() && lastProductionFile != null) || !isCalculatingProduction();
         button.setEnabled(lastConsumptionFile != null && isCalculatingProductionValid && isDateValid);
-    }
-
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
-        final var backButton = new Button(getTranslation("Back to electricity price graph"));
-        backButton.addClassNames(LumoUtility.Height.MEDIUM, LumoUtility.Margin.NONE, LumoUtility.Margin.Bottom.MEDIUM, LumoUtility.BorderColor.CONTRAST_10, LumoUtility.Border.ALL, LumoUtility.BorderRadius.NONE);
-        backButton.addClickListener(e -> attachEvent.getUI().navigate(NordpoolspotView.class));
-        addComponentAsFirst(backButton);
     }
 
     enum Calculations {

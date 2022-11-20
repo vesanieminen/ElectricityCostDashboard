@@ -3,7 +3,6 @@ package com.vesanieminen.froniusvisualizer.views;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Unit;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.PageTitle;
@@ -53,10 +52,6 @@ public class PriceListView extends Div {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        final var button = new Button(getTranslation("Back to electricity price graph"));
-        button.addClassNames(LumoUtility.Height.MEDIUM, "sticky-button", LumoUtility.Background.BASE, LumoUtility.Margin.NONE);
-        button.addClickListener(e -> attachEvent.getUI().navigate(NordpoolspotView.class));
-        add(button);
         renderView(attachEvent.getUI().getLocale());
         //renderViewPakastin(attachEvent.getUI().getLocale());
 
@@ -162,7 +157,7 @@ public class PriceListView extends Div {
             final var dayDiv = new Div();
             dayDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.JustifyContent.CENTER);
             final var daySpan = new Span();
-            daySpan.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER, LumoUtility.Padding.MEDIUM, LumoUtility.Background.BASE);
+            daySpan.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER, LumoUtility.Padding.SMALL, LumoUtility.Background.BASE);
             daySpan.addClassNames(LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL, LumoUtility.Border.BOTTOM, LumoUtility.BorderColor.CONTRAST_10, "sticky-date");
             dayDiv.add(daySpan);
             containerList.add(dayDiv);
@@ -196,7 +191,7 @@ public class PriceListView extends Div {
                         div.addClassNames(LumoUtility.Background.CONTRAST_10);
                     }
                     // Due to the sticky position of some elements we need to scroll to the position of -2h
-                    if (Objects.equals(localDateTime, now.minusHours(2))) {
+                    if (Objects.equals(localDateTime, now.minusHours(1))) {
                         currentTimeDiv = div;
                     }
                 } catch (ParseException e) {

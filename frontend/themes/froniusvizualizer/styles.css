@@ -104,5 +104,6 @@ html {
 .sticky-date {
     position: sticky;
     position: -webkit-sticky;
-    top: calc(var(--lumo-size-m) - 1px);
+    /*top: calc(var(--lumo-size-m) - 1px);*/
+    top: 0;
 }
