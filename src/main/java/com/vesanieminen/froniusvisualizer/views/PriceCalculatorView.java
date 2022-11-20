@@ -20,6 +20,7 @@ import com.vaadin.flow.component.checkbox.CheckboxGroupVariant;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.AnchorTarget;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
@@ -514,7 +515,7 @@ public class PriceCalculatorView extends Div {
         helpLayout.add(helpStepsLayout);
         content.add(helpLayout);
 
-        helpStepsLayout.add(new Span(new Span(getTranslation("1) Login to ")), new Anchor("https://www.fingrid.fi/en/electricity-market/datahub/sign-in-to-datahub-customer-portal/", getTranslation("Fingrid Datahub."))));
+        helpStepsLayout.add(new Span(new Span(getTranslation("1) Login to ")), new Anchor("https://www.fingrid.fi/en/electricity-market/datahub/sign-in-to-datahub-customer-portal/", getTranslation("Fingrid Datahub."), AnchorTarget.BLANK)));
         helpStepsLayout.add(new Span(getTranslation("2) Download your hourly consumption data csv file.")));
         helpStepsLayout.add(new Span(getTranslation("3) Upload the file below.")));
         helpStepsLayout.add(new Span(getTranslation("4) Select the date and time range for the calculation (the end of day is 23:00).")));
