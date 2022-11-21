@@ -67,7 +67,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.utcZone;
 
 @Route(value = "", layout = MainLayout.class)
-@PageTitle("Visualizer")
+@PageTitle("Graafi")
 public class NordpoolspotView extends Div implements HasUrlParameter<String> {
 
     private final DoubleLabel priceNow;
