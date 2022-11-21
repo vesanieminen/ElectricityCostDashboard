@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
 
-import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
 import static java.lang.System.setProperty;
 
 public class ApplicationServiceInitListener implements VaadinServiceInitListener {
@@ -21,7 +20,7 @@ public class ApplicationServiceInitListener implements VaadinServiceInitListener
         serviceInitEvent.getSource().addUIInitListener(uiInitEvent -> {
             // Whenever a new user arrives, determine locale
             //initLanguage(uiInitEvent.getUI());
-            uiInitEvent.getUI().setLocale(fiLocale);
+            //uiInitEvent.getUI().setLocale(fiLocale);
         });
     }
 
