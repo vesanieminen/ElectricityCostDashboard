@@ -31,7 +31,6 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
-import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
@@ -67,7 +66,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.utcZone;
 
 @Route(value = "", layout = MainLayout.class)
-@PageTitle("Graafi")
+//@PageTitle("Graafi")
 public class NordpoolspotView extends Div implements HasUrlParameter<String> {
 
     private final DoubleLabel priceNow;

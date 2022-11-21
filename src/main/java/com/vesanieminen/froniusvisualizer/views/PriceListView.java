@@ -6,7 +6,6 @@ import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility;
@@ -40,7 +39,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.threeDecimals;
 @Route(value = "lista", layout = MainLayout.class)
 @RouteAlias(value = "hintalista", layout = MainLayout.class)
 @RouteAlias(value = "price-list", layout = MainLayout.class)
-@PageTitle("List")
+//@PageTitle("List")
 public class PriceListView extends Div {
 
     private static final double expensiveLimit = 10;
