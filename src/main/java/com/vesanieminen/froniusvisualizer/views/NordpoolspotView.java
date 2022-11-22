@@ -345,6 +345,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         fingridYAxis.setLabels(labelsFingrid);
         fingridYAxis.setTitle(getTranslation("Production"));
         fingridYAxis.setOpposite(false);
+        fingridYAxis.setSoftMax(4500);
         chart.getConfiguration().addyAxis(fingridYAxis);
     }
 
