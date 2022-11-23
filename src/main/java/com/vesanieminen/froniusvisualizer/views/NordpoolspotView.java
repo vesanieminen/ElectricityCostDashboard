@@ -11,6 +11,7 @@ import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.DataSeries;
 import com.vaadin.flow.component.charts.model.DataSeriesItem;
 import com.vaadin.flow.component.charts.model.DateTimeLabelFormats;
+import com.vaadin.flow.component.charts.model.Label;
 import com.vaadin.flow.component.charts.model.Labels;
 import com.vaadin.flow.component.charts.model.Lang;
 import com.vaadin.flow.component.charts.model.Marker;
@@ -192,7 +193,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
 
     private void setMobileDeviceChartHeight(Chart chart) {
         setHeight("auto");
-        chart.setHeight("500px");
+        chart.setHeight("580px");
     }
 
     private Chart renderView() {
@@ -311,12 +312,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         rangeSelector.setEnabled(true);
         rangeSelector.setInputEnabled(true);
 
-        // TODO: bring back the average price per day?
-        //final var averageValue = mapToPrice(format, nordpoolResponse.data.Rows.get(26));
-        //PlotLine averagePrice = new PlotLine();
-        //averagePrice.setLabel(new Label("Average price: " + averageValue + " c/kWh"));
-        //averagePrice.setValue(averageValue);
-        //chart.getConfiguration().getyAxis().addPlotLine(averagePrice);
+        //addAveragePrice(nordpoolResponse, chart);
 
         setTouchDeviceConfiguration(chart);
 
@@ -325,6 +321,15 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         final Span fingridFooter = createFingridLicenseSpan();
         add(fingridFooter);
         return chart;
+    }
+
+    private static void addAveragePrice(NordpoolResponse nordpoolResponse, Chart chart) {
+        // TODO: bring back the average price per day?
+        final var averageValue = nordpoolResponse.data.Rows.get(26);
+        PlotLine averagePrice = new PlotLine();
+        averagePrice.setLabel(new Label("Average price: " + averageValue + " c/kWh"));
+        //averagePrice.setValue(averageValue);
+        chart.getConfiguration().getyAxis().addPlotLine(averagePrice);
     }
 
     private Span createFingridLicenseSpan() {
