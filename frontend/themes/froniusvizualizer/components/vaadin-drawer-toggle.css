@@ -1,0 +1,6 @@
+:host {
+    border-radius: calc(var(--lumo-button-size) * 0.5);
+    height: var(--lumo-button-size);
+    margin: 0;
+    width: var(--lumo-button-size);
+}

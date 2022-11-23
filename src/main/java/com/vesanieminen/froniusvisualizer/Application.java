@@ -28,6 +28,7 @@ import static com.vesanieminen.froniusvisualizer.util.Properties.isStagingEnviro
 @Theme(value = "froniusvizualizer")
 @PWA(name = "Sähkön hinta", shortName = "Sähkön hinta", offlineResources = {})
 @NpmPackage(value = "line-awesome", version = "1.3.0")
+@NpmPackage(value = "@vaadin-component-factory/vcf-nav", version = "1.0.6")
 @JsModule("src/prefers-color-scheme.js")
 public class Application implements AppShellConfigurator {
 
