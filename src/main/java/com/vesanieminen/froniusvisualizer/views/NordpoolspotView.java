@@ -38,9 +38,11 @@ import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
 import com.vesanieminen.froniusvisualizer.components.Spacer;
 import com.vesanieminen.froniusvisualizer.services.FingridService;
 import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
+import com.vesanieminen.froniusvisualizer.services.SpotHintaService;
 import com.vesanieminen.froniusvisualizer.services.model.FingridLiteResponse;
 import com.vesanieminen.froniusvisualizer.services.model.FingridRealtimeResponse;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
+import com.vesanieminen.froniusvisualizer.services.model.SpotHintaResponse;
 import com.vesanieminen.froniusvisualizer.util.Utils;
 
 import java.io.IOException;
@@ -182,6 +184,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
                 YAxis price = chart.getConfiguration().getyAxis(1);
                 price.setTitle(getTranslation("Price") + " (" + getTranslation("c/kWh") + ")");
                 price.getLabels().setFormatter(null);
+                chart.getConfiguration().getyAxis(2).setVisible(false);
             }
             if (screenWidth < 600) {
                 chart.getConfiguration().getRangeSelector().setInputEnabled(false);
@@ -198,11 +201,12 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
 
     private Chart renderView() {
         isInitialRender = false;
-        NordpoolResponse nordpoolResponse = null;
-        FingridRealtimeResponse fingridResponse = null;
-        List<FingridLiteResponse> windEstimateResponses = null;
-        List<FingridLiteResponse> productionEstimateResponses = null;
-        List<FingridLiteResponse> consumptionEstimateResponses = null;
+        NordpoolResponse nordpoolResponse;
+        FingridRealtimeResponse fingridResponse;
+        List<FingridLiteResponse> windEstimateResponses;
+        List<FingridLiteResponse> productionEstimateResponses;
+        List<FingridLiteResponse> consumptionEstimateResponses;
+        List<SpotHintaResponse> temperatureList;
         try {
             // the TVO OL3 requires some page crawling to work reliably
             //var test = getDayAheadPrediction();
@@ -211,6 +215,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
             windEstimateResponses = FingridService.getWindEstimate();
             productionEstimateResponses = FingridService.getProductionEstimate();
             consumptionEstimateResponses = FingridService.getConsumptionEstimate();
+            temperatureList = SpotHintaService.getLatest();
         } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -258,13 +263,14 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
             chart.setHeightFull();
         } else {
             chart.setHeight("580px");
-            chart.setMaxWidth("1320px");
+            chart.setMaxWidth("1400px");
         }
 
         // create x and y-axis
         createXAxis(chart);
         createFingridYAxis(chart);
         createSpotPriceYAxis(chart);
+        createTemperatureYAxis(chart);
 
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
@@ -298,12 +304,28 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
             configureChartTooltips(chart, spotPriceDataSeries);
         }
 
+        if (temperatureList != null && temperatureList.size() > 0) {
+            var temperatureDataSeries = createTemperatureDataSeries(temperatureList, getTranslation("chart.temperature"));
+            temperatureDataSeries.setyAxis(2);
+            chart.getConfiguration().addSeries(temperatureDataSeries);
+            final var plotOptionsLineSpot = new PlotOptionsLine();
+            plotOptionsLineSpot.setStickyTracking(true);
+            plotOptionsLineSpot.setMarker(new Marker(false));
+            final var seriesTooltipSpot = new SeriesTooltip();
+            seriesTooltipSpot.setValueDecimals(1);
+            seriesTooltipSpot.setValueSuffix(" °C");
+            final var dateTimeLabelFormats = new DateTimeLabelFormats();
+            seriesTooltipSpot.setDateTimeLabelFormats(dateTimeLabelFormats);
+            plotOptionsLineSpot.setTooltip(seriesTooltipSpot);
+            temperatureDataSeries.setPlotOptions(plotOptionsLineSpot);
+        }
+
         final var rangeSelector = new RangeSelector();
         rangeSelector.setButtons(
-                new RangeSelectorButton(RangeSelectorTimespan.DAY, 1, getTranslation("1d")),
-                new RangeSelectorButton(RangeSelectorTimespan.DAY, 2, getTranslation("2d")),
-                new RangeSelectorButton(RangeSelectorTimespan.DAY, 3, getTranslation("3d")),
-                new RangeSelectorButton(RangeSelectorTimespan.DAY, 5, getTranslation("5d")),
+                new RangeSelectorButton(RangeSelectorTimespan.DAY, 2, getTranslation("1d")),
+                new RangeSelectorButton(RangeSelectorTimespan.DAY, 3, getTranslation("2d")),
+                new RangeSelectorButton(RangeSelectorTimespan.DAY, 4, getTranslation("3d")),
+                new RangeSelectorButton(RangeSelectorTimespan.DAY, 6, getTranslation("5d")),
                 new RangeSelectorButton(RangeSelectorTimespan.ALL, getTranslation("7d"))
         );
         rangeSelector.setButtonSpacing(12);
@@ -365,6 +387,18 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         yAxisSpot.setTitle(getTranslation("Price"));
         yAxisSpot.setOpposite(true);
         chart.getConfiguration().addyAxis(yAxisSpot);
+    }
+
+    private void createTemperatureYAxis(Chart chart) {
+        final var temperatureYAxis = new YAxis();
+        var labelsTemperature = new Labels();
+        labelsTemperature.setFormatter("return this.value +' °C'");
+        temperatureYAxis.setLabels(labelsTemperature);
+        temperatureYAxis.setTitle(getTranslation("chart.temperature"));
+        temperatureYAxis.setOpposite(true);
+        temperatureYAxis.setSoftMax(5);
+        temperatureYAxis.setSoftMin(-5);
+        chart.getConfiguration().addyAxis(temperatureYAxis);
     }
 
     private void createXAxis(Chart chart) {
@@ -434,6 +468,17 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
             final var dataSeriesItem = new DataSeriesItem();
             dataSeriesItem.setX(response.start_time.toInstant().plus(Duration.ofHours(3)));
             dataSeriesItem.setY(response.value);
+            dataSeries.add(dataSeriesItem);
+        }
+        return dataSeries;
+    }
+
+    private DataSeries createTemperatureDataSeries(List<SpotHintaResponse> dataSource, String title) {
+        final var dataSeries = new DataSeries(title);
+        for (SpotHintaResponse response : dataSource) {
+            final var dataSeriesItem = new DataSeriesItem();
+            dataSeriesItem.setX(response.TimeStamp.toInstant().plus(Duration.ofHours(2)));
+            dataSeriesItem.setY(response.Temperature);
             dataSeries.add(dataSeriesItem);
         }
         return dataSeries;

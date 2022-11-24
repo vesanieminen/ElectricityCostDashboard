@@ -33,6 +33,7 @@ public class Executor {
             updateSpotData();
             TimeUnit.MILLISECONDS.sleep(500);
             FingridService.updateRealtimeData();
+            SpotHintaService.updateData();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
