@@ -305,7 +305,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         }
 
         if (temperatureList != null && temperatureList.size() > 0) {
-            var temperatureDataSeries = createTemperatureDataSeries(temperatureList, getTranslation("chart.temperature"));
+            var temperatureDataSeries = createTemperatureDataSeries(temperatureList, getTranslation("chart.temperature.series"));
             temperatureDataSeries.setyAxis(2);
             chart.getConfiguration().addSeries(temperatureDataSeries);
             final var plotOptionsLineSpot = new PlotOptionsLine();
