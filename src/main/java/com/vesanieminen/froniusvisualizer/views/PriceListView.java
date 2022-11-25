@@ -13,7 +13,7 @@ import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
 import com.vesanieminen.froniusvisualizer.services.PakastinSpotService;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
 import com.vesanieminen.froniusvisualizer.services.model.PakastinResponse;
-import com.vesanieminen.froniusvisualizer.util.css.FontFamily;
+import com.vesanieminen.froniusvisualizer.util.css.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -48,13 +48,10 @@ public class PriceListView extends Main {
     private static final double cheapLimit = 2;
 
     public PriceListView() {
-        addClassNames(
-                LumoUtility.Display.FLEX,
-                LumoUtility.FlexDirection.COLUMN,
-                LumoUtility.JustifyContent.CENTER,
-                LumoUtility.Margin.Horizontal.AUTO,
-                LumoUtility.MaxWidth.SCREEN_SMALL
-        );
+        addClassNames(LumoUtility.Overflow.AUTO, LumoUtility.Padding.Horizontal.SMALL);
+        // Set height to correctly position sticky dates
+        // 3.5 rem is the height of the app header.
+        setHeight("calc(100vh - 3.5rem)");
     }
 
     @Override
@@ -85,14 +82,15 @@ public class PriceListView extends Main {
                     LumoUtility.Background.BASE,
                     LumoUtility.Border.BOTTOM,
                     LumoUtility.BorderColor.CONTRAST_10,
-                    LumoUtility.Display.FLEX,
-                    LumoUtility.FontSize.SMALL,
-                    LumoUtility.JustifyContent.CENTER,
+                    LumoUtility.FontSize.XXLARGE,
+                    Layout.TOP_0,
                     LumoUtility.Margin.Bottom.NONE,
+                    LumoUtility.Margin.Horizontal.AUTO,
                     LumoUtility.Margin.Top.MEDIUM,
+                    LumoUtility.MaxWidth.SCREEN_SMALL,
                     LumoUtility.Padding.SMALL,
-                    LumoUtility.TextColor.SECONDARY,
-                    "sticky-date"
+                    LumoUtility.Position.STICKY,
+                    Layout.Z_10
             );
             containerList.add(day);
 
@@ -100,7 +98,9 @@ public class PriceListView extends Main {
             list.addClassNames(
                     FontFamily.MONO,
                     LumoUtility.ListStyleType.NONE,
-                    LumoUtility.Margin.NONE,
+                    LumoUtility.Margin.Horizontal.AUTO,
+                    LumoUtility.Margin.Vertical.NONE,
+                    LumoUtility.MaxWidth.SCREEN_SMALL,
                     LumoUtility.Padding.NONE
             );
             containerList.add(list);
@@ -118,35 +118,42 @@ public class PriceListView extends Main {
                     final var timeSpan = new Span(DateTimeFormatter.ofPattern("HH:mm").withLocale(locale).format(localDateTime));
                     final var df = new DecimalFormat("#0.000");
                     final var priceSpan = new Span(df.format(price) + "¢");
-                    if (price <= cheapLimit) {
-                        priceSpan.addClassName(LumoUtility.TextColor.SUCCESS);
-                    }
-                    if (price > cheapLimit && price < expensiveLimit) {
-                        priceSpan.addClassName(LumoUtility.TextColor.PRIMARY);
-                    }
-                    if (price >= expensiveLimit) {
-                        priceSpan.addClassName(LumoUtility.TextColor.ERROR);
-                    }
 
                     final var item = new ListItem(timeSpan, priceSpan);
                     item.addClassNames(
                             LumoUtility.Border.BOTTOM,
                             LumoUtility.Display.FLEX,
                             LumoUtility.JustifyContent.BETWEEN,
-                            LumoUtility.Padding.Horizontal.MEDIUM,
-                            LumoUtility.Padding.Vertical.SMALL
+                            LumoUtility.Padding.SMALL,
+                            Transform.Hover.SCALE_102,
+                            Transition.TRANSITION
                     );
+
+                    if (price <= cheapLimit) {
+                        priceSpan.addClassName(LumoUtility.TextColor.SUCCESS);
+                        item.addClassNames(Background.Hover.SUCCESS_10, BorderColor.Hover.SUCCESS);
+                    }
+                    if (price > cheapLimit && price < expensiveLimit) {
+                        priceSpan.addClassName(LumoUtility.TextColor.PRIMARY);
+                        item.addClassNames(Background.Hover.PRIMARY_10, BorderColor.Hover.PRIMARY);
+                    }
+                    if (price >= expensiveLimit) {
+                        priceSpan.addClassName(LumoUtility.TextColor.ERROR);
+                        item.addClassNames(Background.Hover.ERROR_10, BorderColor.Hover.ERROR);
+                    }
+
+                    // Current item
                     if (Objects.equals(localDateTime, now)) {
                         Span currentSpan = new Span("(current)");
                         currentSpan.addClassNames(
                                 FontFamily.SANS,
                                 LumoUtility.FontSize.XSMALL,
-                                LumoUtility.FontWeight.NORMAL,
-                                LumoUtility.TextColor.SECONDARY
+                                LumoUtility.FontWeight.NORMAL
                         );
 
                         timeSpan.setText(timeSpan.getText() + " ");
                         timeSpan.add(currentSpan);
+                        timeSpan.addClassNames(LumoUtility.TextColor.PRIMARY);
 
                         item.addClassNames(
                                 LumoUtility.Background.PRIMARY_10,

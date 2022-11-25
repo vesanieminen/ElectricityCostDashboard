@@ -1,15 +1,16 @@
+@import "background.css";
+@import "border.css";
 @import "color.css";
+@import "layout.css";
 @import "size.css";
+@import "transform.css";
+@import "transition.css";
 @import "typography.css";
-@import url('line-awesome/dist/line-awesome/css/line-awesome.min.css');
 
-.sticky-button {
-    position: sticky;
-    top: 0;
-    z-index: 10;
+body {
+    margin: 0;
 }
 
-.sticky-date {
-    position: sticky;
-    top: var(--lumo-size-m);
+* {
+    box-sizing: border-box;
 }

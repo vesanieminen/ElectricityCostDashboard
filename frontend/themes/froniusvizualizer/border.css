@@ -1,0 +1,15 @@
+.hover\:border-contrast-90:hover {
+    border-color: var(--lumo-contrast-90pct);
+}
+
+.hover\:border-error:hover {
+    border-color: var(--lumo-error-color);
+}
+
+.hover\:border-primary:hover {
+    border-color: var(--lumo-primary-color);
+}
+
+.hover\:border-success:hover {
+    border-color: var(--lumo-success-color);
+}

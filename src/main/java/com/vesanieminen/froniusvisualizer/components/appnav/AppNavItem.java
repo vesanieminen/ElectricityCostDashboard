@@ -10,6 +10,8 @@ import com.vaadin.flow.internal.StateTree;
 import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.router.Router;
 import com.vaadin.flow.server.VaadinService;
+import com.vesanieminen.froniusvisualizer.components.MaterialIcon;
+
 import java.util.Optional;
 
 /**
@@ -125,6 +127,23 @@ public class AppNavItem extends Component {
         setLabel(label);
 
         setIconClass(iconClass);
+    }
+
+    /**
+     * Creates a new menu item using the given label and icon that links to the
+     * given path.
+     *
+     * @param label
+     *            the label for the item
+     * @param view
+     *            the view to link to
+     * @param icon
+     *            the icon for the item
+     */
+    public AppNavItem(String label, Class<? extends Component> view, MaterialIcon icon) {
+        setPath(view);
+        setLabel(label);
+        setIcon(icon.create());
     }
 
     /**
@@ -284,7 +303,7 @@ public class AppNavItem extends Component {
      * Sets the icon using a CSS class for the item.
      * <p>
      * Can also be used to set a custom component to be shown in front of the label.
-     * 
+     *
      * @param iconClass
      *            the CSS class to use for showing the icon
      * @return this instance for chaining

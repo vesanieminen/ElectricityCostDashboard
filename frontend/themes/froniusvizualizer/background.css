@@ -1,0 +1,15 @@
+.hover\:bg-contrast-5:hover {
+    background-color: var(--lumo-contrast-5pct);
+}
+
+.hover\:bg-error-10:hover {
+    background-color: var(--lumo-error-color-10pct);
+}
+
+.hover\:bg-primary-10:hover {
+    background-color: var(--lumo-primary-color-10pct);
+}
+
+.hover\:bg-success-10:hover {
+    background-color: var(--lumo-success-color-10pct);
+}
