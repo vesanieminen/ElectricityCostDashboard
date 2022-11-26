@@ -176,7 +176,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
 
     private void setTouchDeviceConfiguration(Chart chart) {
         if (isTouchDevice) {
-            chart.getConfiguration().getRangeSelector().setSelected(2);
+            chart.getConfiguration().getRangeSelector().setSelected(1);
             if (screenWidth < 1000) {
                 YAxis production = chart.getConfiguration().getyAxis(0);
                 production.setTitle(getTranslation("Production") + " (GWh/h)");

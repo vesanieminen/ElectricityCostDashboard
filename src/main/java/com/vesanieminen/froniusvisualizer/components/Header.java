@@ -21,7 +21,7 @@ public class Header extends Div {
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.Width.FULL);
-        final var graphButton = createButton(getTranslation("Graph"));
+        final var graphButton = createButton(getTranslation("Chart"));
         final var priceListButton = createButton(getTranslation("List"));
         final var priceCalculationButton = createButton(getTranslation("Calculator"));
         graphButton.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(NordpoolspotView.class)));
