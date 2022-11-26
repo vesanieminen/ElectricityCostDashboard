@@ -382,7 +382,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         labels.setReserveSpace(true);
         labels.setFormatter("return this.value +' c/kWh'");
         yAxisSpot.setLabels(labels);
-        yAxisSpot.setMin(0);
+        yAxisSpot.setSoftMin(0);
         //yAxisSpot.setMinRange(-1);
         yAxisSpot.setTitle(getTranslation("Price"));
         yAxisSpot.setOpposite(true);
