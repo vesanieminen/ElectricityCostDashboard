@@ -53,6 +53,7 @@ import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getFingridUsageData;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataEnd;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataStart;
+import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.format;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
@@ -168,6 +169,20 @@ public class PriceCalculatorView extends Div {
         toDateTimePicker.setLocale(getLocale());
         content.add(fromDateTimePicker);
         content.add(toDateTimePicker);
+
+        if (fiLocale.equals(getLocale())) {
+            var finnishI18n = new DatePicker.DatePickerI18n();
+            finnishI18n.setMonthNames(List.of("Tammikuu", "Helmikuu", "Maaliskuu", "Huhtikuu", "Toukokuu", "Kesäkuu", "Heinäkuu", "Elokuu", "Syyskuu", "Lokakuu", "Marraskuu", "Joulukuu"));
+            finnishI18n.setWeekdays(List.of("Sunnuntai", "Maanantai", "Tiistai", "Keskiviikko", "Torstai", "Perjantai", "Lauantai"));
+            finnishI18n.setWeekdaysShort(
+                    List.of("Su", "Ma", "Ti", "Ke", "To", "Pe", "La"));
+            finnishI18n.setWeek("Viikko");
+            finnishI18n.setToday("Tänään");
+            finnishI18n.setCancel("Keskeytä");
+            finnishI18n.setFirstDayOfWeek(1);
+            fromDateTimePicker.setDatePickerI18n(finnishI18n);
+            toDateTimePicker.setDatePickerI18n(finnishI18n);
+        }
 
         final var fieldRow = new Div();
         fieldRow.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Gap.Column.MEDIUM, LumoUtility.FlexWrap.WRAP);
