@@ -55,13 +55,13 @@ public class Header extends Div {
         //changeLanguage.setText(fiLocale.equals(ui.getLocale()) ? getTranslation("to.english") : getTranslation("to.finnish"));
         if (fiLocale.equals(ui.getLocale())) {
             final var finnishIcon = new Image("icons/finland.png", "Finnish");
-            finnishIcon.getElement().setAttribute("height", "50");
-            finnishIcon.getElement().setAttribute("width", "50");
+            finnishIcon.getElement().setAttribute("height", "32");
+            finnishIcon.getElement().setAttribute("width", "32");
             changeLanguage.setIcon(finnishIcon);
         } else {
             final var ukIcon = new Image("icons/united-kingdom.png", "English");
-            ukIcon.getElement().setAttribute("height", "40");
-            ukIcon.getElement().setAttribute("width", "40");
+            ukIcon.getElement().setAttribute("height", "32");
+            ukIcon.getElement().setAttribute("width", "32");
             changeLanguage.setIcon(ukIcon);
         }
     }
