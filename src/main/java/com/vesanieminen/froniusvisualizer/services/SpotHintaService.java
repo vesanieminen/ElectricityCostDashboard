@@ -31,7 +31,7 @@ public class SpotHintaService {
             var previous = newSpotHintaResponse.get(0).TimeStamp;
             for (int i = 1; i < newSpotHintaResponse.size(); ++i) {
                 var current = newSpotHintaResponse.get(i).TimeStamp;
-                // only use estimates of up to 36h from current Finnish time
+                // only use estimates of up to 36h from current Finnish time (= Fingrid wind estimate)
                 if (current.isAfter(time)) {
                     newSpotHintaResponse = newSpotHintaResponse.subList(0, i);
                     break;
