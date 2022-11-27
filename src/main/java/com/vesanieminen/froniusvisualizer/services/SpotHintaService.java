@@ -3,6 +3,7 @@ package com.vesanieminen.froniusvisualizer.services;
 import com.fatboyindustrial.gsonjavatime.Converters;
 import com.google.gson.GsonBuilder;
 import com.vesanieminen.froniusvisualizer.services.model.SpotHintaResponse;
+import com.vesanieminen.froniusvisualizer.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -11,9 +12,11 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.temporal.ChronoUnit;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 
 @Slf4j
 public class SpotHintaService {
@@ -23,14 +26,21 @@ public class SpotHintaService {
 
     public static void updateData() {
         var newSpotHintaResponse = runAndMapToResponse(query);
+        var time = ZonedDateTime.of(Utils.getCurrentTimeWithHourPrecision(), fiZoneID).plusHours(36);
         if (newSpotHintaResponse.size() > 1) {
             var previous = newSpotHintaResponse.get(0).TimeStamp;
             for (int i = 1; i < newSpotHintaResponse.size(); ++i) {
                 var current = newSpotHintaResponse.get(i).TimeStamp;
-                if (ChronoUnit.HOURS.between(previous, current) > 1) {
+                // only use estimates of up to 36h from current Finnish time
+                if (current.isAfter(time)) {
                     newSpotHintaResponse = newSpotHintaResponse.subList(0, i);
                     break;
                 }
+                //// Remove the temperature estimates that have a longer time span than 1h
+                //if (ChronoUnit.HOURS.between(previous, current) > 1) {
+                //    newSpotHintaResponse = newSpotHintaResponse.subList(0, i);
+                //    break;
+                //}
                 previous = newSpotHintaResponse.get(i).TimeStamp;
             }
             spotHintaResponse = newSpotHintaResponse;

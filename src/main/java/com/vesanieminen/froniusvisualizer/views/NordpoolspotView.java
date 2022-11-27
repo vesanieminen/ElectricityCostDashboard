@@ -104,6 +104,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     public NordpoolspotView() {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.CENTER, LumoUtility.TextColor.PRIMARY_CONTRAST);
         setHeightFull();
+        SpotHintaService.updateData();
 
         fiElectricityPriceTitle = getTranslation("FI electricity price");
         hydroPowerProductionTitle = getTranslation("Hydro production");
