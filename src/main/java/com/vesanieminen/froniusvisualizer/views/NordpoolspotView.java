@@ -71,7 +71,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.vat10Instant;
 
 @Route(value = "", layout = MainLayout.class)
 //@PageTitle("Graafi")
-public class NordpoolspotView extends Div implements HasUrlParameter<String> {
+public class NordpoolspotView extends Div implements HasUrlParameter<Boolean> {
 
     private final DoubleLabel priceNow;
     private final DoubleLabel lowestAndHighest;
@@ -93,7 +93,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     private final Double vat24Value = 1.24d;
     private final Double vat10Value = 1.10d;
     private final Double vat0Value = 1d;
-    private Double vat = null;
+    private boolean hasVat = true;
 
     private boolean isFullscreen = false;
     private boolean isTouchDevice = false;
@@ -139,16 +139,11 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     }
 
     @Override
-    public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {
+    public void setParameter(BeforeEvent event, @OptionalParameter Boolean parameter) {
         if (parameter != null) {
-            switch (parameter) {
-                default -> this.vat = null;
-                case vat10 -> this.vat = vat10Value;
-                case vat0 -> this.vat = vat0Value;
-                case vat24 -> this.vat = vat24Value;
-            }
+            this.hasVat = parameter;
         } else {
-            this.vat = null;
+            this.hasVat = true;
         }
         if (!isInitialRender) {
             renderView();
@@ -503,9 +498,8 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     }
 
     public enum VAT {
-        VAT24("VAT 24%"),
-        VAT10("VAT 10%"),
-        VAT0("VAT 0%");
+        VAT("With VAT"),
+        VAT0("Without VAT");
 
         private String vatName;
 
@@ -524,15 +518,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         vatComboBox.setMinWidth(8, Unit.EM);
         vatComboBox.setWidthFull();
         vatComboBox.setItems(VAT.values());
-        if (vat == vat24Value) {
-            vatComboBox.setValue(VAT.VAT24);
-        }
-        if (vat == vat10Value) {
-            vatComboBox.setValue(VAT.VAT10);
-        }
-        if (vat == vat0Value) {
-            vatComboBox.setValue(VAT.VAT0);
-        }
+        vatComboBox.setValue(hasVat ? VAT.VAT : VAT.VAT0);
         vatComboBox.setItemLabelGenerator(item -> getTranslation(item.getVatName()));
         final var menuLayout = new Div(vatComboBox, fullScreenButton);
         menuLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Width.FULL);
@@ -540,9 +526,8 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         // Add event listeners
         vatComboBox.addValueChangeListener(e -> getUI().ifPresent(ui -> {
             switch (e.getValue()) {
-                case VAT24 -> ui.navigate(NordpoolspotView.class, vat24);
-                case VAT10 -> ui.navigate(NordpoolspotView.class);
-                case VAT0 -> ui.navigate(NordpoolspotView.class, vat0);
+                case VAT -> ui.navigate(NordpoolspotView.class, true);
+                case VAT0 -> ui.navigate(NordpoolspotView.class, false);
             }
         }));
     }
@@ -575,15 +560,14 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
                 dataSeriesItem.setX(instant);
                 try {
                     var y = 0.0d;
-                    if (vat == null) {
-                        if (0 < instant.compareTo(vat10Instant)) {
+                    if (hasVat) {
+                        if (0 <= instant.compareTo(vat10Instant)) {
                             y = numberFormat.parse(column.Value).doubleValue() * vat10Value / 10;
                         } else {
                             y = numberFormat.parse(column.Value).doubleValue() * vat24Value / 10;
                         }
                     } else {
-                        // user selected a certain VAT themself
-                        y = numberFormat.parse(column.Value).doubleValue() * vat / 10;
+                        y = numberFormat.parse(column.Value).doubleValue() / 10;
                     }
                     total += y;
                     ++amount;
