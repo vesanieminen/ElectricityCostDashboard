@@ -67,6 +67,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.format;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.utcZone;
+import static com.vesanieminen.froniusvisualizer.util.Utils.vat10Instant;
 
 @Route(value = "", layout = MainLayout.class)
 //@PageTitle("Graafi")
@@ -89,10 +90,10 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     private final String vat0 = "vat=0";
 
     private final String vat24 = "vat=24";
-    private final double vat24Value = 1.24d;
-    private final double vat10Value = 1.10d;
-    private final double vat0Value = 1d;
-    private double vat = vat10Value;
+    private final Double vat24Value = 1.24d;
+    private final Double vat10Value = 1.10d;
+    private final Double vat0Value = 1d;
+    private Double vat = null;
 
     private boolean isFullscreen = false;
     private boolean isTouchDevice = false;
@@ -141,12 +142,13 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {
         if (parameter != null) {
             switch (parameter) {
-                default -> this.vat = vat10Value;
+                default -> this.vat = null;
+                case vat10 -> this.vat = vat10Value;
                 case vat0 -> this.vat = vat0Value;
                 case vat24 -> this.vat = vat24Value;
             }
         } else {
-            this.vat = vat10Value;
+            this.vat = null;
         }
         if (!isInitialRender) {
             renderView();
@@ -572,7 +574,17 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
                 final var localDateTime = LocalDateTime.ofInstant(instant, utcZone);
                 dataSeriesItem.setX(instant);
                 try {
-                    final var y = numberFormat.parse(column.Value).doubleValue() * vat / 10;
+                    var y = 0.0d;
+                    if (vat == null) {
+                        if (0 < instant.compareTo(vat10Instant)) {
+                            y = numberFormat.parse(column.Value).doubleValue() * vat10Value / 10;
+                        } else {
+                            y = numberFormat.parse(column.Value).doubleValue() * vat24Value / 10;
+                        }
+                    } else {
+                        // user selected a certain VAT themself
+                        y = numberFormat.parse(column.Value).doubleValue() * vat / 10;
+                    }
                     total += y;
                     ++amount;
                     dataSeriesItem.setY(y);

@@ -33,6 +33,7 @@ public class Utils {
     public static final Locale enLocale = new Locale("en", "GB");
     public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
+    public static final Instant vat10Instant = Instant.from(ZonedDateTime.of(2022, 12, 1, 0, 0, 0, 0, fiZoneID));
 
     public static boolean notNull(Object... objects) {
         return Arrays.stream(objects).allMatch(Objects::nonNull);
