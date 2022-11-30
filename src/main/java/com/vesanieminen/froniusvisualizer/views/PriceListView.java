@@ -35,6 +35,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentInstantHourPrecisionFinnishZone;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
 import static com.vesanieminen.froniusvisualizer.util.Utils.threeDecimals;
+import static com.vesanieminen.froniusvisualizer.util.Utils.vat10Instant;
 
 @Route(value = "lista", layout = MainLayout.class)
 @RouteAlias(value = "hintalista", layout = MainLayout.class)
@@ -175,7 +176,12 @@ public class PriceListView extends Div {
                 final var localDateTime = convertNordpoolLocalDateTimeToFinnish(dataLocalDataTime);
                 daySpan.setText(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale).format(dataLocalDataTime));
                 try {
-                    final var price = format.parse(column.Value).doubleValue() * 1.24 / 10;
+                    var price = 0.0d;
+                    if (0 < localDateTime.compareTo(vat10Instant.atZone(fiZoneID).toLocalDateTime())) {
+                        price = format.parse(column.Value).doubleValue() * 1.10 / 10;
+                    } else {
+                        price = format.parse(column.Value).doubleValue() * 1.24 / 10;
+                    }
                     final var div = new Div();
                     div.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.BETWEEN, LumoUtility.Border.BOTTOM, LumoUtility.BorderColor.CONTRAST_10, LumoUtility.Padding.SMALL, LumoUtility.Padding.Horizontal.MEDIUM);
                     final var timeSpan = new Span(DateTimeFormatter.ofPattern("HH:mm").withLocale(locale).format(localDateTime));
