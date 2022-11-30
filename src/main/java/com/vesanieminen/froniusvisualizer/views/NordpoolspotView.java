@@ -87,10 +87,12 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     private final String totalRenewablesTitle;
     private final String vat10 = "vat=10";
     private final String vat0 = "vat=0";
+
+    private final String vat24 = "vat=24";
     private final double vat24Value = 1.24d;
     private final double vat10Value = 1.10d;
     private final double vat0Value = 1d;
-    private double vat = vat24Value;
+    private double vat = vat10Value;
 
     private boolean isFullscreen = false;
     private boolean isTouchDevice = false;
@@ -139,12 +141,12 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
     public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {
         if (parameter != null) {
             switch (parameter) {
-                case vat10 -> this.vat = vat10Value;
+                default -> this.vat = vat10Value;
                 case vat0 -> this.vat = vat0Value;
-                default -> this.vat = vat24Value;
+                case vat24 -> this.vat = vat24Value;
             }
         } else {
-            this.vat = vat24Value;
+            this.vat = vat10Value;
         }
         if (!isInitialRender) {
             renderView();
@@ -536,8 +538,8 @@ public class NordpoolspotView extends Div implements HasUrlParameter<String> {
         // Add event listeners
         vatComboBox.addValueChangeListener(e -> getUI().ifPresent(ui -> {
             switch (e.getValue()) {
-                case VAT24 -> ui.navigate(NordpoolspotView.class);
-                case VAT10 -> ui.navigate(NordpoolspotView.class, vat10);
+                case VAT24 -> ui.navigate(NordpoolspotView.class, vat24);
+                case VAT10 -> ui.navigate(NordpoolspotView.class);
                 case VAT0 -> ui.navigate(NordpoolspotView.class, vat0);
             }
         }));
