@@ -150,7 +150,8 @@ public class PriceListView extends Main {
 
                     // Current item
                     if (Objects.equals(localDateTime, now)) {
-                        Span currentSpan = new Span("(current)");
+                        final var current = getTranslation("Current");
+                        Span currentSpan = new Span("(" + current + ")");
                         currentSpan.addClassNames(
                                 FontFamily.SANS,
                                 LumoUtility.FontSize.XSMALL,

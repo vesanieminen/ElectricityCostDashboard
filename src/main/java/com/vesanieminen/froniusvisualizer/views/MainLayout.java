@@ -6,11 +6,14 @@ import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Header;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.theme.lumo.LumoUtility;
@@ -21,6 +24,7 @@ import com.vesanieminen.froniusvisualizer.util.css.FontFamily;
 
 import javax.servlet.http.Cookie;
 
+import static com.vaadin.flow.component.html.AnchorTarget.BLANK;
 import static com.vesanieminen.froniusvisualizer.util.Utils.enLocale;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
 
@@ -62,7 +66,33 @@ public class MainLayout extends AppLayout {
         nav.addItem(new AppNavItem(getTranslation("List"), PriceListView.class, MaterialIcon.LIST));
         nav.addItem(new AppNavItem(getTranslation("Calculator"), PriceCalculatorView.class, MaterialIcon.CALCULATE));
 
-        addToDrawer(app, nav);
+        // Vaadin link
+        final var vaadinIcon = new Icon(VaadinIcon.VAADIN_H);
+        vaadinIcon.addClassNames(LumoUtility.TextColor.PRIMARY, LumoUtility.Margin.Left.AUTO);
+        final var vaadinLink = new Anchor("http://vaadin.com", getTranslation("Built with Vaadin"), BLANK);
+        vaadinLink.addClassNames(LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER);
+        vaadinLink.add(vaadinIcon);
+
+        // GitHub link
+        final var githubIcon = new Image("images/GitHub-Mark-32px.png", "GitHub icon");
+        githubIcon.addClassNames("footer-icon");
+        final var githubLink = new Anchor("https://github.com/vesanieminen/ElectricityCostDashboard", getTranslation("Fork me on GitHub"));
+        githubLink.addClassNames(LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER);
+        githubLink.add(githubIcon);
+        githubIcon.addClassNames(LumoUtility.IconSize.MEDIUM, LumoUtility.TextColor.PRIMARY, LumoUtility.Margin.Left.AUTO);
+
+        final var discordIcon = new Image("icons/discord-mark-black.png", "Discord icon");
+        discordIcon.addClassNames("footer-icon");
+        final var discordLink = new Anchor("https://discord.com/invite/WHcY2UkWVp", getTranslation("Join Discord"));
+        discordLink.addClassNames(LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER);
+        discordLink.add(discordIcon);
+        discordIcon.addClassNames(LumoUtility.IconSize.MEDIUM, LumoUtility.TextColor.PRIMARY, LumoUtility.Margin.Left.AUTO);
+
+        var links = new Div(vaadinLink, githubLink, discordLink);
+        links.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Padding.Horizontal.MEDIUM);
+        links.addClassNames(LumoUtility.Gap.MEDIUM, LumoUtility.Margin.Top.XLARGE);
+
+        addToDrawer(app, nav, links);
     }
 
     @Override
@@ -78,13 +108,27 @@ public class MainLayout extends AppLayout {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        addToNavbar(true, createChangeLanguageButton(attachEvent));
+        // Ko-Fi link
+        final var image = new Image("https://cdn.ko-fi.com/cdn/kofi2.png?v=3", getTranslation("Buy Me a Coffee at ko-fi.com"));
+        image.setHeight("36px");
+        image.getStyle().set("border", "0px");
+        image.getElement().setAttribute("height", "36");
+        image.getElement().setAttribute("border", "0");
+        final var kofiLink = new Anchor("https://ko-fi.com/F2F4FU50T");
+        kofiLink.setTarget(BLANK);
+        kofiLink.addClassNames(LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER);
+        kofiLink.add(image);
+
+        final var navbarContent = new Div(kofiLink, createChangeLanguageButton(attachEvent));
+        navbarContent.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Gap.XSMALL, LumoUtility.Margin.Left.AUTO);
+
+        addToNavbar(true, navbarContent);
     }
 
     private Button createChangeLanguageButton(AttachEvent attachEvent) {
         var changeLanguage = createButton();
         changeLanguage.setSizeUndefined();
-        changeLanguage.addClassNames(LumoUtility.Padding.Horizontal.LARGE);
+        changeLanguage.addClassNames(LumoUtility.Padding.Horizontal.MEDIUM);
         updateChangeLanguageButtonIcon(attachEvent.getUI(), changeLanguage);
         changeLanguage.addClickListener(e -> {
             VaadinService.getCurrentResponse().addCookie(new Cookie("locale", fiLocale.equals(attachEvent.getUI().getLocale()) ? enLocale.toLanguageTag() : fiLocale.toLanguageTag()));

@@ -14,3 +14,7 @@ body {
 * {
     box-sizing: border-box;
 }
+
+html[theme="dark"] .footer-icon {
+    filter: invert(1);
+}
