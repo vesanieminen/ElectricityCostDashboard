@@ -5,6 +5,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Header;
@@ -57,9 +58,9 @@ public class MainLayout extends AppLayout {
 
         AppNav nav = new AppNav();
         nav.addClassNames(LumoUtility.Padding.Horizontal.SMALL);
-        nav.addItem(new AppNavItem("Graph", NordpoolspotView.class, MaterialIcon.TIMELINE));
-        nav.addItem(new AppNavItem("List", PriceListView.class, MaterialIcon.LIST));
-        nav.addItem(new AppNavItem("Calculator", PriceCalculatorView.class, MaterialIcon.CALCULATE));
+        nav.addItem(new AppNavItem(getTranslation("Chart"), NordpoolspotView.class, MaterialIcon.TIMELINE));
+        nav.addItem(new AppNavItem(getTranslation("List"), PriceListView.class, MaterialIcon.LIST));
+        nav.addItem(new AppNavItem(getTranslation("Calculator"), PriceCalculatorView.class, MaterialIcon.CALCULATE));
 
         addToDrawer(app, nav);
     }
@@ -77,7 +78,7 @@ public class MainLayout extends AppLayout {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        addToNavbar(createChangeLanguageButton(attachEvent));
+        addToNavbar(true, createChangeLanguageButton(attachEvent));
     }
 
     private Button createChangeLanguageButton(AttachEvent attachEvent) {
@@ -95,8 +96,9 @@ public class MainLayout extends AppLayout {
 
     private static Button createButton() {
         Button button = new Button();
+        button.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         button.setWidthFull();
-        button.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.BorderRadius.NONE, LumoUtility.Margin.Vertical.NONE, LumoUtility.Height.MEDIUM, LumoUtility.BorderColor.CONTRAST_10, LumoUtility.Border.ALL);
+        button.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.BorderRadius.NONE, LumoUtility.Margin.Vertical.NONE, LumoUtility.Height.MEDIUM);
         return button;
     }
 
