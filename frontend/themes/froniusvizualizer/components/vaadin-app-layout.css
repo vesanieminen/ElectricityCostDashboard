@@ -1,3 +1,7 @@
 [part='drawer'] {
     width: 12.5rem;
 }
+
+:host([overlay]) [part='drawer'] {
+    z-index: 11;
+}
