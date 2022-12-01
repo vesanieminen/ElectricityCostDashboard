@@ -2,18 +2,23 @@ package com.vesanieminen.froniusvisualizer.views;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Unit;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.ListItem;
+import com.vaadin.flow.component.html.Main;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.html.UnorderedList;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
-import com.vesanieminen.froniusvisualizer.services.PakastinSpotService;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
-import com.vesanieminen.froniusvisualizer.services.model.PakastinResponse;
-import com.vesanieminen.froniusvisualizer.util.css.*;
+import com.vesanieminen.froniusvisualizer.util.css.Background;
+import com.vesanieminen.froniusvisualizer.util.css.BorderColor;
+import com.vesanieminen.froniusvisualizer.util.css.FontFamily;
+import com.vesanieminen.froniusvisualizer.util.css.Layout;
+import com.vesanieminen.froniusvisualizer.util.css.Transform;
+import com.vesanieminen.froniusvisualizer.util.css.Transition;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -23,23 +28,18 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.getLatest7Days;
 import static com.vesanieminen.froniusvisualizer.util.Utils.convertNordpoolLocalDateTimeToFinnish;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
-import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentInstantHourPrecisionFinnishZone;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
-import static com.vesanieminen.froniusvisualizer.util.Utils.threeDecimals;
 import static com.vesanieminen.froniusvisualizer.util.Utils.vat10Instant;
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
-@PageTitle("Graph" + URL_SUFFIX)
+@PageTitle("List" + URL_SUFFIX)
 @Route(value = "lista", layout = MainLayout.class)
 @RouteAlias(value = "hintalista", layout = MainLayout.class)
 @RouteAlias(value = "price-list", layout = MainLayout.class)

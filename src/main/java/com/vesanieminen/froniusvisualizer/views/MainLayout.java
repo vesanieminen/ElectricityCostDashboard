@@ -73,7 +73,7 @@ public class MainLayout extends AppLayout {
 
     private String getCurrentPageTitle() {
         PageTitle title = getContent().getClass().getAnnotation(PageTitle.class);
-        return title == null ? "" : title.value().replace(URL_SUFFIX, "");
+        return title == null ? "" : getTranslation(title.value().replace(URL_SUFFIX, ""));
     }
 
     @Override

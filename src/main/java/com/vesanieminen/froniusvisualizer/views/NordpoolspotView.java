@@ -71,7 +71,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.utcZone;
 import static com.vesanieminen.froniusvisualizer.util.Utils.vat10Instant;
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
-@PageTitle("Graph" + URL_SUFFIX)
+@PageTitle("Chart" + URL_SUFFIX)
 @Route(value = "", layout = MainLayout.class)
 public class NordpoolspotView extends Main implements HasUrlParameter<Boolean> {
 
