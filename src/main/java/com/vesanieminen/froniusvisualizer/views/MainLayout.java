@@ -1,17 +1,27 @@
 package com.vesanieminen.froniusvisualizer.views;
 
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Header;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.MaterialIcon;
 import com.vesanieminen.froniusvisualizer.components.appnav.AppNav;
 import com.vesanieminen.froniusvisualizer.components.appnav.AppNavItem;
 import com.vesanieminen.froniusvisualizer.util.css.FontFamily;
+
+import javax.servlet.http.Cookie;
+
+import static com.vesanieminen.froniusvisualizer.util.Utils.enLocale;
+import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
 
 public class MainLayout extends AppLayout {
 
@@ -63,5 +73,45 @@ public class MainLayout extends AppLayout {
     private String getCurrentPageTitle() {
         PageTitle title = getContent().getClass().getAnnotation(PageTitle.class);
         return title == null ? "" : title.value().replace(URL_SUFFIX, "");
+    }
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        addToNavbar(createChangeLanguageButton(attachEvent));
+    }
+
+    private Button createChangeLanguageButton(AttachEvent attachEvent) {
+        var changeLanguage = createButton();
+        changeLanguage.setSizeUndefined();
+        changeLanguage.addClassNames(LumoUtility.Padding.Horizontal.LARGE);
+        updateChangeLanguageButtonIcon(attachEvent.getUI(), changeLanguage);
+        changeLanguage.addClickListener(e -> {
+            VaadinService.getCurrentResponse().addCookie(new Cookie("locale", fiLocale.equals(attachEvent.getUI().getLocale()) ? enLocale.toLanguageTag() : fiLocale.toLanguageTag()));
+            updateChangeLanguageButtonIcon(attachEvent.getUI(), changeLanguage);
+            attachEvent.getUI().getPage().reload();
+        });
+        return changeLanguage;
+    }
+
+    private static Button createButton() {
+        Button button = new Button();
+        button.setWidthFull();
+        button.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.BorderRadius.NONE, LumoUtility.Margin.Vertical.NONE, LumoUtility.Height.MEDIUM, LumoUtility.BorderColor.CONTRAST_10, LumoUtility.Border.ALL);
+        return button;
+    }
+
+    private void updateChangeLanguageButtonIcon(UI ui, Button changeLanguage) {
+        //changeLanguage.setText(fiLocale.equals(ui.getLocale()) ? getTranslation("to.english") : getTranslation("to.finnish"));
+        if (fiLocale.equals(ui.getLocale())) {
+            final var finnishIcon = new Image("icons/finland.png", "Finnish");
+            finnishIcon.getElement().setAttribute("height", "32");
+            finnishIcon.getElement().setAttribute("width", "32");
+            changeLanguage.setIcon(finnishIcon);
+        } else {
+            final var ukIcon = new Image("icons/united-kingdom.png", "English");
+            ukIcon.getElement().setAttribute("height", "32");
+            ukIcon.getElement().setAttribute("width", "32");
+            changeLanguage.setIcon(ukIcon);
+        }
     }
 }
