@@ -23,6 +23,7 @@ import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.pa
 import static com.vesanieminen.froniusvisualizer.util.Utils.divide;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getVAT;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.sizeOf;
 import static com.vesanieminen.froniusvisualizer.util.Utils.sum;
@@ -142,15 +143,15 @@ public class PriceCalculatorService {
         final var spotData = getSpotData();
         final var spotCalculation = fingridConsumptionData.keySet().stream().filter(spotData::containsKey)
                 .map(item -> new SpotCalculation(
-                        spotData.get(item) * vat + margin,
-                        (spotData.get(item) * vat + margin) * fingridConsumptionData.get(item),
-                        spotData.get(item) * vat * fingridConsumptionData.get(item),
+                        spotData.get(item) * getVAT(item, vat) + margin,
+                        (spotData.get(item) * getVAT(item, vat) + margin) * fingridConsumptionData.get(item),
+                        spotData.get(item) * getVAT(item, vat) * fingridConsumptionData.get(item),
                         fingridConsumptionData.get(item),
                         item,
                         item,
                         new HourValue(item.atZone(fiZoneID).getHour(), fingridConsumptionData.get(item)),
-                        new HourValue(item.atZone(fiZoneID).getHour(), (spotData.get(item) * vat + margin) * fingridConsumptionData.get(item) / 100),
-                        new HourValue(item.atZone(fiZoneID).getHour(), spotData.get(item) * vat + margin)
+                        new HourValue(item.atZone(fiZoneID).getHour(), (spotData.get(item) * getVAT(item, vat) + margin) * fingridConsumptionData.get(item) / 100),
+                        new HourValue(item.atZone(fiZoneID).getHour(), spotData.get(item) * getVAT(item, vat) + margin)
                 ))
                 .reduce(new SpotCalculation(
                         0,

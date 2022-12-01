@@ -20,6 +20,9 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
 
+import static com.vesanieminen.froniusvisualizer.views.NordpoolspotView.vat10Value;
+import static com.vesanieminen.froniusvisualizer.views.NordpoolspotView.vat24Value;
+
 public class Utils {
 
     public static final NumberFormat numberFormat = NumberFormat.getInstance(Locale.FRANCE);
@@ -122,6 +125,13 @@ public class Utils {
         DecimalFormat format = new DecimalFormat("#.##", symbols);
         format.setPositivePrefix("+");
         return format;
+    }
+
+    public static double getVAT(Instant instant, double vat) {
+        if (vat == 1) {
+            return 1;
+        }
+        return 0 <= instant.compareTo(vat10Instant) ? vat10Value : vat24Value;
     }
 
 }

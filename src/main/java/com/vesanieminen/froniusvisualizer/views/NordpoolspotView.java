@@ -92,9 +92,8 @@ public class NordpoolspotView extends Main implements HasUrlParameter<Boolean> {
     private final String vat0 = "vat=0";
 
     private final String vat24 = "vat=24";
-    private final Double vat24Value = 1.24d;
-    private final Double vat10Value = 1.10d;
-    private final Double vat0Value = 1d;
+    public static final Double vat24Value = 1.24d;
+    public static final Double vat10Value = 1.10d;
     private boolean hasVat = true;
 
     private boolean isFullscreen = false;
