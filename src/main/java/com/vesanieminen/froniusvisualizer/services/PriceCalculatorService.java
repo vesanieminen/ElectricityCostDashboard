@@ -113,8 +113,7 @@ public class PriceCalculatorService {
     public static double calculateSpotAveragePriceThisYear() throws IOException {
         if (spotAverageThisYear == null) {
             final var year = getCurrentTimeWithHourPrecision().getYear();
-            final var vat = 1.24;
-            spotAverageThisYear = getSpotData().entrySet().stream().filter(yearFilter(year)).map(item -> item.getValue() * vat).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(yearFilter(year)).count();
+            spotAverageThisYear = getSpotData().entrySet().stream().filter(yearFilter(year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(yearFilter(year)).count();
         }
         return spotAverageThisYear;
     }
@@ -127,8 +126,7 @@ public class PriceCalculatorService {
         final var now = getCurrentTimeWithHourPrecision();
         final var month = now.getMonthValue();
         final var year = now.getYear();
-        final var vat = 1.24;
-        return getSpotData().entrySet().stream().filter(monthFilter(month, year)).map(item -> item.getValue() * vat).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(monthFilter(month, year)).count();
+        return getSpotData().entrySet().stream().filter(monthFilter(month, year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(monthFilter(month, year)).count();
     }
 
     private static Predicate<Map.Entry<Instant, Double>> monthFilter(int month, int year) {

@@ -131,6 +131,10 @@ public class Utils {
         if (vat == 1) {
             return 1;
         }
+        return getVAT(instant);
+    }
+
+    public static double getVAT(Instant instant) {
         return 0 <= instant.compareTo(vat10Instant) ? vat10Value : vat24Value;
     }
 

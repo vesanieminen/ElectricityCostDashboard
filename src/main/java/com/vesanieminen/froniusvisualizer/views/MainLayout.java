@@ -24,7 +24,6 @@ import com.vesanieminen.froniusvisualizer.util.css.FontFamily;
 
 import javax.servlet.http.Cookie;
 
-import static com.vaadin.flow.component.html.AnchorTarget.BLANK;
 import static com.vesanieminen.froniusvisualizer.util.Utils.enLocale;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
 
@@ -73,14 +72,13 @@ public class MainLayout extends AppLayout {
         image.getElement().setAttribute("height", "36");
         image.getElement().setAttribute("border", "0");
         final var kofiLink = new Anchor("https://ko-fi.com/F2F4FU50T");
-        kofiLink.setTarget(BLANK);
         kofiLink.addClassNames(LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER);
         kofiLink.add(image);
 
         // Vaadin link
         final var vaadinIcon = new Icon(VaadinIcon.VAADIN_H);
         vaadinIcon.addClassNames(LumoUtility.TextColor.PRIMARY, LumoUtility.Margin.Left.AUTO);
-        final var vaadinLink = new Anchor("http://vaadin.com", getTranslation("Built with Vaadin"), BLANK);
+        final var vaadinLink = new Anchor("http://vaadin.com", getTranslation("Built with Vaadin"));
         vaadinLink.addClassNames(LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER);
         vaadinLink.add(vaadinIcon);
 
