@@ -24,10 +24,12 @@ import com.vaadin.flow.component.html.AnchorTarget;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.FileBuffer;
 import com.vaadin.flow.component.upload.receivers.FileData;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility;
@@ -59,13 +61,14 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.format;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormatMaxTwoDecimalsWithPlusPrefix;
+import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
+@PageTitle("Calculator" + URL_SUFFIX)
 @Route(value = "laskuri", layout = MainLayout.class)
 @RouteAlias(value = "hintalaskuri", layout = MainLayout.class)
 @RouteAlias(value = "price-calculator", layout = MainLayout.class)
-//@PageTitle("Laskuri")
 @Slf4j
-public class PriceCalculatorView extends Div {
+public class PriceCalculatorView extends Main {
 
     private static int consumptionFilesUploaded = 0;
     private static int productionFilesUploaded = 0;

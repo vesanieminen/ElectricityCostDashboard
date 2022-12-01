@@ -28,14 +28,11 @@ import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.router.BeforeEvent;
-import com.vaadin.flow.router.HasUrlParameter;
-import com.vaadin.flow.router.OptionalParameter;
-import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.*;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
-import com.vesanieminen.froniusvisualizer.components.Spacer;
 import com.vesanieminen.froniusvisualizer.services.FingridService;
 import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
 import com.vesanieminen.froniusvisualizer.services.SpotHintaService;
@@ -68,10 +65,11 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHo
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.utcZone;
 import static com.vesanieminen.froniusvisualizer.util.Utils.vat10Instant;
+import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
+@PageTitle("Graph" + URL_SUFFIX)
 @Route(value = "", layout = MainLayout.class)
-//@PageTitle("Graafi")
-public class NordpoolspotView extends Div implements HasUrlParameter<Boolean> {
+public class NordpoolspotView extends Main implements HasUrlParameter<Boolean> {
 
     private final DoubleLabel priceNow;
     private final DoubleLabel lowestAndHighest;
@@ -105,8 +103,7 @@ public class NordpoolspotView extends Div implements HasUrlParameter<Boolean> {
     private int screenWidth;
 
     public NordpoolspotView() {
-        addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.CENTER, LumoUtility.TextColor.PRIMARY_CONTRAST);
-        setHeightFull();
+        addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.CENTER);
 
         fiElectricityPriceTitle = getTranslation("FI electricity price");
         hydroPowerProductionTitle = getTranslation("Hydro production");
@@ -338,7 +335,6 @@ public class NordpoolspotView extends Div implements HasUrlParameter<Boolean> {
         setTouchDeviceConfiguration(chart);
 
         add(chart);
-        add(new Spacer());
         final Span fingridFooter = createFingridLicenseSpan();
         add(fingridFooter);
         return chart;

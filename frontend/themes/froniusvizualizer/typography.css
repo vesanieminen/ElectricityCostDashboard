@@ -1,0 +1,71 @@
+html {
+    --lumo-icon-size-s: 1.125rem;
+    --lumo-icon-size-m: 1.5rem;
+    --lumo-icon-size-l: 3rem;
+
+    --lumo-line-height-xs: 1;
+    --lumo-line-height-s: 1.25;
+    --lumo-line-height-m: 1.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: bold;
+    line-height: var(--lumo-line-height-m);
+}
+
+.font-sans {
+    font-family: var(--lumo-font-family);
+}
+
+@font-face {
+    font-family: 'Faster One';
+    src: url('fonts/FasterOne.ttf') format('truetype');
+}
+
+.font-logo {
+    font-family: 'Faster One', cursive;
+}
+
+@font-face {
+    font-family: 'Material Icons';
+    src: url('fonts/MaterialIcons.otf') format('opentype');
+}
+
+.material-icons {
+    display: inline-block;
+    direction: ltr;
+    font-family: 'Material Icons';
+    font-feature-settings: 'liga';
+    font-size: 24px;
+    font-style: normal;
+    font-weight: normal;
+    letter-spacing: normal;
+    line-height: 1;
+    text-rendering: optimizeLegibility;
+    text-transform: none;
+    white-space: nowrap;
+    word-wrap: normal;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+}
+
+.material-icons.icon-s {
+    font-size: var(--lumo-icon-size-s);
+}
+
+.material-icons.icon-m {
+    font-size: var(--lumo-icon-size-m);
+}
+
+.material-icons.icon-l {
+    font-size: var(--lumo-icon-size-l);
+}
+
+@font-face {
+    font-family: 'Inconsolata';
+    src: url('fonts/Inconsolata.ttf') format('truetype');
+}
+
+.font-mono {
+    font-family: 'Inconsolata', monospace;
+}
