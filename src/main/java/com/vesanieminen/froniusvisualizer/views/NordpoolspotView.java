@@ -30,7 +30,11 @@ import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.router.*;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.OptionalParameter;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
 import com.vesanieminen.froniusvisualizer.services.FingridService;
@@ -522,7 +526,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<Boolean> {
         // Add event listeners
         vatComboBox.addValueChangeListener(e -> getUI().ifPresent(ui -> {
             switch (e.getValue()) {
-                case VAT -> ui.navigate(NordpoolspotView.class, true);
+                case VAT -> ui.navigate(NordpoolspotView.class);
                 case VAT0 -> ui.navigate(NordpoolspotView.class, false);
             }
         }));
