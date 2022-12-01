@@ -66,6 +66,17 @@ public class MainLayout extends AppLayout {
         nav.addItem(new AppNavItem(getTranslation("List"), PriceListView.class, MaterialIcon.LIST));
         nav.addItem(new AppNavItem(getTranslation("Calculator"), PriceCalculatorView.class, MaterialIcon.CALCULATE));
 
+        // Ko-Fi link
+        final var image = new Image("https://cdn.ko-fi.com/cdn/kofi2.png?v=3", getTranslation("Buy Me a Coffee at ko-fi.com"));
+        image.setHeight("36px");
+        image.getStyle().set("border", "0px");
+        image.getElement().setAttribute("height", "36");
+        image.getElement().setAttribute("border", "0");
+        final var kofiLink = new Anchor("https://ko-fi.com/F2F4FU50T");
+        kofiLink.setTarget(BLANK);
+        kofiLink.addClassNames(LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER);
+        kofiLink.add(image);
+
         // Vaadin link
         final var vaadinIcon = new Icon(VaadinIcon.VAADIN_H);
         vaadinIcon.addClassNames(LumoUtility.TextColor.PRIMARY, LumoUtility.Margin.Left.AUTO);
@@ -88,9 +99,9 @@ public class MainLayout extends AppLayout {
         discordLink.add(discordIcon);
         discordIcon.addClassNames(LumoUtility.IconSize.MEDIUM, LumoUtility.TextColor.PRIMARY, LumoUtility.Margin.Left.AUTO);
 
-        var links = new Div(vaadinLink, githubLink, discordLink);
+        var links = new Div(kofiLink, vaadinLink, githubLink, discordLink);
         links.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Padding.Horizontal.MEDIUM);
-        links.addClassNames(LumoUtility.Gap.MEDIUM, LumoUtility.Margin.Top.XLARGE);
+        links.addClassNames(LumoUtility.Gap.MEDIUM, LumoUtility.Margin.Top.MEDIUM);
 
         addToDrawer(app, nav, links);
     }
@@ -108,18 +119,7 @@ public class MainLayout extends AppLayout {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        // Ko-Fi link
-        final var image = new Image("https://cdn.ko-fi.com/cdn/kofi2.png?v=3", getTranslation("Buy Me a Coffee at ko-fi.com"));
-        image.setHeight("36px");
-        image.getStyle().set("border", "0px");
-        image.getElement().setAttribute("height", "36");
-        image.getElement().setAttribute("border", "0");
-        final var kofiLink = new Anchor("https://ko-fi.com/F2F4FU50T");
-        kofiLink.setTarget(BLANK);
-        kofiLink.addClassNames(LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER);
-        kofiLink.add(image);
-
-        final var navbarContent = new Div(kofiLink, createChangeLanguageButton(attachEvent));
+        final var navbarContent = new Div(createChangeLanguageButton(attachEvent));
         navbarContent.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Gap.XSMALL, LumoUtility.Margin.Left.AUTO);
 
         addToNavbar(true, navbarContent);
