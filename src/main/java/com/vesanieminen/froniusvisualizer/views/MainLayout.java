@@ -65,11 +65,7 @@ public class MainLayout extends AppLayout {
         nav.addItem(new AppNavItem(getTranslation("List"), PriceListView.class, MaterialIcon.LIST));
         nav.addItem(new AppNavItem(getTranslation("Calculator"), PriceCalculatorView.class, MaterialIcon.CALCULATE));
 
-        Div links = createLinkDiv();
-        links.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Padding.Horizontal.MEDIUM);
-        links.addClassNames(LumoUtility.Gap.MEDIUM, LumoUtility.Margin.Top.MEDIUM);
-
-        addToDrawer(app, nav, links);
+        addToDrawer(new Div(app, nav), createLinkDiv());
     }
 
     private Div createLinkDiv() {
@@ -106,6 +102,8 @@ public class MainLayout extends AppLayout {
         discordIcon.addClassNames(LumoUtility.IconSize.MEDIUM, LumoUtility.TextColor.PRIMARY, LumoUtility.Margin.Left.AUTO);
 
         var links = new Div(kofiLink, vaadinLink, githubLink, discordLink);
+        links.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Padding.Horizontal.MEDIUM);
+        links.addClassNames(LumoUtility.Gap.MEDIUM, LumoUtility.Margin.Bottom.MEDIUM);
         return links;
     }
 
