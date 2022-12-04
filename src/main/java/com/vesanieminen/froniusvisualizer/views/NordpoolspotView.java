@@ -73,7 +73,7 @@ import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
 @PageTitle("Chart" + URL_SUFFIX)
 @Route(value = "", layout = MainLayout.class)
-public class NordpoolspotView extends Main implements HasUrlParameter<Boolean> {
+public class NordpoolspotView extends Main implements HasUrlParameter<String> {
 
     private final DoubleLabel priceNow;
     private final DoubleLabel lowestAndHighest;
@@ -88,10 +88,8 @@ public class NordpoolspotView extends Main implements HasUrlParameter<Boolean> {
     private final String consumptionTitle;
     private final String importExportTitle;
     private final String totalRenewablesTitle;
-    private final String vat10 = "vat=10";
-    private final String vat0 = "vat=0";
 
-    private final String vat24 = "vat=24";
+    private static final String vatDisabled = "vat=off";
     public static final Double vat24Value = 1.24d;
     public static final Double vat10Value = 1.10d;
     private boolean hasVat = true;
@@ -139,9 +137,9 @@ public class NordpoolspotView extends Main implements HasUrlParameter<Boolean> {
     }
 
     @Override
-    public void setParameter(BeforeEvent event, @OptionalParameter Boolean parameter) {
+    public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {
         if (parameter != null) {
-            this.hasVat = parameter;
+            this.hasVat = !vatDisabled.equals(parameter);
         } else {
             this.hasVat = true;
         }
@@ -526,7 +524,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<Boolean> {
         vatComboBox.addValueChangeListener(e -> getUI().ifPresent(ui -> {
             switch (e.getValue()) {
                 case VAT -> ui.navigate(NordpoolspotView.class);
-                case VAT0 -> ui.navigate(NordpoolspotView.class, false);
+                case VAT0 -> ui.navigate(NordpoolspotView.class, vatDisabled);
             }
         }));
     }
