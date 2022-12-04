@@ -231,20 +231,6 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         pricesLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Width.FULL);
         add(pricesLayout);
 
-        if (nordpoolResponse != null && nordpoolResponse.isValid()) {
-            final var spotDataUpdatedTime = convertNordpoolLocalDateTimeToFinnish(nordpoolResponse.data.DateUpdated);
-            final var spotDataUpdated = format(spotDataUpdatedTime, getLocale());
-            final var spotDataUpdatedSpan = new Span(getTranslation("price.data.updated") + ": " + spotDataUpdated + ", ");
-            spotDataUpdatedSpan.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
-
-            final var fingridDataUpdatedFormatted = fingridDataUpdated != null ? format(fingridDataUpdated, getLocale()) : "";
-            final var fingridDataUpdatedSpan = new Span(getTranslation("fingrid.data.updated") + ": " + fingridDataUpdatedFormatted);
-            fingridDataUpdatedSpan.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
-            final var div = new Div(spotDataUpdatedSpan, fingridDataUpdatedSpan);
-            div.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Gap.Column.XSMALL, LumoUtility.Margin.Horizontal.MEDIUM, LumoUtility.JustifyContent.CENTER);
-            add(div);
-        }
-
         var chart = new Chart(ChartType.LINE);
         // Buggy still and cannot be enabled yet:
         //chart.getConfiguration().setExporting(true);
@@ -336,6 +322,21 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         setTouchDeviceConfiguration(chart);
 
         add(chart);
+
+        if (nordpoolResponse != null && nordpoolResponse.isValid()) {
+            final var spotDataUpdatedTime = convertNordpoolLocalDateTimeToFinnish(nordpoolResponse.data.DateUpdated);
+            final var spotDataUpdated = format(spotDataUpdatedTime, getLocale());
+            final var spotDataUpdatedSpan = new Span(getTranslation("price.data.updated") + ": " + spotDataUpdated + ", ");
+            spotDataUpdatedSpan.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
+
+            final var fingridDataUpdatedFormatted = fingridDataUpdated != null ? format(fingridDataUpdated, getLocale()) : "";
+            final var fingridDataUpdatedSpan = new Span(getTranslation("fingrid.data.updated") + ": " + fingridDataUpdatedFormatted);
+            fingridDataUpdatedSpan.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
+            final var div = new Div(spotDataUpdatedSpan, fingridDataUpdatedSpan);
+            div.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Gap.Column.XSMALL, LumoUtility.Margin.Horizontal.MEDIUM, LumoUtility.JustifyContent.CENTER);
+            add(div);
+        }
+
         final Span fingridFooter = createFingridLicenseSpan();
         add(fingridFooter);
         return chart;
