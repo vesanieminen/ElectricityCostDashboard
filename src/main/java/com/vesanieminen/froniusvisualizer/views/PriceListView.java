@@ -57,18 +57,19 @@ public class PriceListView extends Main {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        renderView(attachEvent.getUI().getLocale());
+        renderView(attachEvent);
     }
 
-    void renderView(Locale locale) {
+    void renderView(AttachEvent attachEvent) {
         var data = getData();
         if (data == null) {
             return;
         }
-        addRows(data, locale);
+        addRows(data, attachEvent);
     }
 
-    private void addRows(NordpoolResponse data, Locale locale) {
+    private void addRows(NordpoolResponse data, AttachEvent attachEvent) {
+        var locale = attachEvent.getUI().getLocale();
         Collection<Component> containerList = new ArrayList<>();
         ListItem currentItem = null;
 
@@ -115,12 +116,7 @@ public class PriceListView extends Main {
                 final var localDateTime = convertNordpoolLocalDateTimeToFinnish(dataLocalDataTime);
                 day.setText(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale).format(dataLocalDataTime));
                 try {
-                    var price = 0.0d;
-                    if (0 < localDateTime.compareTo(vat10Instant.atZone(fiZoneID).toLocalDateTime())) {
-                        price = format.parse(column.Value).doubleValue() * 1.10 / 10;
-                    } else {
-                        price = format.parse(column.Value).doubleValue() * 1.24 / 10;
-                    }
+                    final var price = getPrice(format, column, localDateTime);
                     final var timeSpan = new Span(DateTimeFormatter.ofPattern("HH:mm").withLocale(locale).format(localDateTime));
                     final var df = new DecimalFormat("#0.000");
                     final var priceSpan = new Span(df.format(price) + "¢");
@@ -130,23 +126,38 @@ public class PriceListView extends Main {
                             LumoUtility.Border.BOTTOM,
                             LumoUtility.Display.FLEX,
                             LumoUtility.JustifyContent.BETWEEN,
-                            LumoUtility.Padding.SMALL,
-                            Transform.Hover.SCALE_102,
-                            Transition.TRANSITION
+                            LumoUtility.Padding.SMALL
                     );
 
                     if (price <= cheapLimit) {
                         priceSpan.addClassName(LumoUtility.TextColor.SUCCESS);
-                        item.addClassNames(Background.Hover.SUCCESS_10, BorderColor.Hover.SUCCESS);
                     }
                     if (price > cheapLimit && price < expensiveLimit) {
                         priceSpan.addClassName(LumoUtility.TextColor.PRIMARY);
-                        item.addClassNames(Background.Hover.PRIMARY_10, BorderColor.Hover.PRIMARY);
                     }
                     if (price >= expensiveLimit) {
                         priceSpan.addClassName(LumoUtility.TextColor.ERROR);
-                        item.addClassNames(Background.Hover.ERROR_10, BorderColor.Hover.ERROR);
                     }
+
+                    // Add the hover effect only for desktop browsers
+                    attachEvent.getUI().getPage().retrieveExtendedClientDetails(details -> {
+                        if (!details.isTouchDevice()) {
+                            item.addClassNames(
+                                    Transform.Hover.SCALE_102,
+                                    Transition.TRANSITION
+                            );
+                            if (price <= cheapLimit) {
+                                item.addClassNames(Background.Hover.SUCCESS_10, BorderColor.Hover.SUCCESS);
+                            }
+                            if (price > cheapLimit && price < expensiveLimit) {
+                                item.addClassNames(Background.Hover.PRIMARY_10, BorderColor.Hover.PRIMARY);
+                            }
+                            if (price >= expensiveLimit) {
+                                item.addClassNames(Background.Hover.ERROR_10, BorderColor.Hover.ERROR);
+                            }
+                        }
+                    });
+
 
                     // Current item
                     if (Objects.equals(localDateTime, now)) {
@@ -184,6 +195,16 @@ public class PriceListView extends Main {
 
         add(containerList);
         currentItem.scrollIntoView();
+    }
+
+    private static double getPrice(NumberFormat format, NordpoolResponse.Column column, LocalDateTime localDateTime) throws ParseException {
+        double price;
+        if (0 < localDateTime.compareTo(vat10Instant.atZone(fiZoneID).toLocalDateTime())) {
+            price = format.parse(column.Value).doubleValue() * 1.10 / 10;
+        } else {
+            price = format.parse(column.Value).doubleValue() * 1.24 / 10;
+        }
+        return price;
     }
 
     private static NordpoolResponse getData() {
