@@ -91,6 +91,10 @@ public class PriceCalculatorService {
                 .build();
         String[] line;
         while ((line = csvReader.readNext()) != null) {
+            // in case the Fingrid csv data has rows that contain: "null;MISSING", skip them
+            if (!"OK".equals(line[6])) {
+                break;
+            }
             final var instant = Instant.parse(line[4]);
             map.put(instant, numberFormat.parse(line[5]).doubleValue());
             if (start.isAfter(instant)) {
