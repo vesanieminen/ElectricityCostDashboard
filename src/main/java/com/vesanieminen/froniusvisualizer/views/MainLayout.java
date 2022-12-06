@@ -17,6 +17,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import com.vesanieminen.froniusvisualizer.components.KoFi;
 import com.vesanieminen.froniusvisualizer.components.MaterialIcon;
 import com.vesanieminen.froniusvisualizer.components.appnav.AppNav;
 import com.vesanieminen.froniusvisualizer.components.appnav.AppNavItem;
@@ -101,7 +102,7 @@ public class MainLayout extends AppLayout {
         discordLink.add(discordIcon);
         discordIcon.addClassNames(LumoUtility.IconSize.MEDIUM, LumoUtility.TextColor.PRIMARY, LumoUtility.Margin.Left.AUTO);
 
-        var links = new Div(kofiLink, vaadinLink, githubLink, discordLink);
+        var links = new Div(new KoFi(getTranslation("kofi.text"), "https://ko-fi.com/F2F4FU50T"), vaadinLink, githubLink, discordLink);
         links.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Padding.Horizontal.MEDIUM);
         links.addClassNames(LumoUtility.Gap.MEDIUM, LumoUtility.Margin.Bottom.MEDIUM);
         return links;
