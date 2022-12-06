@@ -70,16 +70,6 @@ public class MainLayout extends AppLayout {
     }
 
     private Div createLinkDiv() {
-        // Ko-Fi link
-        final var image = new Image("https://cdn.ko-fi.com/cdn/kofi2.png?v=3", getTranslation("Buy Me a Coffee at ko-fi.com"));
-        image.setHeight("36px");
-        image.getStyle().set("border", "0px");
-        image.getElement().setAttribute("height", "36");
-        image.getElement().setAttribute("border", "0");
-        final var kofiLink = new Anchor("https://ko-fi.com/F2F4FU50T");
-        kofiLink.addClassNames(LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER);
-        kofiLink.add(image);
-
         // Vaadin link
         final var vaadinIcon = new Icon(VaadinIcon.VAADIN_H);
         vaadinIcon.addClassNames(LumoUtility.TextColor.PRIMARY, LumoUtility.Margin.Left.AUTO);
