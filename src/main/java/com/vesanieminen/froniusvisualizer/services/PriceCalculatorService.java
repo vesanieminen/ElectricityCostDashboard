@@ -150,7 +150,7 @@ public class PriceCalculatorService {
                         item,
                         new HourValue(item.atZone(fiZoneID).getHour(), fingridConsumptionData.get(item)),
                         new HourValue(item.atZone(fiZoneID).getHour(), (spotData.get(item) * getVAT(item, vat) + margin) * fingridConsumptionData.get(item) / 100),
-                        new HourValue(item.atZone(fiZoneID).getHour(), spotData.get(item) * getVAT(item, vat) + margin)
+                        new HourValue(item.atZone(fiZoneID).getHour(), spotData.get(item) * getVAT(item, vat))
                 ))
                 .reduce(new SpotCalculation(
                         0,

@@ -113,7 +113,6 @@ public class MainLayout extends AppLayout {
     protected void onAttach(AttachEvent attachEvent) {
         final var navbarContent = new Div(createChangeLanguageButton(attachEvent));
         navbarContent.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Gap.XSMALL, LumoUtility.Margin.Left.AUTO);
-
         addToNavbar(true, navbarContent);
     }
 
@@ -139,7 +138,6 @@ public class MainLayout extends AppLayout {
     }
 
     private void updateChangeLanguageButtonIcon(UI ui, Button changeLanguage) {
-        //changeLanguage.setText(fiLocale.equals(ui.getLocale()) ? getTranslation("to.english") : getTranslation("to.finnish"));
         if (fiLocale.equals(ui.getLocale())) {
             final var finnishIcon = new Image("icons/finland.png", "Finnish");
             finnishIcon.getElement().setAttribute("height", "32");
