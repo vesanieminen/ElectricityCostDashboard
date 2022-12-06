@@ -271,10 +271,10 @@ public class PriceCalculatorView extends Main {
                 resultLayout.add(new DoubleLabel(getTranslation("Unweighted spot average"), numberFormat.format(spotCalculation.averagePriceWithoutMargin) + " c/kWh", true));
                 final var loweredCost = (weightedAverage - spotCalculation.averagePriceWithoutMargin) / spotCalculation.averagePriceWithoutMargin * 100;
                 final var formattedOwnSpotVsAverage = twoDecimalsWithPlusPrefix.format(loweredCost);
-                resultLayout.add(new DoubleLabel(getTranslation("calculator.own.spot.vs.average"), formattedOwnSpotVsAverage + "%", true));
+                resultLayout.add(new DoubleLabel(getTranslation("calculator.spot.difference.percentage"), formattedOwnSpotVsAverage + "%", true));
                 final var costEffect = (spotCalculation.totalCost * 100 - spotCalculation.averagePriceWithoutMargin * spotCalculation.totalConsumption) / spotCalculation.totalConsumption;
                 final var costEffectFormatted = twoDecimalsWithPlusPrefix.format(costEffect);
-                resultLayout.add(new DoubleLabel(getTranslation("calculator.cost.effect"), costEffectFormatted + " c/kWh", true));
+                resultLayout.add(new DoubleLabel(getTranslation("calculator.spot.difference.cents"), costEffectFormatted + " c/kWh", true));
 
                 var fixedCost = 0d;
                 if (isCalculatingFixed()) {
