@@ -102,7 +102,7 @@ public class PriceCalculatorView extends Main {
 
         final NumberFormat numberFormat = getNumberFormat(getLocale(), 2);
 
-        final var title = new Span(getTranslation("Spot / fixed electricity price calculator"));
+        final var title = new Span(getTranslation("calculator.title"));
         title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
         content.add(title);
         final var spotAverage = PriceCalculatorService.calculateSpotAveragePriceThisYear();
@@ -114,7 +114,7 @@ public class PriceCalculatorView extends Main {
         spanMonth.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
         content.add(spanMonth);
 
-        final var timeRangeSpanCaption = new Span(getTranslation("spot.data.available") + ":");
+        final var timeRangeSpanCaption = new Span(getTranslation("calculator.spot.prices.available") + ":");
         timeRangeSpanCaption.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
         final var timeRangeSpan = new Span(format(spotDataStart, getLocale()) + " - " + format(spotDataEnd, getLocale()));
         timeRangeSpan.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
