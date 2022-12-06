@@ -141,7 +141,7 @@ export class KoFi extends LitElement {
     text?: string = 'Buy Me a Coffee';
 
     @property()
-    url?: string = 'Buy Me a Coffee';
+    url?: string = 'ko-fi.com';
 
     render() {
         return html`
