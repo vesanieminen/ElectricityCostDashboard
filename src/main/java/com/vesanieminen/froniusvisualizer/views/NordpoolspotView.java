@@ -157,7 +157,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
                 screenWidth = details.getBodyClientWidth();
                 setTouchDeviceConfiguration(chart);
             }
-            //fullScreenButton.setVisible(!details.isTouchDevice());
+            fullScreenButton.setVisible(!details.isTouchDevice());
         });
         // Scroll to the top after navigation
         e.getUI().scrollIntoView();
@@ -243,7 +243,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         chart.getConfiguration().getLegend().setEnabled(true);
         chart.getConfiguration().getChart().setStyledMode(true);
         if (isFullscreen) {
-            chart.setHeightFull();
+            chart.setHeight("calc(100vh - 13rem)");
         } else {
             chart.setHeight("580px");
             chart.setMaxWidth("1400px");
