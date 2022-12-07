@@ -534,6 +534,7 @@ public class PriceCalculatorView extends Main {
         averagePriceSeries.setPlotOptions(averagePriceSeriesPlotOptionsColumn);
         chart.getConfiguration().addSeries(averagePriceSeries);
         averagePriceSeries.setyAxis(spotYAxis);
+        averagePriceSeries.setVisible(false);
 
         return chart;
     }
