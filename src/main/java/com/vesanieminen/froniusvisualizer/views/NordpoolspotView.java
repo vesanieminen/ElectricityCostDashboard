@@ -45,6 +45,7 @@ import com.vesanieminen.froniusvisualizer.services.model.FingridRealtimeResponse
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
 import com.vesanieminen.froniusvisualizer.services.model.SpotHintaResponse;
 import com.vesanieminen.froniusvisualizer.util.Utils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -73,6 +74,7 @@ import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
 @PageTitle("Chart" + URL_SUFFIX)
 @Route(value = "", layout = MainLayout.class)
+@Slf4j
 public class NordpoolspotView extends Main implements HasUrlParameter<String> {
 
     private final DoubleLabel priceNow;
@@ -219,15 +221,11 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
 
         removeAll();
         createMenuLayout();
-        var pricesLayout = new Div(priceNow, nextPrice, lowestAndHighest, averagePrice);
-        try {
-            final var averagePriceThisMonth = calculateSpotAveragePriceThisMonth();
-            pricesLayout.add(new DoubleLabel(getTranslation("Average this month"), decimalFormat.format(averagePriceThisMonth) + " " + getTranslation("c/kWh")));
-            final var averagePriceThisYear = calculateSpotAveragePriceThisYear();
-            pricesLayout.add(new DoubleLabel(getTranslation("Average this year"), decimalFormat.format(averagePriceThisYear) + " " + getTranslation("c/kWh")));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        final var averagePriceThisMonth = calculateSpotAveragePriceThisMonth();
+        final var averageThisMonthDoubleLabel = new DoubleLabel(getTranslation("Average this month"), decimalFormat.format(averagePriceThisMonth) + " " + getTranslation("c/kWh"));
+        final var averagePriceThisYear = calculateSpotAveragePriceThisYear();
+        final var averageThisYearDoubleLabel = new DoubleLabel(getTranslation("Average this year"), decimalFormat.format(averagePriceThisYear) + " " + getTranslation("c/kWh"));
+        var pricesLayout = new Div(priceNow, nextPrice, lowestAndHighest, averagePrice, averageThisMonthDoubleLabel, averageThisYearDoubleLabel);
         pricesLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Width.FULL);
         add(pricesLayout);
 

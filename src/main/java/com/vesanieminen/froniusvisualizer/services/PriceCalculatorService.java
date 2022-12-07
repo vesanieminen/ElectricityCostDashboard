@@ -114,7 +114,7 @@ public class PriceCalculatorService {
         return spotData.values().stream().reduce(0d, Double::sum) / spotData.values().size();
     }
 
-    public static double calculateSpotAveragePriceThisYear() throws IOException {
+    public static double calculateSpotAveragePriceThisYear() {
         if (spotAverageThisYear == null) {
             final var year = getCurrentTimeWithHourPrecision().getYear();
             spotAverageThisYear = getSpotData().entrySet().stream().filter(yearFilter(year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(yearFilter(year)).count();
@@ -126,7 +126,7 @@ public class PriceCalculatorService {
         return item -> item.getKey().atZone(fiZoneID).getYear() == year;
     }
 
-    public static double calculateSpotAveragePriceThisMonth() throws IOException {
+    public static double calculateSpotAveragePriceThisMonth() {
         final var now = getCurrentTimeWithHourPrecision();
         final var month = now.getMonthValue();
         final var year = now.getYear();
