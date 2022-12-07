@@ -222,7 +222,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         final var averageThisMonthLabel = new DoubleLabel(getTranslation("Average this month"), decimalFormat.format(calculateSpotAveragePriceThisMonth()));
         final var averageThisYearLabel = new DoubleLabel(getTranslation("Average this year"), decimalFormat.format(calculateSpotAveragePriceThisYear()));
         final var averageTodayLabel = new DoubleLabel(getTranslation("Average today"), decimalFormat.format(calculateSpotAveragePriceToday()));
-        var pricesLayout = new Div(priceNow, nextPrice, averageTodayLabel, lowestAndHighest, averagePrice7Days, averageThisMonthLabel, averageThisYearLabel);
+        var pricesLayout = new Div(priceNow, nextPrice, averageTodayLabel, averagePrice7Days, averageThisMonthLabel, averageThisYearLabel, lowestAndHighest);
         pricesLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Width.FULL/*, LumoUtility.BorderRadius.LARGE, LumoUtility.Border.ALL, LumoUtility.BorderColor.CONTRAST_10*/);
         add(pricesLayout);
 
