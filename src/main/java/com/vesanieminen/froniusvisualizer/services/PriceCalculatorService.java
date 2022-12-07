@@ -114,7 +114,7 @@ public class PriceCalculatorService {
         return spotData.values().stream().reduce(0d, Double::sum) / spotData.values().size();
     }
 
-    public static double calculateSpotAveragePriceThisYear() throws IOException {
+    public static double calculateSpotAveragePriceThisYear() {
         if (spotAverageThisYear == null) {
             final var year = getCurrentTimeWithHourPrecision().getYear();
             spotAverageThisYear = getSpotData().entrySet().stream().filter(yearFilter(year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(yearFilter(year)).count();
@@ -126,15 +126,27 @@ public class PriceCalculatorService {
         return item -> item.getKey().atZone(fiZoneID).getYear() == year;
     }
 
-    public static double calculateSpotAveragePriceThisMonth() throws IOException {
+    public static double calculateSpotAveragePriceThisMonth() {
         final var now = getCurrentTimeWithHourPrecision();
         final var month = now.getMonthValue();
         final var year = now.getYear();
         return getSpotData().entrySet().stream().filter(monthFilter(month, year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(monthFilter(month, year)).count();
     }
 
+    public static double calculateSpotAveragePriceToday() {
+        final var now = getCurrentTimeWithHourPrecision();
+        final var day = now.getDayOfMonth();
+        final var month = now.getMonthValue();
+        final var year = now.getYear();
+        return getSpotData().entrySet().stream().filter(dayFilter(day, month, year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(dayFilter(day, month, year)).count();
+    }
+
     private static Predicate<Map.Entry<Instant, Double>> monthFilter(int month, int year) {
         return item -> item.getKey().atZone(fiZoneID).getMonthValue() == month && item.getKey().atZone(fiZoneID).getYear() == year;
+    }
+
+    private static Predicate<Map.Entry<Instant, Double>> dayFilter(int day, int month, int year) {
+        return item -> item.getKey().atZone(fiZoneID).getDayOfMonth() == day && item.getKey().atZone(fiZoneID).getMonthValue() == month && item.getKey().atZone(fiZoneID).getYear() == year;
     }
 
     public static double calculateSpotElectricityPrice(LinkedHashMap<LocalDateTime, Double> spotData, LinkedHashMap<LocalDateTime, Double> fingridConsumptionData, double margin) {

@@ -89,7 +89,7 @@ public class PriceCalculatorView extends Main {
     private LocalDateTime startProduction;
     private LocalDateTime endProduction;
 
-    public PriceCalculatorView() throws IOException {
+    public PriceCalculatorView() {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Top.MEDIUM);
         final var wrapper = new Div();
         wrapper.addClassNames(LumoUtility.Margin.Horizontal.AUTO);
@@ -106,11 +106,11 @@ public class PriceCalculatorView extends Main {
         title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
         content.add(title);
         final var spotAverage = PriceCalculatorService.calculateSpotAveragePriceThisYear();
-        final var span = new Span(getTranslation("Spot average this year") + ": " + numberFormat.format(spotAverage) + " c/kWh");
+        final var span = new Span(getTranslation("Spot average this year") + ": " + numberFormat.format(spotAverage) + " " + getTranslation("c/kWh"));
         span.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
         content.add(span);
         final var spotAverageMonth = PriceCalculatorService.calculateSpotAveragePriceThisMonth();
-        final var spanMonth = new Span(getTranslation("Spot average this month") + ": " + numberFormat.format(spotAverageMonth) + " c/kWh");
+        final var spanMonth = new Span(getTranslation("Spot average this month") + ": " + numberFormat.format(spotAverageMonth) + " " + getTranslation("c/kWh"));
         spanMonth.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
         content.add(spanMonth);
 
@@ -502,6 +502,7 @@ public class PriceCalculatorView extends Main {
         chart.getConfiguration().addSeries(unweightedSpotAverageSeries);
         unweightedSpotAverageSeries.setyAxis(spotYAxis);
 
+
         // Fixed cost series
         if (isCalculatingFixed) {
             final var fixedPrice = fixedPriceField.getValue();
@@ -518,6 +519,21 @@ public class PriceCalculatorView extends Main {
             chart.getConfiguration().addSeries(fixedCostSeries);
             fixedCostSeries.setyAxis(costYAxis);
         }
+
+        // Average line
+        var averagePriceSeries = new ListSeries(getTranslation("calculator.average.spot.during.period"));
+        for (int i = 0; i < 24; ++i) {
+            averagePriceSeries.addData(spotCalculation.averagePriceWithoutMargin);
+        }
+        final var averagePriceSeriesPlotOptionsColumn = new PlotOptionsLine();
+        averagePriceSeriesPlotOptionsColumn.setMarker(new Marker(false));
+        final var averagePriceSeriesTooltipSpot = new SeriesTooltip();
+        averagePriceSeriesTooltipSpot.setValueDecimals(2);
+        averagePriceSeriesTooltipSpot.setValueSuffix(getTranslation("c/kWh"));
+        averagePriceSeriesPlotOptionsColumn.setTooltip(averagePriceSeriesTooltipSpot);
+        averagePriceSeries.setPlotOptions(averagePriceSeriesPlotOptionsColumn);
+        chart.getConfiguration().addSeries(averagePriceSeries);
+        averagePriceSeries.setyAxis(spotYAxis);
 
         return chart;
     }
