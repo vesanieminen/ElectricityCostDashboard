@@ -27,18 +27,23 @@ export class ChartTemplate extends LitElement {
   render() {
     return html`
       <vaadin-chart
+          style="height:100%"
           title="${this.chartTitle}"
           subtitle="${this.subtitle}"
           type="column"
+          categories='["00","01","02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"]'
           additional-options='{
-              "legend": {
-                  "layout": "vertical",
-                  "align": "right",
-                  "verticalAlign": "middle"
-              },
+              //"legend": {
+              //    layout": "vertical",
+              //    "align": "right",
+              //    "verticalAlign": "middle"
+              //},
               "xAxis": {
                   "crosshair": true
               }
+              //"yAxis": {
+              //  "min": -10
+              //}
             }'
 
 

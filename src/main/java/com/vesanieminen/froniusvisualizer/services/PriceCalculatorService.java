@@ -14,6 +14,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -139,6 +140,14 @@ public class PriceCalculatorService {
         final var month = now.getMonthValue();
         final var year = now.getYear();
         return getSpotData().entrySet().stream().filter(dayFilter(day, month, year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(dayFilter(day, month, year)).count();
+    }
+
+    public static List<Double> getPricesToday() {
+        final var now = getCurrentTimeWithHourPrecision();
+        final var day = now.getDayOfMonth();
+        final var month = now.getMonthValue();
+        final var year = now.getYear();
+        return getSpotData().entrySet().stream().filter(dayFilter(day, month, year)).map(item -> item.getValue() * getVAT(item.getKey())).collect(Collectors.toList());
     }
 
     private static Predicate<Map.Entry<Instant, Double>> monthFilter(int month, int year) {
