@@ -58,7 +58,6 @@ export class ChartTemplate extends LitElement {
           additional-options='{
             "xAxis": {
               "crosshair": true
-              "visible":false
             },
             "yAxis": {
               "min": -10,
