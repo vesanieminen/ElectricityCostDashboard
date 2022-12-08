@@ -40,6 +40,9 @@ export class ChartTemplate extends LitElement {
         crosshair: true
       },
       plotOptions: {
+        column: {
+          borderRadius: 5
+        },
         series: {
           zones: [{
             value: -10,
@@ -57,8 +60,7 @@ export class ChartTemplate extends LitElement {
             className: "zone-4"
           }]
         }
-      }
-
+      },
     }
     return options;
   }
