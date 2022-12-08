@@ -24,11 +24,11 @@
 }
 
 :host .highcharts-point.zone-2 {
-    fill: var(--yellow-500);
+    fill: var(--lumo-success-text-color);
 }
 
 :host .highcharts-point.zone-3 {
-    fill: var(--lumo-primary-text-color);
+    fill: var(--yellow-500);
 }
 
 :host .highcharts-point.zone-4 {
