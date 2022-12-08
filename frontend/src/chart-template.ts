@@ -59,8 +59,8 @@ export class ChartTemplate extends LitElement {
             "xAxis": {
               "crosshair": true
             },
-            "yAxis": {
-              "min": -10,
+            "tooltip": {
+                "shared": true
             },
             "plotOptions": {
                 "series": {
@@ -80,7 +80,7 @@ export class ChartTemplate extends LitElement {
                         "className": "zone-4"
                     }]
                 }
-            }, 
+            }
             }'
       >
         <vaadin-chart-series
