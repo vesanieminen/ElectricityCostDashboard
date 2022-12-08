@@ -40,16 +40,23 @@ export class ChartTemplate extends LitElement {
                 //}
             },
             xAxis: {
-                crosshair: true
+                crosshair: true,
+                //plotLines: [{
+                //    color: '#FDB601',
+                //    dashStyle: 'Solid',
+                //    width: 5,
+                //    value:10
+                //}]
             },
             yAxis: {
-                visible: false,
                 plotLines:
                     [{
                         color: '#FF0000',
                         width: 2,
-                        dashStyle: 'LongDashDot',
-                        value: 55
+                        value: 35,
+                        label: {
+                            text: "Average"
+                        }
                     }]
             },
             plotOptions: {
