@@ -63,6 +63,7 @@ public class MainLayout extends AppLayout {
         AppNav nav = new AppNav();
         nav.addClassNames(LumoUtility.Padding.Horizontal.SMALL);
         nav.addItem(new AppNavItem(getTranslation("Chart"), NordpoolspotView.class, MaterialIcon.TIMELINE));
+        nav.addItem(new AppNavItem(getTranslation("column.chart"), ChartTemplateView.class, MaterialIcon.BAR_CHART));
         nav.addItem(new AppNavItem(getTranslation("List"), PriceListView.class, MaterialIcon.LIST));
         nav.addItem(new AppNavItem(getTranslation("Calculator"), PriceCalculatorView.class, MaterialIcon.CALCULATE));
 

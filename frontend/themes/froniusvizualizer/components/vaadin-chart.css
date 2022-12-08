@@ -12,7 +12,7 @@
 }
 
 :where([styled-mode]) .highcharts-range-selector-buttons .highcharts-label text {
-    fill: var(--lumo-success-text-color);
+    fill: var(--lumo-primary-text-color);
 }
 
 :host .highcharts-point.zone-0 {

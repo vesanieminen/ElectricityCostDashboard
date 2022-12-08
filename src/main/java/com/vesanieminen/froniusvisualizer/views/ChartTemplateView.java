@@ -4,7 +4,7 @@ import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.router.Route;
 import com.vesanieminen.froniusvisualizer.components.ChartTemplate;
 
-@Route(value = "chart-template", layout = MainLayout.class)
+@Route(value = "pylvasgraafi", layout = MainLayout.class)
 public class ChartTemplateView extends Main {
 
     public ChartTemplateView() {
