@@ -44,12 +44,17 @@ export class ChartTemplate extends LitElement {
             },
             xAxis: {
                 crosshair: true,
-                plotBands: [{
-                    borderWidth: 4,
-                    from: this.currentHour! - 0.2,
-                    to: this.currentHour! + 0.2,
-                    zIndex: 0
-                }]
+                //plotBands: [{
+                //    borderWidth: 4,
+                //    from: this.currentHour! - 0.1,
+                //    to: this.currentHour! + 0.1,
+                //    zIndex: 0
+                //}],
+                plotLines:
+                    [{
+                        value: this.currentHour,
+                        className: "time"
+                    }],
             },
             yAxis: [{
                 title: {

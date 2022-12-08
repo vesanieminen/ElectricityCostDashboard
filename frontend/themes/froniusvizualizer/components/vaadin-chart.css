@@ -20,6 +20,13 @@
     fill-opacity: 0.5;
 }
 
+:host([theme~="column"]) .highcharts-plot-line.time {
+    fill: none;
+    stroke: rgb(242, 182, 50);
+    stroke-width: 4px;
+    stroke-dasharray: 0, 0;
+}
+
 :where([styled-mode]) .highcharts-range-selector-buttons .highcharts-label text {
     fill: var(--lumo-primary-text-color);
 }
