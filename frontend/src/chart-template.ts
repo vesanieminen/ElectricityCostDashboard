@@ -26,7 +26,7 @@ export class ChartTemplate extends LitElement {
     average?: number;
 
     @property()
-    currentHour?: number;
+    currentHour: number = 0;
 
     @property()
     values?: Array<number>;
