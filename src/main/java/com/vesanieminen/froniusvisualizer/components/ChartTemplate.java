@@ -25,10 +25,10 @@ public class ChartTemplate extends Component {
 
     public ChartTemplate() {
         String format = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(getLocale()).format(now());
-        set(CHART_TITLE, "Prices");
+        set(CHART_TITLE, getTranslation("column-chart.title"));
         set(SUBTITLE, format);
-        set(SERIES_TITLE, "Series title");
-        set(UNIT, "Series unit");
+        set(SERIES_TITLE, getTranslation("column-chart.series.title"));
+        set(UNIT, getTranslation("column-chart.series.unit"));
         set(POST_FIX, getTranslation("c/kWh"));
         setSeriesList(getPricesToday());
     }
