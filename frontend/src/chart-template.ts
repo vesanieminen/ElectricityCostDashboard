@@ -41,12 +41,6 @@ export class ChartTemplate extends LitElement {
             },
             xAxis: {
                 crosshair: true,
-                //plotLines: [{
-                //    color: '#FDB601',
-                //    dashStyle: 'Solid',
-                //    width: 5,
-                //    value:10
-                //}]
             },
             yAxis: [{
                 title: {
@@ -54,8 +48,6 @@ export class ChartTemplate extends LitElement {
                 },
                 plotLines:
                     [{
-                        color: '#FF0000',
-                        width: 2,
                         value: this.average
                     }],
             }],
