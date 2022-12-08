@@ -24,7 +24,7 @@
 }
 
 :host .highcharts-point.zone-2 {
-    fill: var(--lumo-success-text-color);
+    fill: var(--lumo-primary-text-color);
 }
 
 :host .highcharts-point.zone-3 {
