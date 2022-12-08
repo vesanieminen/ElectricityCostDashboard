@@ -7,25 +7,6 @@ import '@vaadin/charts/src/vaadin-chart-series';
 export class ChartTemplate extends LitElement {
 
   static styles = css`
-    .highcharts-point.zone-0 {
-          fill: green;
-    }
-    
-    .highcharts-point.zone-1 {
-          fill: blue;
-    }
-    
-    .highcharts-point.zone-2 {
-          fill: yellow;
-    }
-    
-    .highcharts-point.zone-3 {
-          fill: red;
-    }
-    
-    .highcharts-point.zone-4 {
-          fill: purple;
-    }
   `;
 
   @property()
@@ -65,7 +46,7 @@ export class ChartTemplate extends LitElement {
             "plotOptions": {
                 "series": {
                     "zones": [{
-                        "value": 0,
+                        "value": -10,
                         "className": "zone-0"
                     }, {
                         "value": 10,
