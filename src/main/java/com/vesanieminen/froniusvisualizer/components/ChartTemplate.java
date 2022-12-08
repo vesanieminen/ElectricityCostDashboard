@@ -23,6 +23,7 @@ public class ChartTemplate extends Component {
     private static final PropertyDescriptor<String, String> UNIT = PropertyDescriptors.propertyWithDefault("unit", "");
     private static final PropertyDescriptor<String, String> POST_FIX = PropertyDescriptors.propertyWithDefault("postfix", "");
     private static final PropertyDescriptor<Double, Double> AVERAGE = PropertyDescriptors.propertyWithDefault("average", -10d);
+    private static final PropertyDescriptor<Integer, Integer> CURRENT_HOUR = PropertyDescriptors.propertyWithDefault("currentHour", 0);
 
     public ChartTemplate() {
         String format = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(getLocale()).format(now());
@@ -33,6 +34,8 @@ public class ChartTemplate extends Component {
         final var pricesToday = getPricesToday();
         setSeriesList(pricesToday);
         Utils.average(pricesToday).ifPresent(value -> set(AVERAGE, value));
+        final var hour = Utils.getCurrentTimeWithHourPrecision().getHour();
+        set(CURRENT_HOUR, hour);
     }
 
     public void setSeriesList(List<Double> list) {

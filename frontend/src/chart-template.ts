@@ -26,6 +26,9 @@ export class ChartTemplate extends LitElement {
     average?: number;
 
     @property()
+    currentHour?: number;
+
+    @property()
     values?: Array<number>;
 
     private getChartOptions(): Options {
@@ -41,6 +44,12 @@ export class ChartTemplate extends LitElement {
             },
             xAxis: {
                 crosshair: true,
+                plotBands: [{
+                    borderWidth: 4,
+                    from: this.currentHour! - 0.2,
+                    to: this.currentHour! + 0.2,
+                    zIndex: 0
+                }]
             },
             yAxis: [{
                 title: {

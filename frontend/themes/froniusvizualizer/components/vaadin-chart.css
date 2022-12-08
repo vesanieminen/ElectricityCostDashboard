@@ -15,6 +15,11 @@
     font-size: 14px;
 }
 
+:host([theme~="column"]) .highcharts-plot-band {
+    fill: yellow;
+    fill-opacity: 0.5;
+}
+
 :where([styled-mode]) .highcharts-range-selector-buttons .highcharts-label text {
     fill: var(--lumo-primary-text-color);
 }
