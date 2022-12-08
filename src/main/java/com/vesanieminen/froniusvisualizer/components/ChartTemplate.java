@@ -12,7 +12,6 @@ import java.time.format.FormatStyle;
 import java.util.List;
 
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getPricesToday;
-import static java.time.LocalDate.now;
 
 @Tag("chart-template")
 @JsModule("src/chart-template.ts")
@@ -26,7 +25,7 @@ public class ChartTemplate extends Component {
     private static final PropertyDescriptor<Integer, Integer> CURRENT_HOUR = PropertyDescriptors.propertyWithDefault("currentHour", 0);
 
     public ChartTemplate() {
-        String format = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(getLocale()).format(now());
+        String format = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(getLocale()).format(Utils.getCurrentInstantHourPrecisionFinnishZone());
         set(CHART_TITLE, format);
         set(SERIES_TITLE, getTranslation("column-chart.series.title"));
         set(UNIT, getTranslation("column-chart.series.unit"));
