@@ -17,8 +17,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.OptionalDouble;
 
 import static com.vesanieminen.froniusvisualizer.views.NordpoolspotView.vat10Value;
 import static com.vesanieminen.froniusvisualizer.views.NordpoolspotView.vat24Value;
@@ -136,6 +138,10 @@ public class Utils {
 
     public static double getVAT(Instant instant) {
         return 0 <= instant.compareTo(vat10Instant) ? vat10Value : vat24Value;
+    }
+
+    public static OptionalDouble average(List<Double> list) {
+        return list.stream().mapToDouble(d -> d).average();
     }
 
 }

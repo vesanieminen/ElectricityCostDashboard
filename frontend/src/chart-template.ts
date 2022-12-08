@@ -26,6 +26,9 @@ export class ChartTemplate extends LitElement {
     postfix?: string = 'c/kWh';
 
     @property()
+    average?: number;
+
+    @property()
     values?: Array<number>;
 
     private getChartOptions(): Options {
@@ -48,17 +51,17 @@ export class ChartTemplate extends LitElement {
                 //    value:10
                 //}]
             },
-            yAxis: {
+            yAxis: [{
+                title: {
+                    text: this.unit
+                },
                 plotLines:
                     [{
                         color: '#FF0000',
                         width: 2,
-                        value: 35,
-                        label: {
-                            text: "Average"
-                        }
+                        value: this.average
                     }]
-            },
+            }],
             plotOptions: {
                 column: {
                     borderRadius: 5
@@ -96,7 +99,6 @@ export class ChartTemplate extends LitElement {
             >
                 <vaadin-chart-series
                         title="${this.seriesTitle}"
-                        unit="${this.unit}"
                         .values="${this.values}"
                         additional-options='{
                 "tooltip": {
