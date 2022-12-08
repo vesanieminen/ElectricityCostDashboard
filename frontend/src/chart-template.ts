@@ -14,9 +14,6 @@ export class ChartTemplate extends LitElement {
     chartTitle?: string = '';
 
     @property()
-    subtitle?: string = '';
-
-    @property()
     seriesTitle?: string = '';
 
     @property()
@@ -53,14 +50,14 @@ export class ChartTemplate extends LitElement {
             },
             yAxis: [{
                 title: {
-                    text: this.unit
+                    text: ""
                 },
                 plotLines:
                     [{
                         color: '#FF0000',
                         width: 2,
                         value: this.average
-                    }]
+                    }],
             }],
             plotOptions: {
                 column: {
@@ -71,16 +68,13 @@ export class ChartTemplate extends LitElement {
                         value: -10,
                         className: "zone-0"
                     }, {
-                        value: 20,
+                        value: this.average! / 2,
                         className: "zone-1"
                     }, {
-                        value: 30,
+                        value: this.average,
                         className: "zone-2"
                     }, {
-                        value: 40,
                         className: "zone-3"
-                    }, {
-                        className: "zone-4"
                     }]
                 }
             },
@@ -91,9 +85,9 @@ export class ChartTemplate extends LitElement {
     render() {
         return html`
             <vaadin-chart
+                    theme="column"
                     style="height:100%"
                     title="${this.chartTitle}"
-                    subtitle="${this.subtitle}"
                     categories='["0:00","1:00","2:00", "3:00", "4:00", "5:00", "6:00", "7:00", "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"]'
                     .additionalOptions=${this.getChartOptions()}
             >

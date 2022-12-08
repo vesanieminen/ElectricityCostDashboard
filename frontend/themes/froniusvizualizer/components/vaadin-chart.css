@@ -11,6 +11,10 @@
     stroke-dasharray: 0, 0;
 }
 
+:host([theme~="column"]) .highcharts-axis-labels {
+    font-size: 14px;
+}
+
 :where([styled-mode]) .highcharts-range-selector-buttons .highcharts-label text {
     fill: var(--lumo-primary-text-color);
 }
@@ -28,9 +32,5 @@
 }
 
 :host .highcharts-point.zone-3 {
-    fill: var(--lumo-primary-text-color);
-}
-
-:host .highcharts-point.zone-4 {
     fill: var(--lumo-error-text-color);
 }

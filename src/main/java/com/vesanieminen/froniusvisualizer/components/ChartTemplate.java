@@ -19,7 +19,6 @@ import static java.time.LocalDate.now;
 public class ChartTemplate extends Component {
 
     private static final PropertyDescriptor<String, String> CHART_TITLE = PropertyDescriptors.propertyWithDefault("chartTitle", "");
-    private static final PropertyDescriptor<String, String> SUBTITLE = PropertyDescriptors.propertyWithDefault("subtitle", "");
     private static final PropertyDescriptor<String, String> SERIES_TITLE = PropertyDescriptors.propertyWithDefault("seriesTitle", "");
     private static final PropertyDescriptor<String, String> UNIT = PropertyDescriptors.propertyWithDefault("unit", "");
     private static final PropertyDescriptor<String, String> POST_FIX = PropertyDescriptors.propertyWithDefault("postfix", "");
@@ -27,8 +26,7 @@ public class ChartTemplate extends Component {
 
     public ChartTemplate() {
         String format = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(getLocale()).format(now());
-        set(CHART_TITLE, getTranslation("column-chart.title"));
-        set(SUBTITLE, format);
+        set(CHART_TITLE, format);
         set(SERIES_TITLE, getTranslation("column-chart.series.title"));
         set(UNIT, getTranslation("column-chart.series.unit"));
         set(POST_FIX, getTranslation("c/kWh"));
