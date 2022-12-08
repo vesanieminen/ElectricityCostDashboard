@@ -44,7 +44,8 @@ export class ChartTemplate extends LitElement {
               //},
               "xAxis": {
                   "crosshair": true
-              }
+              },
+              "animation": false
               //"yAxis": {
               //  "min": -10
               //}
@@ -60,7 +61,8 @@ export class ChartTemplate extends LitElement {
                 "tooltip": {
                     "pointFormat": "{point.y} ${this.postfix}",
                     "valueDecimals": 2
-                }
+                },
+                "animation": false
             }'
         ></vaadin-chart-series>
       </vaadin-chart>

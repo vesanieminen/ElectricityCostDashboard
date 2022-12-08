@@ -1,6 +1,5 @@
 package com.vesanieminen.froniusvisualizer.views;
 
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.router.Route;
 import com.vesanieminen.froniusvisualizer.components.ChartTemplate;
@@ -9,7 +8,7 @@ import com.vesanieminen.froniusvisualizer.components.ChartTemplate;
 public class ChartTemplateView extends Main {
 
     public ChartTemplateView() {
-        setHeight("calc(100vh - 3.5rem)");
+        setHeight("var(--chart-template-height)");
         add(new ChartTemplate());
     }
 
