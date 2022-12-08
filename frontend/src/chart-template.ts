@@ -49,7 +49,7 @@ export class ChartTemplate extends LitElement {
                         "value": -10,
                         "className": "zone-0"
                     }, {
-                        "value": 10,
+                        "value": 20,
                         "className": "zone-1"
                     }, {
                         "value": 30,
