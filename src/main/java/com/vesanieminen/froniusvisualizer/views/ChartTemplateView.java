@@ -9,6 +9,7 @@ public class ChartTemplateView extends Main {
 
     public ChartTemplateView() {
         setHeight("var(--chart-template-height)");
+        setMinHeight("300px");
         add(new ChartTemplate());
     }
 
