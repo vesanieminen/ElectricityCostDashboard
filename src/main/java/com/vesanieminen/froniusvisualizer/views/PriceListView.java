@@ -2,7 +2,11 @@ package com.vesanieminen.froniusvisualizer.views;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.ListItem;
+import com.vaadin.flow.component.html.Main;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.html.UnorderedList;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
@@ -10,7 +14,12 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.Ping;
 import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
-import com.vesanieminen.froniusvisualizer.util.css.*;
+import com.vesanieminen.froniusvisualizer.util.css.Background;
+import com.vesanieminen.froniusvisualizer.util.css.BorderColor;
+import com.vesanieminen.froniusvisualizer.util.css.FontFamily;
+import com.vesanieminen.froniusvisualizer.util.css.Layout;
+import com.vesanieminen.froniusvisualizer.util.css.Transform;
+import com.vesanieminen.froniusvisualizer.util.css.Transition;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -25,7 +34,10 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.Objects;
 
-import static com.vesanieminen.froniusvisualizer.util.Utils.*;
+import static com.vesanieminen.froniusvisualizer.util.Utils.convertNordpoolLocalDateTimeToFinnish;
+import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
+import static com.vesanieminen.froniusvisualizer.util.Utils.vat10Instant;
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
 @PageTitle("List" + URL_SUFFIX)
@@ -40,8 +52,8 @@ public class PriceListView extends Main {
     public PriceListView() {
         addClassNames(LumoUtility.Overflow.AUTO, LumoUtility.Padding.Horizontal.SMALL);
         // Set height to correctly position sticky dates
-        // 3.5 rem is the height of the app header.
-        setHeight("calc(100vh - 3.5rem)");
+        // Added fix for iOS Safari header height that changes when scrolling
+        setHeight("--fullscreen-height");
     }
 
     private static double getPrice(NumberFormat format, NordpoolResponse.Column column, LocalDateTime localDateTime) throws ParseException {

@@ -12,7 +12,7 @@ import com.vesanieminen.froniusvisualizer.components.ChartTemplate;
 public class ChartTemplateView extends Main {
 
     public ChartTemplateView() {
-        setHeight("var(--chart-template-height)");
+        setHeight("var(--fullscreen-height)");
         setMinHeight("300px");
         add(new ChartTemplate());
     }

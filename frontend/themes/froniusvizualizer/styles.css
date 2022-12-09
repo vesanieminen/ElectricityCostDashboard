@@ -20,7 +20,7 @@ body {
 }
 
 html {
-    --chart-template-height: calc(100vh - 3.5rem);
+    --fullscreen-height: calc(100vh - 3.5rem);
 }
 
 html[theme="dark"] .footer-icon {
@@ -30,6 +30,6 @@ html[theme="dark"] .footer-icon {
 /* iOS specific height setting */
 @supports (-webkit-touch-callout: none) {
     html {
-        --chart-template-height: calc(100vh - 10.5rem);
+        --fullscreen-height: calc(100vh - 10.5rem);
     }
 }
