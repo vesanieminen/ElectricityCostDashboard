@@ -5,7 +5,6 @@ import com.vaadin.flow.component.PropertyDescriptor;
 import com.vaadin.flow.component.PropertyDescriptors;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.notification.Notification;
 import com.vesanieminen.froniusvisualizer.util.Utils;
 
 import java.time.format.DateTimeFormatter;
@@ -35,7 +34,6 @@ public class ChartTemplate extends Component {
         setSeriesList(pricesToday);
         Utils.average(pricesToday).ifPresent(value -> set(AVERAGE, value));
         final var hour = Utils.getCurrentTimeWithHourPrecision().getHour();
-        Notification.show("" + hour);
         set(CURRENT_HOUR, hour);
     }
 
