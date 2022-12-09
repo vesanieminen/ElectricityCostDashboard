@@ -32,7 +32,7 @@ export class ChartTemplate extends LitElement {
     values?: Array<number>;
 
     private getChartOptions(): Options {
-        const options: Options = {
+        return {
             chart: {
                 type: "column"
             },
@@ -86,18 +86,16 @@ export class ChartTemplate extends LitElement {
                     animation: false
                 },
             },
-        }
-        return options;
+        };
     }
 
     private getChartSeriesOptions(): Options {
-        const options: Options = {
+        return {
             tooltip: {
                 pointFormat: "{point.y} " + this.postfix,
                 valueDecimals: 2
             },
-        }
-        return options;
+        };
     }
 
     render() {
