@@ -70,6 +70,10 @@ export class ChartTemplate extends LitElement {
                     borderRadius: 5
                 },
                 series: {
+                    tooltip: {
+                        pointFormat: "{point.y} " + this.postfix,
+                        valueDecimals: 2
+                    },
                     zones: [{
                         value: -10,
                         className: "zone-0"
@@ -86,17 +90,16 @@ export class ChartTemplate extends LitElement {
                     animation: false
                 },
             },
+            series: [{
+                name: this.seriesTitle,
+                type: "column",
+                data: [
+                    ...this.values!
+                ]
+            }],
         };
     }
 
-    private getChartSeriesOptions(): Options {
-        return {
-            tooltip: {
-                pointFormat: "{point.y} " + this.postfix,
-                valueDecimals: 2
-            },
-        };
-    }
 
     render() {
         return html`
@@ -107,11 +110,6 @@ export class ChartTemplate extends LitElement {
                     categories='["0:00","1:00","2:00", "3:00", "4:00", "5:00", "6:00", "7:00", "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"]'
                     .additionalOptions=${this.getChartOptions()}
             >
-                <vaadin-chart-series
-                        title="${this.seriesTitle}"
-                        .values="${this.values}"
-                        .additionalOptions=${this.getChartSeriesOptions()}
-                ></vaadin-chart-series>
             </vaadin-chart>
         `;
     }

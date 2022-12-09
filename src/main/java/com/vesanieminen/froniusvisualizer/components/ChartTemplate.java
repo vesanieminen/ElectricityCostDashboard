@@ -1,5 +1,6 @@
 package com.vesanieminen.froniusvisualizer.components;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.PropertyDescriptor;
 import com.vaadin.flow.component.PropertyDescriptors;
@@ -7,11 +8,14 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vesanieminen.froniusvisualizer.util.Utils;
 
+import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
+import java.util.Map;
 
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getPriceDataToday;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getPricesToday;
 
 @Tag("chart-template")
@@ -26,12 +30,18 @@ public class ChartTemplate extends Component {
     private static final PropertyDescriptor<Integer, Integer> CURRENT_HOUR = PropertyDescriptors.propertyWithDefault("currentHour", 0);
 
     public ChartTemplate() {
+    }
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
         String format = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(getLocale()).format(Utils.getCurrentInstantHourPrecisionFinnishZone());
         set(CHART_TITLE, format);
         set(SERIES_TITLE, getTranslation("column-chart.series.title"));
         set(UNIT, getTranslation("column-chart.series.unit"));
         set(POST_FIX, getTranslation("c/kWh"));
         final var pricesToday = getPricesToday();
+        final var priceDataToday = getPriceDataToday();
+        //setSeriesDataList(priceDataToday);
         setSeriesList(pricesToday);
         final var hour = Utils.getCurrentTimeWithHourPrecision().getHour();
         set(CURRENT_HOUR, hour);
@@ -42,5 +52,10 @@ public class ChartTemplate extends Component {
     public void setSeriesList(List<Double> list) {
         getElement().setPropertyList("values", list);
     }
+
+    public void setSeriesDataList(List<Map.Entry<Instant, Double>> list) {
+        getElement().setPropertyList("values", list);
+    }
+
 
 }

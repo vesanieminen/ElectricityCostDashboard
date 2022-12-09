@@ -150,6 +150,27 @@ public class PriceCalculatorService {
         return getSpotData().entrySet().stream().filter(dayFilter(day, month, year)).map(item -> item.getValue() * getVAT(item.getKey())).collect(Collectors.toList());
     }
 
+    public static List<Map.Entry<Instant, Double>> getPriceDataToday() {
+        final var now = getCurrentTimeWithHourPrecision();
+        final var day = now.getDayOfMonth();
+        final var month = now.getMonthValue();
+        final var year = now.getYear();
+        return getSpotData().entrySet().stream().filter(dayFilter(day, month, year)).map(item -> Map.entry(item.getKey(), item.getValue() * getVAT(item.getKey()))).collect(Collectors.toList());
+    }
+
+    public static List<Double> getPricesForMonth() {
+        final var now = getCurrentTimeWithHourPrecision();
+        final var month = now.getMonthValue();
+        final var year = now.getYear();
+        return getSpotData().entrySet().stream().filter(monthFilter(month, year)).map(item -> item.getValue() * getVAT(item.getKey())).collect(Collectors.toList());
+    }
+
+    public static List<Double> getPricesForYear() {
+        final var now = getCurrentTimeWithHourPrecision();
+        final var year = now.getYear();
+        return getSpotData().entrySet().stream().filter(yearFilter(year)).map(item -> item.getValue() * getVAT(item.getKey())).collect(Collectors.toList());
+    }
+
     private static Predicate<Map.Entry<Instant, Double>> monthFilter(int month, int year) {
         return item -> item.getKey().atZone(fiZoneID).getMonthValue() == month && item.getKey().atZone(fiZoneID).getYear() == year;
     }
