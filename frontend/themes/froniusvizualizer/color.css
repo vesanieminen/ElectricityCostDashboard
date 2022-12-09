@@ -1,4 +1,9 @@
 html {
+    --lumo-contrast-5pct: rgba(0, 0, 0, 0.05);
+    --lumo-contrast-60pct: rgba(0, 0, 0, 0.6);
+    --lumo-body-text-color: rgba(0, 0, 0, 0.87);
+    --lumo-secondary-text-color: rgba(0, 0, 0, 0.6);
+
     --yellow-50: #FFFBEF;
     --yellow-100: #FFF9E3;
     --yellow-200: #FFECB4;

@@ -1,7 +1,11 @@
+@import "components/vcf-nav-item.css";
+@import "animation.css";
 @import "background.css";
 @import "border.css";
+@import "border-radius.css";
 @import "color.css";
 @import "layout.css";
+@import "opacity.css";
 @import "size.css";
 @import "transform.css";
 @import "transition.css";

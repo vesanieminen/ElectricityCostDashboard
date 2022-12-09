@@ -1,0 +1,14 @@
+vcf-nav-item {
+    font-size: var(--lumo-font-size-s);
+}
+
+vcf-nav-item::part(item) {
+    border-radius: 9999px;
+    gap: var(--lumo-space-s);
+    height: var(--lumo-size-l);
+    padding: 0 var(--lumo-space-m);
+}
+
+vcf-nav-item:hover::part(item) {
+    background-color: var(--lumo-contrast-5pct);
+}
