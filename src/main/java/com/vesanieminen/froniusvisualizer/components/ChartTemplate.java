@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
 
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getPricesToday;
 
 @Tag("chart-template")
@@ -32,9 +33,10 @@ public class ChartTemplate extends Component {
         set(POST_FIX, getTranslation("c/kWh"));
         final var pricesToday = getPricesToday();
         setSeriesList(pricesToday);
-        Utils.average(pricesToday).ifPresent(value -> set(AVERAGE, value));
         final var hour = Utils.getCurrentTimeWithHourPrecision().getHour();
         set(CURRENT_HOUR, hour);
+        var monthAverage = calculateSpotAveragePriceThisMonth();
+        Utils.average(pricesToday).ifPresent(value -> set(AVERAGE, monthAverage));
     }
 
     public void setSeriesList(List<Double> list) {
