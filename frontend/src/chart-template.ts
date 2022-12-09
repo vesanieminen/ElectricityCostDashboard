@@ -82,7 +82,19 @@ export class ChartTemplate extends LitElement {
                     }, {
                         className: "zone-3"
                     }]
-                }
+                    ,
+                    animation: false
+                },
+            },
+        }
+        return options;
+    }
+
+    private getChartSeriesOptions(): Options {
+        const options: Options = {
+            tooltip: {
+                pointFormat: "{point.y} " + this.postfix,
+                valueDecimals: 2
             },
         }
         return options;
@@ -100,13 +112,7 @@ export class ChartTemplate extends LitElement {
                 <vaadin-chart-series
                         title="${this.seriesTitle}"
                         .values="${this.values}"
-                        additional-options='{
-                "tooltip": {
-                    "pointFormat": "{point.y} ${this.postfix}",
-                    "valueDecimals": 2
-                },
-                "animation": false
-            }'
+                        .additionalOptions=${this.getChartSeriesOptions()}
                 ></vaadin-chart-series>
             </vaadin-chart>
         `;
