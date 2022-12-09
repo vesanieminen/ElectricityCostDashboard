@@ -17,10 +17,10 @@ export class ChartTemplate extends LitElement {
     seriesTitle?: string = '';
 
     @property()
-    unit?: string = '';
+    postfix: string = 'c/kWh';
 
     @property()
-    postfix?: string = 'c/kWh';
+    averageText: string = '';
 
     @property()
     average?: number;
@@ -38,18 +38,9 @@ export class ChartTemplate extends LitElement {
             },
             tooltip: {
                 shared: true,
-                //formatter: function() {
-                //  return this.point.name +": <b>" + this.point.y + "</b>";
-                //}
             },
             xAxis: {
                 crosshair: true,
-                //plotBands: [{
-                //    borderWidth: 4,
-                //    from: this.currentHour! - 0.1,
-                //    to: this.currentHour! + 0.1,
-                //    zIndex: 0
-                //}],
                 plotLines:
                     [{
                         value: this.currentHour,
@@ -62,6 +53,9 @@ export class ChartTemplate extends LitElement {
                 },
                 plotLines:
                     [{
+                        //label: {
+                        //    text: this.averageText
+                        //},
                         value: this.average
                     }],
             }],
@@ -71,7 +65,7 @@ export class ChartTemplate extends LitElement {
                 },
                 series: {
                     tooltip: {
-                        pointFormat: "{point.y} " + this.postfix,
+                        valueSuffix: " " + this.postfix,
                         valueDecimals: 2
                     },
                     zones: [{
