@@ -93,9 +93,7 @@ export class ChartTemplate extends LitElement {
             series: [{
                 name: this.seriesTitle,
                 type: "column",
-                data: [
-                    ...this.values!
-                ]
+                data: this.values
             }],
         };
     }
