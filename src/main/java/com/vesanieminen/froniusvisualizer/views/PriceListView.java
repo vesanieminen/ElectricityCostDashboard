@@ -53,7 +53,7 @@ public class PriceListView extends Main {
         addClassNames(LumoUtility.Overflow.AUTO, LumoUtility.Padding.Horizontal.SMALL);
         // Set height to correctly position sticky dates
         // Added fix for iOS Safari header height that changes when scrolling
-        setHeight("--fullscreen-height");
+        setHeight("var(--fullscreen-height)");
     }
 
     private static double getPrice(NumberFormat format, NordpoolResponse.Column column, LocalDateTime localDateTime) throws ParseException {

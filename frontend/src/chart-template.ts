@@ -30,6 +30,7 @@ export class ChartTemplate extends LitElement {
 
     @property()
     values?: Array<number>;
+    //values?: Map<number, number>;
 
     private getChartOptions(): Options {
         return {
