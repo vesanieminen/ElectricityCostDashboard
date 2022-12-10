@@ -35,7 +35,7 @@ public class ChartTemplate extends Component {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        String format = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(getLocale()).format(Utils.getCurrentInstantHourPrecisionFinnishZone());
+        String format = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(getLocale()).format(Utils.getCurrentLocalDateTimeHourPrecisionFinnishZone());
         set(CHART_TITLE, format);
         set(SERIES_TITLE, getTranslation("column-chart.series.title"));
         set(UNIT, getTranslation("column-chart.series.unit"));

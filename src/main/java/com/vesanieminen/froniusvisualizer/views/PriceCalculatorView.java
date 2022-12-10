@@ -384,6 +384,14 @@ public class PriceCalculatorView extends Main {
                 toDateTimePicker.setValue(isEndProductionBefore ? endConsumption : consumptionDataEnd);
                 startConsumption = consumptionDataStart;
                 endConsumption = consumptionDataEnd;
+
+                // set min to be first day of the month if possible
+                //var currentMonth = Utils.getCurrentLocaleDateTimeMonthPrecisionFinnishZone();
+                //var min = fromDateTimePicker.getMin();
+                //if (min.isBefore(currentMonth) && consumptionDataEnd.isAfter(currentMonth)) {
+                //    fromDateTimePicker.setValue(currentMonth);
+                //}
+
                 updateCalculateButtonState();
                 setFieldsEnabled(true);
             } catch (IOException | ParseException e) {

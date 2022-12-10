@@ -54,8 +54,16 @@ public class Utils {
         return Instant.now().truncatedTo(ChronoUnit.HOURS);
     }
 
-    public static LocalDateTime getCurrentInstantHourPrecisionFinnishZone() {
+    public static Instant getCurrentInstantMonthPrecision() {
+        return Instant.now().truncatedTo(ChronoUnit.MONTHS);
+    }
+
+    public static LocalDateTime getCurrentLocalDateTimeHourPrecisionFinnishZone() {
         return Instant.now().truncatedTo(ChronoUnit.HOURS).atZone(fiZoneID).toLocalDateTime();
+    }
+
+    public static LocalDateTime getCurrentLocaleDateTimeMonthPrecisionFinnishZone() {
+        return LocalDateTime.now(fiZoneID).truncatedTo(ChronoUnit.HOURS).withDayOfMonth(1).withHour(0);
     }
 
     public static Instant getCurrentInstantDayPrecisionFinnishZone() {
