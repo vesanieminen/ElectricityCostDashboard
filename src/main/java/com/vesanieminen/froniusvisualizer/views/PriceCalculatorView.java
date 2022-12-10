@@ -206,7 +206,7 @@ public class PriceCalculatorView extends Main {
         // Spot price field
         spotMarginField = new SuperDoubleField(getTranslation("Spot margin"));
         spotMarginField.setLocale(getLocale());
-        spotMarginField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(0.38));
+        spotMarginField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(0.30) + " " + getTranslation("calculator.with.helen"));
         spotMarginField.setRequiredIndicatorVisible(true);
         spotMarginField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         spotMarginField.addClassNames(LumoUtility.Flex.GROW);
@@ -225,7 +225,7 @@ public class PriceCalculatorView extends Main {
         // Fixed price field
         transferAndTaxField = new SuperDoubleField(getTranslation("calculator.transfer.and.tax"));
         transferAndTaxField.setLocale(getLocale());
-        transferAndTaxField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(7.35));
+        transferAndTaxField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(7.35) + " " + getTranslation("calculator.with.caruna"));
         transferAndTaxField.setRequiredIndicatorVisible(true);
         transferAndTaxField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         transferAndTaxField.addClassNames(LumoUtility.Flex.GROW);
