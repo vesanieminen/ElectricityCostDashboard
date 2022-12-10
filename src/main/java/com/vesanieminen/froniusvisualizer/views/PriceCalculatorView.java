@@ -77,6 +77,7 @@ public class PriceCalculatorView extends Main {
     private final DateTimePicker toDateTimePicker;
     private final SuperDoubleField fixedPriceField;
     private final SuperDoubleField spotMarginField;
+    private final SuperDoubleField transferAndTaxField;
     private final SuperDoubleField spotProductionMarginField;
     private final List<HasEnabled> fields;
     private final Button button;
@@ -221,13 +222,24 @@ public class PriceCalculatorView extends Main {
         spotProductionMarginField.setVisible(false);
         fieldRow.add(spotProductionMarginField);
 
+        // Fixed price field
+        transferAndTaxField = new SuperDoubleField(getTranslation("calculator.transfer.and.tax"));
+        transferAndTaxField.setLocale(getLocale());
+        transferAndTaxField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(7.35));
+        transferAndTaxField.setRequiredIndicatorVisible(true);
+        transferAndTaxField.setSuffixComponent(new Span(getTranslation("c/kWh")));
+        transferAndTaxField.addClassNames(LumoUtility.Flex.GROW);
+        transferAndTaxField.setVisible(false);
+        fieldRow.add(transferAndTaxField);
+
         calculationsCheckboxGroup.addValueChangeListener(e -> {
             fixedPriceField.setVisible(e.getValue().contains(Calculations.FIXED));
             spotProductionMarginField.setVisible(e.getValue().contains(Calculations.SPOT_PRODUCTION));
+            transferAndTaxField.setVisible(e.getValue().contains(Calculations.TRANSFER_AND_TAX));
             productionUpload.setVisible(e.getValue().contains(Calculations.SPOT_PRODUCTION));
             updateCalculateButtonState();
         });
-        fields = Arrays.asList(fromDateTimePicker, toDateTimePicker, fixedPriceField, spotMarginField, spotProductionMarginField);
+        fields = Arrays.asList(fromDateTimePicker, toDateTimePicker, fixedPriceField, spotMarginField, transferAndTaxField, spotProductionMarginField);
 
         button = new Button(getTranslation("Calculate costs"), e -> {
             try {
@@ -237,6 +249,11 @@ public class PriceCalculatorView extends Main {
                 if (isCalculatingFixed()) {
                     if (fixedPriceField.getValue() == null) {
                         fixedPriceField.setValue(0d);
+                    }
+                }
+                if (isCalculatingTransferAndTax()) {
+                    if (transferAndTaxField.getValue() == null) {
+                        transferAndTaxField.setValue(0d);
                     }
                 }
                 if (isCalculatingProduction()) {
@@ -265,22 +282,28 @@ public class PriceCalculatorView extends Main {
                 final var weightedAverage = totalCost / spotCalculation.totalConsumption * 100;
                 // Helen calculates spot average like this:
                 //final var weightedAverage = totalCost / ((int) spotCalculation.totalAmount) * 100;
-                resultLayout.add(new DoubleLabel(getTranslation("Average spot price (incl. margin)"), sixDecimals.format(weightedAverage) + " c/kWh", true));
+                resultLayout.add(new DoubleLabel(getTranslation("Average spot price (incl. margin)"), sixDecimals.format(weightedAverage) + " " + getTranslation("c/kWh"), true));
                 resultLayout.add(new DoubleLabel(getTranslation("Total spot cost (incl. margin)"), numberFormat.format(spotCalculation.totalCost) + "€", true));
                 resultLayout.add(new DoubleLabel(getTranslation("Total spot cost (without margin)"), numberFormat.format(spotCalculation.totalCostWithoutMargin) + "€", true));
-                resultLayout.add(new DoubleLabel(getTranslation("Unweighted spot average"), numberFormat.format(spotCalculation.averagePriceWithoutMargin) + " c/kWh", true));
+                resultLayout.add(new DoubleLabel(getTranslation("Unweighted spot average"), numberFormat.format(spotCalculation.averagePriceWithoutMargin) + " " + getTranslation("c/kWh"), true));
                 final var loweredCost = (weightedAverage - spotCalculation.averagePriceWithoutMargin) / spotCalculation.averagePriceWithoutMargin * 100;
                 final var formattedOwnSpotVsAverage = twoDecimalsWithPlusPrefix.format(loweredCost);
                 resultLayout.add(new DoubleLabel(getTranslation("calculator.spot.difference.percentage"), formattedOwnSpotVsAverage + "%", true));
                 final var costEffect = (spotCalculation.totalCost * 100 - spotCalculation.averagePriceWithoutMargin * spotCalculation.totalConsumption) / spotCalculation.totalConsumption;
                 final var costEffectFormatted = twoDecimalsWithPlusPrefix.format(costEffect);
-                resultLayout.add(new DoubleLabel(getTranslation("calculator.spot.difference.cents"), costEffectFormatted + " c/kWh", true));
+                resultLayout.add(new DoubleLabel(getTranslation("calculator.spot.difference.cents"), costEffectFormatted + " " + getTranslation("c/kWh"), true));
 
-                var fixedCost = 0d;
                 if (isCalculatingFixed()) {
-                    resultLayout.add(new DoubleLabel(getTranslation("Fixed price"), fixedPriceField.getValue() + " c/kWh", true));
-                    fixedCost = calculateFixedElectricityPrice(consumptionData.data(), fixedPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    resultLayout.add(new DoubleLabel(getTranslation("Fixed price"), fixedPriceField.getValue() + " " + getTranslation("c/kWh"), true));
+                    var fixedCost = calculateFixedElectricityPrice(consumptionData.data(), fixedPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     resultLayout.add(new DoubleLabel(getTranslation("Fixed cost total"), numberFormat.format(fixedCost) + "€", true));
+                }
+
+                if (isCalculatingTransferAndTax()) {
+                    resultLayout.add(new DoubleLabel(getTranslation("calculator.transfer.and.tax"), transferAndTaxField.getValue() + " " + getTranslation("c/kWh"), true));
+                    var transferAndTaxTotalCost = calculateFixedElectricityPrice(consumptionData.data(), transferAndTaxField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    resultLayout.add(new DoubleLabel(getTranslation("calculator.transfer.and.tax.total"), numberFormat.format(transferAndTaxTotalCost) + "€", true));
+                    resultLayout.add(new DoubleLabel(getTranslation("calculator.spot.cost.and.transfer"), numberFormat.format(spotCalculation.totalCost + transferAndTaxTotalCost) + "€", true));
                 }
 
                 // Create spot consumption chart
@@ -334,6 +357,10 @@ public class PriceCalculatorView extends Main {
         return calculationsCheckboxGroup.getValue().contains(Calculations.FIXED);
     }
 
+    private boolean isCalculatingTransferAndTax() {
+        return calculationsCheckboxGroup.getValue().contains(Calculations.TRANSFER_AND_TAX);
+    }
+
     private boolean isCalculatingProduction() {
         return calculationsCheckboxGroup.getValue().contains(Calculations.SPOT_PRODUCTION);
     }
@@ -363,7 +390,7 @@ public class PriceCalculatorView extends Main {
                 throw new RuntimeException(e);
             }
         });
-        consumptionUpload.addFailedListener(e -> setEnabled(false, fixedPriceField, spotMarginField, spotProductionMarginField, fromDateTimePicker, toDateTimePicker, button));
+        consumptionUpload.addFailedListener(e -> setEnabled(false, fixedPriceField, spotMarginField, transferAndTaxField, spotProductionMarginField, fromDateTimePicker, toDateTimePicker, button));
     }
 
     private void addProductionSucceededListener(FileBuffer fileBuffer, Upload productionUpload) {
@@ -391,7 +418,7 @@ public class PriceCalculatorView extends Main {
                 throw new RuntimeException(e);
             }
         });
-        productionUpload.addFailedListener(e -> setEnabled(false, fixedPriceField, spotMarginField, spotProductionMarginField, fromDateTimePicker, toDateTimePicker, button));
+        productionUpload.addFailedListener(e -> setEnabled(false, fixedPriceField, spotMarginField, transferAndTaxField, spotProductionMarginField, fromDateTimePicker, toDateTimePicker, button));
     }
 
     private Chart createChart(PriceCalculatorService.SpotCalculation spotCalculation, boolean isCalculatingFixed, String title, String yAxisTitle, String spotTitle) {
@@ -604,6 +631,7 @@ public class PriceCalculatorView extends Main {
     enum Calculations {
         SPOT("Spot price"),
         FIXED("Fixed price"),
+        TRANSFER_AND_TAX("calculator.transfer.and.tax"),
         SPOT_PRODUCTION("Spot production price");
 
         private String name;
