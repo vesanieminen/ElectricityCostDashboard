@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.Objects;
 
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
 import static com.vesanieminen.froniusvisualizer.util.Utils.convertNordpoolLocalDateTimeToFinnish;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
@@ -46,14 +47,16 @@ import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 @RouteAlias(value = "price-list", layout = MainLayout.class)
 public class PriceListView extends Main {
 
-    private static final double expensiveLimit = 10;
-    private static final double cheapLimit = 2;
+    private final double expensiveLimit;
+    private final double cheapLimit;
 
     public PriceListView() {
         addClassNames(LumoUtility.Overflow.AUTO, LumoUtility.Padding.Horizontal.SMALL);
         // Set height to correctly position sticky dates
         // Added fix for iOS Safari header height that changes when scrolling
         setHeight("var(--fullscreen-height)");
+        expensiveLimit = calculateSpotAveragePriceThisMonth();
+        cheapLimit = expensiveLimit / 2;
     }
 
     private static double getPrice(NumberFormat format, NordpoolResponse.Column column, LocalDateTime localDateTime) throws ParseException {
