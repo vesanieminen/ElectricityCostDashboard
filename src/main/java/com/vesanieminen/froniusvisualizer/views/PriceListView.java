@@ -150,7 +150,8 @@ public class PriceListView extends Main {
                             LumoUtility.Border.BOTTOM,
                             LumoUtility.Display.FLEX,
                             LumoUtility.JustifyContent.BETWEEN,
-                            LumoUtility.Padding.SMALL
+                            LumoUtility.Padding.SMALL,
+                            LumoUtility.FontSize.LARGE
                     );
 
                     setPriceTextColor(price, priceSpan);
@@ -187,8 +188,7 @@ public class PriceListView extends Main {
                         item.addClassNames(
                                 getPriceBackgroundColor_10(price),
                                 getPriceBorderColor(price),
-                                LumoUtility.FontWeight.BOLD,
-                                LumoUtility.FontSize.LARGE
+                                LumoUtility.FontWeight.BOLD
                         );
                     } else {
                         item.addClassNames(LumoUtility.BorderColor.CONTRAST_10);
