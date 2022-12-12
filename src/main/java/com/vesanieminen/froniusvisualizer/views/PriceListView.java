@@ -153,15 +153,7 @@ public class PriceListView extends Main {
                             LumoUtility.Padding.SMALL
                     );
 
-                    if (price <= cheapLimit) {
-                        priceSpan.addClassName(LumoUtility.TextColor.SUCCESS);
-                    }
-                    if (price > cheapLimit && price < expensiveLimit) {
-                        priceSpan.addClassName(LumoUtility.TextColor.PRIMARY);
-                    }
-                    if (price >= expensiveLimit) {
-                        priceSpan.addClassName(LumoUtility.TextColor.ERROR);
-                    }
+                    setPriceTextColor(price, priceSpan);
 
                     // Add the hover effect only for desktop browsers
                     attachEvent.getUI().getPage().retrieveExtendedClientDetails(details -> {
@@ -186,16 +178,17 @@ public class PriceListView extends Main {
                     // Current item
                     if (Objects.equals(localDateTime, now)) {
                         final var current = getTranslation("Current");
-                        Ping ping = new Ping(current);
+                        Ping ping = new Ping(current, getPriceBackgroundColor(price));
 
                         timeSpan.setText(timeSpan.getText() + " ");
                         timeSpan.add(ping);
-                        timeSpan.addClassNames(LumoUtility.TextColor.PRIMARY);
+                        setPriceTextColor(price, timeSpan);
 
                         item.addClassNames(
-                                LumoUtility.Background.PRIMARY_10,
-                                LumoUtility.BorderColor.PRIMARY,
-                                LumoUtility.FontWeight.BOLD
+                                getPriceBackgroundColor_10(price),
+                                getPriceBorderColor(price),
+                                LumoUtility.FontWeight.BOLD,
+                                LumoUtility.FontSize.LARGE
                         );
                     } else {
                         item.addClassNames(LumoUtility.BorderColor.CONTRAST_10);
@@ -214,6 +207,58 @@ public class PriceListView extends Main {
 
         add(containerList);
         currentItem.scrollIntoView();
+    }
+
+    private void setPriceTextColor(double price, Span span) {
+        if (price <= cheapLimit) {
+            span.addClassName(LumoUtility.TextColor.SUCCESS);
+        }
+        if (price > cheapLimit && price < expensiveLimit) {
+            span.addClassName(LumoUtility.TextColor.PRIMARY);
+        }
+        if (price >= expensiveLimit) {
+            span.addClassName(LumoUtility.TextColor.ERROR);
+        }
+    }
+
+    private String getPriceBackgroundColor(double price) {
+        if (price <= cheapLimit) {
+            return LumoUtility.Background.SUCCESS;
+        }
+        if (price < expensiveLimit) {
+            return LumoUtility.Background.PRIMARY;
+        }
+        if (price >= expensiveLimit) {
+            return LumoUtility.Background.ERROR;
+        }
+        return LumoUtility.Background.PRIMARY;
+    }
+
+    private String getPriceBackgroundColor_10(double price) {
+        if (price <= cheapLimit) {
+            return LumoUtility.Background.SUCCESS_10;
+        }
+        if (price < expensiveLimit) {
+            return LumoUtility.Background.PRIMARY_10;
+        }
+        if (price >= expensiveLimit) {
+            return LumoUtility.Background.ERROR_10;
+        }
+        return LumoUtility.Background.PRIMARY_10;
+    }
+
+    private String getPriceBorderColor(double price) {
+        if (price <= cheapLimit) {
+            return LumoUtility.BorderColor.SUCCESS;
+        }
+        if (price < expensiveLimit) {
+            return LumoUtility.BorderColor.PRIMARY;
+
+        }
+        if (price >= expensiveLimit) {
+            return LumoUtility.BorderColor.ERROR;
+        }
+        return LumoUtility.BorderColor.PRIMARY;
     }
 
 }

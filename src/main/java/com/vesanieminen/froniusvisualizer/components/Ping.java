@@ -8,7 +8,7 @@ import com.vesanieminen.froniusvisualizer.util.css.Opacity;
 
 public class Ping extends Span {
 
-    public Ping(String label) {
+    public Ping(String label, String bgColorClassname) {
         addClassNames(
                 LumoUtility.Display.INLINE_FLEX,
                 LumoUtility.Position.RELATIVE
@@ -31,7 +31,7 @@ public class Ping extends Span {
 
         Span dot = new Span();
         dot.addClassNames(
-                LumoUtility.Background.PRIMARY,
+                bgColorClassname,
                 LumoUtility.BorderRadius.LARGE,
                 LumoUtility.Display.FLEX,
                 LumoUtility.Position.RELATIVE
