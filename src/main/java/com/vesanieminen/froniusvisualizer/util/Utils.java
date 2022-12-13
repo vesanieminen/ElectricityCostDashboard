@@ -107,6 +107,18 @@ public class Utils {
         return Duration.between(now, nextHour).getSeconds();
     }
 
+    public static ZonedDateTime getNext_13_50() {
+        final var now = ZonedDateTime.now(fiZoneID);
+        final var today_1350 = ZonedDateTime.now(fiZoneID).withHour(13).withMinute(50);
+        return now.isAfter(today_1350) ? today_1350.plusDays(1) : today_1350;
+    }
+
+    public static long getSecondsToNext_13_50() {
+        ZonedDateTime now = ZonedDateTime.now(Utils.fiZoneID);
+        ZonedDateTime next_13_50 = Utils.getNext_13_50();
+        return Duration.between(now, next_13_50).getSeconds();
+    }
+
     public static Instant getStartOfDay(int year, int month, int day) {
         return ZonedDateTime.of(year, month, day, 0, 00, 0, 0, fiZoneID).withZoneSameInstant(utcZone).toInstant();
     }

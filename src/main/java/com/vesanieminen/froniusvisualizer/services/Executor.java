@@ -9,14 +9,16 @@ import java.util.concurrent.TimeUnit;
 import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.getAndWriteToFile2YearData;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.updateSpotData;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getSecondsToNextEvenHour;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getSecondsToNext_13_50;
 
 @Slf4j
 public class Executor {
 
     static {
-        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(2);
+        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(3);
         executorService.schedule(Executor::updateAll, 0, TimeUnit.SECONDS);
         executorService.scheduleAtFixedRate(Executor::updateAll, getSecondsToNextEvenHour(), TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(NordpoolSpotService::updateNordpoolData, getSecondsToNext_13_50(), TimeUnit.DAYS.toSeconds(1), TimeUnit.SECONDS);
     }
 
     private static void updateAll() {
