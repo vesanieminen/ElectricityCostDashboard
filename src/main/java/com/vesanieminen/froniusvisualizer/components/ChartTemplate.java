@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
-import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getPriceDataToday;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getPricesToday;
 
 @Tag("chart-template")
@@ -42,7 +41,7 @@ public class ChartTemplate extends Component {
         set(POST_FIX, getTranslation("c/kWh"));
         set(AVERAGE_TEXT, getTranslation("column-chart.month.average"));
         final var pricesToday = getPricesToday();
-        final var priceDataToday = getPriceDataToday();
+        //final var priceDataToday = getPriceDataToday();
         //setSeriesDataList(priceDataToday);
         setSeriesList(pricesToday);
         final var hour = Utils.getCurrentTimeWithHourPrecision().getHour();
