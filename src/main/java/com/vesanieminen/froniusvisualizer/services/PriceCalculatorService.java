@@ -87,17 +87,25 @@ public class PriceCalculatorService {
         final var reader = Files.newBufferedReader(Path.of(filePath));
         CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
         CSVReader csvReader = new CSVReaderBuilder(reader)
-                .withSkipLines(1)
+                .withSkipLines(0)
                 .withCSVParser(parser)
                 .build();
+
+        String[] header = csvReader.readNext();
+        boolean isNewFormat = header.length == 8;
+
         String[] line;
         while ((line = csvReader.readNext()) != null) {
             // in case the Fingrid csv data has rows that contain: "null;MISSING", skip them
-            if ("MISSING".equals(line[6])) {
+            if ("MISSING".equals(line[getColumnIndex(isNewFormat, 6)])) {
                 break;
             }
-            final var instant = Instant.parse(line[4]);
-            map.put(instant, numberFormat.parse(line[5]).doubleValue());
+            final var instant = Instant.parse(line[getColumnIndex(isNewFormat, 4)]);
+            if (isNewFormat) {
+                map.put(instant, Double.parseDouble(line[6]));
+            } else {
+                map.put(instant, numberFormat.parse(line[5]).doubleValue());
+            }
             if (start.isAfter(instant)) {
                 start = instant;
             }
@@ -106,6 +114,10 @@ public class PriceCalculatorService {
             }
         }
         return new FingridUsageData(map, start, end);
+    }
+
+    private static int getColumnIndex(boolean isNewFormat, int index) {
+        return isNewFormat ? index + 1 : index;
     }
 
     public record FingridUsageData(LinkedHashMap<Instant, Double> data, Instant start, Instant end) {
