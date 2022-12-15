@@ -523,7 +523,7 @@ public class PriceCalculatorView extends Main {
         spotAverageSeries.setyAxis(spotYAxis);
 
         // Unweighted spot average series
-        final var unweightedSpotAverageSeries = new ListSeries(getTranslation("Unweighted spot average (incl. margin)"));
+        final var unweightedSpotAverageSeries = new ListSeries(getTranslation("Unweighted spot average"));
         for (int i = 0; i < spotCalculation.spotAverage.length; ++i) {
             unweightedSpotAverageSeries.addData(spotCalculation.spotAverage[i]);
         }

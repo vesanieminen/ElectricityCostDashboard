@@ -162,6 +162,14 @@ public class PriceCalculatorService {
         return getSpotData().entrySet().stream().filter(dayFilter(day, month, year)).map(item -> item.getValue() * getVAT(item.getKey())).collect(Collectors.toList());
     }
 
+    public static List<Double> getPricesTomorrow() {
+        final var now = getCurrentTimeWithHourPrecision();
+        final var day = now.getDayOfMonth() + 1;
+        final var month = now.getMonthValue();
+        final var year = now.getYear();
+        return getSpotData().entrySet().stream().filter(dayFilter(day, month, year)).map(item -> item.getValue() * getVAT(item.getKey())).collect(Collectors.toList());
+    }
+
     public static List<Map.Entry<Instant, Double>> getPriceDataToday() {
         final var now = getCurrentTimeWithHourPrecision();
         final var day = now.getDayOfMonth();

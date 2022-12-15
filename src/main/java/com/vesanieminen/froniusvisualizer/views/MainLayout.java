@@ -52,6 +52,9 @@ public class MainLayout extends AppLayout {
 
         // Navigation sidebar
         Span icon = MaterialIcon.OFFLINE_BOLT.create(LumoUtility.IconSize.LARGE, LumoUtility.TextColor.PRIMARY);
+        //final var icon = new Image("icons/icon.png", "");
+        //icon.setWidth("75%");
+        //icon.setHeight("75%");
 
         Span name = new Span("LIUKURI");
         name.addClassNames(FontFamily.LOGO, LumoUtility.FontSize.XXLARGE, LumoUtility.TextColor.PRIMARY);
