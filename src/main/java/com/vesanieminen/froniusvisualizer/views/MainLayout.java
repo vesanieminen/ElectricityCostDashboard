@@ -51,10 +51,9 @@ public class MainLayout extends AppLayout {
         addToNavbar(true, header);
 
         // Navigation sidebar
-        Span icon = MaterialIcon.OFFLINE_BOLT.create(LumoUtility.IconSize.LARGE, LumoUtility.TextColor.PRIMARY);
-        //final var icon = new Image("icons/icon.png", "");
-        //icon.setWidth("75%");
-        //icon.setHeight("75%");
+        //Span icon = MaterialIcon.OFFLINE_BOLT.create(LumoUtility.IconSize.LARGE, LumoUtility.TextColor.PRIMARY);
+        final var icon = new Image("icons/icon.png", "Liukuri");
+        icon.setSizeFull();
 
         Span name = new Span("LIUKURI");
         name.addClassNames(FontFamily.LOGO, LumoUtility.FontSize.XXLARGE, LumoUtility.TextColor.PRIMARY);
@@ -69,6 +68,7 @@ public class MainLayout extends AppLayout {
         nav.addItem(new AppNavItem(getTranslation("column.chart"), ChartTemplateView.class, MaterialIcon.BAR_CHART));
         nav.addItem(new AppNavItem(getTranslation("List"), PriceListView.class, MaterialIcon.LIST));
         nav.addItem(new AppNavItem(getTranslation("Calculator"), PriceCalculatorView.class, MaterialIcon.CALCULATE));
+        nav.addItem(new AppNavItem(getTranslation("view.about"), AboutView.class, MaterialIcon.INFO));
 
         addToDrawer(new Div(app, nav), createLinkDiv());
     }
