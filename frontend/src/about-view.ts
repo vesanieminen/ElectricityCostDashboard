@@ -11,10 +11,6 @@ registerTranslateConfig({
 export class AboutView extends LitElement {
 
     static styles = css`
-        .logo {
-            max-width: 256px;
-            max-height: 256px;
-        }
   `;
 
     @property()
@@ -53,7 +49,7 @@ export class AboutView extends LitElement {
             <h2>${translate("about.logo.title")}</h2>
             <div>${translateUnsafeHTML("about.logo.descriptionHTML")}</div>
             <div class="m-auto">
-                <img class="logo" src="icons/icon.png"/>
+                <img class="w-full h-full" src="icons/icon.png"/>
             </div>
         `;
     }
