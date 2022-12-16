@@ -49,7 +49,7 @@ export class AboutView extends LitElement {
             <h2>${translate("about.logo.title")}</h2>
             <div>${translateUnsafeHTML("about.logo.descriptionHTML")}</div>
             <div class="m-auto">
-                <img class="w-full h-full" src="icons/icon.png"/>
+                <img class="w-full h-full" src="icons/Liukurikettu1c.png"/>
             </div>
         `;
     }
