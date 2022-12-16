@@ -57,6 +57,7 @@ public class MainLayout extends AppLayout {
 
         Span name = new Span("LIUKURI");
         name.addClassNames(FontFamily.LOGO, LumoUtility.FontSize.XXLARGE, LumoUtility.TextColor.PRIMARY);
+        //name.getElement().getStyle().set("font-size", "100px");
 
         Div app = new Div(icon, name);
         app.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN,

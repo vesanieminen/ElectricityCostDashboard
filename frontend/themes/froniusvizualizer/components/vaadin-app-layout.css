@@ -1,4 +1,5 @@
 [part='drawer'] {
+    /*width: 32rem;*/
     width: 12.5rem;
     display: flex;
     flex-direction: column;
