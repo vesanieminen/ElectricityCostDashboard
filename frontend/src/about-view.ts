@@ -32,10 +32,6 @@ export class AboutView extends LitElement {
         this.hasLoadedStrings = true;
     }
 
-    setLanguage(language: string) {
-        use(language);
-    }
-
     createRenderRoot() {
         // Do not use a shadow root
         return this;
@@ -49,7 +45,7 @@ export class AboutView extends LitElement {
             <h2>${translate("about.logo.title")}</h2>
             <div>${translateUnsafeHTML("about.logo.descriptionHTML")}</div>
             <div class="m-auto">
-                <img class="w-full h-full" src="icons/Liukurikettu1c.png"/>
+                <img class="w-full h-full" src="icons/Liukurikettu1c.png" alt="logo"/>
             </div>
         `;
     }
