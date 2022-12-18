@@ -36,7 +36,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7Days;
-import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.toPriceList;
+import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7DaysList;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
 import static com.vesanieminen.froniusvisualizer.util.Utils.convertNordpoolLocalDateTimeToFinnish;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
@@ -82,7 +82,7 @@ public class PriceListView extends Main {
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         //renderView(attachEvent);
-        renderViewList(attachEvent);
+        renderListView(attachEvent);
     }
 
     void renderView(AttachEvent attachEvent) {
@@ -261,8 +261,8 @@ public class PriceListView extends Main {
         return LumoUtility.BorderColor.PRIMARY;
     }
 
-    void renderViewList(AttachEvent attachEvent) {
-        var data = toPriceList(getLatest7Days());
+    void renderListView(AttachEvent attachEvent) {
+        var data = getLatest7DaysList();
         if (data.isEmpty()) {
             return;
         }
@@ -296,14 +296,7 @@ public class PriceListView extends Main {
             final var timeSpan = new Span(DateTimeFormatter.ofPattern("HH:mm").withLocale(locale).format(localDateTime));
             final var vatPrice = price.price() * getVAT(price.time());
             final var priceSpan = new Span(threeDecimals.format(vatPrice) + "¢");
-            final var item = new ListItem(timeSpan, priceSpan);
-            item.addClassNames(
-                    LumoUtility.Border.BOTTOM,
-                    LumoUtility.Display.FLEX,
-                    LumoUtility.JustifyContent.BETWEEN,
-                    LumoUtility.Padding.SMALL,
-                    LumoUtility.FontSize.LARGE
-            );
+            final ListItem item = createListItem(timeSpan, priceSpan);
 
             setPriceTextColor(vatPrice, priceSpan);
 
@@ -353,6 +346,18 @@ public class PriceListView extends Main {
         }
         add(containerList);
         currentItem.scrollIntoView();
+    }
+
+    private static ListItem createListItem(Span timeSpan, Span priceSpan) {
+        final var item = new ListItem(timeSpan, priceSpan);
+        item.addClassNames(
+                LumoUtility.Border.BOTTOM,
+                LumoUtility.Display.FLEX,
+                LumoUtility.JustifyContent.BETWEEN,
+                LumoUtility.Padding.SMALL,
+                LumoUtility.FontSize.LARGE
+        );
+        return item;
     }
 
     private H2 createDayH2() {

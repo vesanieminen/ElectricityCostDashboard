@@ -30,6 +30,7 @@ public class NordpoolSpotService {
     public static final String nordPoolSpotFile = "nordpool-spot-data.json";
 
     private static final String url = "https://www.nordpoolspot.com/api/marketdata/page/35?currency=,,EUR,EUR";
+    private static List<NordpoolPrice> nordpoolPrices;
 
     public static void updateNordpoolData() {
         final HttpRequest request;
@@ -44,6 +45,7 @@ public class NordpoolSpotService {
         var newNordpoolResponse = gson.fromJson(response.body(), NordpoolResponse.class);
         if (newNordpoolResponse.isValid()) {
             nordpoolResponse = newNordpoolResponse;
+            nordpoolPrices = toPriceList(nordpoolResponse);
         }
     }
 
@@ -60,7 +62,7 @@ public class NordpoolSpotService {
         }
     }
 
-    public static List<NordpoolPrice> toPriceList(NordpoolResponse nordpoolResponse) {
+    private static List<NordpoolPrice> toPriceList(NordpoolResponse nordpoolResponse) {
         final var nordpoolPrices = new ArrayList<NordpoolPrice>();
         final var rows = nordpoolResponse.data.Rows;
         int columnIndex = 6;
@@ -81,6 +83,10 @@ public class NordpoolSpotService {
             }
             --columnIndex;
         }
+        return nordpoolPrices;
+    }
+
+    public static List<NordpoolPrice> getLatest7DaysList() {
         return nordpoolPrices;
     }
 
