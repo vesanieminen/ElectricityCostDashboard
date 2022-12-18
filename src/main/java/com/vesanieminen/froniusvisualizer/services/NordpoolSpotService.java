@@ -15,9 +15,11 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.ParseException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.vesanieminen.froniusvisualizer.util.Utils.dateTimeFormatter;
 import static com.vesanieminen.froniusvisualizer.util.Utils.nordpoolZoneID;
@@ -31,6 +33,7 @@ public class NordpoolSpotService {
 
     private static final String url = "https://www.nordpoolspot.com/api/marketdata/page/35?currency=,,EUR,EUR";
     private static List<NordpoolPrice> nordpoolPrices;
+    private static List<Map.Entry<Instant, Double>> nordpoolPriceMap;
 
     public static void updateNordpoolData() {
         final HttpRequest request;
@@ -46,6 +49,7 @@ public class NordpoolSpotService {
         if (newNordpoolResponse.isValid()) {
             nordpoolResponse = newNordpoolResponse;
             nordpoolPrices = toPriceList(nordpoolResponse);
+            nordpoolPriceMap = toPriceMap(nordpoolResponse);
         }
     }
 
@@ -88,6 +92,34 @@ public class NordpoolSpotService {
 
     public static List<NordpoolPrice> getLatest7DaysList() {
         return nordpoolPrices;
+    }
+
+    private static List<Map.Entry<Instant, Double>> toPriceMap(NordpoolResponse nordpoolResponse) {
+        final var nordpoolPrices = new ArrayList<Map.Entry<Instant, Double>>();
+        final var rows = nordpoolResponse.data.Rows;
+        int columnIndex = 6;
+        while (columnIndex >= 0) {
+            for (NordpoolResponse.Row row : rows.subList(0, rows.size() - 6)) {
+                final var time = row.StartTime.toString().split("T")[1];
+                NordpoolResponse.Column column = row.Columns.get(columnIndex);
+                final var dateTimeString = column.Name + " " + time;
+                final var dataLocalDataTime = LocalDateTime.parse(dateTimeString, dateTimeFormatter);
+                final var instant = dataLocalDataTime.atZone(nordpoolZoneID).toInstant();
+                try {
+                    var price = numberFormat.parse(column.Value).doubleValue() / 10;
+                    final var nordpoolPrice = Map.entry(instant, price);
+                    nordpoolPrices.add(nordpoolPrice);
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            --columnIndex;
+        }
+        return nordpoolPrices;
+    }
+
+    public static List<Map.Entry<Instant, Double>> getLatest7DaysMap() {
+        return nordpoolPriceMap;
     }
 
 }

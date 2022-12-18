@@ -21,6 +21,7 @@ body {
 
 html {
     --fullscreen-height: calc(100vh - 3.5rem);
+    --fullscreen-height-column: calc(100vh - 7.5rem);
 }
 
 html[theme="dark"] .footer-icon {
@@ -31,6 +32,7 @@ html[theme="dark"] .footer-icon {
 @supports (-webkit-touch-callout: none) {
     html {
         --fullscreen-height: calc(100vh - 10.5rem);
+        --fullscreen-height-column: calc(100vh - 14.5rem);
     }
 }
 

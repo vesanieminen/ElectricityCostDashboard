@@ -1,14 +1,17 @@
 package com.vesanieminen.froniusvisualizer.components;
 
 import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.PropertyDescriptor;
 import com.vaadin.flow.component.PropertyDescriptors;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import com.vesanieminen.froniusvisualizer.util.Utils;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -16,6 +19,8 @@ import java.util.Map;
 
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getPricesToday;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getPricesTomorrow;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentLocalDateTimeDayPrecisionFinnishZone;
 
 @Tag("chart-template")
 @JsModule("src/chart-template.ts")
@@ -28,8 +33,10 @@ public class ChartTemplate extends Component {
     private static final PropertyDescriptor<String, String> AVERAGE_TEXT = PropertyDescriptors.propertyWithDefault("averageText", "");
     private static final PropertyDescriptor<Double, Double> AVERAGE = PropertyDescriptors.propertyWithDefault("average", -10d);
     private static final PropertyDescriptor<Integer, Integer> CURRENT_HOUR = PropertyDescriptors.propertyWithDefault("currentHour", 0);
+    private LocalDateTime selectedDay;
 
     public ChartTemplate() {
+        selectedDay = getCurrentLocalDateTimeDayPrecisionFinnishZone();
     }
 
     @Override
@@ -41,9 +48,17 @@ public class ChartTemplate extends Component {
         set(POST_FIX, getTranslation("c/kWh"));
         set(AVERAGE_TEXT, getTranslation("column-chart.month.average"));
         final var pricesToday = getPricesToday();
+        setSeriesList(pricesToday);
+
         //final var priceDataToday = getPriceDataToday();
         //setSeriesDataList(priceDataToday);
-        setSeriesList(pricesToday);
+
+        //final var priceDataToday = getLatest7DaysMap();
+        //setSeriesDataList(priceDataToday);
+
+        //var data = getLatest7DaysList();
+        //setNordpoolDataList(data);
+
         final var hour = Utils.getCurrentTimeWithHourPrecision().getHour();
         set(CURRENT_HOUR, hour);
         var monthAverage = calculateSpotAveragePriceThisMonth();
@@ -58,5 +73,18 @@ public class ChartTemplate extends Component {
         getElement().setPropertyList("values", list);
     }
 
+    public void setNordpoolDataList(List<NordpoolPrice> list) {
+        getElement().setPropertyList("values", list);
+    }
+
+    @ClientCallable
+    private void previous() {
+        setSeriesList(getPricesToday());
+    }
+
+    @ClientCallable
+    private void next() {
+        setSeriesList(getPricesTomorrow());
+    }
 
 }

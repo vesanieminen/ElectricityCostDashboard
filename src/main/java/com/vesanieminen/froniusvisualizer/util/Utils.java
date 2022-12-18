@@ -62,6 +62,10 @@ public class Utils {
         return Instant.now().truncatedTo(ChronoUnit.HOURS).atZone(fiZoneID).toLocalDateTime();
     }
 
+    public static LocalDateTime getCurrentLocalDateTimeDayPrecisionFinnishZone() {
+        return Instant.now().atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS).toLocalDateTime();
+    }
+
     public static LocalDateTime getCurrentLocaleDateTimeMonthPrecisionFinnishZone() {
         return LocalDateTime.now(fiZoneID).truncatedTo(ChronoUnit.HOURS).withDayOfMonth(1).withHour(0);
     }

@@ -1,5 +1,6 @@
 import {css, html, LitElement} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
+import '@vaadin/vaadin-button'
 import '@vaadin/charts';
 import '@vaadin/charts/src/vaadin-chart-series';
 import type {Options} from 'highcharts';
@@ -93,17 +94,46 @@ export class ChartTemplate extends LitElement {
                 name: this.seriesTitle,
                 type: "column",
                 data: this.values
+                //data: [this.values?.map()]
             }],
         };
     }
 
+    connectedCallback() {
+        super.connectedCallback();
+        //this.classList.add('h-full');
+    }
+
+    createRenderRoot() {
+        // Do not use a shadow root
+        return this;
+    }
+
+    previous() {
+        this.$server!.previous();
+    }
+
+    next() {
+        this.$server!.next();
+    }
+
+    private $server?: ChartTemplateServerInterface;
 
     render() {
         return html`
+            <div class="flex justify-center items-center">
+                <vaadin-button class="h-s" theme="tertiary" @click=${this.previous}>
+                    <span class="material-icons w-l">chevron_left</span>
+                </vaadin-button>
+                <h2 class="m-s text-l">${this.chartTitle}</h2>
+                    <!--h2 class="m-s text-l">${this.values![0]}</h2-->
+                <vaadin-button class="h-s" theme="tertiary" @click=${this.next}>
+                    <span class="material-icons w-l">chevron_right</span>
+                </vaadin-button>
+            </div>
             <vaadin-chart
                     theme="column"
-                    style="height:100%"
-                    title="${this.chartTitle}"
+                    style="height: 100%"
                     categories='["0:00","1:00","2:00", "3:00", "4:00", "5:00", "6:00", "7:00", "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"]'
                     .additionalOptions=${this.getChartOptions()}
             >
@@ -112,3 +142,15 @@ export class ChartTemplate extends LitElement {
     }
 
 }
+
+interface Nordpool {
+    time: number;
+    price: number;
+}
+
+interface ChartTemplateServerInterface {
+    previous(): void;
+
+    next(): void;
+}
+
