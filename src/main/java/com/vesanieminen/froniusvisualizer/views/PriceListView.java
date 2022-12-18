@@ -82,7 +82,7 @@ public class PriceListView extends Main {
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         //renderView(attachEvent);
-        renderViewList(attachEvent.getUI().getLocale());
+        renderViewList(attachEvent);
     }
 
     void renderView(AttachEvent attachEvent) {
@@ -97,7 +97,6 @@ public class PriceListView extends Main {
         var locale = attachEvent.getUI().getLocale();
         Collection<Component> containerList = new ArrayList<>();
         ListItem currentItem = null;
-
         var now = getCurrentTimeWithHourPrecision();
         NumberFormat format = NumberFormat.getInstance(Locale.FRANCE);
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
@@ -262,66 +261,132 @@ public class PriceListView extends Main {
         return LumoUtility.BorderColor.PRIMARY;
     }
 
-    void renderViewList(Locale locale) {
+    void renderViewList(AttachEvent attachEvent) {
         var data = toPriceList(getLatest7Days());
         if (data.isEmpty()) {
             return;
         }
-        addRows(data, locale);
+        addRows(data, attachEvent);
     }
 
-    private void addRows(List<NordpoolPrice> data, Locale locale) {
+    private void addRows(List<NordpoolPrice> data, AttachEvent attachEvent) {
+        var locale = attachEvent.getUI().getLocale();
         Collection<Component> containerList = new ArrayList<>();
-        Div currentTimeDiv = null;
+        ListItem currentItem = null;
         final var nowLocalDateTime = getCurrentLocalDateTimeHourPrecisionFinnishZone();
-        Div dayDiv = null;
+        H2 day = null;
+        UnorderedList list = null;
         Span daySpan;
-        var day = data.get(0).time();
+        var currentDayTime = data.get(0).time();
         boolean first = true;
         for (NordpoolPrice price : data) {
             var currentDay = price.time();
-            if (currentDay.atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS).isAfter(day.atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS)) || first) {
+            if (currentDay.atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS).isAfter(currentDayTime.atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS)) || first) {
                 first = false;
-                day = currentDay;
-                dayDiv = createDayDiv();
+                currentDayTime = currentDay;
+                day = createDayH2();
+                containerList.add(day);
+                list = createUnorderedList();
+                containerList.add(list);
                 daySpan = createDaySpan();
                 daySpan.setText(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale).format(price.time().atZone(fiZoneID)));
-                dayDiv.add(daySpan);
-                containerList.add(dayDiv);
             }
-            final var timeDiv = createTimeDiv();
             final var localDateTime = price.time().atZone(fiZoneID).toLocalDateTime();
-            final var timeSpan = new Span(DateTimeFormatter.ofPattern("HH:mm").format(localDateTime));
+            day.setText(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale).format(localDateTime));
+            final var timeSpan = new Span(DateTimeFormatter.ofPattern("HH:mm").withLocale(locale).format(localDateTime));
             final var vatPrice = price.price() * getVAT(price.time());
             final var priceSpan = new Span(threeDecimals.format(vatPrice) + "¢");
-            timeDiv.add(timeSpan, priceSpan);
-            dayDiv.add(timeDiv);
-            if (vatPrice <= cheapLimit) {
-                priceSpan.addClassName("color-green");
-            }
-            if (vatPrice > cheapLimit && vatPrice < expensiveLimit) {
-                priceSpan.addClassName("list-blue");
-            }
-            if (vatPrice >= expensiveLimit) {
-                priceSpan.addClassName("list-red");
-            }
+            final var item = new ListItem(timeSpan, priceSpan);
+            item.addClassNames(
+                    LumoUtility.Border.BOTTOM,
+                    LumoUtility.Display.FLEX,
+                    LumoUtility.JustifyContent.BETWEEN,
+                    LumoUtility.Padding.SMALL,
+                    LumoUtility.FontSize.LARGE
+            );
+
+            setPriceTextColor(vatPrice, priceSpan);
+
+            // Add the hover effect only for desktop browsers
+            attachEvent.getUI().getPage().retrieveExtendedClientDetails(details -> {
+                if (!details.isTouchDevice()) {
+                    item.addClassNames(
+                            Transform.Hover.SCALE_102,
+                            Transition.TRANSITION
+                    );
+                    if (vatPrice <= cheapLimit) {
+                        item.addClassNames(Background.Hover.SUCCESS_10, BorderColor.Hover.SUCCESS);
+                    }
+                    if (vatPrice > cheapLimit && vatPrice < expensiveLimit) {
+                        item.addClassNames(Background.Hover.PRIMARY_10, BorderColor.Hover.PRIMARY);
+                    }
+                    if (vatPrice >= expensiveLimit) {
+                        item.addClassNames(Background.Hover.ERROR_10, BorderColor.Hover.ERROR);
+                    }
+                }
+            });
+
+
+            // Current item
             if (Objects.equals(localDateTime, nowLocalDateTime)) {
-                timeDiv.addClassNames(LumoUtility.Background.CONTRAST_10);
+                final var current = getTranslation("Current");
+                Ping ping = new Ping(current, getPriceBackgroundColor(vatPrice));
+
+                timeSpan.setText(timeSpan.getText() + " ");
+                timeSpan.add(ping);
+                setPriceTextColor(vatPrice, timeSpan);
+
+                item.addClassNames(
+                        getPriceBackgroundColor_10(vatPrice),
+                        getPriceBorderColor(vatPrice),
+                        LumoUtility.FontWeight.BOLD
+                );
+            } else {
+                item.addClassNames(LumoUtility.BorderColor.CONTRAST_10);
             }
+            list.add(item);
+
             // Due to the sticky position of some elements we need to scroll to the position of -2h
             if (Objects.equals(localDateTime, nowLocalDateTime.minusHours(2))) {
-                currentTimeDiv = timeDiv;
+                currentItem = item;
             }
         }
         add(containerList);
-        currentTimeDiv.scrollIntoView();
+        currentItem.scrollIntoView();
     }
 
-    private Div createDayDiv() {
-        final var dayDiv = new Div();
-        dayDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.JustifyContent.CENTER);
-        return dayDiv;
+    private H2 createDayH2() {
+        final var day = new H2();
+        day.addClassNames(
+                LumoUtility.Background.BASE,
+                LumoUtility.Border.BOTTOM,
+                LumoUtility.BorderColor.CONTRAST_10,
+                LumoUtility.FontSize.XXLARGE,
+                Layout.TOP_0,
+                LumoUtility.Margin.Bottom.NONE,
+                LumoUtility.Margin.Horizontal.AUTO,
+                LumoUtility.Margin.Top.MEDIUM,
+                LumoUtility.MaxWidth.SCREEN_SMALL,
+                LumoUtility.Padding.SMALL,
+                LumoUtility.Position.STICKY,
+                Layout.Z_10
+        );
+        return day;
     }
+
+    private static UnorderedList createUnorderedList() {
+        var list = new UnorderedList();
+        list.addClassNames(
+                FontFamily.MONO,
+                LumoUtility.ListStyleType.NONE,
+                LumoUtility.Margin.Horizontal.AUTO,
+                LumoUtility.Margin.Vertical.NONE,
+                LumoUtility.MaxWidth.SCREEN_SMALL,
+                LumoUtility.Padding.NONE
+        );
+        return list;
+    }
+
 
     private Span createDaySpan() {
         final var daySpan = new Span();
