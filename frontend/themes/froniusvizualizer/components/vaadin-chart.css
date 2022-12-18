@@ -1,5 +1,5 @@
 :host .highcharts-plot-line {
-    stroke: red;
+    stroke: var(--lumo-error-text-color);
     stroke-width: 2px;
     stroke-dasharray: 1, 2;
 }
