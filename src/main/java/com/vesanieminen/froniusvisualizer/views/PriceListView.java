@@ -2,6 +2,7 @@ package com.vesanieminen.froniusvisualizer.views;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.ListItem;
 import com.vaadin.flow.component.html.Main;
@@ -12,7 +13,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.Ping;
-import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
+import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
 import com.vesanieminen.froniusvisualizer.util.css.Background;
 import com.vesanieminen.froniusvisualizer.util.css.BorderColor;
@@ -21,23 +22,28 @@ import com.vesanieminen.froniusvisualizer.util.css.Layout;
 import com.vesanieminen.froniusvisualizer.util.css.Transform;
 import com.vesanieminen.froniusvisualizer.util.css.Transition;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7Days;
+import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.toPriceList;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
 import static com.vesanieminen.froniusvisualizer.util.Utils.convertNordpoolLocalDateTimeToFinnish;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentLocalDateTimeHourPrecisionFinnishZone;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getVAT;
+import static com.vesanieminen.froniusvisualizer.util.Utils.threeDecimals;
 import static com.vesanieminen.froniusvisualizer.util.Utils.vat10Instant;
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
@@ -70,18 +76,13 @@ public class PriceListView extends Main {
     }
 
     private static NordpoolResponse getData() {
-        NordpoolResponse nordpoolResponse = null;
-        try {
-            nordpoolResponse = NordpoolSpotService.getLatest7Days();
-        } catch (URISyntaxException | IOException | InterruptedException e) {
-            return nordpoolResponse;
-        }
-        return nordpoolResponse;
+        return getLatest7Days();
     }
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        renderView(attachEvent);
+        //renderView(attachEvent);
+        renderViewList(attachEvent.getUI().getLocale());
     }
 
     void renderView(AttachEvent attachEvent) {
@@ -260,5 +261,80 @@ public class PriceListView extends Main {
         }
         return LumoUtility.BorderColor.PRIMARY;
     }
+
+    void renderViewList(Locale locale) {
+        var data = toPriceList(getLatest7Days());
+        if (data.isEmpty()) {
+            return;
+        }
+        addRows(data, locale);
+    }
+
+    private void addRows(List<NordpoolPrice> data, Locale locale) {
+        Collection<Component> containerList = new ArrayList<>();
+        Div currentTimeDiv = null;
+        final var nowLocalDateTime = getCurrentLocalDateTimeHourPrecisionFinnishZone();
+        Div dayDiv = null;
+        Span daySpan;
+        var day = data.get(0).time();
+        boolean first = true;
+        for (NordpoolPrice price : data) {
+            var currentDay = price.time();
+            if (currentDay.atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS).isAfter(day.atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS)) || first) {
+                first = false;
+                day = currentDay;
+                dayDiv = createDayDiv();
+                daySpan = createDaySpan();
+                daySpan.setText(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale).format(price.time().atZone(fiZoneID)));
+                dayDiv.add(daySpan);
+                containerList.add(dayDiv);
+            }
+            final var timeDiv = createTimeDiv();
+            final var localDateTime = price.time().atZone(fiZoneID).toLocalDateTime();
+            final var timeSpan = new Span(DateTimeFormatter.ofPattern("HH:mm").format(localDateTime));
+            final var vatPrice = price.price() * getVAT(price.time());
+            final var priceSpan = new Span(threeDecimals.format(vatPrice) + "¢");
+            timeDiv.add(timeSpan, priceSpan);
+            dayDiv.add(timeDiv);
+            if (vatPrice <= cheapLimit) {
+                priceSpan.addClassName("color-green");
+            }
+            if (vatPrice > cheapLimit && vatPrice < expensiveLimit) {
+                priceSpan.addClassName("list-blue");
+            }
+            if (vatPrice >= expensiveLimit) {
+                priceSpan.addClassName("list-red");
+            }
+            if (Objects.equals(localDateTime, nowLocalDateTime)) {
+                timeDiv.addClassNames(LumoUtility.Background.CONTRAST_10);
+            }
+            // Due to the sticky position of some elements we need to scroll to the position of -2h
+            if (Objects.equals(localDateTime, nowLocalDateTime.minusHours(2))) {
+                currentTimeDiv = timeDiv;
+            }
+        }
+        add(containerList);
+        currentTimeDiv.scrollIntoView();
+    }
+
+    private Div createDayDiv() {
+        final var dayDiv = new Div();
+        dayDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.JustifyContent.CENTER);
+        return dayDiv;
+    }
+
+    private Span createDaySpan() {
+        final var daySpan = new Span();
+        daySpan.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER, LumoUtility.Padding.MEDIUM, LumoUtility.Background.BASE);
+        daySpan.addClassNames(LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL, LumoUtility.Border.BOTTOM, LumoUtility.BorderColor.CONTRAST_10, "sticky-date");
+        return daySpan;
+    }
+
+    private Div createTimeDiv() {
+        final var div = new Div();
+        div.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.BETWEEN, LumoUtility.Border.BOTTOM, LumoUtility.BorderColor.CONTRAST_10, LumoUtility.Padding.SMALL, LumoUtility.Padding.Horizontal.MEDIUM);
+        return div;
+    }
+
 
 }

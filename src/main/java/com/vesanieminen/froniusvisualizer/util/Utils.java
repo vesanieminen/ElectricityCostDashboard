@@ -70,6 +70,10 @@ public class Utils {
         return Instant.now().atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS).toInstant();
     }
 
+    public static Instant getCurrentInstantHourPrecisionFinnishZone() {
+        return Instant.now().atZone(fiZoneID).truncatedTo(ChronoUnit.HOURS).toInstant();
+    }
+
     public static LocalDateTime convertNordpoolLocalDateTimeToFinnish(LocalDateTime localDateTime) {
         return localDateTime.atZone(nordpoolZoneID).withZoneSameInstant(fiZoneID).toLocalDateTime();
     }
