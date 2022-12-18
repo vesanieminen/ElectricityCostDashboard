@@ -30,6 +30,7 @@ export class ChartTemplate extends LitElement {
 
     @property()
     values?: Array<number>;
+
     //values?: Map<number, number>;
 
     private getChartOptions(): Options {
@@ -58,6 +59,9 @@ export class ChartTemplate extends LitElement {
                         //    text: this.averageText
                         //},
                         value: this.average
+                    }, {
+                        className: "average-per-2",
+                        value: this.average! / 2
                     }],
             }],
             plotOptions: {

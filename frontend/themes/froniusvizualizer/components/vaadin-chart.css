@@ -1,7 +1,13 @@
 :host .highcharts-plot-line {
     stroke: red;
     stroke-width: 2px;
-    stroke-dasharray: 1, 1;
+    stroke-dasharray: 1, 2;
+}
+
+:host .highcharts-plot-line.average-per-2 {
+    stroke: var(--lumo-success-text-color);
+    stroke-width: 2px;
+    stroke-dasharray: 1, 2;
 }
 
 :host .highcharts-plot-line.time {
