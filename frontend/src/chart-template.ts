@@ -34,18 +34,50 @@ export class ChartTemplate extends LitElement {
 
     private getChartOptions(): Options {
         return {
+            rangeSelector: {
+                enabled: true,
+                verticalAlign: 'top',
+                x: 0,
+                y: 0,
+                selected: 1,
+                buttons: [{
+                    type: 'day',
+                    count: 1,
+                    text: '1',
+                }, {
+                    type: 'day',
+                    count: 2,
+                    text: '2',
+
+                }, {
+                    type: 'day',
+                    count: 3,
+                    text: '3'
+                }, {
+                    type: 'day',
+                    count: 5,
+                    text: '5'
+                }, {
+                    type: 'all',
+                    text: '7'
+                }]
+            },
             chart: {
                 type: "column"
             },
             tooltip: {
                 shared: true,
             },
+            time: {
+                useUTC: false,
+                timezone: 'Europe/Helsinki'
+            },
             xAxis: {
                 type: "datetime",
                 crosshair: true,
                 plotLines:
                     [{
-                        value: this.currentHour,
+                        value: this.currentHour * 1000,
                         className: "time"
                     }],
             },
@@ -92,7 +124,6 @@ export class ChartTemplate extends LitElement {
             series: [{
                 name: this.seriesTitle,
                 type: "column",
-                //data: this.values
                 data: [...this.values!.map(item => [item.time, item.price * 1.1])]
             }],
         };
@@ -120,7 +151,7 @@ export class ChartTemplate extends LitElement {
 
     render() {
         return html`
-            <div class="flex justify-center items-center">
+            <!--div class="flex justify-center items-center">
                 <vaadin-button class="h-s" theme="tertiary" @click=${this.previous}>
                     <span class="material-icons w-l">chevron_left</span>
                 </vaadin-button>
@@ -128,7 +159,7 @@ export class ChartTemplate extends LitElement {
                 <vaadin-button class="h-s" theme="tertiary" @click=${this.next}>
                     <span class="material-icons w-l">chevron_right</span>
                 </vaadin-button>
-            </div>
+            </div-->
             <vaadin-chart
                     theme="column"
                     style="height: 100%"
