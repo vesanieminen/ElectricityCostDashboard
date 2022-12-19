@@ -36,6 +36,9 @@ public class ChartTemplate extends Component {
     private static final PropertyDescriptor<String, String> AVERAGE_TEXT = PropertyDescriptors.propertyWithDefault("averageText", "");
     private static final PropertyDescriptor<Double, Double> AVERAGE = PropertyDescriptors.propertyWithDefault("average", -10d);
     private static final PropertyDescriptor<Integer, Integer> CURRENT_HOUR = PropertyDescriptors.propertyWithDefault("currentHour", 0);
+
+    private static final PropertyDescriptor<String, String> LANGUAGE = PropertyDescriptors.propertyWithDefault("language", "en");
+
     private LocalDateTime selectedDay;
 
     public ChartTemplate() {
@@ -44,6 +47,8 @@ public class ChartTemplate extends Component {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
+        set(LANGUAGE, getLocale().getLanguage());
+
         String format = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(getLocale()).format(Utils.getCurrentLocalDateTimeHourPrecisionFinnishZone());
         set(CHART_TITLE, format);
         set(SERIES_TITLE, getTranslation("column-chart.series.title"));

@@ -8,5 +8,8 @@
       "title": "About the Logo",
       "descriptionHTML": "<p>The logo has been created by graphical designer <a href='mailto:topi.saavalainen@gmail.com'>Topi Saavalainen</a>.</p>"
     }
+  },
+  "column-chart": {
+    "now": "Now"
   }
 }

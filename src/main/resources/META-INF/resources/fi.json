@@ -8,5 +8,8 @@
       "title": "Logosta",
       "descriptionHTML": "<p>Logon on tehnyt graafinen suunnittelija <a href='mailto:topi.saavalainen@gmail.com'>Topi Saavalainen</a>.</p>"
     }
+  },
+  "column-chart": {
+    "now": "Nyt"
   }
 }

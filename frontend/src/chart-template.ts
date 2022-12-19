@@ -1,15 +1,38 @@
-import {css, html, LitElement} from 'lit';
-import {customElement, property} from 'lit/decorators.js';
+import {css, html, LitElement, PropertyValues} from 'lit';
+import {customElement, property, state} from 'lit/decorators.js';
 import '@vaadin/vaadin-button'
 import '@vaadin/charts';
 import '@vaadin/charts/src/vaadin-chart-series';
 import type {Options} from 'highcharts';
+//import {High} from 'highcharts/highcharts';
+import {get, registerTranslateConfig, use} from "lit-translate";
+
+registerTranslateConfig({
+    loader: lang => fetch(`${lang}.json`).then(res => res.json())
+});
 
 @customElement('chart-template')
 export class ChartTemplate extends LitElement {
 
     static styles = css`
   `;
+
+    @property()
+    language: string = 'en';
+
+    // Defer the first update of the component until the strings has been loaded to avoid empty strings being shown
+    @state() hasLoadedStrings = false;
+
+    protected shouldUpdate(props: PropertyValues) {
+        return this.hasLoadedStrings && super.shouldUpdate(props);
+    }
+
+    // Load the initial language and mark that the strings has been loaded so the component can render.
+    async connectedCallback() {
+        super.connectedCallback();
+        await use(this.language);
+        this.hasLoadedStrings = true;
+    }
 
     @property()
     chartTitle?: string = '';
@@ -39,24 +62,32 @@ export class ChartTemplate extends LitElement {
                 verticalAlign: 'top',
                 x: 0,
                 y: 0,
-                selected: 1,
+                selected: 0,
                 buttons: [{
-                    type: 'day',
-                    count: 1,
-                    text: '1',
+                    type: 'millisecond',
+                    // @ts-ignore
+                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000,
+                    text: get("column-chart.now"),
+                    //offsetMin: -86400000,
+                    //offsetMax: -86400000,
                 }, {
                     type: 'day',
                     count: 2,
                     text: '2',
-
+                    offsetMin: 0,
+                    offsetMax: 0,
                 }, {
                     type: 'day',
                     count: 3,
-                    text: '3'
+                    text: '3',
+                    offsetMin: 0,
+                    offsetMax: 0,
                 }, {
                     type: 'day',
                     count: 5,
-                    text: '5'
+                    text: '5',
+                    offsetMin: 0,
+                    offsetMax: 0,
                 }, {
                     type: 'all',
                     text: '7'
@@ -127,11 +158,6 @@ export class ChartTemplate extends LitElement {
                 data: [...this.values!.map(item => [item.time, item.price * 1.1])]
             }],
         };
-    }
-
-    connectedCallback() {
-        super.connectedCallback();
-        //this.classList.add('h-full');
     }
 
     createRenderRoot() {
