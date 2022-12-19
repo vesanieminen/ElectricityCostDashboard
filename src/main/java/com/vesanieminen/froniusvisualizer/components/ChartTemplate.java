@@ -17,6 +17,7 @@ import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 
+import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7DaysList;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getPricesToday;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getPricesTomorrow;
@@ -48,7 +49,7 @@ public class ChartTemplate extends Component {
         set(POST_FIX, getTranslation("c/kWh"));
         set(AVERAGE_TEXT, getTranslation("column-chart.month.average"));
         final var pricesToday = getPricesToday();
-        setSeriesList(pricesToday);
+        //setSeriesList(pricesToday);
 
         //final var priceDataToday = getPriceDataToday();
         //setSeriesDataList(priceDataToday);
@@ -56,8 +57,8 @@ public class ChartTemplate extends Component {
         //final var priceDataToday = getLatest7DaysMap();
         //setSeriesDataList(priceDataToday);
 
-        //var data = getLatest7DaysList();
-        //setNordpoolDataList(data);
+        var data = getLatest7DaysList();
+        setNordpoolDataList(data);
 
         final var hour = Utils.getCurrentTimeWithHourPrecision().getHour();
         set(CURRENT_HOUR, hour);

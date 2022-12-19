@@ -277,10 +277,10 @@ public class PriceListView extends Main {
         H2 day = null;
         UnorderedList list = null;
         Span daySpan;
-        var currentDayTime = data.get(0).time();
+        var currentDayTime = data.get(0).timeInstant();
         boolean first = true;
-        for (NordpoolPrice price : data) {
-            var currentDay = price.time();
+        for (NordpoolPrice entry : data) {
+            var currentDay = entry.timeInstant();
             if (currentDay.atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS).isAfter(currentDayTime.atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS)) || first) {
                 first = false;
                 currentDayTime = currentDay;
@@ -289,12 +289,12 @@ public class PriceListView extends Main {
                 list = createUnorderedList();
                 containerList.add(list);
                 daySpan = createDaySpan();
-                daySpan.setText(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale).format(price.time().atZone(fiZoneID)));
+                daySpan.setText(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale).format(entry.timeInstant().atZone(fiZoneID)));
             }
-            final var localDateTime = price.time().atZone(fiZoneID).toLocalDateTime();
+            final var localDateTime = entry.timeInstant().atZone(fiZoneID).toLocalDateTime();
             day.setText(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale).format(localDateTime));
             final var timeSpan = new Span(DateTimeFormatter.ofPattern("HH:mm").withLocale(locale).format(localDateTime));
-            final var vatPrice = price.price() * getVAT(price.time());
+            final var vatPrice = entry.price() * getVAT(entry.timeInstant());
             final var priceSpan = new Span(threeDecimals.format(vatPrice) + "¢");
             final ListItem item = createListItem(timeSpan, priceSpan);
 

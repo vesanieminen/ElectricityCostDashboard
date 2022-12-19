@@ -79,7 +79,7 @@ public class NordpoolSpotService {
                 final var instant = dataLocalDataTime.atZone(nordpoolZoneID).toInstant();
                 try {
                     var price = numberFormat.parse(column.Value).doubleValue() / 10;
-                    final var nordpoolPrice = new NordpoolPrice(price, instant);
+                    final var nordpoolPrice = new NordpoolPrice(price, instant.toEpochMilli());
                     nordpoolPrices.add(nordpoolPrice);
                 } catch (ParseException e) {
                     throw new RuntimeException(e);
