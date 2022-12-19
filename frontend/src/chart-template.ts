@@ -72,22 +72,20 @@ export class ChartTemplate extends LitElement {
                     //offsetMax: -86400000,
                 }, {
                     type: 'day',
+                    count: 1,
+                    text: '1',
+                }, {
+                    type: 'day',
                     count: 2,
                     text: '2',
-                    offsetMin: 0,
-                    offsetMax: 0,
                 }, {
                     type: 'day',
                     count: 3,
                     text: '3',
-                    offsetMin: 0,
-                    offsetMax: 0,
                 }, {
                     type: 'day',
                     count: 5,
                     text: '5',
-                    offsetMin: 0,
-                    offsetMax: 0,
                 }, {
                     type: 'all',
                     text: '7'
