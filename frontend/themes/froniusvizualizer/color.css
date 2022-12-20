@@ -16,6 +16,12 @@ html {
     --lumo-primary-color-10pct: hsla(198, 53%, 38%, 0.09);
     --lumo-primary-text-color: hsl(198, 53%, 38%);
 
+    /* TODO: change the hsla for lumo-success-color to match the #5B9627 color */
+    --lumo-success-color: hsla(120, 31%, 31%);
+    --lumo-success-text-color: #5B9627;
+    --lumo-success-color-50pct: hsla(120, 31%, 31%, 0.5);
+    --lumo-success-color-10pct: hsla(120, 31%, 31%, 0.1);
+
     --lumo-body-text-color: rgba(0, 0, 0, 0.87);
     --lumo-secondary-text-color: rgba(0, 0, 0, 0.6);
 
