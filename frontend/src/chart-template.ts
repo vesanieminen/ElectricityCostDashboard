@@ -73,6 +73,7 @@ export class ChartTemplate extends LitElement {
                     type: 'day',
                     count: 1,
                     text: '1',
+
                 }, {
                     type: 'day',
                     count: 2,
@@ -111,7 +112,8 @@ export class ChartTemplate extends LitElement {
             },
             yAxis: [{
                 title: {
-                    text: get("general.price-type")
+                    text: ''
+                    //text: get("general.price-type")
                 },
                 plotLines:
                     [{
@@ -201,7 +203,6 @@ interface Nordpool {
 
 interface ChartTemplateServerInterface {
     previous(): void;
-
     next(): void;
 }
 
