@@ -4,7 +4,6 @@ import '@vaadin/vaadin-button'
 import '@vaadin/charts';
 import '@vaadin/charts/src/vaadin-chart-series';
 import type {Options} from 'highcharts';
-//import {High} from 'highcharts/highcharts';
 import {get, registerTranslateConfig, use} from "lit-translate";
 
 registerTranslateConfig({
@@ -112,7 +111,7 @@ export class ChartTemplate extends LitElement {
             },
             yAxis: [{
                 title: {
-                    text: ""
+                    text: get("general.price-type")
                 },
                 plotLines:
                     [{

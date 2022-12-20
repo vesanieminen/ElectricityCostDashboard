@@ -1,4 +1,7 @@
 {
+  "general": {
+    "price-type": "snt/kWh ALV 10%"
+  },
   "about": {
     "liukuri": {
       "title": "Tietoja Sovelluksesta",
