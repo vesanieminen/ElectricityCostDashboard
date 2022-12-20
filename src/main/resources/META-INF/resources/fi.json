@@ -1,4 +1,7 @@
 {
+  "general": {
+    "price-type": "snt/kWh ALV 10%"
+  },
   "about": {
     "liukuri": {
       "title": "Tietoja Sovelluksesta",
@@ -10,6 +13,11 @@
     }
   },
   "column-chart": {
-    "now": "Nyt"
+    "now": "Nyt",
+    "1d": "1pv",
+    "2d": "2pv",
+    "3d": "3pv",
+    "5d": "5pv",
+    "7d": "7pv"
   }
 }

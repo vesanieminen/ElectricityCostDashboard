@@ -13,7 +13,6 @@ import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import com.vesanieminen.froniusvisualizer.util.Utils;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -23,7 +22,6 @@ import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.ge
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getPricesToday;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getPricesTomorrow;
-import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentLocalDateTimeDayPrecisionFinnishZone;
 
 @Tag("chart-template")
 @JsModule("src/chart-template.ts")
@@ -36,14 +34,7 @@ public class ChartTemplate extends Component {
     private static final PropertyDescriptor<String, String> AVERAGE_TEXT = PropertyDescriptors.propertyWithDefault("averageText", "");
     private static final PropertyDescriptor<Double, Double> AVERAGE = PropertyDescriptors.propertyWithDefault("average", -10d);
     private static final PropertyDescriptor<Integer, Integer> CURRENT_HOUR = PropertyDescriptors.propertyWithDefault("currentHour", 0);
-
     private static final PropertyDescriptor<String, String> LANGUAGE = PropertyDescriptors.propertyWithDefault("language", "en");
-
-    private LocalDateTime selectedDay;
-
-    public ChartTemplate() {
-        selectedDay = getCurrentLocalDateTimeDayPrecisionFinnishZone();
-    }
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
@@ -78,6 +69,7 @@ public class ChartTemplate extends Component {
             lang.setMonths(new String[]{"Tammikuu", "Helmikuu", "Maaliskuu", "Huhtikuu", "Toukokuu", "Kesäkuu", "Heinäkuu", "Elokuu", "Syyskuu", "Lokakuu", "Marraskuu", "Joulukuu"});
             lang.setShortMonths(new String[]{"Tammi", "Helmi", "Maalis", "Huhti", "Touko", "Kesä", "Heinä", "Elo", "Syys", "Loka", "Marras", "Joulu"});
             lang.setWeekdays(new String[]{"Sunnuntai", "Maanantai", "Tiistai", "Keskiviikko", "Torstai", "Perjantai", "Lauantai"});
+            lang.setRangeSelectorZoom("");
             chartOptions.setLang(lang);
         }
     }

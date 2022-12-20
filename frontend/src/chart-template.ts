@@ -4,7 +4,6 @@ import '@vaadin/vaadin-button'
 import '@vaadin/charts';
 import '@vaadin/charts/src/vaadin-chart-series';
 import type {Options} from 'highcharts';
-//import {High} from 'highcharts/highcharts';
 import {get, registerTranslateConfig, use} from "lit-translate";
 
 registerTranslateConfig({
@@ -73,22 +72,23 @@ export class ChartTemplate extends LitElement {
                 }, {
                     type: 'day',
                     count: 1,
-                    text: '1',
+                    text: get("column-chart.1d"),
+
                 }, {
                     type: 'day',
                     count: 2,
-                    text: '2',
+                    text: get("column-chart.2d"),
                 }, {
                     type: 'day',
                     count: 3,
-                    text: '3',
+                    text: get("column-chart.3d"),
                 }, {
                     type: 'day',
                     count: 5,
-                    text: '5',
+                    text: get("column-chart.5d"),
                 }, {
                     type: 'all',
-                    text: '7'
+                    text: get("column-chart.7d"),
                 }]
             },
             chart: {
@@ -112,7 +112,8 @@ export class ChartTemplate extends LitElement {
             },
             yAxis: [{
                 title: {
-                    text: ""
+                    text: ''
+                    //text: get("general.price-type")
                 },
                 plotLines:
                     [{
@@ -153,7 +154,7 @@ export class ChartTemplate extends LitElement {
             series: [{
                 name: this.seriesTitle,
                 type: "column",
-                data: [...this.values!.map(item => [item.time, item.price * 1.1])]
+                data: this.values!.map(item => [item.time, item.price * 1.1])
             }],
         };
     }
@@ -202,7 +203,6 @@ interface Nordpool {
 
 interface ChartTemplateServerInterface {
     previous(): void;
-
     next(): void;
 }
 

@@ -1,4 +1,7 @@
 {
+  "general": {
+    "price-type": "c/kWh VAT 10%"
+  },
   "about": {
     "liukuri": {
       "title": "About This Application",
@@ -10,6 +13,11 @@
     }
   },
   "column-chart": {
-    "now": "Now"
+    "now": "Now",
+    "1d": "1d",
+    "2d": "2d",
+    "3d": "3d",
+    "5d": "5d",
+    "7d": "7d"
   }
 }
