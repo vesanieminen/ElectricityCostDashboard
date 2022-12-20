@@ -72,23 +72,23 @@ export class ChartTemplate extends LitElement {
                 }, {
                     type: 'day',
                     count: 1,
-                    text: '1',
+                    text: get("column-chart.1d"),
 
                 }, {
                     type: 'day',
                     count: 2,
-                    text: '2',
+                    text: get("column-chart.2d"),
                 }, {
                     type: 'day',
                     count: 3,
-                    text: '3',
+                    text: get("column-chart.3d"),
                 }, {
                     type: 'day',
                     count: 5,
-                    text: '5',
+                    text: get("column-chart.5d"),
                 }, {
                     type: 'all',
-                    text: '7'
+                    text: get("column-chart.7d"),
                 }]
             },
             chart: {
