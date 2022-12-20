@@ -152,7 +152,7 @@ export class ChartTemplate extends LitElement {
             series: [{
                 name: this.seriesTitle,
                 type: "column",
-                data: [...this.values!.map(item => [item.time, item.price * 1.1])]
+                data: this.values!.map(item => [item.time, item.price * 1.1])
             }],
         };
     }
