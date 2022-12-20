@@ -1,6 +1,12 @@
 html {
     --lumo-contrast-5pct: rgba(0, 0, 0, 0.05);
     --lumo-contrast-60pct: rgba(0, 0, 0, 0.6);
+
+    --lumo-primary-color: rgb(63, 118, 148);
+    --lumo-primary-color-50pct: rgba(63, 118, 148, 0.5);
+    --lumo-primary-color-10pct: rgba(63, 118, 148, 0.07);
+    --lumo-primary-text-color: rgb(63, 118, 148);
+
     --lumo-body-text-color: rgba(0, 0, 0, 0.87);
     --lumo-secondary-text-color: rgba(0, 0, 0, 0.6);
 
