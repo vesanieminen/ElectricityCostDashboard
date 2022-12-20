@@ -28,6 +28,10 @@ html[theme="dark"] .footer-icon {
     filter: invert(1);
 }
 
+:focus-visible {
+    outline-color: var(--lumo-primary-color-50pct);
+}
+
 /* iOS specific height setting */
 @supports (-webkit-touch-callout: none) {
     html {

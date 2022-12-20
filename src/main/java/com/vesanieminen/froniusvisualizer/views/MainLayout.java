@@ -78,6 +78,7 @@ public class MainLayout extends AppLayout {
         final var kofiLink = new Anchor("https://ko-fi.com/F2F4FU50T", getTranslation("kofi.text"));
         kofiLink.addClassNames(
                 LumoUtility.AlignItems.CENTER,
+                LumoUtility.BorderRadius.LARGE,
                 LumoUtility.Display.FLEX,
                 LumoUtility.FontSize.SMALL,
                 LumoUtility.FontWeight.MEDIUM,
@@ -93,6 +94,7 @@ public class MainLayout extends AppLayout {
         final var vaadinLink = new Anchor("http://vaadin.com", getTranslation("Built with Vaadin"));
         vaadinLink.addClassNames(
                 LumoUtility.AlignItems.CENTER,
+                LumoUtility.BorderRadius.LARGE,
                 LumoUtility.Display.FLEX,
                 LumoUtility.FontSize.SMALL,
                 LumoUtility.FontWeight.MEDIUM,
@@ -109,6 +111,7 @@ public class MainLayout extends AppLayout {
         final var githubLink = new Anchor("https://github.com/vesanieminen/ElectricityCostDashboard");
         githubLink.addClassNames(
                 LumoUtility.AlignItems.CENTER,
+                LumoUtility.BorderRadius.LARGE,
                 LumoUtility.Display.FLEX,
                 LumoUtility.Height.MEDIUM,
                 LumoUtility.JustifyContent.CENTER,
@@ -124,6 +127,7 @@ public class MainLayout extends AppLayout {
         final var discordLink = new Anchor("https://discord.com/invite/WHcY2UkWVp");
         discordLink.addClassNames(
                 LumoUtility.AlignItems.CENTER,
+                LumoUtility.BorderRadius.LARGE,
                 LumoUtility.Display.FLEX,
                 LumoUtility.Height.MEDIUM,
                 LumoUtility.JustifyContent.CENTER,
@@ -140,7 +144,12 @@ public class MainLayout extends AppLayout {
         row.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER);
 
         var footer = new Div(kofiLink, vaadinLink, hr, row);
-        footer.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Padding.Vertical.SMALL);
+        footer.addClassNames(
+                LumoUtility.Display.FLEX,
+                LumoUtility.FlexDirection.COLUMN,
+                LumoUtility.Padding.Horizontal.SMALL,
+                LumoUtility.Padding.Vertical.SMALL
+        );
         return footer;
     }
 
