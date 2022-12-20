@@ -1,11 +1,20 @@
 html {
     --lumo-contrast-5pct: rgba(0, 0, 0, 0.05);
+    --lumo-contrast-10pct: rgba(0, 0, 0, 0.1);
+    --lumo-contrast-20pct: rgba(0, 0, 0, 0.2);
+    --lumo-contrast-30pct: rgba(0, 0, 0, 0.3);
+    --lumo-contrast-40pct: rgba(0, 0, 0, 0.4);
+    --lumo-contrast-50pct: rgba(0, 0, 0, 0.5);
     --lumo-contrast-60pct: rgba(0, 0, 0, 0.6);
+    --lumo-contrast-70pct: rgba(0, 0, 0, 0.7);
+    --lumo-contrast-80pct: rgba(0, 0, 0, 0.8);
+    --lumo-contrast-90pct: rgba(0, 0, 0, 0.9);
+    --lumo-contrast: rgba(0, 0, 0, 1);
 
-    --lumo-primary-color: rgb(63, 118, 148);
-    --lumo-primary-color-50pct: rgba(63, 118, 148, 0.5);
-    --lumo-primary-color-10pct: rgba(63, 118, 148, 0.07);
-    --lumo-primary-text-color: rgb(63, 118, 148);
+    --lumo-primary-color: hsl(198, 53%, 38%);
+    --lumo-primary-color-50pct: hsla(198, 53%, 38%, 0.5);
+    --lumo-primary-color-10pct: hsla(198, 53%, 38%, 0.09);
+    --lumo-primary-text-color: hsl(198, 53%, 38%);
 
     --lumo-body-text-color: rgba(0, 0, 0, 0.87);
     --lumo-secondary-text-color: rgba(0, 0, 0, 0.6);
@@ -24,6 +33,30 @@ html {
     --green-500: #1BA875;
 
     --red-500: #FF3A49;
+}
+
+[theme~="dark"] {
+    --lumo-base-color: hsl(198, 53%, 12%);
+
+    --lumo-contrast-5pct: rgba(255, 255, 255, 0.05);
+    --lumo-contrast-10pct: rgba(255, 255, 255, 0.1);
+    --lumo-contrast-20pct: rgba(255, 255, 255, 0.2);
+    --lumo-contrast-30pct: rgba(255, 255, 255, 0.3);
+    --lumo-contrast-40pct: rgba(255, 255, 255, 0.4);
+    --lumo-contrast-50pct: rgba(255, 255, 255, 0.5);
+    --lumo-contrast-60pct: rgba(255, 255, 255, 0.6);
+    --lumo-contrast-70pct: rgba(255, 255, 255, 0.7);
+    --lumo-contrast-80pct: rgba(255, 255, 255, 0.8);
+    --lumo-contrast-90pct: rgba(255, 255, 255, 0.9);
+    --lumo-contrast: rgba(255, 255, 255, 1);
+
+    --lumo-primary-color: hsl(198, 53%, 58%);
+    --lumo-primary-color-50pct: hsla(198, 53%, 58%, 0.5);
+    --lumo-primary-color-10pct: hsla(198, 53%, 58%, 0.09);
+    --lumo-primary-text-color: hsl(198, 53%, 58%);
+
+    --lumo-body-text-color: rgba(255, 255, 255, 1);
+    --lumo-secondary-text-color: rgba(255, 255, 255, 0.7);
 }
 
 .bg-yellow-50 {

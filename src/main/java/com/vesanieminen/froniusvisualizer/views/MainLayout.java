@@ -13,6 +13,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.theme.lumo.Lumo;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.KoFi;
 import com.vesanieminen.froniusvisualizer.components.MaterialIcon;
@@ -31,6 +32,7 @@ public class MainLayout extends AppLayout {
     public static final String DISCORD_SVG = "<svg class=\"icon-s\" fill=\"var(--lumo-primary-text-color)\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 127.14 96.36\"><g id=\"图层_2\" data-name=\"图层 2\"><g id=\"Discord_Logos\" data-name=\"Discord Logos\"><g id=\"Discord_Logo_-_Large_-_White\" data-name=\"Discord Logo - Large - White\"><path d=\"M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z\"/></g></g></g></svg>";
     public static final String GITHUB_SVG = "<svg class=\"icon-s\" viewBox=\"0 0 98 96\" xmlns=\"http://www.w3.org/2000/svg\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z\" fill=\"var(--lumo-primary-text-color)\"/></svg>";
 
+    private Header header;
     private H1 title;
 
     public MainLayout() {
@@ -41,11 +43,28 @@ public class MainLayout extends AppLayout {
         toggle.getElement().setAttribute("aria-label", "Menu toggle");
 
         title = new H1();
-        title.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
+        title.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.End.AUTO, LumoUtility.Margin.Vertical.NONE);
 
-        Header header = new Header(toggle, title);
+        Button theme = new Button(MaterialIcon.DARK_MODE.create());
+        // TODO: Translation
+        theme.getElement().setAttribute("aria-label", getTranslation("Switch to dark mode"));
+        theme.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        theme.addClickListener(e -> {
+            if (UI.getCurrent().getElement().getThemeList().contains(Lumo.DARK)) {
+                UI.getCurrent().getElement().getThemeList().remove(Lumo.DARK);
+                theme.setIcon(MaterialIcon.DARK_MODE.create());
+                theme.getElement().setAttribute("aria-label", getTranslation("Switch to dark mode"));
+            } else {
+                UI.getCurrent().getElement().getThemeList().add(Lumo.DARK);
+                theme.setIcon(MaterialIcon.LIGHT_MODE.create());
+                theme.getElement().setAttribute("aria-label", getTranslation("Switch to light mode"));
+            }
+        });
+
+        header = new Header(toggle, title, theme);
         header.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.Display.FLEX, LumoUtility.Gap.SMALL,
                 LumoUtility.Padding.SMALL);
+        header.setWidthFull();
 
         addToNavbar(true, header);
 
@@ -166,15 +185,12 @@ public class MainLayout extends AppLayout {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        final var navbarContent = new Div(createChangeLanguageButton(attachEvent));
-        navbarContent.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Gap.XSMALL, LumoUtility.Margin.Left.AUTO);
-        addToNavbar(true, navbarContent);
+        header.add(createChangeLanguageButton(attachEvent));
     }
 
     private Button createChangeLanguageButton(AttachEvent attachEvent) {
-        var changeLanguage = createButton();
-        changeLanguage.setSizeUndefined();
-        changeLanguage.addClassNames(LumoUtility.Padding.Horizontal.MEDIUM);
+        var changeLanguage = new Button();
+        changeLanguage.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         updateChangeLanguageButtonIcon(attachEvent.getUI(), changeLanguage);
         changeLanguage.addClickListener(e -> {
             VaadinService.getCurrentResponse().addCookie(new Cookie("locale", fiLocale.equals(attachEvent.getUI().getLocale()) ? enLocale.toLanguageTag() : fiLocale.toLanguageTag()));
@@ -184,25 +200,31 @@ public class MainLayout extends AppLayout {
         return changeLanguage;
     }
 
-    private static Button createButton() {
-        Button button = new Button();
-        button.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        button.setWidthFull();
-        button.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.BorderRadius.NONE, LumoUtility.Margin.Vertical.NONE, LumoUtility.Height.MEDIUM);
-        return button;
-    }
-
     private void updateChangeLanguageButtonIcon(UI ui, Button changeLanguage) {
+        Image image;
         if (fiLocale.equals(ui.getLocale())) {
-            final var finnishIcon = new Image("icons/finland.png", "Finnish");
-            finnishIcon.getElement().setAttribute("height", "32");
-            finnishIcon.getElement().setAttribute("width", "32");
-            changeLanguage.setIcon(finnishIcon);
+            // TODO: Translation
+            image = new Image("icons/finnish.png", "Finnish");
+            changeLanguage.getElement().setAttribute("aria-label", "Switch to English");
+            changeLanguage.getElement().setAttribute("title", "Switch to English");
         } else {
-            final var ukIcon = new Image("icons/united-kingdom.png", "English");
-            ukIcon.getElement().setAttribute("height", "32");
-            ukIcon.getElement().setAttribute("width", "32");
-            changeLanguage.setIcon(ukIcon);
+            // TODO: Translation
+            image = new Image("icons/english.png", "English");
+            changeLanguage.getElement().setAttribute("aria-label", "Switch to Finnish");
+            changeLanguage.getElement().setAttribute("title", "Switch to Finnish");
         }
+        image.setHeightFull();
+
+        // Wrapper; circle
+        Span icon = new Span(image);
+        icon.addClassNames(
+                LumoUtility.AlignItems.CENTER,
+                LumoUtility.BorderRadius.LARGE,
+                LumoUtility.Display.FLEX,
+                LumoUtility.IconSize.MEDIUM,
+                LumoUtility.JustifyContent.CENTER,
+                LumoUtility.Overflow.HIDDEN
+        );
+        changeLanguage.setIcon(icon);
     }
 }
