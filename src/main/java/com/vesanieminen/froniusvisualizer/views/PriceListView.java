@@ -226,7 +226,7 @@ public class PriceListView extends Main {
                 LumoUtility.JustifyContent.BETWEEN,
                 LumoUtility.Padding.SMALL,
                 LumoUtility.FontSize.LARGE,
-                LumoUtility.FontWeight.SEMIBOLD
+                LumoUtility.FontWeight.NORMAL
         );
         return item;
     }
