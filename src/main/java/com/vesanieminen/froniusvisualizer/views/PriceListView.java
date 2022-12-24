@@ -38,8 +38,8 @@ import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.ge
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentLocalDateTimeHourPrecisionFinnishZone;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getVAT;
-import static com.vesanieminen.froniusvisualizer.util.Utils.threeDecimals;
 import static com.vesanieminen.froniusvisualizer.util.Utils.vat10Instant;
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
@@ -166,7 +166,11 @@ public class PriceListView extends Main {
             day.setText(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale).format(localDateTime));
             final var timeSpan = new Span(DateTimeFormatter.ofPattern("HH:mm").withLocale(locale).format(localDateTime));
             final var vatPrice = entry.price() * getVAT(entry.timeInstant());
-            final var priceSpan = new Span(threeDecimals.format(vatPrice) + "¢");
+
+            final NumberFormat numberFormat = getNumberFormat(getLocale(), 2);
+            numberFormat.setMinimumFractionDigits(2);
+            final var priceSpan = new Span(numberFormat.format(vatPrice) + "¢");
+
             final ListItem item = createListItem(timeSpan, priceSpan);
 
             setPriceTextColor(vatPrice, priceSpan);
