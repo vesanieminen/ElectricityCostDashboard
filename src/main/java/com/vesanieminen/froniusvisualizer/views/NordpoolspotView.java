@@ -44,11 +44,11 @@ import com.vesanieminen.froniusvisualizer.services.model.FingridLiteResponse;
 import com.vesanieminen.froniusvisualizer.services.model.FingridRealtimeResponse;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
 import com.vesanieminen.froniusvisualizer.services.model.SpotHintaResponse;
-import com.vesanieminen.froniusvisualizer.util.Utils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -64,9 +64,9 @@ import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisYear;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceToday;
 import static com.vesanieminen.froniusvisualizer.util.Utils.convertNordpoolLocalDateTimeToFinnish;
-import static com.vesanieminen.froniusvisualizer.util.Utils.decimalFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.format;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.utcZone;
 import static com.vesanieminen.froniusvisualizer.util.Utils.vat10Instant;
@@ -220,9 +220,11 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
 
         removeAll();
         createMenuLayout();
-        final var averageThisMonthLabel = new DoubleLabel(getTranslation("Average this month"), decimalFormat.format(calculateSpotAveragePriceThisMonth()));
-        final var averageThisYearLabel = new DoubleLabel(getTranslation("Average this year"), decimalFormat.format(calculateSpotAveragePriceThisYear()));
-        final var averageTodayLabel = new DoubleLabel(getTranslation("Average today"), decimalFormat.format(calculateSpotAveragePriceToday()));
+        final NumberFormat numberFormat = getNumberFormat(getLocale(), 2);
+        numberFormat.setMinimumFractionDigits(2);
+        final var averageThisMonthLabel = new DoubleLabel(getTranslation("Average this month"), numberFormat.format(calculateSpotAveragePriceThisMonth()));
+        final var averageThisYearLabel = new DoubleLabel(getTranslation("Average this year"), numberFormat.format(calculateSpotAveragePriceThisYear()));
+        final var averageTodayLabel = new DoubleLabel(getTranslation("Average today"), numberFormat.format(calculateSpotAveragePriceToday()));
         var pricesLayout = new Div(priceNow, nextPrice, averageTodayLabel, averagePrice7Days, averageThisMonthLabel, averageThisYearLabel, lowestAndHighest);
         pricesLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Width.FULL/*, LumoUtility.BorderRadius.LARGE, LumoUtility.Border.ALL, LumoUtility.BorderColor.CONTRAST_10*/);
         add(pricesLayout);
@@ -536,6 +538,8 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
     }
 
     private DataSeries createSpotPriceDataSeries(NordpoolResponse nordpoolResponse, Chart chart, DateTimeFormatter dateTimeFormatter, ArrayList<Series> series) {
+        final NumberFormat decimalFormat = getNumberFormat(getLocale(), 2);
+        decimalFormat.setMinimumFractionDigits(2);
         var now = getCurrentTimeWithHourPrecision();
         var highest = Double.MIN_VALUE;
         var lowest = Double.MAX_VALUE;
@@ -569,10 +573,10 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
                     ++amount;
                     dataSeriesItem.setY(y);
                     if (Objects.equals(localDateTime, now)) {
-                        priceNow.setTitleBottom(Utils.decimalFormat.format(y));
+                        priceNow.setTitleBottom(decimalFormat.format(y));
                     }
                     if (Objects.equals(localDateTime, now.plusHours(1))) {
-                        nextPrice.setTitleBottom(Utils.decimalFormat.format(y));
+                        nextPrice.setTitleBottom(decimalFormat.format(y));
                     }
                     if (localDateTime.getDayOfMonth() == now.getDayOfMonth()) {
                         if (y > highest) {
@@ -590,8 +594,8 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
             }
             --columnIndex;
         }
-        lowestAndHighest.setTitleBottom(Utils.decimalFormat.format(lowest) + " / " + Utils.decimalFormat.format(highest));
-        averagePrice7Days.setTitleBottom(Utils.decimalFormat.format(total / amount));
+        lowestAndHighest.setTitleBottom(decimalFormat.format(lowest) + " / " + decimalFormat.format(highest));
+        averagePrice7Days.setTitleBottom(decimalFormat.format(total / amount));
         series.add(0, dataSeries);
         chart.getConfiguration().setSeries(series);
         return dataSeries;
