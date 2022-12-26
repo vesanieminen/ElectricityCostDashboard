@@ -7,6 +7,8 @@ import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.charts.ChartOptions;
+import com.vaadin.flow.component.charts.model.Lang;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
@@ -24,6 +26,7 @@ import com.vesanieminen.froniusvisualizer.components.appnav.AppNavItem;
 import com.vesanieminen.froniusvisualizer.util.css.FontFamily;
 
 import javax.servlet.http.Cookie;
+import java.text.DecimalFormat;
 
 import static com.vesanieminen.froniusvisualizer.util.Utils.enLocale;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
@@ -192,6 +195,19 @@ public class MainLayout extends AppLayout {
         header.add(theme);
 
         header.add(createChangeLanguageButton(attachEvent));
+
+        if ("fi".equals(attachEvent.getUI().getLocale().getLanguage())) {
+            final var chartOptions = ChartOptions.get(attachEvent.getUI());
+            final var lang = new Lang();
+            lang.setMonths(new String[]{"Tammikuu", "Helmikuu", "Maaliskuu", "Huhtikuu", "Toukokuu", "Kesäkuu", "Heinäkuu", "Elokuu", "Syyskuu", "Lokakuu", "Marraskuu", "Joulukuu"});
+            lang.setShortMonths(new String[]{"Tammi", "Helmi", "Maalis", "Huhti", "Touko", "Kesä", "Heinä", "Elo", "Syys", "Loka", "Marras", "Joulu"});
+            lang.setWeekdays(new String[]{"Sunnuntai", "Maanantai", "Tiistai", "Keskiviikko", "Torstai", "Perjantai", "Lauantai"});
+            //lang.setRangeSelectorZoom("");
+            var decimalFormat = (DecimalFormat) DecimalFormat.getInstance(getLocale());
+            lang.setDecimalPoint(decimalFormat.getDecimalFormatSymbols().getDecimalSeparator() + "");
+            chartOptions.setLang(lang);
+        }
+
     }
 
     private Button createChangeLanguageButton(AttachEvent attachEvent) {

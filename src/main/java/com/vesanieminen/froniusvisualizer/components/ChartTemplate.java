@@ -6,8 +6,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.PropertyDescriptor;
 import com.vaadin.flow.component.PropertyDescriptors;
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.charts.ChartOptions;
-import com.vaadin.flow.component.charts.model.Lang;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import com.vesanieminen.froniusvisualizer.util.Utils;
@@ -62,16 +60,6 @@ public class ChartTemplate extends Component {
         set(CURRENT_HOUR, hour);
         var monthAverage = calculateSpotAveragePriceThisMonth();
         Utils.average(pricesToday).ifPresent(value -> set(AVERAGE, monthAverage));
-
-        if ("fi".equals(attachEvent.getUI().getLocale().getLanguage())) {
-            final var chartOptions = ChartOptions.get(attachEvent.getUI());
-            final var lang = new Lang();
-            lang.setMonths(new String[]{"Tammikuu", "Helmikuu", "Maaliskuu", "Huhtikuu", "Toukokuu", "Kesäkuu", "Heinäkuu", "Elokuu", "Syyskuu", "Lokakuu", "Marraskuu", "Joulukuu"});
-            lang.setShortMonths(new String[]{"Tammi", "Helmi", "Maalis", "Huhti", "Touko", "Kesä", "Heinä", "Elo", "Syys", "Loka", "Marras", "Joulu"});
-            lang.setWeekdays(new String[]{"Sunnuntai", "Maanantai", "Tiistai", "Keskiviikko", "Torstai", "Perjantai", "Lauantai"});
-            lang.setRangeSelectorZoom("");
-            chartOptions.setLang(lang);
-        }
     }
 
     public void setSeriesList(List<Double> list) {

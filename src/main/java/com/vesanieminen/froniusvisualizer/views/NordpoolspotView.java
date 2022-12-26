@@ -5,7 +5,6 @@ import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.charts.Chart;
-import com.vaadin.flow.component.charts.ChartOptions;
 import com.vaadin.flow.component.charts.model.AxisType;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.DataSeries;
@@ -13,7 +12,6 @@ import com.vaadin.flow.component.charts.model.DataSeriesItem;
 import com.vaadin.flow.component.charts.model.DateTimeLabelFormats;
 import com.vaadin.flow.component.charts.model.Label;
 import com.vaadin.flow.component.charts.model.Labels;
-import com.vaadin.flow.component.charts.model.Lang;
 import com.vaadin.flow.component.charts.model.Marker;
 import com.vaadin.flow.component.charts.model.PlotLine;
 import com.vaadin.flow.component.charts.model.PlotOptionsLine;
@@ -161,15 +159,6 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         });
         // Scroll to the top after navigation
         e.getUI().scrollIntoView();
-        if ("fi".equals(e.getUI().getLocale().getLanguage())) {
-            final var chartOptions = ChartOptions.get(e.getUI());
-            final var lang = new Lang();
-            lang.setMonths(new String[]{"Tammikuu", "Helmikuu", "Maaliskuu", "Huhtikuu", "Toukokuu", "Kesäkuu", "Heinäkuu", "Elokuu", "Syyskuu", "Lokakuu", "Marraskuu", "Joulukuu"});
-            lang.setShortMonths(new String[]{"Tammi", "Helmi", "Maalis", "Huhti", "Touko", "Kesä", "Heinä", "Elo", "Syys", "Loka", "Marras", "Joulu"});
-            lang.setWeekdays(new String[]{"Sunnuntai", "Maanantai", "Tiistai", "Keskiviikko", "Torstai", "Perjantai", "Lauantai"});
-            lang.setRangeSelectorZoom("");
-            chartOptions.setLang(lang);
-        }
     }
 
     private void setTouchDeviceConfiguration(Chart chart) {
