@@ -115,6 +115,7 @@ export class ChartTemplate extends LitElement {
                     text: ''
                     //text: get("general.price-type")
                 },
+                softMax: this.average! + 1,
                 plotLines:
                     [{
                         //label: {
