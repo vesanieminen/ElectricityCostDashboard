@@ -37,7 +37,6 @@ public class ChartTemplate extends Component {
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         set(LANGUAGE, getLocale().getLanguage());
-
         String format = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(getLocale()).format(Utils.getCurrentLocalDateTimeHourPrecisionFinnishZone());
         set(CHART_TITLE, format);
         set(SERIES_TITLE, getTranslation("column-chart.series.title"));
@@ -45,17 +44,8 @@ public class ChartTemplate extends Component {
         set(POST_FIX, getTranslation("c/kWh"));
         set(AVERAGE_TEXT, getTranslation("column-chart.month.average"));
         final var pricesToday = getPricesToday();
-        //setSeriesList(pricesToday);
-
-        //final var priceDataToday = getPriceDataToday();
-        //setSeriesDataList(priceDataToday);
-
-        //final var priceDataToday = getLatest7DaysMap();
-        //setSeriesDataList(priceDataToday);
-
         var data = getLatest7DaysList();
         setNordpoolDataList(data);
-
         final var hour = (int) Utils.getCurrentInstantHourPrecision().getEpochSecond();
         set(CURRENT_HOUR, hour);
         var monthAverage = calculateSpotAveragePriceThisMonth();
