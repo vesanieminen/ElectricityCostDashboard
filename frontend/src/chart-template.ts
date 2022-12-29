@@ -1,4 +1,4 @@
-import {css, html, LitElement, PropertyValues} from 'lit';
+import {html, LitElement, PropertyValues} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import '@vaadin/vaadin-button'
 import '@vaadin/charts';
@@ -12,9 +12,6 @@ registerTranslateConfig({
 
 @customElement('chart-template')
 export class ChartTemplate extends LitElement {
-
-    static styles = css`
-  `;
 
     @property()
     language: string = 'en';
