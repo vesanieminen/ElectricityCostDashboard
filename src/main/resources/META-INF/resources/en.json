@@ -5,7 +5,7 @@
   "about": {
     "liukuri": {
       "title": "About This Application",
-      "descriptionHTML": "<p>This is a web app <a href='/'>visualizing the current electricity prices and sources</a>, inspired by exceptionally high electricity prices in 2022. In addition it also features <a href='/laskuri'>an electricity cost calculator</a> with which you can determine how much your electricity consumption in Finland has cost based on real Fingrid datahub exported data. Built using <a href='https://vaadin.com'>Vaadin</a>.</p>"
+      "descriptionHTML": "<p>This is a web app <a href='/'>visualizing the current electricity prices and sources</a>, inspired by exceptionally high electricity prices in 2022. In addition it also features <a href='/laskuri'>an electricity cost calculator</a> with which you can determine how much your electricity consumption in Finland has cost based on real Fingrid datahub exported data.</p><p>The app has been developed by <a href='mailto:vesa.nieminen@gmail.com'>Vesa Nieminen</a> and it has been built using <a href='https://vaadin.com'>Vaadin</a>.</p>"
     },
     "logo": {
       "title": "About the Logo",
