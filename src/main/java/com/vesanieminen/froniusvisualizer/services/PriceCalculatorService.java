@@ -128,11 +128,12 @@ public class PriceCalculatorService {
     }
 
     public static double calculateSpotAveragePriceThisYear() {
-        if (spotAverageThisYear == null) {
-            final var year = getCurrentTimeWithHourPrecision().getYear();
-            spotAverageThisYear = getSpotData().entrySet().stream().filter(yearFilter(year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(yearFilter(year)).count();
-        }
-        return spotAverageThisYear;
+        //if (spotAverageThisYear == null) {
+        final var year = getCurrentTimeWithHourPrecision().getYear();
+        return getSpotData().entrySet().stream().filter(yearFilter(year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(yearFilter(year)).count();
+        //spotAverageThisYear = getSpotData().entrySet().stream().filter(yearFilter(year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(yearFilter(year)).count();
+        //}
+        //return spotAverageThisYear;
     }
 
     private static Predicate<Map.Entry<Instant, Double>> yearFilter(int year) {
