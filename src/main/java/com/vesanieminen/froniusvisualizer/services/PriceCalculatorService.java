@@ -26,7 +26,6 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getVAT;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
-import static com.vesanieminen.froniusvisualizer.util.Utils.sizeOf;
 import static com.vesanieminen.froniusvisualizer.util.Utils.sum;
 
 @Slf4j
@@ -40,20 +39,6 @@ public class PriceCalculatorService {
     public static Instant spotDataEnd;
     private static Double spotAverageThisYear;
     private static Double spotAverageThisMonth;
-
-    // Old sahko.tk export file reading - requires manual work
-    public static void getSpotDataSahkoTK() throws IOException {
-        var map = new LinkedHashMap<>();
-        final var reader = Files.newBufferedReader(Path.of(spotPriceDataFile));
-        final var csvReader = new CSVReader(reader);
-        csvReader.readNext(); // skip header
-        String[] line;
-        while ((line = csvReader.readNext()) != null) {
-            final var dateTime = LocalDateTime.parse(line[0], datetimeFormatter);
-            map.put(dateTime, Double.valueOf(line[1]));
-        }
-        log.info("size of Sahko.tk map: " + sizeOf(map));
-    }
 
     public static LinkedHashMap<Instant, Double> getSpotData() {
         if (spotPriceMap == null) {
