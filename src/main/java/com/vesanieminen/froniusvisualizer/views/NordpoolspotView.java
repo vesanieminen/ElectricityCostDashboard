@@ -219,13 +219,6 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         add(pricesLayout);
 
         var chart = new Chart(ChartType.LINE);
-        // Buggy still and cannot be enabled yet:
-        //chart.getConfiguration().setExporting(true);
-        //final var exporting = chart.getConfiguration().getExporting();
-        //exporting.setScale(1);
-        //exporting.setSourceHeight(500);
-        //exporting.setSourceWidth(1320);
-        //exporting.setAllowHTML(true);
         chart.setTimeline(true);
         chart.getConfiguration().getLegend().setEnabled(true);
         chart.getConfiguration().getChart().setStyledMode(true);
