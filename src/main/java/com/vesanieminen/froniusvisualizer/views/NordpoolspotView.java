@@ -281,6 +281,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
             seriesTooltipSpot.setDateTimeLabelFormats(dateTimeLabelFormats);
             plotOptionsLineSpot.setTooltip(seriesTooltipSpot);
             temperatureDataSeries.setPlotOptions(plotOptionsLineSpot);
+            temperatureDataSeries.setVisible(false);
         }
 
         final var rangeSelector = new RangeSelector();
