@@ -114,7 +114,6 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         totalRenewablesTitle = getTranslation("Total renewables");
 
         priceNow = new DoubleLabel(getTranslation("Price now"), "");
-        //priceNow.addClassNamesToSpans("color-yellow");
         lowestAndHighest = new DoubleLabel(getTranslation("Lowest / highest today"), "");
         averagePrice7Days = new DoubleLabel(getTranslation("7 day average"), "");
         nextPrice = new DoubleLabel(getTranslation("Price in 1h"), "");
