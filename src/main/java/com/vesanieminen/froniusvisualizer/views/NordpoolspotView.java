@@ -327,7 +327,6 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         final var averageValue = nordpoolResponse.data.Rows.get(26);
         PlotLine averagePrice = new PlotLine();
         averagePrice.setLabel(new Label("Average price: " + averageValue + " c/kWh"));
-        //averagePrice.setValue(averageValue);
         chart.getConfiguration().getyAxis().addPlotLine(averagePrice);
     }
 
