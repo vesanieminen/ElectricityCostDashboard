@@ -359,7 +359,6 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         labels.setFormatter("return this.value +' c/kWh'");
         yAxisSpot.setLabels(labels);
         yAxisSpot.setSoftMin(0);
-        //yAxisSpot.setMinRange(-1);
         yAxisSpot.setTitle(getTranslation("Price"));
         yAxisSpot.setOpposite(true);
         chart.getConfiguration().addyAxis(yAxisSpot);
