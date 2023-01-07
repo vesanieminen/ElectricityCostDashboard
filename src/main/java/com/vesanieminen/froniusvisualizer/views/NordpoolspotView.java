@@ -397,7 +397,6 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         spotPriceDataSeries.setPlotOptions(plotOptionsLineSpot);
 
         final var plotOptionsLine = new PlotOptionsLine();
-        //plotOptionsLine.setAnimation(false);
         plotOptionsLine.setStickyTracking(true);
         plotOptionsLine.setMarker(new Marker(false));
         chart.getConfiguration().setPlotOptions(plotOptionsLine);
