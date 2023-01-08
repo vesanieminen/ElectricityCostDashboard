@@ -14,7 +14,6 @@ import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.Ping;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
-import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
 import com.vesanieminen.froniusvisualizer.util.css.Background;
 import com.vesanieminen.froniusvisualizer.util.css.BorderColor;
 import com.vesanieminen.froniusvisualizer.util.css.FontFamily;
@@ -23,8 +22,6 @@ import com.vesanieminen.froniusvisualizer.util.css.Transform;
 import com.vesanieminen.froniusvisualizer.util.css.Transition;
 
 import java.text.NumberFormat;
-import java.text.ParseException;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
@@ -33,14 +30,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7Days;
 import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7DaysList;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentLocalDateTimeHourPrecisionFinnishZone;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getVAT;
-import static com.vesanieminen.froniusvisualizer.util.Utils.vat10Instant;
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
 @PageTitle("List" + URL_SUFFIX)
@@ -59,20 +54,6 @@ public class PriceListView extends Main {
         setHeight("var(--fullscreen-height)");
         expensiveLimit = calculateSpotAveragePriceThisMonth();
         cheapLimit = expensiveLimit / 2;
-    }
-
-    private static double getPrice(NumberFormat format, NordpoolResponse.Column column, LocalDateTime localDateTime) throws ParseException {
-        double price;
-        if (0 < localDateTime.compareTo(vat10Instant.atZone(fiZoneID).toLocalDateTime())) {
-            price = format.parse(column.Value).doubleValue() * 1.10 / 10;
-        } else {
-            price = format.parse(column.Value).doubleValue() * 1.24 / 10;
-        }
-        return price;
-    }
-
-    private static NordpoolResponse getData() {
-        return getLatest7Days();
     }
 
     @Override
