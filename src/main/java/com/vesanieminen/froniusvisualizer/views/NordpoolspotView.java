@@ -385,7 +385,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
 
     private void configureChartTooltips(Chart chart, DataSeries spotPriceDataSeries) {
         final var plotOptionsLineSpot = new PlotOptionsLine();
-        //plotOptionsLineSpot.setAnimation(false);
+        plotOptionsLineSpot.setAnimation(false);
         plotOptionsLineSpot.setStickyTracking(true);
         plotOptionsLineSpot.setMarker(new Marker(false));
         final var seriesTooltipSpot = new SeriesTooltip();
@@ -397,6 +397,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         spotPriceDataSeries.setPlotOptions(plotOptionsLineSpot);
 
         final var plotOptionsLine = new PlotOptionsLine();
+        plotOptionsLine.setAnimation(false);
         plotOptionsLine.setStickyTracking(true);
         plotOptionsLine.setMarker(new Marker(false));
         chart.getConfiguration().setPlotOptions(plotOptionsLine);
