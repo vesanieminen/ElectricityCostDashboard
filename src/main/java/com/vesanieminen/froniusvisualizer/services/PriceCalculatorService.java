@@ -87,7 +87,12 @@ public class PriceCalculatorService {
             }
             final var instant = Instant.parse(line[getColumnIndex(isNewFormat, 4)]);
             if (isNewFormat) {
-                map.put(instant, Double.parseDouble(line[6]));
+                // On 2023-01-16 Fingrid changed from . to , for the comma separator
+                if (line[6].contains(".")) {
+                    map.put(instant, Double.parseDouble(line[6]));
+                } else {
+                    map.put(instant, numberFormat.parse(line[6]).doubleValue());
+                }
             } else {
                 map.put(instant, numberFormat.parse(line[5]).doubleValue());
             }
