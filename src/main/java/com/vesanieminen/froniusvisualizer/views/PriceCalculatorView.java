@@ -224,6 +224,7 @@ public class PriceCalculatorView extends Main {
 
         // Fixed price field
         transferAndTaxField = new SuperDoubleField(getTranslation("calculator.transfer.and.tax"));
+        transferAndTaxField.setMaximumFractionDigits(6);
         transferAndTaxField.setLocale(getLocale());
         transferAndTaxField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(7.35) + " " + getTranslation("calculator.with.caruna"));
         transferAndTaxField.setRequiredIndicatorVisible(true);
