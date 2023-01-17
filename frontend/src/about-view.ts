@@ -1,7 +1,6 @@
 import {css, html, LitElement, PropertyValues} from 'lit';
-import {customElement} from 'lit/decorators.js';
+import {customElement,property, state} from 'lit/decorators.js';
 import {registerTranslateConfig, translate, translateUnsafeHTML, use} from "lit-translate";
-import {property, state} from "lit/decorators";
 
 registerTranslateConfig({
     loader: lang => fetch(`${lang}.json`).then(res => res.json())
