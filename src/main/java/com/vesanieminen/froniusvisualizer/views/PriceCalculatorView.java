@@ -226,7 +226,7 @@ public class PriceCalculatorView extends Main {
         transferAndTaxField = new SuperDoubleField(getTranslation("calculator.transfer.and.tax"));
         transferAndTaxField.setMaximumFractionDigits(6);
         transferAndTaxField.setLocale(getLocale());
-        transferAndTaxField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(7.35) + " " + getTranslation("calculator.with.caruna"));
+        transferAndTaxField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(7.61) + " " + getTranslation("calculator.with.caruna"));
         transferAndTaxField.setRequiredIndicatorVisible(true);
         transferAndTaxField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         transferAndTaxField.addClassNames(LumoUtility.Flex.GROW);
