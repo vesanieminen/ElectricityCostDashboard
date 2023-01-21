@@ -466,13 +466,6 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         final var value = fingridResponse.NetImportExport.stream().filter(item -> item.start_time.getDayOfMonth() == now.getDayOfMonth()).map(item -> item.value).reduce(0d, Double::sum);
         final var formattedValue = df.format(value) + " MWh/h";
         netToday.setTitleBottom(formattedValue);
-        // The red color isn't looking good yet:
-        //if (value < 0) {
-        //    netToday.getSpanBottom().addClassNames("color-red");
-        //}
-        //else {
-        //    netToday.getSpanBottom().addClassNames("color-red");
-        //}
     }
 
     public enum VAT {
