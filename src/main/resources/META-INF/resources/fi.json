@@ -4,8 +4,12 @@
   },
   "about": {
     "liukuri": {
-      "title": "Tietoja Sovelluksesta",
+      "title": "Sovelluksesta",
       "descriptionHTML": "<p>Tämä sovellus on kehitetty helpottamaan vuoden 2022 korkean sähkön hinnan kanssa elämistä.Ominaisuuksina mm. <a href='/'>kaavionäkymä</a>, jolla voi arvioida esim. tuulivoimaennusteen vaikutusta sähkön hintaan. Lisäksi sovelluksesta löytyy <a href='/laskuri'>laskuri</a>, jonka avulla käyttäjä voi verrata todellista sähkökulutustaan kiinteähintaisen ja pörssisähkösopimuksen välillä.</p><p>Sovelluksen on tehnyt <a href='mailto:vesa.nieminen@gmail.com'>Vesa Nieminen</a> ja se on kehitetty <a href='https://vaadin.com'>Vaadinilla</a>.</p>"
+    },
+    "design": {
+      "title": "Designista",
+      "description": "Sovelluksen käyttöliittymä- ja käytettävyysparannuksia on lisäksi tehnyt Joacim Päivärinne."
     },
     "logo": {
       "title": "Logosta",

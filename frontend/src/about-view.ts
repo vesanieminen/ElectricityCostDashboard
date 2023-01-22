@@ -41,6 +41,9 @@ export class AboutView extends LitElement {
             <h2>${translate("about.liukuri.title")}</h2>
             <div>${translateUnsafeHTML("about.liukuri.descriptionHTML")}</div>
 
+            <h2>${translate("about.design.title")}</h2>
+            <div>${translate("about.design.description")}</div>
+
             <h2>${translate("about.logo.title")}</h2>
             <div>${translateUnsafeHTML("about.logo.descriptionHTML")}</div>
             <div class="m-auto">
