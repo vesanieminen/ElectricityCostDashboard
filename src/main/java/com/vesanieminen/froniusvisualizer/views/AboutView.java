@@ -1,6 +1,5 @@
 package com.vesanieminen.froniusvisualizer.views;
 
-import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.PropertyDescriptor;
 import com.vaadin.flow.component.PropertyDescriptors;
@@ -19,10 +18,6 @@ public class AboutView extends Component {
 
     public AboutView() {
         set(LANGUAGE, getLocale().getLanguage());
-    }
-
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
     }
 
 }
