@@ -1,5 +1,6 @@
 package com.vesanieminen.froniusvisualizer.views;
 
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.textfield.IntegerField;
@@ -53,9 +54,14 @@ public class AxisAndAlliesCalculator extends Div {
     private final IntegerField battleshipField;
 
     public AxisAndAlliesCalculator() {
+        final var header = new Div();
+        header.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Margin.SMALL, LumoUtility.Gap.MEDIUM, LumoUtility.AlignItems.CENTER);
         totalCostPrefix = "Total cost: ";
         totalCost = new H3(totalCostPrefix);
-        add(totalCost);
+        totalCost.addClassNames(LumoUtility.Margin.Top.SMALL);
+        final var clear = new Button("Clear", e -> clear());
+        header.add(clear, totalCost);
+        add(header);
 
         fieldContainer = new Div();
         fieldContainer.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Margin.SMALL);
@@ -72,7 +78,7 @@ public class AxisAndAlliesCalculator extends Div {
         transportField = createIntegerField("Transport");
         destroyerField = createIntegerField("Destroyer");
         cruiserField = createIntegerField("Cruiser");
-        aircraftCarrierField = createIntegerField("Aircraft Carrier");
+        aircraftCarrierField = createIntegerField("Carrier");
         battleshipField = createIntegerField("Battleship");
 
         map = new HashMap<>();
@@ -94,6 +100,7 @@ public class AxisAndAlliesCalculator extends Div {
     private IntegerField createIntegerField(String name) {
         var infantryField = new IntegerField(name);
         infantryField.setMin(0);
+        infantryField.setWidth("100px");
         infantryField.addClassNames(LumoUtility.Margin.SMALL);
         infantryField.setValue(0);
         infantryField.setStepButtonsVisible(true);
@@ -109,6 +116,11 @@ public class AxisAndAlliesCalculator extends Div {
 
     private int getFieldValue(IntegerField component) {
         return map.get(component).cost * component.getValue();
+    }
+
+    private void clear() {
+        map.keySet().forEach(field -> field.setValue(0));
+        totalCost.setText(totalCostPrefix);
     }
 
 }
