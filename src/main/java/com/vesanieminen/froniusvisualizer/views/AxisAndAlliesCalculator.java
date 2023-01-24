@@ -67,19 +67,19 @@ public class AxisAndAlliesCalculator extends Div {
         fieldContainer.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Margin.SMALL);
         add(fieldContainer);
 
-        infantryField = createIntegerField("Infantry");
-        artilleryField = createIntegerField("Artillery");
-        tankField = createIntegerField("Tank");
-        aaField = createIntegerField("AA Gun");
-        icField = createIntegerField("IC");
-        fighterField = createIntegerField("Fighter");
-        bomberField = createIntegerField("Bomber");
-        submarineField = createIntegerField("Submarine");
-        transportField = createIntegerField("Transport");
-        destroyerField = createIntegerField("Destroyer");
-        cruiserField = createIntegerField("Cruiser");
-        aircraftCarrierField = createIntegerField("Carrier");
-        battleshipField = createIntegerField("Battleship");
+        infantryField = createIntegerField("Infantry - 3");
+        artilleryField = createIntegerField("Artillery - 4");
+        tankField = createIntegerField("Tank - 6");
+        aaField = createIntegerField("AA Gun - 5");
+        icField = createIntegerField("IC - 15");
+        fighterField = createIntegerField("Fighter - 10");
+        bomberField = createIntegerField("Bomber - 12");
+        submarineField = createIntegerField("Submarine - 6");
+        transportField = createIntegerField("Transport - 7");
+        destroyerField = createIntegerField("Destroyer - 8");
+        cruiserField = createIntegerField("Cruiser - 12");
+        aircraftCarrierField = createIntegerField("Carrier - 14");
+        battleshipField = createIntegerField("Battleship 20");
 
         map = new HashMap<>();
         map.put(infantryField, UnitCost.INFANTRY);
@@ -100,8 +100,8 @@ public class AxisAndAlliesCalculator extends Div {
     private IntegerField createIntegerField(String name) {
         var infantryField = new IntegerField(name);
         infantryField.setMin(0);
-        infantryField.setWidth("100px");
-        infantryField.addClassNames(LumoUtility.Margin.SMALL);
+        infantryField.setWidth("110px");
+        infantryField.addClassNames(LumoUtility.Margin.XSMALL);
         infantryField.setValue(0);
         infantryField.setStepButtonsVisible(true);
         infantryField.addValueChangeListener(e -> calculate());
