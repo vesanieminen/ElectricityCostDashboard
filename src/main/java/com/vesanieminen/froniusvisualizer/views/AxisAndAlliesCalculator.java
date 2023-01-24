@@ -8,6 +8,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import java.util.HashMap;
+import java.util.stream.Stream;
 
 @Route("aa-calculator")
 public class AxisAndAlliesCalculator extends Div {
@@ -18,40 +19,28 @@ public class AxisAndAlliesCalculator extends Div {
     private final HashMap<IntegerField, UnitCost> map;
 
     enum UnitCost {
-        INFANTRY(3),
-        ARTILLERY(4),
-        TANK(6),
-        ANTIAIRCRAFT_ARTILLERY(5),
-        INDUSTRIAL_COMPLEX(15),
-        FIGHTER(10),
-        BOMBER(12),
-        SUBMARINE(6),
-        TRANSPORT(7),
-        DESTROYER(8),
-        CRUISER(12),
-        AIRCRAFT_CARRIER(14),
-        BATTLESHIP(20);
+        INFANTRY(3, "Infantry"),
+        ARTILLERY(4, "Artillery"),
+        TANK(6, "Tank"),
+        ANTIAIRCRAFT_ARTILLERY(5, "AA Gun"),
+        INDUSTRIAL_COMPLEX(15, "IC"),
+        FIGHTER(10, "Fighter"),
+        BOMBER(12, "Bomber"),
+        SUBMARINE(6, "Submarine"),
+        TRANSPORT(7, "Transport"),
+        DESTROYER(8, "Destroyer"),
+        CRUISER(12, "Cruiser"),
+        AIRCRAFT_CARRIER(14, "Carrier"),
+        BATTLESHIP(20, "Battleship");
 
         public int cost;
+        public String name;
 
-        UnitCost(int cost) {
+        UnitCost(int cost, String name) {
             this.cost = cost;
+            this.name = name;
         }
     }
-
-    private final IntegerField infantryField;
-    private final IntegerField artilleryField;
-    private final IntegerField tankField;
-    private final IntegerField aaField;
-    private final IntegerField icField;
-    private final IntegerField fighterField;
-    private final IntegerField bomberField;
-    private final IntegerField submarineField;
-    private final IntegerField transportField;
-    private final IntegerField destroyerField;
-    private final IntegerField cruiserField;
-    private final IntegerField aircraftCarrierField;
-    private final IntegerField battleshipField;
 
     public AxisAndAlliesCalculator() {
         final var header = new Div();
@@ -67,46 +56,25 @@ public class AxisAndAlliesCalculator extends Div {
         fieldContainer.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Margin.SMALL);
         add(fieldContainer);
 
-        infantryField = createIntegerField("Infantry - 3");
-        artilleryField = createIntegerField("Artillery - 4");
-        tankField = createIntegerField("Tank - 6");
-        aaField = createIntegerField("AA Gun - 5");
-        icField = createIntegerField("IC - 15");
-        fighterField = createIntegerField("Fighter - 10");
-        bomberField = createIntegerField("Bomber - 12");
-        submarineField = createIntegerField("Submarine - 6");
-        transportField = createIntegerField("Transport - 7");
-        destroyerField = createIntegerField("Destroyer - 8");
-        cruiserField = createIntegerField("Cruiser - 12");
-        aircraftCarrierField = createIntegerField("Carrier - 14");
-        battleshipField = createIntegerField("Battleship 20");
-
         map = new HashMap<>();
-        map.put(infantryField, UnitCost.INFANTRY);
-        map.put(artilleryField, UnitCost.ARTILLERY);
-        map.put(tankField, UnitCost.TANK);
-        map.put(aaField, UnitCost.ANTIAIRCRAFT_ARTILLERY);
-        map.put(icField, UnitCost.INDUSTRIAL_COMPLEX);
-        map.put(fighterField, UnitCost.FIGHTER);
-        map.put(bomberField, UnitCost.BOMBER);
-        map.put(submarineField, UnitCost.SUBMARINE);
-        map.put(transportField, UnitCost.TRANSPORT);
-        map.put(destroyerField, UnitCost.DESTROYER);
-        map.put(cruiserField, UnitCost.CRUISER);
-        map.put(aircraftCarrierField, UnitCost.AIRCRAFT_CARRIER);
-        map.put(battleshipField, UnitCost.BATTLESHIP);
+        Stream.of(UnitCost.values()).forEach(this::addField);
     }
 
-    private IntegerField createIntegerField(String name) {
-        var infantryField = new IntegerField(name);
-        infantryField.setMin(0);
-        infantryField.setWidth("110px");
-        infantryField.addClassNames(LumoUtility.Margin.XSMALL);
-        infantryField.setValue(0);
-        infantryField.setStepButtonsVisible(true);
-        infantryField.addValueChangeListener(e -> calculate());
-        fieldContainer.add(infantryField);
-        return infantryField;
+    private void addField(UnitCost item) {
+        final var integerField = createIntegerField(item);
+        map.put(integerField, item);
+    }
+
+    private IntegerField createIntegerField(UnitCost unitCost) {
+        var integerField = new IntegerField(unitCost.name + " " + unitCost.cost);
+        integerField.setMin(0);
+        integerField.setWidth("110px");
+        integerField.addClassNames(LumoUtility.Margin.XSMALL);
+        integerField.setValue(0);
+        integerField.setStepButtonsVisible(true);
+        integerField.addValueChangeListener(e -> calculate());
+        fieldContainer.add(integerField);
+        return integerField;
     }
 
     private void calculate() {
