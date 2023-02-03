@@ -12,7 +12,6 @@ import java.nio.file.Path;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,14 +30,9 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.sum;
 @Slf4j
 public class PriceCalculatorService {
 
-    public static final String spotPriceDataFile = "src/main/resources/data/sahko.tk/chart-alv0.csv";
-
-    public static final DateTimeFormatter datetimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static LinkedHashMap<Instant, Double> spotPriceMap;
     public static Instant spotDataStart;
     public static Instant spotDataEnd;
-    private static Double spotAverageThisYear;
-    private static Double spotAverageThisMonth;
 
     public static LinkedHashMap<Instant, Double> getSpotData() {
         if (spotPriceMap == null) {
