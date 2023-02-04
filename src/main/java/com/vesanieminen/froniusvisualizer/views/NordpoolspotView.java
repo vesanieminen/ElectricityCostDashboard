@@ -194,8 +194,6 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         List<FingridLiteResponse> consumptionEstimateResponses;
         List<SpotHintaResponse> temperatureList;
         try {
-            // the TVO OL3 requires some page crawling to work reliably
-            //var test = getDayAheadPrediction();
             nordpoolResponse = NordpoolSpotService.getLatest7Days();
             fingridResponse = FingridService.getLatest7Days();
             windEstimateResponses = FingridService.getWindEstimate();
