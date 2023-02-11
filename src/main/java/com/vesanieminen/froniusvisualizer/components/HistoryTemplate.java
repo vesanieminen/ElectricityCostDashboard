@@ -26,7 +26,7 @@ public class HistoryTemplate extends Component {
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         set(LANGUAGE, getLocale().getLanguage());
-        set(SERIES_TITLE, getTranslation("column-chart.series.title"));
+        set(SERIES_TITLE, getTranslation("history-chart.series.title"));
         set(UNIT, getTranslation("column-chart.series.unit"));
         set(POST_FIX, getTranslation("c/kWh"));
         var data = getPrices();
