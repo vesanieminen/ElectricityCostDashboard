@@ -76,6 +76,7 @@ public class MainLayout extends AppLayout {
         nav.addItem(new AppNavItem(getTranslation("Chart"), NordpoolspotView.class, MaterialIcon.TIMELINE));
         nav.addItem(new AppNavItem(getTranslation("column.chart"), ChartTemplateView.class, MaterialIcon.BAR_CHART));
         nav.addItem(new AppNavItem(getTranslation("List"), PriceListView.class, MaterialIcon.LIST));
+        nav.addItem(new AppNavItem(getTranslation("view.history"), HistoryView.class, MaterialIcon.HISTORY));
         nav.addItem(new AppNavItem(getTranslation("Calculator"), PriceCalculatorView.class, MaterialIcon.CALCULATE));
         nav.addItem(new AppNavItem(getTranslation("view.about"), AboutView.class, MaterialIcon.INFO));
 

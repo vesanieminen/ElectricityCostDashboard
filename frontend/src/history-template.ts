@@ -4,14 +4,14 @@ import '@vaadin/vaadin-button'
 import '@vaadin/charts';
 import '@vaadin/charts/src/vaadin-chart-series';
 import type {Options} from 'highcharts';
-import {get, registerTranslateConfig, use} from "lit-translate";
+import {registerTranslateConfig, use} from "lit-translate";
 
 registerTranslateConfig({
     loader: lang => fetch(`${lang}.json`).then(res => res.json())
 });
 
-@customElement('chart-template')
-export class ChartTemplate extends LitElement {
+@customElement('history-template')
+export class HistoryTemplate extends LitElement {
 
     @property()
     language: string = 'en';
@@ -40,12 +40,6 @@ export class ChartTemplate extends LitElement {
     postfix: string = 'c/kWh';
 
     @property()
-    averageText: string = '';
-
-    @property()
-    average?: number;
-
-    @property()
     currentHour: number = 0;
 
     @property()
@@ -58,9 +52,9 @@ export class ChartTemplate extends LitElement {
                 verticalAlign: 'top',
                 x: 0,
                 y: 0,
-                selected: 0,
-                buttons: [{
-                    type: 'millisecond',
+                selected: 4
+                /*buttons: [{
+                    type: 'month',
                     // @ts-ignore
                     count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000,
                     text: get("column-chart.now"),
@@ -86,10 +80,7 @@ export class ChartTemplate extends LitElement {
                 }, {
                     type: 'all',
                     text: get("column-chart.7d"),
-                }]
-            },
-            chart: {
-                type: "column"
+                }]*/
             },
             tooltip: {
                 shared: true,
@@ -111,48 +102,28 @@ export class ChartTemplate extends LitElement {
                 title: {
                     text: ''
                     //text: get("general.price-type")
-                },
-                softMax: this.average! + 1,
-                plotLines:
-                    [{
-                        //label: {
-                        //    text: this.averageText
-                        //},
-                        value: this.average
-                    }, {
-                        className: "average-per-2",
-                        value: this.average! / 2
-                    }],
+                }
             }],
             plotOptions: {
                 column: {
-                    borderRadius: 5
+                    borderRadius: 5,
+                    pointPadding: 0,
+                    groupPadding: 0,
+                    showInNavigator: true
                 },
                 series: {
                     tooltip: {
                         valueSuffix: " " + this.postfix,
                         valueDecimals: 2
                     },
-                    zones: [{
-                        value: -10,
-                        className: "zone-0"
-                    }, {
-                        value: this.average! / 2,
-                        className: "zone-1"
-                    }, {
-                        value: this.average,
-                        className: "zone-2"
-                    }, {
-                        className: "zone-3"
-                    }]
-                    ,
                     animation: false
                 },
             },
             series: [{
                 name: this.seriesTitle,
                 type: "column",
-                data: this.values!.map(item => [item.time, item.price * 1.1])
+                data: this.values!.map(item => [item.time, item.price]),
+                showInNavigator: true
             }],
         };
     }
@@ -162,27 +133,8 @@ export class ChartTemplate extends LitElement {
         return this;
     }
 
-    previous() {
-        this.$server!.previous();
-    }
-
-    next() {
-        this.$server!.next();
-    }
-
-    private $server?: ChartTemplateServerInterface;
-
     render() {
         return html`
-            <!--div class="flex justify-center items-center">
-                <vaadin-button class="h-s" theme="tertiary" @click=${this.previous}>
-                    <span class="material-icons w-l">chevron_left</span>
-                </vaadin-button>
-                <h2 class="m-s text-l">${this.chartTitle}</h2>
-                <vaadin-button class="h-s" theme="tertiary" @click=${this.next}>
-                    <span class="material-icons w-l">chevron_right</span>
-                </vaadin-button>
-            </div-->
             <vaadin-chart
                     theme="column"
                     style="height: 100%"
@@ -199,8 +151,4 @@ interface Nordpool {
     price: number;
 }
 
-interface ChartTemplateServerInterface {
-    previous(): void;
-    next(): void;
-}
 

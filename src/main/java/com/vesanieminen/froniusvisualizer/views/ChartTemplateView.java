@@ -4,7 +4,7 @@ import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
-import com.vesanieminen.froniusvisualizer.components.ChartTemplate;
+import com.vesanieminen.froniusvisualizer.components.BarChartTemplate;
 
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
@@ -16,7 +16,7 @@ public class ChartTemplateView extends Main {
     public ChartTemplateView() {
         setHeight("var(--fullscreen-height)");
         setMinHeight("300px");
-        add(new ChartTemplate());
+        add(new BarChartTemplate());
     }
 
 }

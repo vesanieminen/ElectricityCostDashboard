@@ -4,6 +4,7 @@ import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
+import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -174,6 +175,10 @@ public class PriceCalculatorService {
         final var now = getCurrentTimeWithHourPrecision();
         final var year = now.getYear();
         return getSpotData().entrySet().stream().filter(yearFilter(year)).map(item -> item.getValue() * getVAT(item.getKey())).collect(Collectors.toList());
+    }
+
+    public static List<NordpoolPrice> getPrices() {
+        return getSpotData().entrySet().stream().map(item -> new NordpoolPrice(item.getValue() * getVAT(item.getKey()), item.getKey().toEpochMilli())).collect(Collectors.toList());
     }
 
     private static Predicate<Map.Entry<Instant, Double>> monthFilter(int month, int year) {
