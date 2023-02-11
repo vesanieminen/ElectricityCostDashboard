@@ -31,9 +31,6 @@ export class HistoryTemplate extends LitElement {
     }
 
     @property()
-    chartTitle?: string = '';
-
-    @property()
     seriesTitle?: string = '';
 
     @property()

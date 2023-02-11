@@ -7,7 +7,7 @@ import com.vesanieminen.froniusvisualizer.components.HistoryTemplate;
 
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
-@Route(value = "historia", layout = MainLayout.class)
+@Route(value = "historiakaavio", layout = MainLayout.class)
 @PageTitle("view.history" + URL_SUFFIX)
 public class HistoryView extends Main {
 
@@ -15,6 +15,7 @@ public class HistoryView extends Main {
         setHeight("var(--fullscreen-height)");
         setMinHeight("300px");
         add(new HistoryTemplate());
+
     }
 
 }
