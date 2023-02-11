@@ -49,7 +49,7 @@ export class HistoryTemplate extends LitElement {
                 verticalAlign: 'top',
                 x: 0,
                 y: 0,
-                selected: 4
+                selected: 0
                 /*buttons: [{
                     type: 'month',
                     // @ts-ignore
@@ -79,6 +79,9 @@ export class HistoryTemplate extends LitElement {
                     text: get("column-chart.7d"),
                 }]*/
             },
+            navigator: {
+                enabled: true
+            },
             tooltip: {
                 shared: true,
             },
@@ -103,24 +106,21 @@ export class HistoryTemplate extends LitElement {
             }],
             plotOptions: {
                 column: {
-                    borderRadius: 5,
                     pointPadding: 0,
-                    groupPadding: 0,
-                    showInNavigator: true
+                    groupPadding: 0
                 },
                 series: {
                     tooltip: {
                         valueSuffix: " " + this.postfix,
                         valueDecimals: 2
                     },
-                    animation: false
+                    animation: false,
                 },
             },
             series: [{
                 name: this.seriesTitle,
                 type: "column",
-                data: this.values!.map(item => [item.time, item.price]),
-                showInNavigator: true
+                data: this.values!.map(item => [item.time, item.price])
             }],
         };
     }
