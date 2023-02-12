@@ -82,6 +82,9 @@ export class HistoryTemplate extends LitElement {
             navigator: {
                 enabled: true
             },
+            legend: {
+                enabled: false
+            },
             tooltip: {
                 shared: true,
             },

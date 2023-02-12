@@ -91,6 +91,9 @@ export class BarChartTemplate extends LitElement {
             chart: {
                 type: "column"
             },
+            legend: {
+                enabled: false
+            },
             tooltip: {
                 shared: true,
             },
