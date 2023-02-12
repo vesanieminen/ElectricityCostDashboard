@@ -126,13 +126,16 @@ export class HistoryTemplate extends LitElement {
                         valueDecimals: 2
                     },
                     animation: false,
+                    /*marker: {
+                        enabled: false
+                    },*/
                 },
             },
             series: [{
                 name: this.seriesTitle,
                 type: "line",
                 data: this.values!.map(item => [item.time, item.price]),
-                boostThreshold: 1000
+                boostThreshold: 100
             }],
         };
     }

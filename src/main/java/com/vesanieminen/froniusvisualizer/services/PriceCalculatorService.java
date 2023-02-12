@@ -32,6 +32,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.sum;
 public class PriceCalculatorService {
 
     private static LinkedHashMap<Instant, Double> spotPriceMap;
+    private static List<NordpoolPrice> nordpoolPriceList;
     public static Instant spotDataStart;
     public static Instant spotDataEnd;
 
@@ -57,7 +58,14 @@ public class PriceCalculatorService {
         spotDataEnd = pakastinResponse.prices.get(pakastinResponse.prices.size() - 1).date;
         log.info("updated spot data");
         //log.info("size of pakastin map: " + sizeOf(spotPriceMap));
+        updateNordPoolPriceList();
         return spotPriceMap;
+    }
+
+    public static void updateNordPoolPriceList() {
+        if (spotPriceMap != null) {
+            nordpoolPriceList = spotPriceMap.entrySet().stream().map(item -> new NordpoolPrice(item.getValue() * getVAT(item.getKey()), item.getKey().toEpochMilli())).toList();
+        }
     }
 
     public static FingridUsageData getFingridUsageData(String filePath) throws IOException, ParseException {
@@ -178,7 +186,7 @@ public class PriceCalculatorService {
     }
 
     public static List<NordpoolPrice> getPrices() {
-        return getSpotData().entrySet().stream().map(item -> new NordpoolPrice(item.getValue() * getVAT(item.getKey()), item.getKey().toEpochMilli())).collect(Collectors.toList());
+        return nordpoolPriceList;
     }
 
     private static Predicate<Map.Entry<Instant, Double>> monthFilter(int month, int year) {
