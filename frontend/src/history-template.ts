@@ -49,9 +49,13 @@ export class HistoryTemplate extends LitElement {
                 verticalAlign: 'top',
                 x: 0,
                 y: 0,
-                selected: 6,
+                selected: 2,
                 buttons: [
                     {
+                        type: 'day',
+                        count: 7,
+                        text: "7d"
+                    }, {
                         type: 'day',
                         count: 14,
                         text: "14d"
@@ -59,10 +63,6 @@ export class HistoryTemplate extends LitElement {
                         type: 'month',
                         count: 1,
                         text: "1m"
-                    }, {
-                        type: 'month',
-                        count: 2,
-                        text: "2m"
                     }, {
                         type: 'month',
                         count: 3,
@@ -78,9 +78,6 @@ export class HistoryTemplate extends LitElement {
                     }, {
                         type: 'ytd',
                         text: "YTD"
-                    }, {
-                        type: 'all',
-                        text: "ALL"
                     }
                 ]
             },
@@ -95,6 +92,7 @@ export class HistoryTemplate extends LitElement {
             },
             tooltip: {
                 shared: true,
+                xDateFormat: "%A<br />%H:%M %e.%m.%Y",
             },
             time: {
                 useUTC: false,
@@ -128,14 +126,11 @@ export class HistoryTemplate extends LitElement {
                         valueDecimals: 2
                     },
                     animation: false,
-                    marker: {
-                        enabled: false
-                    },
                 },
             },
             series: [{
                 name: this.seriesTitle,
-                type: "column",
+                type: "line",
                 data: this.values!.map(item => [item.time, item.price]),
                 boostThreshold: 1000
             }],
