@@ -49,35 +49,40 @@ export class HistoryTemplate extends LitElement {
                 verticalAlign: 'top',
                 x: 0,
                 y: 0,
-                selected: 0
-                /*buttons: [{
-                    type: 'month',
-                    // @ts-ignore
-                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000,
-                    text: get("column-chart.now"),
-                    //offsetMin: -86400000,
-                    //offsetMax: -86400000,
-                }, {
-                    type: 'day',
-                    count: 1,
-                    text: get("column-chart.1d"),
-
-                }, {
-                    type: 'day',
-                    count: 2,
-                    text: get("column-chart.2d"),
-                }, {
-                    type: 'day',
-                    count: 3,
-                    text: get("column-chart.3d"),
-                }, {
-                    type: 'day',
-                    count: 5,
-                    text: get("column-chart.5d"),
-                }, {
-                    type: 'all',
-                    text: get("column-chart.7d"),
-                }]*/
+                selected: 6,
+                buttons: [
+                    {
+                        type: 'day',
+                        count: 14,
+                        text: "14d"
+                    }, {
+                        type: 'month',
+                        count: 1,
+                        text: "1m"
+                    }, {
+                        type: 'month',
+                        count: 2,
+                        text: "2m"
+                    }, {
+                        type: 'month',
+                        count: 3,
+                        text: "3m"
+                    }, {
+                        type: 'month',
+                        count: 6,
+                        text: "6m"
+                    }, {
+                        type: 'month',
+                        count: 12,
+                        text: "12m"
+                    }, {
+                        type: 'ytd',
+                        text: "YTD"
+                    }, {
+                        type: 'all',
+                        text: "ALL"
+                    }
+                ]
             },
             navigator: {
                 enabled: true
@@ -102,6 +107,7 @@ export class HistoryTemplate extends LitElement {
                     }],
             },
             yAxis: [{
+                softMin: 0,
                 title: {
                     text: ''
                     //text: get("general.price-type")
@@ -110,7 +116,8 @@ export class HistoryTemplate extends LitElement {
             plotOptions: {
                 column: {
                     pointPadding: 0,
-                    groupPadding: 0
+                    groupPadding: 0,
+                    borderWidth: 0,
                 },
                 series: {
                     tooltip: {
@@ -118,6 +125,9 @@ export class HistoryTemplate extends LitElement {
                         valueDecimals: 2
                     },
                     animation: false,
+                    marker: {
+                        enabled: false
+                    },
                 },
             },
             series: [{
