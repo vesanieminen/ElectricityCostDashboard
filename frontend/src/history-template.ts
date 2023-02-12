@@ -84,6 +84,9 @@ export class HistoryTemplate extends LitElement {
                     }
                 ]
             },
+            boost: {
+                useGPUTranslations: true
+            },
             navigator: {
                 enabled: true
             },
@@ -133,7 +136,8 @@ export class HistoryTemplate extends LitElement {
             series: [{
                 name: this.seriesTitle,
                 type: "column",
-                data: this.values!.map(item => [item.time, item.price])
+                data: this.values!.map(item => [item.time, item.price]),
+                boostThreshold: 1000
             }],
         };
     }
