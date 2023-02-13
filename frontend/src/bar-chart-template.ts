@@ -129,6 +129,8 @@ export class BarChartTemplate extends LitElement {
             }],
             plotOptions: {
                 column: {
+                    pointPadding: 0,
+                    groupPadding: 0,
                     borderRadius: 5
                 },
                 series: {
