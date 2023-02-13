@@ -72,12 +72,12 @@ export class HistoryTemplate extends LitElement {
                         count: 6,
                         text: "6m"
                     }, {
+                        type: 'ytd',
+                        text: "YTD"
+                    }, {
                         type: 'month',
                         count: 12,
                         text: "12m"
-                    }, {
-                        type: 'ytd',
-                        text: "YTD"
                     }
                 ]
             },
@@ -148,7 +148,6 @@ export class HistoryTemplate extends LitElement {
     render() {
         return html`
             <vaadin-chart
-                    theme="column"
                     style="height: 100%"
                     .additionalOptions=${this.getChartOptions()}
             >
