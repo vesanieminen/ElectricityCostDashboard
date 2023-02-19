@@ -126,6 +126,7 @@ export class HistoryTemplate extends LitElement {
                         valueDecimals: 2
                     },
                     animation: false,
+                    // Works but is buggy when switching back and forth from different date ranges.
                     /*marker: {
                         enabled: false
                     },*/
