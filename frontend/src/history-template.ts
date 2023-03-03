@@ -5,6 +5,7 @@ import '@vaadin/charts';
 import '@vaadin/charts/src/vaadin-chart-series';
 import type {Options} from 'highcharts';
 import {registerTranslateConfig, use} from "lit-translate";
+import {Nordpool} from "Frontend/src/nordpool";
 
 registerTranslateConfig({
     loader: lang => fetch(`${lang}.json`).then(res => res.json())
@@ -156,11 +157,6 @@ export class HistoryTemplate extends LitElement {
         `;
     }
 
-}
-
-interface Nordpool {
-    time: number;
-    price: number;
 }
 
 
