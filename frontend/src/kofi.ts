@@ -146,10 +146,19 @@ export class KoFi extends LitElement {
     render() {
         return html`
             <div class="btn-container">
-                <a title="${this.text}" class="kofi-button" style="background-color:#29abe0;"
-                   href="${this.url}" target="_blank">
-                    <span class="kofitext"><img src="https://storage.ko-fi.com/cdn/cup-border.png" alt="Ko-fi donations"
-                                                class="kofiimg">${this.text} </span>
+                <a
+                        title="${this.text}"
+                        class="kofi-button"
+                        style="background-color:#29abe0;"
+                        href="${this.url}"
+                        target="_blank">
+                    <span class="kofitext">
+                        <img
+                                src="https://storage.ko-fi.com/cdn/cup-border.png"
+                                alt="Ko-fi donations"
+                                class="kofiimg"/>
+                        ${this.text}
+                    </span>
                 </a>
             </div>
         `;
