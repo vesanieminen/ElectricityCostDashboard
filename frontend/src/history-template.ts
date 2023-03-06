@@ -4,7 +4,7 @@ import '@vaadin/vaadin-button'
 import '@vaadin/charts';
 import '@vaadin/charts/src/vaadin-chart-series';
 import type {Options} from 'highcharts';
-import {registerTranslateConfig, use} from "lit-translate";
+import {get, registerTranslateConfig, use} from "lit-translate";
 import {Nordpool} from "Frontend/src/nordpool";
 
 registerTranslateConfig({
@@ -55,30 +55,30 @@ export class HistoryTemplate extends LitElement {
                     {
                         type: 'day',
                         count: 7,
-                        text: "7d"
+                        text: get("column-chart.7d")
                     }, {
                         type: 'day',
                         count: 14,
-                        text: "14d"
+                        text: get("column-chart.14d")
                     }, {
                         type: 'month',
                         count: 1,
-                        text: "1m"
+                        text: get("column-chart.1m")
                     }, {
                         type: 'month',
                         count: 3,
-                        text: "3m"
+                        text: get("column-chart.3m")
                     }, {
                         type: 'month',
                         count: 6,
-                        text: "6m"
+                        text: get("column-chart.6m")
                     }, {
                         type: 'ytd',
-                        text: "YTD"
+                        text: get("column-chart.ytd")
                     }, {
                         type: 'month',
                         count: 12,
-                        text: "12m"
+                        text: get("column-chart.12m")
                     }
                 ]
             },
