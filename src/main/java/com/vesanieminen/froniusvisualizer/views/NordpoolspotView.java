@@ -42,6 +42,7 @@ import com.vesanieminen.froniusvisualizer.services.model.FingridLiteResponse;
 import com.vesanieminen.froniusvisualizer.services.model.FingridRealtimeResponse;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
 import com.vesanieminen.froniusvisualizer.services.model.SpotHintaResponse;
+import org.vaadin.addons.parttio.lightchart.LightChart;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -215,7 +216,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         pricesLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Width.FULL/*, LumoUtility.BorderRadius.LARGE, LumoUtility.Border.ALL, LumoUtility.BorderColor.CONTRAST_10*/);
         add(pricesLayout);
 
-        var chart = new Chart(ChartType.LINE);
+        var chart = new LightChart(ChartType.LINE);
         chart.setTimeline(true);
         chart.getConfiguration().getLegend().setEnabled(true);
         chart.getConfiguration().getChart().setStyledMode(true);

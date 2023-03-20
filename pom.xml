@@ -84,6 +84,11 @@
             <artifactId>vaadin</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.parttio</groupId>
+            <artifactId>light-chart</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+        <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-spring-boot-starter</artifactId>
         </dependency>
