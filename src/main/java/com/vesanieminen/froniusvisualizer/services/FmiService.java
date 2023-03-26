@@ -20,7 +20,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 
 public class FmiService {
     private static final String fmiApiBaseUrl = "https://www.ilmatieteenlaitos.fi/api/weather/observations?fmisid=%s&observations=true";
-    private static final String observationPlaceFmisid = "101150";
+    private static final String observationPlaceFmisid = "101150"; // Hämeenlinna/Katinen, matches with the forecasts
 
     private static LocalDateTime nextUpdate = LocalDateTime.now(fiZoneID).minusHours(1);
     private static FmiObservationResponse lastResponse;
