@@ -114,7 +114,7 @@ public class NotificationService {
         }
     }
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 0 * * * *")
     public void sendNotifications() {
         log.info("Starting to send hourly notifications...");
 
