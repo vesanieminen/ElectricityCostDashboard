@@ -3,14 +3,25 @@ package com.vesanieminen.froniusvisualizer.services;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
-import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
 import com.vesanieminen.froniusvisualizer.services.model.PriceNotification;
+import lombok.extern.slf4j.Slf4j;
+import nl.martijndwars.webpush.Notification;
+import nl.martijndwars.webpush.PushService;
+import nl.martijndwars.webpush.Subscription;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.jose4j.lang.JoseException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.security.GeneralSecurityException;
 import java.security.Security;
 import java.time.Instant;
@@ -26,20 +37,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import lombok.extern.slf4j.Slf4j;
-import nl.martijndwars.webpush.Notification;
-import nl.martijndwars.webpush.PushService;
-import nl.martijndwars.webpush.Subscription;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.jose4j.lang.JoseException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
@@ -64,8 +61,10 @@ public class NotificationService {
     @PostConstruct
     private void init() throws GeneralSecurityException {
         try {
-            notifications = mapper.readValue(notificationsfile, new TypeReference<List<PriceNotification>>(){});
-            uidToSubscription = mapper.readValue(uidsubfile, new TypeReference<HashMap<String,Subscription>>(){});
+            notifications = mapper.readValue(notificationsfile, new TypeReference<>() {
+            });
+            uidToSubscription = mapper.readValue(uidsubfile, new TypeReference<HashMap<String, Subscription>>() {
+            });
         } catch( Exception e) {
             log.info("couln't read old data", e);
         }
