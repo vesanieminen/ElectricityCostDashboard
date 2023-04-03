@@ -97,7 +97,7 @@ public class NotificationService {
         
         for (PriceNotification notification : notifications) {
             notification.setUid(userId);
-            notification.setLastTriggered(now);
+            notification.setLastTriggered(now.minus(24, ChronoUnit.HOURS));
         }
         clearAll(userId);
         this.notifications.addAll(notifications);
@@ -129,11 +129,11 @@ public class NotificationService {
             return;
         }
 
-        final Double priceNow = current.price()*getVat(current.timeInstant());
-        final Double previousPrice = prev.price()*getVat(prev.timeInstant());
+        final double priceNow = current.price()*getVat(current.timeInstant());
+        final double previousPrice = prev.price()*getVat(prev.timeInstant());
         final boolean up = priceNow > previousPrice;
-        final Double lowerBound = up ? previousPrice : priceNow;
-        final Double upperBound = up ? priceNow : previousPrice;
+        final double lowerBound = up ? previousPrice : priceNow;
+        final double upperBound = up ? priceNow : previousPrice;
         Set<PriceNotification> uidsToClean = new HashSet<>();
         
         notifications.stream()
@@ -143,7 +143,7 @@ public class NotificationService {
                 .filter(pn -> pn.getPrice() >= lowerBound && pn.getPrice() <= upperBound )
                 .forEach(pn -> {
                     String body =
-                            "Price now %s c/kWh. %s".formatted(priceNow, pn.getExtraMsg());
+                            "Price now %.2f c/kWh. %s".formatted(priceNow, pn.getExtraMsg());
                     String title = up ? "Prices going up!": "Prices going down!";
                     Message message = new Message(title, body);
                     Subscription s = uidToSubscription.get(pn.getUid());

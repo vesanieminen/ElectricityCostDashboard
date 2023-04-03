@@ -42,7 +42,7 @@ public class NotificationsView extends VerticalLayout {
                 .withItemLabelGenerator(b -> b ? "↗" : "↘︎")
                 .withWidth("5em");
         // VIntegerField prewarn = new VIntegerField().withWidth("5em");
-        VIntegerField timeout = new VIntegerField().withWidth("5em");
+//        VIntegerField timeout = new VIntegerField().withWidth("5em");
         VTextField extraMsg = new VTextField();
     }
 
@@ -129,7 +129,7 @@ jotta notificaatiot toimivat.
                             detail: JSON.parse(JSON.stringify(subscription))
                         }));
                     }).catch( (er) => {
-                        console.error(er.message);
+                        console.error(er);
                     });
                 });
             } else {
