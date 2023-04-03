@@ -25,8 +25,11 @@ import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.security.Security;
 import java.time.Instant;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -123,15 +126,41 @@ public class NotificationService {
         List<NordpoolPrice> latest7DaysList = NordpoolSpotService.getLatest7DaysList();
         NordpoolPrice prev = latest7DaysList.stream().filter(p->p.timeInstant().equals(nowMinus1Hour)).findFirst().orElse(null);
         NordpoolPrice current = latest7DaysList.stream().filter(p->p.timeInstant().equals(now)).findFirst().orElse(null);
-
         if(prev == null || current == null) {
             log.info("Couldn't find previous or current price, skipping");
             return;
         }
-
         final double priceNow = current.price()*getVat(current.timeInstant());
         final double previousPrice = prev.price()*getVat(prev.timeInstant());
         final boolean up = priceNow > previousPrice;
+
+        List<NordpoolPrice> futurePrices = latest7DaysList.subList(latest7DaysList.indexOf(current), latest7DaysList.size());
+        Iterator<NordpoolPrice> priceIterator = futurePrices.iterator();
+        NordpoolPrice nextPeakLow = current;
+        while (priceIterator.hasNext()) {
+            NordpoolPrice price = priceIterator.next();
+            if(up) {
+                if(price.price() > current.price()) {
+                    nextPeakLow = price;
+                } else {
+                    break;
+                }
+            } else {
+                if(price.price() < current.price()) {
+                    nextPeakLow = price;
+                } else {
+                    break;
+                }
+            }
+        }
+        final String peakLowMsg;
+        if(nextPeakLow != current) {
+            LocalTime peakTime = LocalTime.ofInstant(nextPeakLow.timeInstant(), ZoneId.of("Europe/Helsinki"));
+            peakLowMsg = (" Next " + (up ? "peak" : "low") + ": %.2f c/kWh at %s.").formatted(nextPeakLow.price()*getVat(nextPeakLow.timeInstant()), peakTime);
+        } else {
+            peakLowMsg = "";
+        }
+
         final double lowerBound = up ? previousPrice : priceNow;
         final double upperBound = up ? priceNow : previousPrice;
         Set<PriceNotification> uidsToClean = new HashSet<>();
@@ -143,7 +172,8 @@ public class NotificationService {
                 .filter(pn -> pn.getPrice() >= lowerBound && pn.getPrice() <= upperBound )
                 .forEach(pn -> {
                     String body =
-                            "Price now %.2f c/kWh. %s".formatted(priceNow, pn.getExtraMsg());
+                            "Price now %.2f c/kWh. %s".formatted(priceNow, pn.getExtraMsg())
+                                    + peakLowMsg;
                     String title = up ? "Prices going up!": "Prices going down!";
                     Message message = new Message(title, body);
                     Subscription s = uidToSubscription.get(pn.getUid());
