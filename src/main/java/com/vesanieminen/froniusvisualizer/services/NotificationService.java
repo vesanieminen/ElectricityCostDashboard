@@ -69,7 +69,7 @@ public class NotificationService {
             uidToSubscription = mapper.readValue(uidsubfile, new TypeReference<HashMap<String, Subscription>>() {
             });
         } catch( Exception e) {
-            log.info("couln't read old data", e);
+            log.info("couldn't read old data", e);
         }
         
         Security.addProvider(new BouncyCastleProvider());
@@ -86,7 +86,6 @@ public class NotificationService {
         } catch (IOException ex) {
             Logger.getLogger(NotificationService.class.getName()).log(Level.SEVERE, null, ex);
         }
-    
     }
 
 
@@ -97,13 +96,23 @@ public class NotificationService {
     public void saveNotifications(String userId, List<PriceNotification> notifications) {
         log.info("Updating notifications for " + userId);
         Instant now = Instant.now().truncatedTo(ChronoUnit.HOURS);
-        
+
         for (PriceNotification notification : notifications) {
             notification.setUid(userId);
-            notification.setLastTriggered(now.minus(24, ChronoUnit.HOURS));
+            notification.setLastTriggered(now.minus(1, ChronoUnit.DAYS));
         }
         clearAll(userId);
         this.notifications.addAll(notifications);
+
+        try {
+            mapper.writeValue(uidsubfile, uidToSubscription);
+            mapper.writeValue(notificationsfile, notifications);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(NotificationService.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(NotificationService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     private void clearAll(String userId) {
@@ -167,7 +176,7 @@ public class NotificationService {
         
         notifications.stream()
                .filter(PriceNotification::isEnabled)
-                .filter(pn -> pn.getLastTriggered().plus(pn.getTimeout(),ChronoUnit.HOURS).isBefore(now))
+//                .filter(pn -> pn.getLastTriggered().plus(pn.getTimeout(),ChronoUnit.HOURS).isBefore(now))
                 .filter(pn -> pn.isUp() == up)
                 .filter(pn -> pn.getPrice() >= lowerBound && pn.getPrice() <= upperBound )
                 .forEach(pn -> {
