@@ -64,7 +64,7 @@ public class NotificationService {
     @PostConstruct
     private void init() throws GeneralSecurityException {
         try {
-            notifications = mapper.readValue(notificationsfile, new TypeReference<>() {
+            notifications = mapper.readValue(notificationsfile, new TypeReference<ArrayList<PriceNotification>>() {
             });
             uidToSubscription = mapper.readValue(uidsubfile, new TypeReference<HashMap<String, Subscription>>() {
             });
@@ -103,16 +103,7 @@ public class NotificationService {
         }
         clearAll(userId);
         this.notifications.addAll(notifications);
-
-        try {
-            mapper.writeValue(uidsubfile, uidToSubscription);
-            mapper.writeValue(notificationsfile, notifications);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(NotificationService.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(NotificationService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
+        
     }
 
     private void clearAll(String userId) {
@@ -172,7 +163,7 @@ public class NotificationService {
 
         final double lowerBound = up ? previousPrice : priceNow;
         final double upperBound = up ? priceNow : previousPrice;
-        Set<PriceNotification> uidsToClean = new HashSet<>();
+        Set<PriceNotification> orphaned = new HashSet<>();
         
         notifications.stream()
                .filter(PriceNotification::isEnabled)
@@ -190,10 +181,11 @@ public class NotificationService {
                        sendNotification(s, message);
                        pn.setLastTriggered(now);
                     } else {
-                        uidsToClean.add(pn);
+                        orphaned.add(pn);
                     }
                 });
-        notifications.removeAll(uidsToClean);
+
+        notifications.removeAll(orphaned);
         log.info("All notifications  sent...");
     }
 
