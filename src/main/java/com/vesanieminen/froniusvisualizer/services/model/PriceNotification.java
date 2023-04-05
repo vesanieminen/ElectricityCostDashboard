@@ -1,11 +1,17 @@
 package com.vesanieminen.froniusvisualizer.services.model;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Version;
+import org.springframework.data.relational.core.mapping.Table;
 
 /**
  *
@@ -13,15 +19,18 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Table("notification")
 public class PriceNotification {
-    String uid;
+    @Id
+    @EqualsAndHashCode.Include
+    UUID id = UUID.randomUUID();
+    @Version
+    int version;
+    UUID subscriptionId;
     boolean enabled;
     double price = 20;
     boolean up = true;
-    int prewarn = 0;
-    int timeout = 0;
     String extraMsg = "";
-    @JsonIgnore // too hard for Jackson ?
-    Instant lastTriggered;
-    
+
 }

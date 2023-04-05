@@ -31,7 +31,7 @@ import org.vaadin.firitin.util.WebStorage;
 @Route(layout = MainLayout.class)
 public class NotificationsView extends VerticalLayout {
 
-    private String uid;
+    private UUID uid;
     private final NotificationService service;
 
     public static class PriceNotificationEditor {
@@ -62,18 +62,17 @@ jotta notificaatiot toimivat.
 
         WebStorage.getItem("uid", uid -> {
             if (uid == null) {
-                this.uid = UUID.randomUUID().toString();
                 requestToAllowNotifications();
                 addSubscribeListener(e -> {
-                    WebStorage.setItem("uid", this.uid);
-                    service.subscribe(this.uid, e.getSubscription());
+                    this.uid = service.subscribe(e.getSubscription());
+                    WebStorage.setItem("uid", this.uid.toString());
                     notifications = new ArrayList<>();
                     bindData();
                     remove(requestNotificationsBtn);
                 });
             } else {
-                this.uid = uid;
-                notifications = service.listNotifications(uid);
+                this.uid = UUID.fromString(uid);
+                notifications = service.listNotifications(this.uid);
                 bindData();
             }
         });

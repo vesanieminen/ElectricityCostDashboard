@@ -1,8 +1,8 @@
 package com.vesanieminen.froniusvisualizer.services;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
+import com.vesanieminen.froniusvisualizer.services.model.NotificationSubscription;
 import com.vesanieminen.froniusvisualizer.services.model.PriceNotification;
 import lombok.extern.slf4j.Slf4j;
 import nl.martijndwars.webpush.Notification;
@@ -12,14 +12,13 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jose4j.lang.JoseException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
@@ -29,17 +28,12 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -51,69 +45,45 @@ public class NotificationService {
     private String privateKey;
     @Value("${vapid.subject}")
     private String subject;
-    
+
+    @Autowired
+    SubscriptionRepository subscriptionRepository;
+
+    @Autowired
+    NotificationRepository repository;
+
     private PushService pushService;
 
-    // TODO persist to PostgreSQL with jdbc template before releasing publicly
-    List<PriceNotification> notifications = new ArrayList<>();
-    Map<String,Subscription> uidToSubscription = new HashMap<>(); 
-    
     File uidsubfile = new File("uidsub.json");
     File notificationsfile = new File("notifications.json");
     
     @PostConstruct
     private void init() throws GeneralSecurityException {
-        try {
-            notifications = mapper.readValue(notificationsfile, new TypeReference<ArrayList<PriceNotification>>() {
-            });
-            uidToSubscription = mapper.readValue(uidsubfile, new TypeReference<HashMap<String, Subscription>>() {
-            });
-        } catch( Exception e) {
-            log.info("couldn't read old data", e);
-        }
-        
         Security.addProvider(new BouncyCastleProvider());
         pushService = new PushService(publicKey, privateKey, subject);
     }
-    
-    @PreDestroy
-    private void serialize() {
-        try {
-            mapper.writeValue(uidsubfile, uidToSubscription);
-            mapper.writeValue(notificationsfile, notifications);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(NotificationService.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(NotificationService.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
+    public List<PriceNotification> listNotifications(UUID userId) {
+        return new ArrayList<>(repository.findBySubscriptionId(userId));
     }
 
-
-    public List<PriceNotification> listNotifications(String userId) {
-        return new ArrayList<>(notifications.stream().filter(pn -> pn.getUid().equals(userId)).collect(Collectors.toList()));
-    }
-
-    public void saveNotifications(String userId, List<PriceNotification> notifications) {
+    public void saveNotifications(UUID userId, List<PriceNotification> notifications) {
         log.info("Updating notifications for " + userId);
         Instant now = Instant.now().truncatedTo(ChronoUnit.HOURS);
 
         for (PriceNotification notification : notifications) {
-            notification.setUid(userId);
-            notification.setLastTriggered(now.minus(1, ChronoUnit.DAYS));
+            notification.setSubscriptionId(userId);
         }
-        clearAll(userId);
-        this.notifications.addAll(notifications);
-        
+        repository.saveAll(notifications);
+        repository.findBySubscriptionId(userId).forEach(n -> {
+            if (!notifications.contains(n)) {
+                repository.delete(n);
+            }
+        });
     }
 
-    private void clearAll(String userId) {
-        Iterator<PriceNotification> iterator = notifications.iterator();
-        while (iterator.hasNext()) {
-            PriceNotification pn = iterator.next();
-            if (pn.getUid().equals(userId)) {
-                iterator.remove();
-            }
-        }
+    private void clearAll(UUID userId) {
+        repository.deleteAllBySubscriptionId(userId);
     }
 
     @Scheduled(cron = "0 0 * * * *")
@@ -164,29 +134,27 @@ public class NotificationService {
         final double lowerBound = up ? previousPrice : priceNow;
         final double upperBound = up ? priceNow : previousPrice;
         Set<PriceNotification> orphaned = new HashSet<>();
-        
-        notifications.stream()
-               .filter(PriceNotification::isEnabled)
-//                .filter(pn -> pn.getLastTriggered().plus(pn.getTimeout(),ChronoUnit.HOURS).isBefore(now))
-                .filter(pn -> pn.isUp() == up)
-                .filter(pn -> pn.getPrice() >= lowerBound && pn.getPrice() <= upperBound )
-                .forEach(pn -> {
-                    String body =
-                            "Price now %.2f c/kWh. %s".formatted(priceNow, pn.getExtraMsg())
-                                    + peakLowMsg;
-                    String title = up ? "Prices going up!": "Prices going down!";
-                    Message message = new Message(title, body);
-                    Subscription s = uidToSubscription.get(pn.getUid());
-                    if(s != null) {
-                       sendNotification(s, message);
-                       pn.setLastTriggered(now);
-                    } else {
-                        orphaned.add(pn);
-                    }
-                });
 
-        notifications.removeAll(orphaned);
+        // TODO enabled, bounds & direction to query
+        Iterable<PriceNotification> all = repository.findAll();
+        all.forEach(pn -> {
+            if(pn.isEnabled() && pn.isUp() == up && pn.getPrice() >= lowerBound && pn.getPrice() <= upperBound) {
+                String body =
+                        "Price now %.2f c/kWh. %s".formatted(priceNow, pn.getExtraMsg())
+                                + peakLowMsg;
+                String title = up ? "Prices going up!": "Prices going down!";
+                Message message = new Message(title, body);
+                Subscription s = getSubscription(pn.getSubscriptionId());
+                sendNotification(s, message);
+            }
+        });
+
         log.info("All notifications  sent...");
+    }
+
+    private Subscription getSubscription(UUID uid) {
+        NotificationSubscription ns = subscriptionRepository.findById(uid).get();
+        return new Subscription(ns.getEndpoint(), new Subscription.Keys(ns.getP256dh(), ns.getAuth()));
     }
 
     private double getVat(Instant timeInstant) {
@@ -210,12 +178,14 @@ public class NotificationService {
         }
     }
 
-    public void subscribe(String uid, Subscription subscription) {
-        uidToSubscription.put(uid, subscription);
+    public UUID subscribe(Subscription subscription) {
+        NotificationSubscription saved = subscriptionRepository.save(new NotificationSubscription(subscription.endpoint, subscription.keys.p256dh, subscription.keys.auth));
+        return saved.getId();
     }
 
-    public void unsubscribe(String uid) {
-        uidToSubscription.remove(uid);
+    public void unsubscribe(UUID uid) {
+        repository.deleteAllBySubscriptionId(uid);
+        subscriptionRepository.deleteById(uid);
     }
 
     public String getPublicKey() {
