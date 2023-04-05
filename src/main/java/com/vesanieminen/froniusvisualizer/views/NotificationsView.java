@@ -114,6 +114,8 @@ jotta notificaatiot toimivat.
     }
 
     this.addEventListener("click", () => {
+        this.setAttribute("disabled", "disabled");
+        this.textContent = "Requesting...";
         Notification.requestPermission().then( notificationPermission => {
             if (notificationPermission === 'granted') {
                 navigator.serviceWorker.getRegistration().then(registration => {
