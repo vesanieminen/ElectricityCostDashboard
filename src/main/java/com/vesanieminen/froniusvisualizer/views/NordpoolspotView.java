@@ -7,6 +7,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.AxisType;
 import com.vaadin.flow.component.charts.model.ChartType;
+import com.vaadin.flow.component.charts.model.Configuration;
 import com.vaadin.flow.component.charts.model.DataSeries;
 import com.vaadin.flow.component.charts.model.DataSeriesItem;
 import com.vaadin.flow.component.charts.model.DateTimeLabelFormats;
@@ -149,11 +150,12 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
     @Override
     protected void onAttach(AttachEvent e) {
         final var chart = renderView();
+        final var conf = chart.getConfiguration();
         e.getUI().getPage().retrieveExtendedClientDetails(details -> {
             if (details.isTouchDevice()) {
                 isTouchDevice = true;
                 screenWidth = details.getBodyClientWidth();
-                setTouchDeviceConfiguration(chart);
+                setTouchDeviceConfiguration(chart, conf);
             }
             fullScreenButton.setVisible(!details.isTouchDevice());
         });
@@ -161,23 +163,23 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         e.getUI().scrollIntoView();
     }
 
-    private void setTouchDeviceConfiguration(Chart chart) {
+    private void setTouchDeviceConfiguration(Chart chart, Configuration conf) {
         if (isTouchDevice) {
-            chart.getConfiguration().getRangeSelector().setSelected(1);
+            conf.getRangeSelector().setSelected(1);
             if (screenWidth < 1000) {
-                YAxis production = chart.getConfiguration().getyAxis(0);
+                YAxis production = conf.getyAxis(0);
                 production.setTitle(getTranslation("Production") + " (GWh/h)");
                 production.getLabels().setFormatter("return this.value/1000");
-                YAxis price = chart.getConfiguration().getyAxis(1);
+                YAxis price = conf.getyAxis(1);
                 price.setTitle(getTranslation("Price") + " (" + getTranslation("c/kWh") + ")");
                 price.getLabels().setFormatter(null);
-                chart.getConfiguration().getyAxis(2).setVisible(false);
+                conf.getyAxis(2).setVisible(false);
             }
             if (screenWidth < 600) {
-                chart.getConfiguration().getRangeSelector().setInputEnabled(false);
+                conf.getRangeSelector().setInputEnabled(false);
             }
             setMobileDeviceChartHeight(chart);
-            chart.drawChart(true);
+            chart.setConfiguration(conf);
         }
     }
 
@@ -298,7 +300,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
 
         //addAveragePrice(nordpoolResponse, chart);
 
-        setTouchDeviceConfiguration(chart);
+        setTouchDeviceConfiguration(chart, chart.getConfiguration());
 
         add(chart);
 
