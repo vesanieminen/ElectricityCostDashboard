@@ -42,11 +42,9 @@ import com.vesanieminen.froniusvisualizer.services.SpotHintaService;
 import com.vesanieminen.froniusvisualizer.services.model.FingridLiteResponse;
 import com.vesanieminen.froniusvisualizer.services.model.FingridRealtimeResponse;
 import com.vesanieminen.froniusvisualizer.services.model.FmiObservationResponse;
+import com.vesanieminen.froniusvisualizer.services.model.FmiObservationResponse.FmiObservation;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
 import com.vesanieminen.froniusvisualizer.services.model.SpotHintaResponse;
-import com.vesanieminen.froniusvisualizer.services.model.FmiObservationResponse.FmiObservation;
-
-import org.vaadin.addons.parttio.lightchart.LightChart;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
