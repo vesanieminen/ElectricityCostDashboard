@@ -81,7 +81,8 @@ public class NordpoolSpotService {
                     final var nordpoolPrice = new NordpoolPrice(price, instant.toEpochMilli());
                     nordpoolPrices.add(nordpoolPrice);
                 } catch (ParseException e) {
-                    throw new RuntimeException(e);
+                    continue;
+                    //throw new RuntimeException(e);
                 }
             }
             --columnIndex;

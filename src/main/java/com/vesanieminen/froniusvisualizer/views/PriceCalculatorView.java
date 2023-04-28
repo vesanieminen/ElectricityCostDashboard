@@ -36,7 +36,6 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
 import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService;
 import lombok.extern.slf4j.Slf4j;
-import org.vaadin.addons.parttio.lightchart.LightChart;
 import org.vaadin.miki.superfields.numbers.SuperDoubleField;
 
 import java.io.IOException;
@@ -425,7 +424,7 @@ public class PriceCalculatorView extends Main {
     }
 
     private Chart createChart(PriceCalculatorService.SpotCalculation spotCalculation, boolean isCalculatingFixed, String title, String yAxisTitle, String spotTitle) {
-        var chart = new LightChart(ChartType.COLUMN);
+        var chart = new Chart(ChartType.COLUMN);
         chart.getConfiguration().setTitle(title);
         chart.getConfiguration().getLegend().setEnabled(true);
         chart.getConfiguration().getChart().setStyledMode(true);
