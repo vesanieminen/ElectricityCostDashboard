@@ -67,7 +67,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHo
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.utcZone;
-import static com.vesanieminen.froniusvisualizer.util.Utils.vat10Instant;
+import static com.vesanieminen.froniusvisualizer.util.Utils.vat10InstantStart;
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
 @PageTitle("Chart" + URL_SUFFIX)
@@ -532,7 +532,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
                 try {
                     var y = 0.0d;
                     if (hasVat) {
-                        if (0 <= instant.compareTo(vat10Instant)) {
+                        if (0 <= instant.compareTo(vat10InstantStart)) {
                             y = numberFormat.parse(column.Value).doubleValue() * vat10Value / 10;
                         } else {
                             y = numberFormat.parse(column.Value).doubleValue() * vat24Value / 10;

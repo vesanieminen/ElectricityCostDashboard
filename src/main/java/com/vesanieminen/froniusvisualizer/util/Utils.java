@@ -37,7 +37,8 @@ public class Utils {
     public static final Locale enLocale = new Locale("en", "GB");
     public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
-    public static final Instant vat10Instant = Instant.from(ZonedDateTime.of(2022, 12, 1, 0, 0, 0, 0, fiZoneID));
+    public static final Instant vat10InstantStart = Instant.from(ZonedDateTime.of(2022, 12, 1, 0, 0, 0, 0, fiZoneID));
+    public static final Instant vat10InstantEnd = Instant.from(ZonedDateTime.of(2023, 5, 1, 0, 0, 0, 0, fiZoneID));
 
     public static boolean notNull(Object... objects) {
         return Arrays.stream(objects).allMatch(Objects::nonNull);
@@ -164,7 +165,7 @@ public class Utils {
     }
 
     public static double getVAT(Instant instant) {
-        return 0 <= instant.compareTo(vat10Instant) ? vat10Value : vat24Value;
+        return 0 <= instant.compareTo(vat10InstantStart) && instant.compareTo(vat10InstantEnd) < 0 ? vat10Value : vat24Value;
     }
 
     public static OptionalDouble average(List<Double> list) {
