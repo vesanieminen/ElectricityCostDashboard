@@ -269,20 +269,13 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
             configureChartTooltips(chart, spotPriceDataSeries);
         }
 
-        var temperatureDataSeries = createTemperatureDataSeries(temperatureForecastList, temperatureObservations, getTranslation("chart.temperature.series"));
-        temperatureDataSeries.setyAxis(2);
+        //var temperatureForecastDataSeries = createTemperatureForecastDataSeries(temperatureForecastList, getTranslation("chart.temperature.series"));
+        //chart.getConfiguration().addSeries(temperatureForecastDataSeries);
+        //configureTemperatureDataSeries(temperatureForecastDataSeries);
+
+        var temperatureDataSeries = createTemperatureDataSeries(temperatureObservations, getTranslation("chart.temperature.series"));
         chart.getConfiguration().addSeries(temperatureDataSeries);
-        final var plotOptionsLineSpot = new PlotOptionsLine();
-        plotOptionsLineSpot.setStickyTracking(true);
-        plotOptionsLineSpot.setMarker(new Marker(false));
-        final var seriesTooltipSpot = new SeriesTooltip();
-        seriesTooltipSpot.setValueDecimals(1);
-        seriesTooltipSpot.setValueSuffix(" °C");
-        final var dateTimeLabelFormats = new DateTimeLabelFormats();
-        seriesTooltipSpot.setDateTimeLabelFormats(dateTimeLabelFormats);
-        plotOptionsLineSpot.setTooltip(seriesTooltipSpot);
-        temperatureDataSeries.setPlotOptions(plotOptionsLineSpot);
-        temperatureDataSeries.setVisible(false);
+        configureTemperatureDataSeries(temperatureDataSeries);
 
         final var rangeSelector = new RangeSelector();
         rangeSelector.setButtons(
@@ -321,6 +314,21 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         final Span fingridFooter = createFingridLicenseSpan();
         add(fingridFooter);
         return chart;
+    }
+
+    private static void configureTemperatureDataSeries(DataSeries temperatureDataSeries) {
+        temperatureDataSeries.setyAxis(2);
+        final var plotOptionsLineSpot = new PlotOptionsLine();
+        plotOptionsLineSpot.setStickyTracking(true);
+        plotOptionsLineSpot.setMarker(new Marker(false));
+        final var seriesTooltipSpot = new SeriesTooltip();
+        seriesTooltipSpot.setValueDecimals(1);
+        seriesTooltipSpot.setValueSuffix(" °C");
+        final var dateTimeLabelFormats = new DateTimeLabelFormats();
+        seriesTooltipSpot.setDateTimeLabelFormats(dateTimeLabelFormats);
+        plotOptionsLineSpot.setTooltip(seriesTooltipSpot);
+        temperatureDataSeries.setPlotOptions(plotOptionsLineSpot);
+        //temperatureDataSeries.setVisible(false);
     }
 
     private static void addAveragePrice(NordpoolResponse nordpoolResponse, Chart chart) {
@@ -452,7 +460,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         return dataSeries;
     }
 
-    private DataSeries createTemperatureDataSeries(List<SpotHintaResponse> spotHintadataSource, FmiObservationResponse fmiObservations, String title) {
+    private DataSeries createTemperatureForecastDataSeries(List<SpotHintaResponse> spotHintadataSource, String title) {
         final var dataSeries = new DataSeries(title);
 
         if (spotHintadataSource != null) {
@@ -463,7 +471,11 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
                 dataSeries.add(dataSeriesItem);
             }
         }
+        return dataSeries;
+    }
 
+    private DataSeries createTemperatureDataSeries(FmiObservationResponse fmiObservations, String title) {
+        final var dataSeries = new DataSeries(title);
         if (fmiObservations != null) {
             for (FmiObservation observation : fmiObservations.getObservations()) {
                 final var dataSeriesItem = new DataSeriesItem();
