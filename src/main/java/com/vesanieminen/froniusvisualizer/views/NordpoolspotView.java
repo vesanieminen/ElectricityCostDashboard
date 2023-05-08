@@ -279,12 +279,9 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
             configureChartTooltips(chart, spotPriceDataSeries);
         }
 
-        //var temperatureForecastDataSeries = createTemperatureForecastDataSeries(temperatureForecastList, getTranslation("chart.temperature.series"));
-        //chart.getConfiguration().addSeries(temperatureForecastDataSeries);
-        //configureTemperatureDataSeries(temperatureForecastDataSeries);
-
-        var temperatureDataSeries = createTemperatureDataSeries(temperatureObservations, getTranslation("chart.temperature.series"));
+        var temperatureDataSeries = createTemperatureDataSeries(temperatureForecastList, temperatureObservations, getTranslation("chart.temperature.series"));
         chart.getConfiguration().addSeries(temperatureDataSeries);
+        temperatureDataSeries.setVisible(false);
         configureTemperatureDataSeries(temperatureDataSeries);
 
         final var rangeSelector = new RangeSelector();
@@ -472,31 +469,32 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         return dataSeries;
     }
 
-    private DataSeries createTemperatureForecastDataSeries(List<SpotHintaResponse> spotHintadataSource, String title) {
+
+    private DataSeries createTemperatureDataSeries(List<SpotHintaResponse> spotHintadataSource, FmiObservationResponse fmiObservations, String title) {
         final var dataSeries = new DataSeries(title);
 
-        if (spotHintadataSource != null) {
-            for (SpotHintaResponse response : spotHintadataSource) {
-                final var dataSeriesItem = new DataSeriesItem();
-                dataSeriesItem.setX(response.TimeStamp.toInstant().plus(Duration.ofHours(2)));
-                dataSeriesItem.setY(response.Temperature);
-                dataSeries.add(dataSeriesItem);
-            }
-        }
-        return dataSeries;
-    }
-
-    private DataSeries createTemperatureDataSeries(FmiObservationResponse fmiObservations, String title) {
-        final var dataSeries = new DataSeries(title);
         if (fmiObservations != null) {
             for (FmiObservation observation : fmiObservations.getObservations()) {
                 final var dataSeriesItem = new DataSeriesItem();
                 var timestamp = FmiService.parseFmiTimestamp(observation.getLocaltime(), observation.getLocaltz());
-                dataSeriesItem.setX(timestamp.toInstant());
+                if (timestamp.getMinutes() != 0) {
+                    continue;
+                }
+                dataSeriesItem.setX(timestamp.toInstant().plus(Duration.ofHours(3)));
                 dataSeriesItem.setY(observation.getTemperature());
                 dataSeries.add(dataSeriesItem);
             }
         }
+
+        if (spotHintadataSource != null) {
+            for (SpotHintaResponse response : spotHintadataSource) {
+                final var dataSeriesItem = new DataSeriesItem();
+                dataSeriesItem.setX(response.TimeStamp.toInstant().plus(Duration.ofHours(3)));
+                dataSeriesItem.setY(response.Temperature);
+                dataSeries.add(dataSeriesItem);
+            }
+        }
+
         return dataSeries;
     }
 

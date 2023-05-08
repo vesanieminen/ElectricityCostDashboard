@@ -1,6 +1,5 @@
 package com.vesanieminen.froniusvisualizer.services;
 
-import java.time.LocalDateTime;
 import com.fatboyindustrial.gsonjavatime.Converters;
 import com.google.gson.GsonBuilder;
 import com.vesanieminen.froniusvisualizer.services.model.FmiObservationResponse;
@@ -13,6 +12,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -39,7 +39,7 @@ public class FmiService {
 
     public static FmiObservationResponse fetchLatestObservations() {
 
-        final var nowWithoutMinutes = LocalDateTime.now(fiZoneID).withMinute(36);
+        final var nowWithoutMinutes = LocalDateTime.now(fiZoneID);
         nextUpdate = nowWithoutMinutes.plusHours(1);
         final HttpRequest request;
         final HttpResponse<String> response;
