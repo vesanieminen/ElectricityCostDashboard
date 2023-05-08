@@ -253,9 +253,19 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
             consumptionSeries.setVisible(false);
             importExportSeries.setVisible(false);
             renewablesSeries.setVisible(false);
-            productionEstimateDataSeries.setVisible(false);
-            consumptionEstimateDataSeries.setVisible(false);
-            final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, dateTimeFormatter, new ArrayList<>(Arrays.asList(hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, windEstimateDataSeries, consumptionEstimateDataSeries, productionEstimateDataSeries, renewablesSeries)));
+            if (productionEstimateDataSeries != null) {
+                productionEstimateDataSeries.setVisible(false);
+            }
+            if (consumptionEstimateDataSeries != null) {
+                consumptionEstimateDataSeries.setVisible(false);
+            }
+            DataSeries spotPriceDataSeries;
+            if (productionEstimateDataSeries == null || windEstimateDataSeries == null || consumptionEstimateDataSeries == null) {
+                spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, dateTimeFormatter, new ArrayList<>(Arrays.asList(hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, renewablesSeries)));
+                add(new Span(getTranslation("Fingrid not responding for estimate data")));
+            } else {
+                spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, dateTimeFormatter, new ArrayList<>(Arrays.asList(hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, windEstimateDataSeries, consumptionEstimateDataSeries, productionEstimateDataSeries, renewablesSeries)));
+            }
             configureChartTooltips(chart, spotPriceDataSeries);
             //setNetToday(fingridResponse, df, netToday);
         } else {
@@ -439,6 +449,9 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
 
     private DataSeries createEstimateDataSeries(List<FingridLiteResponse> dataSource, String title) {
         final var dataSeries = new DataSeries(title);
+        if (dataSource == null) {
+            return null;
+        }
         for (FingridLiteResponse response : dataSource) {
             final var dataSeriesItem = new DataSeriesItem();
             dataSeriesItem.setX(response.start_time.toInstant().plus(Duration.ofHours(3)));
