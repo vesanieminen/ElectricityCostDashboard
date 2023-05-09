@@ -56,7 +56,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -240,37 +239,22 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
         if (fingridResponse != null) {
-            final var hydroPowerSeries = createDataSeries(fingridResponse.HydroPower, hydroPowerProductionTitle);
-            final var windPowerSeries = createDataSeries(fingridResponse.WindPower, windPowerProductionTitle);
-            final var nuclearPowerSeries = createDataSeries(fingridResponse.NuclearPower, nuclearPowerProductionTitle);
-            final var solarPowerSeries = createDataSeries(fingridResponse.SolarPower, solarPowerProductionTitle);
-            final var consumptionSeries = createDataSeries(fingridResponse.Consumption, consumptionTitle);
-            final var importExportSeries = createDataSeries(fingridResponse.NetImportExport, importExportTitle);
-            final var renewablesSeries = createRenewablesDataSeries(fingridResponse);
-            final var windEstimateDataSeries = createEstimateDataSeries(windEstimateResponses, getTranslation("Wind production estimate"));
-            final var productionEstimateDataSeries = createEstimateDataSeries(productionEstimateResponses, getTranslation("Production estimate"));
-            final var consumptionEstimateDataSeries = createEstimateDataSeries(consumptionEstimateResponses, getTranslation("Consumption estimate"));
-            // set the default visibility for the series
-            hydroPowerSeries.setVisible(false);
-            windPowerSeries.setVisible(true);
-            nuclearPowerSeries.setVisible(false);
-            solarPowerSeries.setVisible(false);
-            consumptionSeries.setVisible(false);
-            importExportSeries.setVisible(false);
-            renewablesSeries.setVisible(false);
-            if (productionEstimateDataSeries != null) {
-                productionEstimateDataSeries.setVisible(false);
-            }
-            if (consumptionEstimateDataSeries != null) {
-                consumptionEstimateDataSeries.setVisible(false);
-            }
-            DataSeries spotPriceDataSeries;
+            final var seriesList = new ArrayList<Series>();
+            createDataSeries(fingridResponse.HydroPower, hydroPowerProductionTitle, false, seriesList);
+            createDataSeries(fingridResponse.WindPower, windPowerProductionTitle, true, seriesList);
+            createDataSeries(fingridResponse.NuclearPower, nuclearPowerProductionTitle, false, seriesList);
+            createDataSeries(fingridResponse.SolarPower, solarPowerProductionTitle, false, seriesList);
+            createDataSeries(fingridResponse.Consumption, consumptionTitle, false, seriesList);
+            createDataSeries(fingridResponse.NetImportExport, importExportTitle, false, seriesList);
+            final var windEstimateDataSeries = createEstimateDataSeries(windEstimateResponses, getTranslation("Wind production estimate"), true, seriesList);
+            final var consumptionEstimateDataSeries = createEstimateDataSeries(consumptionEstimateResponses, getTranslation("Consumption estimate"), false, seriesList);
+            final var productionEstimateDataSeries = createEstimateDataSeries(productionEstimateResponses, getTranslation("Production estimate"), false, seriesList);
+            createRenewablesDataSeries(fingridResponse, seriesList);
+
             if (productionEstimateDataSeries == null || windEstimateDataSeries == null || consumptionEstimateDataSeries == null) {
-                spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, dateTimeFormatter, new ArrayList<>(Arrays.asList(hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, renewablesSeries)));
                 add(new Span(getTranslation("Fingrid not responding for estimate data")));
-            } else {
-                spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, dateTimeFormatter, new ArrayList<>(Arrays.asList(hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, windEstimateDataSeries, consumptionEstimateDataSeries, productionEstimateDataSeries, renewablesSeries)));
             }
+            final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, dateTimeFormatter, seriesList);
             configureChartTooltips(chart, spotPriceDataSeries);
             //setNetToday(fingridResponse, df, netToday);
         } else {
@@ -432,19 +416,21 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         chart.getConfiguration().getxAxis().addPlotLine(plotLine);
     }
 
-    private DataSeries createDataSeries(List<FingridRealtimeResponse.Data> datasource, String title) {
+    private void createDataSeries(List<FingridRealtimeResponse.Data> datasource, String title, boolean isVisible, List<Series> seriesList) {
         final var dataSeries = new DataSeries(title);
+        dataSeries.setVisible(isVisible);
         for (FingridRealtimeResponse.Data data : datasource) {
             final var dataSeriesItem = new DataSeriesItem();
             dataSeriesItem.setX(data.start_time.plusHours(3).withMinute(0).toInstant());
             dataSeriesItem.setY(data.value);
             dataSeries.add(dataSeriesItem);
         }
-        return dataSeries;
+        seriesList.add(dataSeries);
     }
 
-    private DataSeries createRenewablesDataSeries(FingridRealtimeResponse fingridResponse) {
+    private void createRenewablesDataSeries(FingridRealtimeResponse fingridResponse, ArrayList<Series> seriesList) {
         final var dataSeries = new DataSeries(totalRenewablesTitle);
+        dataSeries.setVisible(false);
         for (int i = 0; i < fingridResponse.WindPower.size() && i < fingridResponse.HydroPower.size() && i < fingridResponse.SolarPower.size(); ++i) {
             final var value = fingridResponse.WindPower.get(i).value + fingridResponse.HydroPower.get(i).value + fingridResponse.SolarPower.get(i).value;
             final var dataSeriesItem = new DataSeriesItem();
@@ -452,11 +438,12 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
             dataSeriesItem.setY(value);
             dataSeries.add(dataSeriesItem);
         }
-        return dataSeries;
+        seriesList.add(dataSeries);
     }
 
-    private DataSeries createEstimateDataSeries(List<FingridLiteResponse> dataSource, String title) {
+    private DataSeries createEstimateDataSeries(List<FingridLiteResponse> dataSource, String title, boolean isVisible, List<Series> seriesList) {
         final var dataSeries = new DataSeries(title);
+        dataSeries.setVisible(isVisible);
         if (dataSource == null) {
             return null;
         }
@@ -466,6 +453,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
             dataSeriesItem.setY(response.value);
             dataSeries.add(dataSeriesItem);
         }
+        seriesList.add(dataSeries);
         return dataSeries;
     }
 
