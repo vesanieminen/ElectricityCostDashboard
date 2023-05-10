@@ -13,6 +13,7 @@ import java.net.http.HttpResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -54,6 +55,9 @@ public class FmiService {
         }
         final var gson = Converters.registerAll(new GsonBuilder()).create();
         lastResponse = gson.fromJson(response.body(), FmiObservationResponse.class);
+
+        final var fmiObservationsFiltered = Arrays.stream(lastResponse.getObservations()).filter(item -> FmiService.parseFmiTimestamp(item.getLocaltime(), item.getLocaltz()).getMinutes() == 0).toArray(FmiObservationResponse.FmiObservation[]::new);
+        lastResponse.setObservations(fmiObservationsFiltered);
 
         return lastResponse;
     }

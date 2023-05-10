@@ -102,4 +102,9 @@ public class FmiObservationResponse {
     public FmiObservation[] getObservations() {
         return observations;
     }
+
+    public void setObservations(FmiObservation[] observations) {
+        this.observations = observations;
+    }
+
 }
