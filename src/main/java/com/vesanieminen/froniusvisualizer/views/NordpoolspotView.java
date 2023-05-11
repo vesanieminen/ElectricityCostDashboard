@@ -37,13 +37,15 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
 import com.vesanieminen.froniusvisualizer.services.FingridService;
+import com.vesanieminen.froniusvisualizer.services.FmiService;
 import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
 import com.vesanieminen.froniusvisualizer.services.SpotHintaService;
 import com.vesanieminen.froniusvisualizer.services.model.FingridLiteResponse;
 import com.vesanieminen.froniusvisualizer.services.model.FingridRealtimeResponse;
+import com.vesanieminen.froniusvisualizer.services.model.FmiObservationResponse;
+import com.vesanieminen.froniusvisualizer.services.model.FmiObservationResponse.FmiObservation;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
 import com.vesanieminen.froniusvisualizer.services.model.SpotHintaResponse;
-import org.vaadin.addons.parttio.lightchart.LightChart;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -55,7 +57,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -67,9 +68,9 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.convertNordpoolLocal
 import static com.vesanieminen.froniusvisualizer.util.Utils.format;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getVAT;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.utcZone;
-import static com.vesanieminen.froniusvisualizer.util.Utils.vat10Instant;
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
 @PageTitle("Chart" + URL_SUFFIX)
@@ -195,14 +196,16 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         List<FingridLiteResponse> windEstimateResponses;
         List<FingridLiteResponse> productionEstimateResponses;
         List<FingridLiteResponse> consumptionEstimateResponses;
-        List<SpotHintaResponse> temperatureList;
+        List<SpotHintaResponse> temperatureForecastList;
+        FmiObservationResponse temperatureObservations;
         try {
             nordpoolResponse = NordpoolSpotService.getLatest7Days();
             fingridResponse = FingridService.getLatest7Days();
             windEstimateResponses = FingridService.getWindEstimate();
             productionEstimateResponses = FingridService.getProductionEstimate();
             consumptionEstimateResponses = FingridService.getConsumptionEstimate();
-            temperatureList = SpotHintaService.getLatest();
+            temperatureForecastList = SpotHintaService.getLatest();
+            temperatureObservations = FmiService.getObservations();
         } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -218,7 +221,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         pricesLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Width.FULL/*, LumoUtility.BorderRadius.LARGE, LumoUtility.Border.ALL, LumoUtility.BorderColor.CONTRAST_10*/);
         add(pricesLayout);
 
-        var chart = new LightChart(ChartType.LINE);
+        var chart = new Chart(ChartType.LINE);
         chart.setTimeline(true);
         chart.getConfiguration().getLegend().setEnabled(true);
         chart.getConfiguration().getChart().setStyledMode(true);
@@ -238,27 +241,22 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
         if (fingridResponse != null) {
-            final var hydroPowerSeries = createDataSeries(fingridResponse.HydroPower, hydroPowerProductionTitle);
-            final var windPowerSeries = createDataSeries(fingridResponse.WindPower, windPowerProductionTitle);
-            final var nuclearPowerSeries = createDataSeries(fingridResponse.NuclearPower, nuclearPowerProductionTitle);
-            final var solarPowerSeries = createDataSeries(fingridResponse.SolarPower, solarPowerProductionTitle);
-            final var consumptionSeries = createDataSeries(fingridResponse.Consumption, consumptionTitle);
-            final var importExportSeries = createDataSeries(fingridResponse.NetImportExport, importExportTitle);
-            final var renewablesSeries = createRenewablesDataSeries(fingridResponse);
-            final var windEstimateDataSeries = createEstimateDataSeries(windEstimateResponses, getTranslation("Wind production estimate"));
-            final var productionEstimateDataSeries = createEstimateDataSeries(productionEstimateResponses, getTranslation("Production estimate"));
-            final var consumptionEstimateDataSeries = createEstimateDataSeries(consumptionEstimateResponses, getTranslation("Consumption estimate"));
-            // set the default visibility for the series
-            hydroPowerSeries.setVisible(false);
-            windPowerSeries.setVisible(true);
-            nuclearPowerSeries.setVisible(false);
-            solarPowerSeries.setVisible(false);
-            consumptionSeries.setVisible(false);
-            importExportSeries.setVisible(false);
-            renewablesSeries.setVisible(false);
-            productionEstimateDataSeries.setVisible(false);
-            consumptionEstimateDataSeries.setVisible(false);
-            final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, dateTimeFormatter, new ArrayList<>(Arrays.asList(hydroPowerSeries, windPowerSeries, nuclearPowerSeries, solarPowerSeries, consumptionSeries, importExportSeries, windEstimateDataSeries, consumptionEstimateDataSeries, productionEstimateDataSeries, renewablesSeries)));
+            final var seriesList = new ArrayList<Series>();
+            createDataSeries(fingridResponse.HydroPower, hydroPowerProductionTitle, false, seriesList);
+            createDataSeries(fingridResponse.WindPower, windPowerProductionTitle, true, seriesList);
+            createDataSeries(fingridResponse.NuclearPower, nuclearPowerProductionTitle, false, seriesList);
+            createDataSeries(fingridResponse.SolarPower, solarPowerProductionTitle, false, seriesList);
+            createDataSeries(fingridResponse.Consumption, consumptionTitle, false, seriesList);
+            createDataSeries(fingridResponse.NetImportExport, importExportTitle, false, seriesList);
+            final var windEstimateDataSeries = createEstimateDataSeries(windEstimateResponses, getTranslation("Wind production estimate"), true, seriesList);
+            final var consumptionEstimateDataSeries = createEstimateDataSeries(consumptionEstimateResponses, getTranslation("Consumption estimate"), false, seriesList);
+            final var productionEstimateDataSeries = createEstimateDataSeries(productionEstimateResponses, getTranslation("Production estimate"), false, seriesList);
+            createRenewablesDataSeries(fingridResponse, seriesList);
+
+            if (productionEstimateDataSeries == null || windEstimateDataSeries == null || consumptionEstimateDataSeries == null) {
+                add(new Span(getTranslation("Fingrid not responding for estimate data")));
+            }
+            final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, dateTimeFormatter, seriesList);
             configureChartTooltips(chart, spotPriceDataSeries);
             //setNetToday(fingridResponse, df, netToday);
         } else {
@@ -267,22 +265,10 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
             configureChartTooltips(chart, spotPriceDataSeries);
         }
 
-        if (temperatureList != null && temperatureList.size() > 0) {
-            var temperatureDataSeries = createTemperatureDataSeries(temperatureList, getTranslation("chart.temperature.series"));
-            temperatureDataSeries.setyAxis(2);
-            chart.getConfiguration().addSeries(temperatureDataSeries);
-            final var plotOptionsLineSpot = new PlotOptionsLine();
-            plotOptionsLineSpot.setStickyTracking(true);
-            plotOptionsLineSpot.setMarker(new Marker(false));
-            final var seriesTooltipSpot = new SeriesTooltip();
-            seriesTooltipSpot.setValueDecimals(1);
-            seriesTooltipSpot.setValueSuffix(" °C");
-            final var dateTimeLabelFormats = new DateTimeLabelFormats();
-            seriesTooltipSpot.setDateTimeLabelFormats(dateTimeLabelFormats);
-            plotOptionsLineSpot.setTooltip(seriesTooltipSpot);
-            temperatureDataSeries.setPlotOptions(plotOptionsLineSpot);
-            temperatureDataSeries.setVisible(false);
-        }
+        var temperatureDataSeries = createTemperatureDataSeries(temperatureForecastList, temperatureObservations, getTranslation("chart.temperature.series"));
+        chart.getConfiguration().addSeries(temperatureDataSeries);
+        temperatureDataSeries.setVisible(false);
+        configureTemperatureDataSeries(temperatureDataSeries);
 
         final var rangeSelector = new RangeSelector();
         rangeSelector.setButtons(
@@ -321,6 +307,21 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         final Span fingridFooter = createFingridLicenseSpan();
         add(fingridFooter);
         return chart;
+    }
+
+    private static void configureTemperatureDataSeries(DataSeries temperatureDataSeries) {
+        temperatureDataSeries.setyAxis(2);
+        final var plotOptionsLineSpot = new PlotOptionsLine();
+        plotOptionsLineSpot.setStickyTracking(true);
+        plotOptionsLineSpot.setMarker(new Marker(false));
+        final var seriesTooltipSpot = new SeriesTooltip();
+        seriesTooltipSpot.setValueDecimals(1);
+        seriesTooltipSpot.setValueSuffix(" °C");
+        final var dateTimeLabelFormats = new DateTimeLabelFormats();
+        seriesTooltipSpot.setDateTimeLabelFormats(dateTimeLabelFormats);
+        plotOptionsLineSpot.setTooltip(seriesTooltipSpot);
+        temperatureDataSeries.setPlotOptions(plotOptionsLineSpot);
+        //temperatureDataSeries.setVisible(false);
     }
 
     private static void addAveragePrice(NordpoolResponse nordpoolResponse, Chart chart) {
@@ -417,19 +418,21 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         chart.getConfiguration().getxAxis().addPlotLine(plotLine);
     }
 
-    private DataSeries createDataSeries(List<FingridRealtimeResponse.Data> datasource, String title) {
+    private void createDataSeries(List<FingridRealtimeResponse.Data> datasource, String title, boolean isVisible, List<Series> seriesList) {
         final var dataSeries = new DataSeries(title);
+        dataSeries.setVisible(isVisible);
         for (FingridRealtimeResponse.Data data : datasource) {
             final var dataSeriesItem = new DataSeriesItem();
             dataSeriesItem.setX(data.start_time.plusHours(3).withMinute(0).toInstant());
             dataSeriesItem.setY(data.value);
             dataSeries.add(dataSeriesItem);
         }
-        return dataSeries;
+        seriesList.add(dataSeries);
     }
 
-    private DataSeries createRenewablesDataSeries(FingridRealtimeResponse fingridResponse) {
+    private void createRenewablesDataSeries(FingridRealtimeResponse fingridResponse, ArrayList<Series> seriesList) {
         final var dataSeries = new DataSeries(totalRenewablesTitle);
+        dataSeries.setVisible(false);
         for (int i = 0; i < fingridResponse.WindPower.size() && i < fingridResponse.HydroPower.size() && i < fingridResponse.SolarPower.size(); ++i) {
             final var value = fingridResponse.WindPower.get(i).value + fingridResponse.HydroPower.get(i).value + fingridResponse.SolarPower.get(i).value;
             final var dataSeriesItem = new DataSeriesItem();
@@ -437,28 +440,48 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
             dataSeriesItem.setY(value);
             dataSeries.add(dataSeriesItem);
         }
-        return dataSeries;
+        seriesList.add(dataSeries);
     }
 
-    private DataSeries createEstimateDataSeries(List<FingridLiteResponse> dataSource, String title) {
+    private DataSeries createEstimateDataSeries(List<FingridLiteResponse> dataSource, String title, boolean isVisible, List<Series> seriesList) {
         final var dataSeries = new DataSeries(title);
+        dataSeries.setVisible(isVisible);
+        if (dataSource == null) {
+            return null;
+        }
         for (FingridLiteResponse response : dataSource) {
             final var dataSeriesItem = new DataSeriesItem();
             dataSeriesItem.setX(response.start_time.toInstant().plus(Duration.ofHours(3)));
             dataSeriesItem.setY(response.value);
             dataSeries.add(dataSeriesItem);
         }
+        seriesList.add(dataSeries);
         return dataSeries;
     }
 
-    private DataSeries createTemperatureDataSeries(List<SpotHintaResponse> dataSource, String title) {
+
+    private DataSeries createTemperatureDataSeries(List<SpotHintaResponse> spotHintadataSource, FmiObservationResponse fmiObservations, String title) {
         final var dataSeries = new DataSeries(title);
-        for (SpotHintaResponse response : dataSource) {
-            final var dataSeriesItem = new DataSeriesItem();
-            dataSeriesItem.setX(response.TimeStamp.toInstant().plus(Duration.ofHours(2)));
-            dataSeriesItem.setY(response.Temperature);
-            dataSeries.add(dataSeriesItem);
+
+        if (fmiObservations != null) {
+            for (FmiObservation observation : fmiObservations.getObservations()) {
+                final var dataSeriesItem = new DataSeriesItem();
+                var timestamp = FmiService.parseFmiTimestamp(observation.getLocaltime(), observation.getLocaltz());
+                dataSeriesItem.setX(timestamp.toInstant().plus(Duration.ofHours(3)));
+                dataSeriesItem.setY(observation.getTemperature());
+                dataSeries.add(dataSeriesItem);
+            }
         }
+
+        if (spotHintadataSource != null) {
+            for (SpotHintaResponse response : spotHintadataSource) {
+                final var dataSeriesItem = new DataSeriesItem();
+                dataSeriesItem.setX(response.TimeStamp.toInstant().plus(Duration.ofHours(3)));
+                dataSeriesItem.setY(response.Temperature);
+                dataSeries.add(dataSeriesItem);
+            }
+        }
+
         return dataSeries;
     }
 
@@ -535,11 +558,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
                 try {
                     var y = 0.0d;
                     if (hasVat) {
-                        if (0 <= instant.compareTo(vat10Instant)) {
-                            y = numberFormat.parse(column.Value).doubleValue() * vat10Value / 10;
-                        } else {
-                            y = numberFormat.parse(column.Value).doubleValue() * vat24Value / 10;
-                        }
+                        y = numberFormat.parse(column.Value).doubleValue() * getVAT(instant) / 10;
                     } else {
                         y = numberFormat.parse(column.Value).doubleValue() / 10;
                     }
