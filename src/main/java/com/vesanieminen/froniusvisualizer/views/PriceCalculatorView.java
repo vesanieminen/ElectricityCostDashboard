@@ -368,7 +368,7 @@ public class PriceCalculatorView extends Main {
     private void addConsumptionSucceededListener(MemoryBuffer fileBuffer, Upload consumptionUpload) {
         consumptionUpload.addSucceededListener(event -> {
             lastConsumptionData = fileBuffer;
-            log.info("Consumption files uploaded: " + ++consumptionFilesUploaded);
+            log.info("Consumption data uploaded: " + ++consumptionFilesUploaded);
             try {
                 final var consumptionData = getFingridUsageData(lastConsumptionData);
                 final var consumptionDataStart = consumptionData.start().atZone(fiZoneID).toLocalDateTime();
@@ -396,7 +396,7 @@ public class PriceCalculatorView extends Main {
     private void addProductionSucceededListener(MemoryBuffer fileBuffer, Upload productionUpload) {
         productionUpload.addSucceededListener(event -> {
             lastProductionData = fileBuffer;
-            log.info("Production files uploaded: " + ++productionFilesUploaded);
+            log.info("Production data uploaded: " + ++productionFilesUploaded);
             try {
                 final var productionData = getFingridUsageData(lastProductionData);
                 final var productionDataStart = productionData.start().atZone(fiZoneID).toLocalDateTime();
