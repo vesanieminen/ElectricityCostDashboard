@@ -268,6 +268,10 @@ public class PriceCalculatorService {
         return calculateFixedElectricityPrice(filtered, fixed);
     }
 
+    /**
+     * Groups together different calculation values.
+     * Has multiple arrays that acts as buckets that are filled of data from different days for periods of 24h.
+     */
     public static class SpotCalculation {
         public double totalSpotPrice;
         public double totalSpotPriceWithoutMargin;
