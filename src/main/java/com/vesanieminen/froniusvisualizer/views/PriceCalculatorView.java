@@ -27,8 +27,7 @@ import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.upload.Upload;
-import com.vaadin.flow.component.upload.receivers.FileBuffer;
-import com.vaadin.flow.component.upload.receivers.FileData;
+import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
@@ -82,8 +81,8 @@ public class PriceCalculatorView extends Main {
     private final List<HasEnabled> fields;
     private final Button button;
     private final CheckboxGroup<Calculations> calculationsCheckboxGroup;
-    private String lastConsumptionFile;
-    private String lastProductionFile;
+    private MemoryBuffer lastConsumptionData;
+    private MemoryBuffer lastProductionData;
 
     private LocalDateTime startConsumption;
     private LocalDateTime endConsumption;
@@ -140,7 +139,7 @@ public class PriceCalculatorView extends Main {
         final var chartLayout = new Div();
 
         // Consumption file
-        FileBuffer consumptionFileBuffer = new FileBuffer();
+        final var consumptionFileBuffer = new MemoryBuffer();
         final var uploadFingridConsumptionData = new Button(getTranslation("Consumption csv file upload (1MB max)"));
         Upload consumptionUpload = new Upload(consumptionFileBuffer);
         consumptionUpload.setMaxFileSize(1000000);
@@ -151,7 +150,7 @@ public class PriceCalculatorView extends Main {
         content.add(consumptionUpload);
 
         // Consumption file
-        FileBuffer productionFileBuffer = new FileBuffer();
+        final var productionFileBuffer = new MemoryBuffer();
         final var uploadFingridproductionData = new Button(getTranslation("Production csv file upload (1MB max)"));
         Upload productionUpload = new Upload(productionFileBuffer);
         productionUpload.setMaxFileSize(1000000);
@@ -262,7 +261,7 @@ public class PriceCalculatorView extends Main {
                         spotProductionMarginField.setValue(0d);
                     }
                 }
-                final var consumptionData = getFingridUsageData(lastConsumptionFile);
+                final var consumptionData = getFingridUsageData(lastConsumptionData);
                 final var spotCalculation = calculateSpotElectricityPriceDetails(consumptionData.data(), spotMarginField.getValue(), 1.24, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                 resultLayout.removeAll();
                 chartLayout.removeAll();
@@ -311,7 +310,7 @@ public class PriceCalculatorView extends Main {
                 chartLayout.add(createChart(spotCalculation, isCalculatingFixed(), getTranslation("Consumption / cost per hour"), getTranslation("Consumption"), getTranslation("Spot cost")));
 
                 if (isCalculatingProduction()) {
-                    final var productionData = getFingridUsageData(lastProductionFile);
+                    final var productionData = getFingridUsageData(lastProductionData);
                     final var spotProductionCalculation = calculateSpotElectricityPriceDetails(productionData.data(), -spotProductionMarginField.getValue(), 1, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     resultLayout.add(new DoubleLabel(getTranslation("Total production over period"), numberFormat.format(spotProductionCalculation.totalConsumption) + "kWh", true));
                     resultLayout.add(new DoubleLabel(getTranslation("Net spot cost (consumption - production)"), numberFormat.format(spotCalculation.totalCost - spotProductionCalculation.totalCost) + "€", true));
@@ -366,13 +365,12 @@ public class PriceCalculatorView extends Main {
         return calculationsCheckboxGroup.getValue().contains(Calculations.SPOT_PRODUCTION);
     }
 
-    private void addConsumptionSucceededListener(FileBuffer fileBuffer, Upload consumptionUpload) {
+    private void addConsumptionSucceededListener(MemoryBuffer fileBuffer, Upload consumptionUpload) {
         consumptionUpload.addSucceededListener(event -> {
-            FileData savedFileData = fileBuffer.getFileData();
-            lastConsumptionFile = savedFileData.getFile().getAbsolutePath();
+            lastConsumptionData = fileBuffer;
             log.info("Consumption files uploaded: " + ++consumptionFilesUploaded);
             try {
-                final var consumptionData = getFingridUsageData(lastConsumptionFile);
+                final var consumptionData = getFingridUsageData(lastConsumptionData);
                 final var consumptionDataStart = consumptionData.start().atZone(fiZoneID).toLocalDateTime();
                 final var consumptionDataEnd = consumptionData.end().atZone(fiZoneID).toLocalDateTime();
                 final var isStartProductionAfter = startProduction != null && startProduction.isAfter(consumptionDataStart);
@@ -395,13 +393,12 @@ public class PriceCalculatorView extends Main {
         consumptionUpload.addFailedListener(e -> setEnabled(false, fixedPriceField, spotMarginField, transferAndTaxField, spotProductionMarginField, fromDateTimePicker, toDateTimePicker, button));
     }
 
-    private void addProductionSucceededListener(FileBuffer fileBuffer, Upload productionUpload) {
+    private void addProductionSucceededListener(MemoryBuffer fileBuffer, Upload productionUpload) {
         productionUpload.addSucceededListener(event -> {
-            FileData savedFileData = fileBuffer.getFileData();
-            lastProductionFile = savedFileData.getFile().getAbsolutePath();
+            lastProductionData = fileBuffer;
             log.info("Production files uploaded: " + ++productionFilesUploaded);
             try {
-                final var productionData = getFingridUsageData(lastProductionFile);
+                final var productionData = getFingridUsageData(lastProductionData);
                 final var productionDataStart = productionData.start().atZone(fiZoneID).toLocalDateTime();
                 final var productionDataEnd = productionData.end().atZone(fiZoneID).toLocalDateTime();
                 final var isStartConsumptionAfter = startConsumption != null && startConsumption.isAfter(productionDataStart);
@@ -626,8 +623,8 @@ public class PriceCalculatorView extends Main {
 
     private void updateCalculateButtonState() {
         final var isDateValid = fromDateTimePicker.getValue() != null && toDateTimePicker.getValue() != null && fromDateTimePicker.getValue().isBefore(toDateTimePicker.getValue()) && !fromDateTimePicker.isInvalid() && !toDateTimePicker.isInvalid();
-        final var isCalculatingProductionValid = (isCalculatingProduction() && lastProductionFile != null) || !isCalculatingProduction();
-        button.setEnabled(lastConsumptionFile != null && isCalculatingProductionValid && isDateValid);
+        final var isCalculatingProductionValid = (isCalculatingProduction() && lastProductionData != null) || !isCalculatingProduction();
+        button.setEnabled(lastConsumptionData != null && isCalculatingProductionValid && isDateValid);
     }
 
     enum Calculations {

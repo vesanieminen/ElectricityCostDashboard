@@ -4,10 +4,12 @@ import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
+import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.ParseException;
@@ -68,11 +70,11 @@ public class PriceCalculatorService {
         }
     }
 
-    public static FingridUsageData getFingridUsageData(String filePath) throws IOException, ParseException {
+    public static FingridUsageData getFingridUsageData(MemoryBuffer memoryBuffer) throws IOException, ParseException {
         var start = Instant.MAX;
         var end = Instant.MIN;
         final var map = new LinkedHashMap<Instant, Double>();
-        final var reader = Files.newBufferedReader(Path.of(filePath));
+        final var reader = new InputStreamReader(memoryBuffer.getInputStream());
         CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
         CSVReader csvReader = new CSVReaderBuilder(reader)
                 .withSkipLines(0)
@@ -106,6 +108,7 @@ public class PriceCalculatorService {
                 end = instant;
             }
         }
+        reader.close();
         return new FingridUsageData(map, start, end);
     }
 

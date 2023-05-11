@@ -11,8 +11,6 @@ import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.concurrent.TimeUnit;
 
-import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateFixedElectricityPrice;
-import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getFingridUsageData;
 import static com.vesanieminen.froniusvisualizer.util.Utils.dateTimeFormatter;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentInstantDayPrecisionFinnishZone;
@@ -58,8 +56,9 @@ public class UtilsTest {
     @Ignore
     public void testReadFileWithNulls() throws IOException, ParseException {
         //final var fingridUsageData = getFingridUsageData("src/main/resources/META-INF/resources/data/consumption.csv");
-        final var fingridUsageData1 = getFingridUsageData("src/main/resources/META-INF/resources/data/consumption-with-null-only.csv");
-        final var cost = calculateFixedElectricityPrice(fingridUsageData1.data(), 36);
+        // TODO: fixme:
+        //final var fingridUsageData1 = getFingridUsageData("src/main/resources/META-INF/resources/data/consumption-with-null-only.csv");
+        //final var cost = calculateFixedElectricityPrice(fingridUsageData1.data(), 36);
     }
 
 }
