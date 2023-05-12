@@ -15,13 +15,13 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.shared.Registration;
+import com.vesanieminen.froniusvisualizer.components.appnav.LocalizedElementCollectionField;
 import com.vesanieminen.froniusvisualizer.services.NotificationService;
 import com.vesanieminen.froniusvisualizer.services.model.PriceNotification;
 import nl.martijndwars.webpush.Subscription;
 import org.vaadin.firitin.components.select.VSelect;
 import org.vaadin.firitin.components.textfield.VNumberField;
 import org.vaadin.firitin.components.textfield.VTextField;
-import org.vaadin.firitin.fields.ElementCollectionField;
 import org.vaadin.firitin.util.WebStorage;
 
 import java.util.ArrayList;
@@ -80,11 +80,12 @@ public class NotificationsView extends VerticalLayout {
     }
 
     private void bindData() {
-        ElementCollectionField<PriceNotification> elementCollectionField = new ElementCollectionField<>(PriceNotification.class, PriceNotificationEditor.class);
+        final var elementCollectionField = new LocalizedElementCollectionField<>(PriceNotification.class, PriceNotificationEditor.class);
 
         elementCollectionField.setValue(notifications);
 
         add(elementCollectionField);
+        int i = 0;
 
         add(new Button(getTranslation("view.notifications.save"), e -> save()));
 
