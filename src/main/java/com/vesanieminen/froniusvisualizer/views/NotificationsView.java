@@ -5,10 +5,8 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DomEvent;
 import com.vaadin.flow.component.EventData;
 import com.vaadin.flow.component.UI;
-import com.vesanieminen.froniusvisualizer.services.model.PriceNotification;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
-
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -16,17 +14,18 @@ import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.shared.Registration;
 import com.vesanieminen.froniusvisualizer.services.NotificationService;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import com.vesanieminen.froniusvisualizer.services.model.PriceNotification;
 import nl.martijndwars.webpush.Subscription;
 import org.vaadin.firitin.components.button.DeleteButton;
 import org.vaadin.firitin.components.select.VSelect;
-import org.vaadin.firitin.components.textfield.VIntegerField;
 import org.vaadin.firitin.components.textfield.VNumberField;
 import org.vaadin.firitin.components.textfield.VTextField;
 import org.vaadin.firitin.fields.ElementCollectionField;
 import org.vaadin.firitin.util.WebStorage;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Route(layout = MainLayout.class)
 public class NotificationsView extends VerticalLayout {
@@ -52,13 +51,8 @@ public class NotificationsView extends VerticalLayout {
 
     public NotificationsView(NotificationService service) {
         this.service = service;
-        add(new H1("Notifications"));
-        add(new Paragraph("""
-Tällä näytöllä voit konfiguraoida itsellesi notifikaatiot hintojen heilahteluista.
-
-Huom. Applen iOS laitteilla sovellus tulee "asentaa kotinäytölle", 
-jotta notificaatiot toimivat.    			
-    			"""));
+        add(new H1(getTranslation("view.notifications.title")));
+        add(new Paragraph(getTranslation("view.notifications.description")));
 
         WebStorage.getItem("uid", uid -> {
             if (uid == null) {
@@ -91,16 +85,14 @@ jotta notificaatiot toimivat.
 
         add(elementCollectionField);
 
-        add(new Button("Save", e -> save()));
-        
-        add(new DeleteButton("Clear and stop notifications", () -> {
-            unsubscribe();
-        }));
+        add(new Button(getTranslation("view.notifications.save"), e -> save()));
+
+        add(new DeleteButton(getTranslation("view.notifications.clear"), this::unsubscribe));
     }
     
     
     public void requestToAllowNotifications() {
-        requestNotificationsBtn = new Button("Subscribe...");
+        requestNotificationsBtn = new Button(getTranslation("view.notifications.subscribe"));
         add(requestNotificationsBtn);
         // Notifications need to be requested from direct user interaction
         requestNotificationsBtn.getElement().executeJs("""

@@ -78,7 +78,7 @@ public class MainLayout extends AppLayout {
         nav.addItem(new AppNavItem(getTranslation("view.history"), HistoryView.class, MaterialIcon.HISTORY));
         nav.addItem(new AppNavItem(getTranslation("List"), PriceListView.class, MaterialIcon.LIST));
         nav.addItem(new AppNavItem(getTranslation("Calculator"), PriceCalculatorView.class, MaterialIcon.CALCULATE));
-        nav.addItem(new AppNavItem(getTranslation("Notifications"), NotificationsView.class, MaterialIcon.WARNING));
+        nav.addItem(new AppNavItem(getTranslation("view.notifications"), NotificationsView.class, MaterialIcon.WARNING));
         nav.addItem(new AppNavItem(getTranslation("view.about"), AboutView.class, MaterialIcon.INFO));
 
         addToDrawer(new Div(app, nav), createLinkDiv());
