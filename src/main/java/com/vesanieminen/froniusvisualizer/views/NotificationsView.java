@@ -6,7 +6,9 @@ import com.vaadin.flow.component.DomEvent;
 import com.vaadin.flow.component.EventData;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -16,7 +18,6 @@ import com.vaadin.flow.shared.Registration;
 import com.vesanieminen.froniusvisualizer.services.NotificationService;
 import com.vesanieminen.froniusvisualizer.services.model.PriceNotification;
 import nl.martijndwars.webpush.Subscription;
-import org.vaadin.firitin.components.button.DeleteButton;
 import org.vaadin.firitin.components.select.VSelect;
 import org.vaadin.firitin.components.textfield.VNumberField;
 import org.vaadin.firitin.components.textfield.VTextField;
@@ -46,7 +47,7 @@ public class NotificationsView extends VerticalLayout {
     }
 
     private List<PriceNotification> notifications;
-    
+
     Button requestNotificationsBtn;
 
     public NotificationsView(NotificationService service) {
@@ -87,75 +88,86 @@ public class NotificationsView extends VerticalLayout {
 
         add(new Button(getTranslation("view.notifications.save"), e -> save()));
 
-        add(new DeleteButton(getTranslation("view.notifications.clear"), this::unsubscribe));
+        final var button = new Button(
+                getTranslation("view.notifications.clear"),
+                e -> new ConfirmDialog(getTranslation("view.notifications.confirmation.header"),
+                        "",
+                        getTranslation("view.notifications.confirmation.confirm"),
+                        ee -> unsubscribe(),
+                        getTranslation("view.notifications.confirmation.cancel"),
+                        ee -> {
+                        }).open()
+        );
+        button.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        add(button);
     }
-    
-    
+
+
     public void requestToAllowNotifications() {
         requestNotificationsBtn = new Button(getTranslation("view.notifications.subscribe"));
         add(requestNotificationsBtn);
         // Notifications need to be requested from direct user interaction
         requestNotificationsBtn.getElement().executeJs("""
-    const keyfromserver = $0;
-    const padding = '='.repeat((4 - (keyfromserver.length % 4)) % 4);
-    const base64 = (keyfromserver + padding).replace(/\\-/g, '+').replace(/_/g, '/');
-    const rawData = window.atob(base64);
-    const serverKey = new Uint8Array(rawData.length);
-    for (let i = 0; i < rawData.length; ++i) {
-        serverKey[i] = rawData.charCodeAt(i);
-    }
+                const keyfromserver = $0;
+                const padding = '='.repeat((4 - (keyfromserver.length % 4)) % 4);
+                const base64 = (keyfromserver + padding).replace(/\\-/g, '+').replace(/_/g, '/');
+                const rawData = window.atob(base64);
+                const serverKey = new Uint8Array(rawData.length);
+                for (let i = 0; i < rawData.length; ++i) {
+                    serverKey[i] = rawData.charCodeAt(i);
+                }
 
-    this.addEventListener("click", () => {
-        this.setAttribute("disabled", "disabled");
-        this.textContent = "Requesting...";
-        Notification.requestPermission().then( notificationPermission => {
-            if (notificationPermission === 'granted') {
-                navigator.serviceWorker.getRegistration().then(registration => {
-                    registration.pushManager.subscribe({
-                        userVisibleOnly: true,
-                        applicationServerKey: serverKey,
-                    }).then(subscription => {
-                        this.dispatchEvent(new CustomEvent('web-push-subscribed', {
-                            bubbles: true,
-                            composed: true,
-                            // Serialize keys uint8array -> base64
-                            detail: JSON.parse(JSON.stringify(subscription))
-                        }));
-                    }).catch( (er) => {
-                        console.error(er);
+                this.addEventListener("click", () => {
+                    this.setAttribute("disabled", "disabled");
+                    this.textContent = "Requesting...";
+                    Notification.requestPermission().then( notificationPermission => {
+                        if (notificationPermission === 'granted') {
+                            navigator.serviceWorker.getRegistration().then(registration => {
+                                registration.pushManager.subscribe({
+                                    userVisibleOnly: true,
+                                    applicationServerKey: serverKey,
+                                }).then(subscription => {
+                                    this.dispatchEvent(new CustomEvent('web-push-subscribed', {
+                                        bubbles: true,
+                                        composed: true,
+                                        // Serialize keys uint8array -> base64
+                                        detail: JSON.parse(JSON.stringify(subscription))
+                                    }));
+                                }).catch( (er) => {
+                                    console.error(er);
+                                });
+                            });
+                        } else {
+                            window.alert("No fun then!");
+                        }
                     });
                 });
-            } else {
-                window.alert("No fun then!");
-            }
-        });
-    });
-                           """, service.getPublicKey());
+                                       """, service.getPublicKey());
 
     }
-    
+
     private void unsubscribe() {
         WebStorage.clear();
         service.unsubscribe(uid);
 
         getElement().executeJs("""
-navigator.serviceWorker.ready.then((reg) => {
-reg.pushManager.getSubscription().then((subscription) => {
-  subscription
-    .unsubscribe()
-    .then((successful) => {
-      // You've successfully unsubscribed
-    })
-    .catch((e) => {
-        console.log(e);
-    });
-});
-});                               
-                               
-        """).then(r -> UI.getCurrent().getPage().reload());
+                navigator.serviceWorker.ready.then((reg) => {
+                reg.pushManager.getSubscription().then((subscription) => {
+                  subscription
+                    .unsubscribe()
+                    .then((successful) => {
+                      // You've successfully unsubscribed
+                    })
+                    .catch((e) => {
+                        console.log(e);
+                    });
+                });
+                });                               
+                                               
+                        """).then(r -> UI.getCurrent().getPage().reload());
     }
-    
-        // Events
+
+    // Events
 
     public static class WebPushSubscriptionEvent extends ComponentEvent<NotificationsView> {
         private final Subscription subscription;
