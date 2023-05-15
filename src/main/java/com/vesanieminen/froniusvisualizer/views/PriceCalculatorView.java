@@ -103,6 +103,10 @@ public class PriceCalculatorView extends Main {
 
         final NumberFormat numberFormat = getNumberFormat(getLocale(), 2);
 
+        final var warning = new Span(getTranslation("price.calculator.warning"));
+        warning.addClassNames(LumoUtility.TextColor.ERROR);
+        content.add(warning);
+
         final var title = new Span(getTranslation("calculator.title"));
         title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
         content.add(title);
@@ -568,7 +572,7 @@ public class PriceCalculatorView extends Main {
         return chart;
     }
 
-    private Div createHelpLayout(Div content) {
+    private void createHelpLayout(Div content) {
         final var helpButton = new Button(getTranslation("Click to show/hide help"));
         helpButton.addClassNames(LumoUtility.Margin.Top.SMALL, LumoUtility.Background.BASE);
         content.add(helpButton);
@@ -613,7 +617,6 @@ public class PriceCalculatorView extends Main {
         additionalInfo.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
         helpLayout.add(additionalInfo);
 
-        return helpLayout;
     }
 
     private void setEnabled(boolean isEnabled, HasEnabled... hasEnableds) {
