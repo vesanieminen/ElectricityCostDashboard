@@ -1,7 +1,6 @@
 package com.vesanieminen.froniusvisualizer.components;
 
 import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.PropertyDescriptor;
 import com.vaadin.flow.component.PropertyDescriptors;
@@ -10,16 +9,13 @@ import com.vaadin.flow.component.dependency.JsModule;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import com.vesanieminen.froniusvisualizer.util.Utils;
 
-import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
-import java.util.Map;
 
 import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7DaysList;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getPricesToday;
-import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getPricesTomorrow;
 
 @Tag("bar-chart-template")
 @JsModule("src/bar-chart-template.ts")
@@ -52,26 +48,8 @@ public class BarChartTemplate extends Component {
         Utils.average(pricesToday).ifPresent(value -> set(AVERAGE, monthAverage));
     }
 
-    public void setSeriesList(List<Double> list) {
-        getElement().setPropertyList("values", list);
-    }
-
-    public void setSeriesDataList(List<Map.Entry<Instant, Double>> list) {
-        getElement().setPropertyList("values", list);
-    }
-
     public void setNordpoolDataList(List<NordpoolPrice> list) {
         getElement().setPropertyList("values", list);
-    }
-
-    @ClientCallable
-    private void previous() {
-        setSeriesList(getPricesToday());
-    }
-
-    @ClientCallable
-    private void next() {
-        setSeriesList(getPricesTomorrow());
     }
 
 }
