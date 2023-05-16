@@ -106,6 +106,9 @@ public class PriceCalculatorView extends Main {
         warning.addClassNames(LumoUtility.TextColor.ERROR);
         content.add(warning);
 
+        final var newSpan = new Span(new Anchor("https://www.fingrid.fi/sahkomarkkinat/markkinoiden-yhtenaisyys/pohjoismainen-tasehallinta/varttitase/#taustaa", getTranslation("price.calculator.readmore"), AnchorTarget.BLANK));
+        content.add(newSpan);
+
         final var title = new Span(getTranslation("calculator.title"));
         title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
         content.add(title);
