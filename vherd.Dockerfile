@@ -18,7 +18,7 @@ RUN ls -la /app/target
 
 # The "Run" stage. Start with a clean image, and copy over just the app itself, omitting gradle, npm and any intermediate build files.
 FROM eclipse-temurin:17
-COPY target/froniusvizualizer-1.0-SNAPSHOT.jar /app/
+COPY --from=BUILD /app/target/froniusvizualizer-1.0-SNAPSHOT.jar /app/
 WORKDIR /app/
 EXPOSE 8080
 ENTRYPOINT java -jar froniusvizualizer-1.0-SNAPSHOT.jar 8080
