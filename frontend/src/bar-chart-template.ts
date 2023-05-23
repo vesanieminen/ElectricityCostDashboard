@@ -156,7 +156,7 @@ export class BarChartTemplate extends LitElement {
             series: [{
                 name: this.seriesTitle,
                 type: "column",
-                data: this.values!.map(item => [item.time, item.time > 1682888400000 ? item.price * 1.24 : 1.1])
+                data: this.values!.map(item => [item.time, item.price > 0 ? item.price * 1.24 : item.price])
             }],
         };
     }
