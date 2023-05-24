@@ -66,7 +66,7 @@ public class PriceCalculatorService {
 
     public static void updateNordPoolPriceList() {
         if (spotPriceMap != null) {
-            nordpoolPriceList = spotPriceMap.entrySet().stream().map(item -> new NordpoolPrice(item.getValue() > 0 ? item.getValue() * getVAT(item.getKey()) : item.getValue(), item.getKey().toEpochMilli())).toList();
+            nordpoolPriceList = spotPriceMap.entrySet().stream().map(item -> new NordpoolPrice(item.getValue() * getVAT(item.getKey()), item.getKey().toEpochMilli())).toList();
         }
     }
 

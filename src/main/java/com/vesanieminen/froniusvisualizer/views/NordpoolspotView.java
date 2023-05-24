@@ -557,11 +557,10 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
                 dataSeriesItem.setX(instant);
                 try {
                     var y = 0.0d;
-                    final var price = numberFormat.parse(column.Value).doubleValue();
-                    if (hasVat && price > 0) {
-                        y = price * getVAT(instant) / 10;
+                    if (hasVat) {
+                        y = numberFormat.parse(column.Value).doubleValue() * getVAT(instant) / 10;
                     } else {
-                        y = price / 10;
+                        y = numberFormat.parse(column.Value).doubleValue() / 10;
                     }
                     total += y;
                     ++amount;
