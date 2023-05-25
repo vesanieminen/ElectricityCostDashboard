@@ -86,6 +86,7 @@ public class PriceCalculatorService {
 
         String[] line;
         while ((line = csvReader.readNext()) != null) {
+
             // in case the Fingrid csv data has rows that contain: "null;MISSING", skip them
             if ("MISSING".equals(line[getColumnIndex(isNewFormat, 6)])) {
                 break;
@@ -96,7 +97,19 @@ public class PriceCalculatorService {
                 if (line[6].contains(".")) {
                     map.put(instant, Double.parseDouble(line[6]));
                 } else {
-                    map.put(instant, numberFormat.parse(line[6]).doubleValue());
+                    // in case of 15min interval data, combine 4 values into 1h
+                    if ("PT15M".equals(line[2])) {
+                        final var _15Min = csvReader.readNext();
+                        final var _30Min = csvReader.readNext();
+                        final var _45Min = csvReader.readNext();
+                        final var value00Min = numberFormat.parse(line[6]).doubleValue();
+                        final var value15Min = numberFormat.parse(_15Min[6]).doubleValue();
+                        final var value30Min = numberFormat.parse(_30Min[6]).doubleValue();
+                        final var value45Min = numberFormat.parse(_45Min[6]).doubleValue();
+                        map.put(instant, value00Min + value15Min + value30Min + value45Min);
+                    } else {
+                        map.put(instant, numberFormat.parse(line[6]).doubleValue());
+                    }
                 }
             } else {
                 map.put(instant, numberFormat.parse(line[5]).doubleValue());
