@@ -103,7 +103,7 @@ public class PriceCalculatorView extends Main {
         final NumberFormat numberFormat = getNumberFormat(getLocale(), 2);
 
         final var warning = new Span(getTranslation("price.calculator.warning"));
-        warning.addClassNames(LumoUtility.TextColor.ERROR);
+        warning.addClassNames(LumoUtility.TextColor.SUCCESS);
         content.add(warning);
 
         final var newSpan = new Span(new Anchor("https://www.fingrid.fi/sahkomarkkinat/markkinoiden-yhtenaisyys/pohjoismainen-tasehallinta/varttitase/#taustaa", getTranslation("price.calculator.readmore"), AnchorTarget.BLANK));
