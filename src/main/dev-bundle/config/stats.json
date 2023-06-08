@@ -309,7 +309,7 @@
   "themes/froniusvizualizer/components/vaadin-drawer-toggle.css": "64b5e0468eadf98a2c3db9ac60c88e65289c78bba2c84b3d1157b95a659829e5",
   "themes/froniusvizualizer/components/vcf-nav-item.css": "7ac805a32e7b24441306194daf5d084e45de5265c4a4af53656bbe3e71f9f62b",
   "src/prefers-color-scheme.js": "73ea2254f500b9fea62c87cc1c2eaa2fd51f1e04659ba1c305674e97e4f3b277",
-  "src/bar-chart-template.ts": "5fd66f7593ff63b74b8fe703c5bbfb0692448d461a58c89f5c51aaa6957ba2db",
+  "src/bar-chart-template.ts": "723d446ee3c34800a7defc5aca8a6c5689ccfc97be334fd9465cf854785282a0",
   "src/history-template.ts": "9e8b2422d8c11240fe2ed5442742ed0767b56ea7a9d9919276011ff5deae2485",
   "src/kofi.ts": "1b34392face32e3635b20b4d23ee6b070c42e3e736998621bd60a97fbcf01411",
   "src/about-view.ts": "821796a55ed6a1d215b53ff4b434218177162097f9982e379e75c2394eb0b4d3",
@@ -360,7 +360,7 @@
   "froniusvizualizer": "{\n  \"lumoImports\" : [ \"typography\", \"color\", \"spacing\", \"badge\", \"utility\" ]\n}"
  },
  "entryScripts": [
-  "VAADIN/build/indexhtml-3beba897.js"
+  "VAADIN/build/indexhtml-104ccbaa.js"
  ],
  "webComponents": [],
  "cvdlModules": {
@@ -395,6 +395,6 @@
  },
  "packageJsonHash": "012ed152e155f7930f303cbcd3105acca91030555b00fdc805120fff82b30334",
  "indexHtmlGenerated": [
-  "  <script type=\"module\" crossorigin src=\"./VAADIN/build/indexhtml-3beba897.js\"></script>"
+  "  <script type=\"module\" crossorigin src=\"./VAADIN/build/indexhtml-104ccbaa.js\"></script>"
  ]
 }

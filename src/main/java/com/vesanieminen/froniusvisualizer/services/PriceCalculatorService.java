@@ -70,6 +70,47 @@ public class PriceCalculatorService {
         }
     }
 
+    public static FingridUsageData getFingridUsageData(String filePath) throws IOException, ParseException {
+        var start = Instant.MAX;
+        var end = Instant.MIN;
+        final var map = new LinkedHashMap<Instant, Double>();
+        final var reader = Files.newBufferedReader(Path.of(filePath));
+        CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
+        CSVReader csvReader = new CSVReaderBuilder(reader)
+                .withSkipLines(0)
+                .withCSVParser(parser)
+                .build();
+
+        String[] header = csvReader.readNext();
+        boolean isNewFormat = header.length == 8;
+
+        String[] line;
+        while ((line = csvReader.readNext()) != null) {
+            // in case the Fingrid csv data has rows that contain: "null;MISSING", skip them
+            if ("MISSING".equals(line[getColumnIndex(isNewFormat, 6)])) {
+                break;
+            }
+            final var instant = Instant.parse(line[getColumnIndex(isNewFormat, 4)]);
+            if (isNewFormat) {
+                // On 2023-01-16 Fingrid changed from . to , for the comma separator
+                if (line[6].contains(".")) {
+                    map.put(instant, Double.parseDouble(line[6]));
+                } else {
+                    map.put(instant, numberFormat.parse(line[6]).doubleValue());
+                }
+            } else {
+                map.put(instant, numberFormat.parse(line[5]).doubleValue());
+            }
+            if (start.isAfter(instant)) {
+                start = instant;
+            }
+            if (end.isBefore(instant)) {
+                end = instant;
+            }
+        }
+        return new FingridUsageData(map, start, end);
+    }
+
     public static FingridUsageData getFingridUsageData(MemoryBuffer memoryBuffer) throws IOException, ParseException {
         var start = Instant.MAX;
         var end = Instant.MIN;
