@@ -29,6 +29,7 @@ import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
@@ -510,13 +511,14 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
     private void createMenuLayout() {
         final var vatComboBox = new ComboBox<VAT>();
         vatComboBox.addClassNames(LumoUtility.Padding.NONE);
-        vatComboBox.setMinWidth(8, Unit.EM);
+        vatComboBox.setMinWidth(18, Unit.EM);
         vatComboBox.setWidthFull();
         vatComboBox.setItems(VAT.values());
         vatComboBox.setValue(hasVat ? VAT.VAT : VAT.VAT0);
         vatComboBox.setItemLabelGenerator(item -> getTranslation(item.getVatName()));
-        final var menuLayout = new Div(vatComboBox, fullScreenButton);
+        final var menuLayout = new FlexLayout(vatComboBox, fullScreenButton);
         menuLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Width.FULL);
+        menuLayout.setFlexShrink(1, fullScreenButton);
         add(menuLayout);
         // Add event listeners
         vatComboBox.addValueChangeListener(e -> getUI().ifPresent(ui -> {
