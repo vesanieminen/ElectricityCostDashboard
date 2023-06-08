@@ -24,8 +24,8 @@ import com.vesanieminen.froniusvisualizer.components.MaterialIcon;
 import com.vesanieminen.froniusvisualizer.components.appnav.AppNav;
 import com.vesanieminen.froniusvisualizer.components.appnav.AppNavItem;
 import com.vesanieminen.froniusvisualizer.util.css.FontFamily;
+import jakarta.servlet.http.Cookie;
 
-import javax.servlet.http.Cookie;
 import java.text.DecimalFormat;
 
 import static com.vesanieminen.froniusvisualizer.util.Utils.enLocale;

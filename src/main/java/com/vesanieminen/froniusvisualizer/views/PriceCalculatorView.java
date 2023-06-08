@@ -187,7 +187,7 @@ public class PriceCalculatorView extends Main {
             finnishI18n.setWeekdays(List.of("Sunnuntai", "Maanantai", "Tiistai", "Keskiviikko", "Torstai", "Perjantai", "Lauantai"));
             finnishI18n.setWeekdaysShort(
                     List.of("Su", "Ma", "Ti", "Ke", "To", "Pe", "La"));
-            finnishI18n.setWeek("Viikko");
+            //finnishI18n.setWeek("Viikko");
             finnishI18n.setToday("Tänään");
             finnishI18n.setCancel("Keskeytä");
             finnishI18n.setFirstDayOfWeek(1);

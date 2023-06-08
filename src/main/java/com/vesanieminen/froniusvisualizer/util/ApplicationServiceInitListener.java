@@ -4,8 +4,8 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServiceInitListener;
+import jakarta.servlet.http.Cookie;
 
-import javax.servlet.http.Cookie;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
