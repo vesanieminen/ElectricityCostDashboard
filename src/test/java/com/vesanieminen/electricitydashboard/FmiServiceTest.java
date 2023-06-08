@@ -1,12 +1,8 @@
 package com.vesanieminen.electricitydashboard;
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
-
 import com.vesanieminen.froniusvisualizer.services.FmiService;
-
-import java.io.IOException;
-import java.util.Arrays;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Test;
 
 @Slf4j
 public class FmiServiceTest {

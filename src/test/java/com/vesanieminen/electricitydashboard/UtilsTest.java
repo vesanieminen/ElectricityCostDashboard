@@ -1,8 +1,8 @@
 package com.vesanieminen.electricitydashboard;
 
 import com.vesanieminen.froniusvisualizer.util.Utils;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 import static com.vesanieminen.froniusvisualizer.util.Utils.dateTimeFormatter;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentInstantDayPrecisionFinnishZone;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class UtilsTest {
 
@@ -37,7 +37,7 @@ public class UtilsTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void printSpotdataSizes() throws IOException, URISyntaxException, InterruptedException {
         //getSpotDataSahkoTK();
         // final var spotData = getSpotData();
@@ -53,7 +53,7 @@ public class UtilsTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testReadFileWithNulls() throws IOException, ParseException {
         //final var fingridUsageData = getFingridUsageData("src/main/resources/META-INF/resources/data/consumption.csv");
         // TODO: fixme:
