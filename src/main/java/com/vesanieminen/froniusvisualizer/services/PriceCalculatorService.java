@@ -190,6 +190,10 @@ public class PriceCalculatorService {
         return item -> item.getKey().atZone(fiZoneID).getYear() == year;
     }
 
+    public static double calculateSpotAveragePriceOnMonth(int year, int month) {
+        return getSpotData().entrySet().stream().filter(monthFilter(month, year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(monthFilter(month, year)).count();
+    }
+
     public static double calculateSpotAveragePriceThisMonth() {
         final var now = getCurrentTimeWithHourPrecision();
         final var month = now.getMonthValue();

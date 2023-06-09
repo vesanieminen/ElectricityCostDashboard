@@ -77,6 +77,7 @@ public class MainLayout extends AppLayout {
         nav.addItem(new SideNavItem(getTranslation("column.chart"), ChartTemplateView.class, MaterialIcon.BAR_CHART.create()));
         nav.addItem(new SideNavItem(getTranslation("view.history"), HistoryView.class, MaterialIcon.HISTORY.create()));
         nav.addItem(new SideNavItem(getTranslation("List"), PriceListView.class, MaterialIcon.LIST.create()));
+        //nav.addItem(new SideNavItem(getTranslation("Monthly Prices"), MonthlyPricesView.class, MaterialIcon.CALENDAR_VIEW_MONTH.create()));
         nav.addItem(new SideNavItem(getTranslation("Calculator"), PriceCalculatorView.class, MaterialIcon.CALCULATE.create()));
         nav.addItem(new SideNavItem(getTranslation("view.notifications"), NotificationsView.class, MaterialIcon.WARNING.create()));
         nav.addItem(new SideNavItem(getTranslation("view.about"), AboutView.class, MaterialIcon.INFO.create()));
