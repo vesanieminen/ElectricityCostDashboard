@@ -6,9 +6,13 @@ import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import com.vesanieminen.froniusvisualizer.services.Executor;
+import jakarta.servlet.MultipartConfigElement;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.MultipartConfigFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.util.unit.DataSize;
 
 /**
  * The entry point of the Spring Boot application.
@@ -28,6 +32,14 @@ public class Application implements AppShellConfigurator {
     public static void main(String[] args) {
         Executor.init();
         SpringApplication.run(Application.class, args);
+    }
+
+    @Bean
+    MultipartConfigElement multipartConfigElement() {
+        MultipartConfigFactory factory = new MultipartConfigFactory();
+        factory.setMaxFileSize(DataSize.ofBytes(5000000L));
+        factory.setMaxRequestSize(DataSize.ofBytes(50000000L));
+        return factory.createMultipartConfig();
     }
 
 }
