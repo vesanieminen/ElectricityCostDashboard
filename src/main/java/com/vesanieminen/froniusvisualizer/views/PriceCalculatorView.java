@@ -141,7 +141,7 @@ public class PriceCalculatorView extends Main {
         final var datahubAnchor = new Anchor("https://oma.datahub.fi", image);
         datahubAnchor.setTarget(AnchorTarget.BLANK);
         datahubAnchor.addClassNames(LumoUtility.Margin.Top.XLARGE);
-        image.addClassNames(LumoUtility.Margin.Vertical.SMALL, LumoUtility.BorderRadius.MEDIUM, LumoUtility.Border.ALL);
+        image.addClassNames(LumoUtility.Margin.Vertical.SMALL, LumoUtility.BorderRadius.MEDIUM, LumoUtility.Border.ALL, LumoUtility.BoxShadow.MEDIUM);
         image.getStyle().set("background-color", "#d4121e");
         image.getStyle().set("border-color", "#d4121e");
         image.setMaxWidth("100%");
