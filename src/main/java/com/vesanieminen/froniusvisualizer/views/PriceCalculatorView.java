@@ -137,7 +137,16 @@ public class PriceCalculatorView extends Main {
         final var calculations = new HashSet<Calculations>();
         calculations.add(Calculations.SPOT);
         calculationsCheckboxGroup.setValue(calculations);
-        content.add(calculationsCheckboxGroup);
+        final var image = new Image("images/fingrid_dh_white.png", getTranslation("login.to.fingrid"));
+        final var datahubAnchor = new Anchor("https://www.fingrid.fi/sahkomarkkinat/datahub/kirjautuminen-datahubin-asiakasportaaliin/", image);
+        datahubAnchor.setTarget(AnchorTarget.BLANK);
+        image.addClassNames(LumoUtility.Margin.Vertical.SMALL);
+        image.getStyle().set("background-color", "#d4121e");
+        image.setMaxWidth("100%");
+        image.setWidth("200px");
+        final var checkBoxesAndDatahubLink = new Div(calculationsCheckboxGroup, datahubAnchor);
+        checkBoxesAndDatahubLink.addClassNames(LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.BETWEEN);
+        content.add(checkBoxesAndDatahubLink);
 
         // Layouts
         createHelpLayout(content);
@@ -636,6 +645,7 @@ public class PriceCalculatorView extends Main {
     enum Calculations {
         SPOT("Spot price"),
         FIXED("Fixed price"),
+        //COST_EFFECT("cost.effect"),
         TRANSFER_AND_TAX("calculator.transfer.and.tax"),
         SPOT_PRODUCTION("Spot production price");
 
