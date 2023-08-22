@@ -138,7 +138,9 @@ public class PriceCalculatorView extends Main {
         calculations.add(Calculations.SPOT);
         calculationsCheckboxGroup.setValue(calculations);
         final var image = new Image("images/fingrid_dh_white.png", getTranslation("login.to.fingrid"));
-        final var datahubAnchor = new Anchor("https://oma.datahub.fi", image);
+        final var openDatahub = new Span(getTranslation("open.datahub"));
+        openDatahub.addClassNames(LumoUtility.FlexDirection.COLUMN, LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER);
+        final var datahubAnchor = new Anchor("https://oma.datahub.fi", openDatahub, image);
         datahubAnchor.setTarget(AnchorTarget.BLANK);
         datahubAnchor.addClassNames(LumoUtility.Margin.Top.XLARGE);
         image.addClassNames(LumoUtility.Margin.Vertical.SMALL, LumoUtility.BorderRadius.MEDIUM, LumoUtility.Border.ALL, LumoUtility.BoxShadow.MEDIUM);
