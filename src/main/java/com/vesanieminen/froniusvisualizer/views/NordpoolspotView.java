@@ -187,7 +187,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
 
     private void setMobileDeviceChartHeight(Chart chart) {
         setHeight("auto");
-        chart.setHeight("580px");
+        chart.setHeight("500px");
     }
 
     private Chart renderView() {
@@ -224,12 +224,14 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
 
         var chart = new Chart(ChartType.LINE);
         chart.setTimeline(true);
+        chart.getConfiguration().getNavigator().setEnabled(false);
+        chart.getConfiguration().getScrollbar().setEnabled(false);
         chart.getConfiguration().getLegend().setEnabled(true);
         chart.getConfiguration().getChart().setStyledMode(true);
         if (isFullscreen) {
             chart.setHeight("calc(100vh - 13rem)");
         } else {
-            chart.setHeight("580px");
+            chart.setHeight("500px");
             chart.setMaxWidth("1400px");
         }
 
@@ -402,9 +404,10 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         final var plotOptionsLine = new PlotOptionsLine();
         plotOptionsLine.setAnimation(false);
         plotOptionsLine.setStickyTracking(true);
-        plotOptionsLine.setMarker(new Marker(false));
+        //plotOptionsLine.setMarker(new Marker(false));
         chart.getConfiguration().setPlotOptions(plotOptionsLine);
         final var tooltip = new Tooltip();
+        tooltip.setShared(true);
         tooltip.setValueDecimals(0);
         tooltip.setValueSuffix(" MWh/h");
         chart.getConfiguration().setTooltip(tooltip);
