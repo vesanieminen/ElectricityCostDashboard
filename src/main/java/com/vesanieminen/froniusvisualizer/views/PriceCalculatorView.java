@@ -597,7 +597,7 @@ public class PriceCalculatorView extends Main {
         helpStepsLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Left.LARGE);
         helpLayout.add(helpStepsLayout);
         content.add(helpLayout);
-        helpStepsLayout.add(new Span(new Span(getTranslation("calculator.instructions.step1")), new Anchor("https://www.fingrid.fi/sahkomarkkinat/datahub/kirjautuminen-datahubin-asiakasportaaliin/", getTranslation("calculator.instructions.step1b"), AnchorTarget.BLANK)));
+        helpStepsLayout.add(new Span(new Span(getTranslation("calculator.instructions.step1")), new Anchor("https://oma.datahub.fi", getTranslation("calculator.instructions.step1b"), AnchorTarget.BLANK)));
         final var fingridInstruction1 = new Image("images/instructions/Fingrid_1.png", "");
         fingridInstruction1.addClassNames(LumoUtility.Margin.Vertical.SMALL);
         fingridInstruction1.setMaxWidth("100%");
