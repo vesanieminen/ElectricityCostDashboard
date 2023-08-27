@@ -624,7 +624,6 @@ public class PriceCalculatorView extends Main {
         final var anchor = new Anchor("https://raw.githubusercontent.com/vesanieminen/ElectricityCostDashboard/main/src/main/resources/META-INF/resources/data/consumption.csv", getTranslation("Download example csv file here"));
         anchor.addClassNames(LumoUtility.Margin.Top.MEDIUM);
         helpLayout.add(anchor);
-        //
 
         final var additionalInfo = new Span(getTranslation("calculator.help.notice"));
         additionalInfo.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
