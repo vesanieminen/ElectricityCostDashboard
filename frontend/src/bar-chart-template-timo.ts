@@ -104,8 +104,12 @@ export class BarChartTemplateTimo extends LitElement {
                 timezone: 'Europe/Helsinki'
             },
             xAxis: {
+                tickInterval: 1,
                 type: "datetime",
                 crosshair: true,
+                labels: {
+                    format: '{value:%k}'
+                },
             },
             yAxis: [{
                 title: {
