@@ -56,7 +56,7 @@ export class BarChartTemplateTimo extends LitElement {
         return {
             rangeSelector: {
                 enabled: true,
-                verticalAlign: 'top',
+                verticalAlign: 'bottom',
                 x: 0,
                 y: 0,
                 selected: 1,

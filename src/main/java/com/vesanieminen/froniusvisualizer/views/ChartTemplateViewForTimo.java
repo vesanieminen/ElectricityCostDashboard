@@ -12,8 +12,8 @@ import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 public class ChartTemplateViewForTimo extends Main {
 
     public ChartTemplateViewForTimo() {
-        setHeight("var(--fullscreen-height)");
-        setMinHeight("300px");
+        //setHeight("var(--fullscreen-height)");
+        //setMinHeight("300px");
         add(new BarChartTemplateTimo());
     }
 
