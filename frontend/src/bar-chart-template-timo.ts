@@ -59,7 +59,7 @@ export class BarChartTemplateTimo extends LitElement {
                 verticalAlign: 'top',
                 x: 0,
                 y: 0,
-                selected: 0,
+                selected: 1,
                 buttons: [{
                     type: 'millisecond',
                     // @ts-ignore
@@ -90,7 +90,8 @@ export class BarChartTemplateTimo extends LitElement {
                 }]
             },
             chart: {
-                type: "column"
+                type: "column",
+                height: '100%'
             },
             legend: {
                 enabled: false
@@ -147,6 +148,9 @@ export class BarChartTemplateTimo extends LitElement {
                     ,
                     animation: false
                 },
+            },
+            title: {
+                text: 'Liukuri.fi'
             },
             series: [{
                 name: this.seriesTitle,
