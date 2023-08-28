@@ -10,6 +10,12 @@
     stroke-dasharray: 1, 2;
 }
 
+:host .highcharts-plot-line.average-yellow {
+    stroke: rgb(242, 182, 50);
+    stroke-width: 2px;
+    stroke-dasharray: 1, 2;
+}
+
 :host .highcharts-plot-line.time {
     fill: none;
     stroke: rgb(242, 182, 50);
