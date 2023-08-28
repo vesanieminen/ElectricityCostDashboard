@@ -27,6 +27,10 @@
     font-size: 14px;
 }
 
+:host([theme~="column-timo"]) .highcharts-axis-labels {
+    font-size: 18px;
+}
+
 :host([theme~="column"]) .highcharts-plot-band {
     fill: yellow;
     fill-opacity: 0.5;
