@@ -79,3 +79,8 @@
 :host([theme~="column-timo"]) .highcharts-point.zone-3 {
     fill: #f0454a;
 }
+
+:host([theme~="column-timo"]) .highcharts-range-selector-group {
+    visibility: hidden;
+    display: none;
+}
