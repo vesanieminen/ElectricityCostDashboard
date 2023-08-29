@@ -154,7 +154,7 @@ export class BarChartTemplateTimo extends LitElement {
                 },
             },
             title: {
-                text: 'Liukuri.fi'
+                //text: 'Liukuri.fi'
             },
             series: [{
                 name: this.seriesTitle,
