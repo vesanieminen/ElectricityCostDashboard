@@ -19,8 +19,8 @@ import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
-@Route(value = "pörssisähkö", layout = MainLayout.class)
-@PageTitle("Market electricity" + URL_SUFFIX)
+@Route(value = "pörssisähköryhmä", layout = MainLayout.class)
+@PageTitle("Market electricity group" + URL_SUFFIX)
 public class ChartTemplateViewForTimo extends Main {
 
     public ChartTemplateViewForTimo() {
