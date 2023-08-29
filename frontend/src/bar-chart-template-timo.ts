@@ -56,37 +56,16 @@ export class BarChartTemplateTimo extends LitElement {
         return {
             rangeSelector: {
                 enabled: true,
+                inputEnabled: false,
+                allButtonsEnabled: false,
                 verticalAlign: 'bottom',
                 x: 0,
                 y: 0,
-                selected: 1,
+                selected: 0,
                 buttons: [{
-                    type: 'millisecond',
-                    // @ts-ignore
-                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000,
-                    text: get("column-chart.now"),
-                    //offsetMin: -86400000,
-                    //offsetMax: -86400000,
-                }, {
                     type: 'day',
                     count: 1,
                     text: get("column-chart.1d"),
-
-                }, {
-                    type: 'day',
-                    count: 2,
-                    text: get("column-chart.2d"),
-                }, {
-                    type: 'day',
-                    count: 3,
-                    text: get("column-chart.3d"),
-                }, {
-                    type: 'day',
-                    count: 5,
-                    text: get("column-chart.5d"),
-                }, {
-                    type: 'all',
-                    text: get("column-chart.7d"),
                 }]
             },
             chart: {
