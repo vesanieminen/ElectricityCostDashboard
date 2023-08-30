@@ -96,14 +96,14 @@ export class BarChartTemplateTimo extends LitElement {
                     //text: get("general.price-type")
                 },
                 softMax: this.average! + 1,
-                plotLines:
-                    [{
-                        //label: {
-                        //    text: this.averageText
-                        //},
-                        className: "average-yellow",
-                        value: this.average
-                    }],
+                //plotLines:
+                //    [{
+                //        //label: {
+                //        //    text: this.averageText
+                //        //},
+                //        className: "average-yellow",
+                //        value: this.average
+                //    }],
             }],
             plotOptions: {
                 column: {
