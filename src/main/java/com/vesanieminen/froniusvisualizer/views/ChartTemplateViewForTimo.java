@@ -39,14 +39,17 @@ public class ChartTemplateViewForTimo extends Main {
         final var h2 = new H2("%s".formatted(day));
         h2.addClassNames(LumoUtility.FontSize.LARGE);
         final var title = new Div(h2, span);
-        title.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER, LumoUtility.Margin.Top.SMALL, LumoUtility.Gap.SMALL);
+        title.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER, LumoUtility.Margin.Top.MEDIUM, LumoUtility.Gap.SMALL);
         add(title);
 
         add(new BarChartTemplateTimo());
 
         final NumberFormat numberFormat = getNumberFormat(getLocale(), 2);
         numberFormat.setMinimumFractionDigits(2);
+
         final var latest7DaysList = getLatest7DaysList();
+
+
         final var averageTodayLabel = new DoubleLabel(getTranslation("Average today"), numberFormat.format(calculateSpotAveragePriceToday()) + " " + getTranslation("c/kWh"));
         final var averageThisMonthLabel = new DoubleLabel(getTranslation("Average this month"), numberFormat.format(calculateSpotAveragePriceThisMonth()) + " " + getTranslation("c/kWh"));
         averageThisMonthLabel.getSpanBottom().getStyle().set("border-color", "rgb(242, 182, 50)");

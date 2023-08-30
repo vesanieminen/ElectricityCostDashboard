@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -233,11 +234,11 @@ public class PriceCalculatorService {
         return getSpotData().entrySet().stream().filter(dayFilter(day, month, year)).map(item -> Map.entry(item.getKey(), item.getValue() * getVAT(item.getKey()))).collect(Collectors.toList());
     }
 
-    public static List<Double> getPricesForMonth() {
+    public static Set<Map.Entry<Instant, Double>> getPriceDataForMonth() {
         final var now = getCurrentTimeWithHourPrecision();
         final var month = now.getMonthValue();
         final var year = now.getYear();
-        return getSpotData().entrySet().stream().filter(monthFilter(month, year)).map(item -> item.getValue() * getVAT(item.getKey())).collect(Collectors.toList());
+        return getSpotData().entrySet().stream().filter(monthFilter(month, year)).map(item -> Map.entry(item.getKey(), item.getValue() * getVAT(item.getKey()))).collect(Collectors.toSet());
     }
 
     public static List<Double> getPricesForYear() {

@@ -49,6 +49,7 @@ public class NordpoolSpotService {
         if (newNordpoolResponse.isValid()) {
             nordpoolResponse = newNordpoolResponse;
             nordpoolPrices = toPriceList(nordpoolResponse);
+            nordpoolPriceMap = toPriceMap(nordpoolResponse);
         }
     }
 
@@ -93,5 +94,33 @@ public class NordpoolSpotService {
     public static List<NordpoolPrice> getLatest7DaysList() {
         return nordpoolPrices;
     }
+
+    private static List<Map.Entry<Instant, Double>> toPriceMap(NordpoolResponse nordpoolResponse) {
+        final var nordpoolPrices = new ArrayList<Map.Entry<Instant, Double>>();
+        final var rows = nordpoolResponse.data.Rows;
+        int columnIndex = 6;
+        while (columnIndex >= 0) {
+            for (NordpoolResponse.Row row : rows.subList(0, rows.size() - 6)) {
+                final var time = row.StartTime.toString().split("T")[1];
+                NordpoolResponse.Column column = row.Columns.get(columnIndex);
+                final var dateTimeString = column.Name + " " + time;
+                final var dataLocalDataTime = LocalDateTime.parse(dateTimeString, dateTimeFormatter);
+                final var instant = dataLocalDataTime.atZone(nordpoolZoneID).toInstant();
+                try {
+                    var price = numberFormat.parse(column.Value).doubleValue() / 10;
+                    final var nordpoolPrice = Map.entry(instant, price);
+                    nordpoolPrices.add(nordpoolPrice);
+                } catch (ParseException e) {
+                }
+            }
+            --columnIndex;
+        }
+        return nordpoolPrices;
+    }
+
+    public static List<Map.Entry<Instant, Double>> getLatest7DaysMap() {
+        return nordpoolPriceMap;
+    }
+
 
 }
