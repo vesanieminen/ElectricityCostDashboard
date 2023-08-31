@@ -18,8 +18,8 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.vesanieminen.froniusvisualizer.util.Utils.dateTimeFormatter;
 import static com.vesanieminen.froniusvisualizer.util.Utils.nordpoolZoneID;
@@ -33,7 +33,7 @@ public class NordpoolSpotService {
 
     private static final String url = "https://www.nordpoolspot.com/api/marketdata/page/35?currency=,,EUR,EUR";
     private static List<NordpoolPrice> nordpoolPrices;
-    private static List<Map.Entry<Instant, Double>> nordpoolPriceMap;
+    private static LinkedHashMap<Instant, Double> nordpoolPriceMap;
 
     public static void updateNordpoolData() {
         final HttpRequest request;
@@ -95,8 +95,8 @@ public class NordpoolSpotService {
         return nordpoolPrices;
     }
 
-    private static List<Map.Entry<Instant, Double>> toPriceMap(NordpoolResponse nordpoolResponse) {
-        final var nordpoolPrices = new ArrayList<Map.Entry<Instant, Double>>();
+    private static LinkedHashMap<Instant, Double> toPriceMap(NordpoolResponse nordpoolResponse) {
+        final var nordpoolPrices = new LinkedHashMap<Instant, Double>();
         final var rows = nordpoolResponse.data.Rows;
         int columnIndex = 6;
         while (columnIndex >= 0) {
@@ -108,8 +108,7 @@ public class NordpoolSpotService {
                 final var instant = dataLocalDataTime.atZone(nordpoolZoneID).toInstant();
                 try {
                     var price = numberFormat.parse(column.Value).doubleValue() / 10;
-                    final var nordpoolPrice = Map.entry(instant, price);
-                    nordpoolPrices.add(nordpoolPrice);
+                    nordpoolPrices.put(instant, price);
                 } catch (ParseException e) {
                 }
             }
@@ -118,7 +117,7 @@ public class NordpoolSpotService {
         return nordpoolPrices;
     }
 
-    public static List<Map.Entry<Instant, Double>> getLatest7DaysMap() {
+    public static LinkedHashMap<Instant, Double> getLatest7DaysMap() {
         return nordpoolPriceMap;
     }
 
