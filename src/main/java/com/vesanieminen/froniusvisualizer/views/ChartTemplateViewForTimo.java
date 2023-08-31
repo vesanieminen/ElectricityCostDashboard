@@ -37,11 +37,12 @@ public class ChartTemplateViewForTimo extends Main {
         final var day = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(getLocale()).format(latestData);
 
         final var icon = new Image("icons/icon.png", "Liukuri");
-        icon.setMaxWidth(20, Unit.PIXELS);
+        icon.setMaxWidth(30, Unit.PIXELS);
+        icon.setMaxHeight(30, Unit.PIXELS);
         final var span = new H2("Liukuri.fi");
-        span.addClassNames(LumoUtility.FontSize.MEDIUM, LumoUtility.TextColor.SECONDARY, LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER);
+        span.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.TextColor.SECONDARY, LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER);
         final var h2 = new H2("%s".formatted(day));
-        h2.addClassNames(LumoUtility.FontSize.LARGE);
+        h2.addClassNames(LumoUtility.FontSize.XLARGE);
         final var liukuriAd = new Div(span, icon);
         liukuriAd.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Gap.SMALL, LumoUtility.JustifyContent.CENTER);
         final var title = new Div(h2, liukuriAd);
