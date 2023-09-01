@@ -171,7 +171,6 @@ export class BarChartTemplateTimo extends LitElement {
             </div-->
             <vaadin-chart
                     theme="column-timo"
-                    style="height: 100%"
                     .additionalOptions=${this.getChartOptions()}
             >
             </vaadin-chart>
