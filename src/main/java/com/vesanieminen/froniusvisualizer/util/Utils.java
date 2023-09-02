@@ -10,6 +10,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -17,11 +18,16 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.OptionalDouble;
+import java.util.function.Predicate;
 
+import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7DaysMap;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getSpotData;
 import static com.vesanieminen.froniusvisualizer.views.NordpoolspotView.vat10Value;
 import static com.vesanieminen.froniusvisualizer.views.NordpoolspotView.vat24Value;
 
@@ -170,6 +176,35 @@ public class Utils {
 
     public static OptionalDouble average(List<Double> list) {
         return list.stream().mapToDouble(d -> d).average();
+    }
+
+    public static Predicate<Map.Entry<Instant, Double>> monthFilter(int month, int year) {
+        return item -> item.getKey().atZone(fiZoneID).getMonthValue() == month && item.getKey().atZone(fiZoneID).getYear() == year;
+    }
+
+    public static Predicate<Map.Entry<Instant, Double>> dayFilter(int day, int month, int year) {
+        return item -> item.getKey().atZone(fiZoneID).getDayOfMonth() == day && item.getKey().atZone(fiZoneID).getMonthValue() == month && item.getKey().atZone(fiZoneID).getYear() == year;
+    }
+
+    public static double calculateAverageOfDay(LocalDate localDate, LinkedHashMap<Instant, Double> data) {
+        final var day = localDate.getDayOfMonth();
+        final var month = localDate.getMonthValue();
+        final var year = localDate.getYear();
+        return data.entrySet().stream().filter(dayFilter(day, month, year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(dayFilter(day, month, year)).count();
+    }
+
+    public static double calculateSpotAveragePriceOfMonth(LocalDate localDate, LinkedHashMap<Instant, Double> data) {
+        final var month = localDate.getMonthValue();
+        final var year = localDate.getYear();
+        return data.entrySet().stream().filter(monthFilter(month, year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(monthFilter(month, year)).count();
+    }
+
+    public static LinkedHashMap<Instant, Double> getCombinedSpotData() {
+        final var spotData = getSpotData();
+        final var combinedSpotData = new LinkedHashMap<>(spotData);
+        final var latest7DaysMap = getLatest7DaysMap();
+        combinedSpotData.putAll(latest7DaysMap);
+        return combinedSpotData;
     }
 
 }

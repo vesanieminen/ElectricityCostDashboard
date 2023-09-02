@@ -24,10 +24,12 @@ import java.util.stream.Collectors;
 
 import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.mapToResponse;
 import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.pakastin2YearFile;
+import static com.vesanieminen.froniusvisualizer.util.Utils.dayFilter;
 import static com.vesanieminen.froniusvisualizer.util.Utils.divide;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getVAT;
+import static com.vesanieminen.froniusvisualizer.util.Utils.monthFilter;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.sum;
 
@@ -249,14 +251,6 @@ public class PriceCalculatorService {
 
     public static List<NordpoolPrice> getPrices() {
         return nordpoolPriceList;
-    }
-
-    private static Predicate<Map.Entry<Instant, Double>> monthFilter(int month, int year) {
-        return item -> item.getKey().atZone(fiZoneID).getMonthValue() == month && item.getKey().atZone(fiZoneID).getYear() == year;
-    }
-
-    private static Predicate<Map.Entry<Instant, Double>> dayFilter(int day, int month, int year) {
-        return item -> item.getKey().atZone(fiZoneID).getDayOfMonth() == day && item.getKey().atZone(fiZoneID).getMonthValue() == month && item.getKey().atZone(fiZoneID).getYear() == year;
     }
 
     public static double calculateSpotElectricityPrice(LinkedHashMap<LocalDateTime, Double> spotData, LinkedHashMap<LocalDateTime, Double> fingridConsumptionData, double margin) {

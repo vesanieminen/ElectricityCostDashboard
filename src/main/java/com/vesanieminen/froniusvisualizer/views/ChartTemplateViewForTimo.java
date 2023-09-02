@@ -15,13 +15,11 @@ import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
 import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.LinkedHashMap;
 
 import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7Days;
-import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7DaysMap;
-import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
-import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceToday;
-import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getSpotData;
+import static com.vesanieminen.froniusvisualizer.util.Utils.calculateAverageOfDay;
+import static com.vesanieminen.froniusvisualizer.util.Utils.calculateSpotAveragePriceOfMonth;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getCombinedSpotData;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
@@ -35,8 +33,8 @@ public class ChartTemplateViewForTimo extends Main {
         //setMinHeight("300px");
 
         final var latest7Days = getLatest7Days();
-        final var latestData = latest7Days.data.DataEnddate.minusDays(1);
-        final var day = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(getLocale()).format(latestData);
+        final var dateOfLatestFullData = latest7Days.data.DataEnddate.minusDays(1);
+        final var day = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(getLocale()).format(dateOfLatestFullData);
 
         final var icon = new Image("icons/icon.png", "Liukuri");
         icon.setMaxWidth(30, Unit.PIXELS);
@@ -56,24 +54,20 @@ public class ChartTemplateViewForTimo extends Main {
         final NumberFormat numberFormat = getNumberFormat(getLocale(), 2);
         numberFormat.setMinimumFractionDigits(2);
 
-        // Combine pakastin and nordpool data
-        final var latest7DaysMap = getLatest7DaysMap();
-        final var spotData = getSpotData();
-        final var instantDoubleLinkedHashMap = new LinkedHashMap<>(spotData);
-        final var size = instantDoubleLinkedHashMap.size();
-        instantDoubleLinkedHashMap.putAll(latest7DaysMap);
-        final var sizeAfter = instantDoubleLinkedHashMap.size();
+        final var combinedSpotData = getCombinedSpotData();
 
+        //final var entryPredicate = dayFilter(dateOfLatestFullData.getDayOfMonth(), dateOfLatestFullData.getMonthValue(), dateOfLatestFullData.getYear());
+        //final var collect = instantDoubleLinkedHashMap.entrySet().stream().filter(entryPredicate).map(item -> item.getValue()).toList();
 
-        final var averageTodayLabel = new DoubleLabel(getTranslation("Average today"), numberFormat.format(calculateSpotAveragePriceToday()) + " " + getTranslation("c/kWh"));
-        final var averageThisMonthLabel = new DoubleLabel(getTranslation("Average this month"), numberFormat.format(calculateSpotAveragePriceThisMonth()) + " " + getTranslation("c/kWh"));
+        final var averageTodayLabel = new DoubleLabel(getTranslation("Average today"), numberFormat.format(calculateAverageOfDay(dateOfLatestFullData.toLocalDate(), combinedSpotData)) + " " + getTranslation("c/kWh"));
+        final var averageThisMonthLabel = new DoubleLabel(getTranslation("Average this month"), numberFormat.format(calculateSpotAveragePriceOfMonth(dateOfLatestFullData.toLocalDate(), combinedSpotData)) + " " + getTranslation("c/kWh"));
         averageThisMonthLabel.getSpanBottom().getStyle().set("border-color", "rgb(242, 182, 50)");
         averageThisMonthLabel.getSpanBottom().getStyle().set("border-width", "medium");
         averageThisMonthLabel.getSpanBottom().addClassNames(LumoUtility.Border.BOTTOM);
 
         final var div = new Div(averageTodayLabel, averageThisMonthLabel);
         div.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Width.FULL/*, LumoUtility.BorderRadius.LARGE, LumoUtility.Border.ALL, LumoUtility.BorderColor.CONTRAST_10*/);
-        //add(div);
+        add(div);
     }
 
     private DoubleLabel getLowestAndHighestPriceToday() {
