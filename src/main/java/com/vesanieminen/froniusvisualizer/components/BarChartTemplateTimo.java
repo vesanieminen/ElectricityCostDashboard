@@ -13,9 +13,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
 
+import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getDateOfLatestFullDayData;
 import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7DaysList;
-import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getPricesToday;
+import static com.vesanieminen.froniusvisualizer.util.Utils.calculateSpotAveragePriceOfMonth;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getCombinedSpotData;
 
 @Tag("bar-chart-template-timo")
 @JsModule("src/bar-chart-template-timo.ts")
@@ -44,7 +46,10 @@ public class BarChartTemplateTimo extends Component {
         setNordpoolDataList(data);
         final var hour = (int) Utils.getCurrentInstantHourPrecision().getEpochSecond();
         set(CURRENT_HOUR, hour);
-        var monthAverage = calculateSpotAveragePriceThisMonth();
+
+        final var dateOfLatestFullData = getDateOfLatestFullDayData();
+        final var day = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(getLocale()).format(dateOfLatestFullData);
+        var monthAverage = calculateSpotAveragePriceOfMonth(dateOfLatestFullData.toLocalDate(), getCombinedSpotData());
         Utils.average(pricesToday).ifPresent(value -> set(AVERAGE, monthAverage));
     }
 
