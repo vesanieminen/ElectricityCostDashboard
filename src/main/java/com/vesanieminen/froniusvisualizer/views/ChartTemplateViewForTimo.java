@@ -19,6 +19,8 @@ import java.time.format.FormatStyle;
 
 import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getDateOfLatestFullDayData;
 import static com.vesanieminen.froniusvisualizer.util.Utils.calculateAverageOfDay;
+import static com.vesanieminen.froniusvisualizer.util.Utils.calculateMaximumOfDay;
+import static com.vesanieminen.froniusvisualizer.util.Utils.calculateMinimumOfDay;
 import static com.vesanieminen.froniusvisualizer.util.Utils.calculateSpotAveragePriceOfMonth;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCombinedSpotData;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
@@ -64,8 +66,11 @@ public class ChartTemplateViewForTimo extends Main {
         final var averageTodayLabel = new DoubleLabel(getTranslation("Average today"), numberFormat.format(calculateAverageOfDay(dateOfLatestFullData.toLocalDate(), combinedSpotData)) + " " + getTranslation("c/kWh"));
         final var monthAverage = calculateSpotAveragePriceOfMonth(dateOfLatestFullData.toLocalDate(), combinedSpotData);
         final var averageThisMonthLabel = new DoubleLabel(getTranslation("Average this month"), numberFormat.format(monthAverage) + " " + getTranslation("c/kWh"));
-
-        final var div = new Div(averageTodayLabel, averageThisMonthLabel);
+        final NumberFormat decimalFormat = getNumberFormat(getLocale(), 2);
+        decimalFormat.setMinimumFractionDigits(2);
+        final var lowestToday = new DoubleLabel(getTranslation("Lowest today"), decimalFormat.format(calculateMinimumOfDay(dateOfLatestFullData.toLocalDate(), combinedSpotData)) + " " + getTranslation("c/kWh"));
+        final var highestToday = new DoubleLabel(getTranslation("Highest today"), decimalFormat.format(calculateMaximumOfDay(dateOfLatestFullData.toLocalDate(), combinedSpotData)) + " " + getTranslation("c/kWh"));
+        final var div = new Div(averageTodayLabel, averageThisMonthLabel, lowestToday, highestToday);
         div.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Width.FULL/*, LumoUtility.BorderRadius.LARGE, LumoUtility.Border.ALL, LumoUtility.BorderColor.CONTRAST_10*/);
         div.addClassNames(LumoUtility.Margin.Bottom.MEDIUM);
         add(div);

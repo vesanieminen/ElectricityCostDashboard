@@ -18,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -184,6 +185,20 @@ public class Utils {
 
     public static Predicate<Map.Entry<Instant, Double>> dayFilter(int day, int month, int year) {
         return item -> item.getKey().atZone(fiZoneID).getDayOfMonth() == day && item.getKey().atZone(fiZoneID).getMonthValue() == month && item.getKey().atZone(fiZoneID).getYear() == year;
+    }
+
+    public static double calculateMinimumOfDay(LocalDate localDate, LinkedHashMap<Instant, Double> data) {
+        final var day = localDate.getDayOfMonth();
+        final var month = localDate.getMonthValue();
+        final var year = localDate.getYear();
+        return data.entrySet().stream().filter(dayFilter(day, month, year)).map(item -> item.getValue() * getVAT(item.getKey())).min(Comparator.comparingDouble(p -> p)).get();
+    }
+
+    public static double calculateMaximumOfDay(LocalDate localDate, LinkedHashMap<Instant, Double> data) {
+        final var day = localDate.getDayOfMonth();
+        final var month = localDate.getMonthValue();
+        final var year = localDate.getYear();
+        return data.entrySet().stream().filter(dayFilter(day, month, year)).map(item -> item.getValue() * getVAT(item.getKey())).max(Comparator.comparingDouble(p -> p)).get();
     }
 
     public static double calculateAverageOfDay(LocalDate localDate, LinkedHashMap<Instant, Double> data) {
