@@ -82,6 +82,7 @@ public class ChartTemplateViewForTimo extends Main {
             }
         });
         näytäKeskiarvoviiva.setValue(true);
+
         näytäKeskiarvoviiva.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER);
         add(näytäKeskiarvoviiva);
     }
