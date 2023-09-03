@@ -1,6 +1,7 @@
 package com.vesanieminen.froniusvisualizer.views;
 
 import com.vaadin.flow.component.Unit;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Image;
@@ -32,6 +33,7 @@ public class ChartTemplateViewForTimo extends Main {
         //setHeight("var(--fullscreen-height)");
         //setMinHeight("300px");
 
+
         final var dateOfLatestFullData = getDateOfLatestFullDayData();
         final var day = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(getLocale()).format(dateOfLatestFullData);
 
@@ -48,7 +50,8 @@ public class ChartTemplateViewForTimo extends Main {
         title.addClassNames(LumoUtility.FlexDirection.COLUMN, LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER, LumoUtility.Margin.Top.MEDIUM);
         add(title);
 
-        add(new BarChartTemplateTimo());
+        final var barChartTemplateTimo = new BarChartTemplateTimo();
+        add(barChartTemplateTimo);
 
         final NumberFormat numberFormat = getNumberFormat(getLocale(), 2);
         numberFormat.setMinimumFractionDigits(2);
@@ -59,14 +62,28 @@ public class ChartTemplateViewForTimo extends Main {
         //final var collect = instantDoubleLinkedHashMap.entrySet().stream().filter(entryPredicate).map(item -> item.getValue()).toList();
 
         final var averageTodayLabel = new DoubleLabel(getTranslation("Average today"), numberFormat.format(calculateAverageOfDay(dateOfLatestFullData.toLocalDate(), combinedSpotData)) + " " + getTranslation("c/kWh"));
-        final var averageThisMonthLabel = new DoubleLabel(getTranslation("Average this month"), numberFormat.format(calculateSpotAveragePriceOfMonth(dateOfLatestFullData.toLocalDate(), combinedSpotData)) + " " + getTranslation("c/kWh"));
-        averageThisMonthLabel.getSpanBottom().getStyle().set("border-color", "rgb(242, 182, 50)");
-        averageThisMonthLabel.getSpanBottom().getStyle().set("border-width", "medium");
-        averageThisMonthLabel.getSpanBottom().addClassNames(LumoUtility.Border.BOTTOM);
+        final var monthAverage = calculateSpotAveragePriceOfMonth(dateOfLatestFullData.toLocalDate(), combinedSpotData);
+        final var averageThisMonthLabel = new DoubleLabel(getTranslation("Average this month"), numberFormat.format(monthAverage) + " " + getTranslation("c/kWh"));
 
         final var div = new Div(averageTodayLabel, averageThisMonthLabel);
         div.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Width.FULL/*, LumoUtility.BorderRadius.LARGE, LumoUtility.Border.ALL, LumoUtility.BorderColor.CONTRAST_10*/);
+        div.addClassNames(LumoUtility.Margin.Bottom.MEDIUM);
         add(div);
+
+        final var näytäKeskiarvoviiva = new Checkbox("Näytä keskiarvoviiva");
+        näytäKeskiarvoviiva.addValueChangeListener(e -> {
+            barChartTemplateTimo.setAverage(e.getValue() ? monthAverage : -100d);
+            averageThisMonthLabel.getSpanBottom().getStyle().set("border-color", e.getValue() ? "rgb(242, 182, 50)" : "");
+            averageThisMonthLabel.getSpanBottom().getStyle().set("border-width", e.getValue() ? "medium" : "");
+            if (e.getValue()) {
+                averageThisMonthLabel.getSpanBottom().addClassNames(LumoUtility.Border.BOTTOM);
+            } else {
+                averageThisMonthLabel.getSpanBottom().removeClassName(LumoUtility.Border.BOTTOM);
+            }
+        });
+        näytäKeskiarvoviiva.setValue(true);
+        näytäKeskiarvoviiva.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER);
+        add(näytäKeskiarvoviiva);
     }
 
     private DoubleLabel getLowestAndHighestPriceToday() {

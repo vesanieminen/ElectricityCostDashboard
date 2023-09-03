@@ -50,11 +50,16 @@ public class BarChartTemplateTimo extends Component {
         final var dateOfLatestFullData = getDateOfLatestFullDayData();
         final var day = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(getLocale()).format(dateOfLatestFullData);
         var monthAverage = calculateSpotAveragePriceOfMonth(dateOfLatestFullData.toLocalDate(), getCombinedSpotData());
-        Utils.average(pricesToday).ifPresent(value -> set(AVERAGE, monthAverage));
+        //Utils.average(pricesToday).ifPresent(value -> set(AVERAGE, monthAverage));
     }
 
     public void setNordpoolDataList(List<NordpoolPrice> list) {
         getElement().setPropertyList("values", list);
+    }
+
+    public void setAverage(Double average) {
+        //set(AVERAGE, average);
+        getElement().setProperty("average", average);
     }
 
 }
