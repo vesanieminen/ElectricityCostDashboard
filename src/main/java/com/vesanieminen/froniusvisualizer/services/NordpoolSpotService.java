@@ -121,5 +121,9 @@ public class NordpoolSpotService {
         return nordpoolPriceMap;
     }
 
+    public static LocalDateTime getDateOfLatestFullDayData() {
+        final var latest7Days = getLatest7Days();
+        return latest7Days.data.DataEnddate.minusDays(1);
+    }
 
 }

@@ -16,7 +16,7 @@ import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 
-import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7Days;
+import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getDateOfLatestFullDayData;
 import static com.vesanieminen.froniusvisualizer.util.Utils.calculateAverageOfDay;
 import static com.vesanieminen.froniusvisualizer.util.Utils.calculateSpotAveragePriceOfMonth;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCombinedSpotData;
@@ -32,8 +32,7 @@ public class ChartTemplateViewForTimo extends Main {
         //setHeight("var(--fullscreen-height)");
         //setMinHeight("300px");
 
-        final var latest7Days = getLatest7Days();
-        final var dateOfLatestFullData = latest7Days.data.DataEnddate.minusDays(1);
+        final var dateOfLatestFullData = getDateOfLatestFullDayData();
         final var day = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(getLocale()).format(dateOfLatestFullData);
 
         final var icon = new Image("icons/icon.png", "Liukuri");
