@@ -179,6 +179,10 @@ public class Utils {
         return list.stream().mapToDouble(d -> d).average();
     }
 
+    public static Predicate<Map.Entry<Instant, Double>> isAfter(int month, int year) {
+        return item -> item.getKey().atZone(fiZoneID).getMonthValue() == month && item.getKey().atZone(fiZoneID).getYear() == year;
+    }
+
     public static Predicate<Map.Entry<Instant, Double>> monthFilter(int month, int year) {
         return item -> item.getKey().atZone(fiZoneID).getMonthValue() == month && item.getKey().atZone(fiZoneID).getYear() == year;
     }

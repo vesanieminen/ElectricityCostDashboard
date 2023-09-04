@@ -4,7 +4,7 @@ import {customElement, property, state} from 'lit/decorators.js';
 import '@vaadin/charts';
 import '@vaadin/charts/src/vaadin-chart-series';
 import type {Options} from 'highcharts';
-import {get, registerTranslateConfig, use} from "lit-translate";
+import {registerTranslateConfig, use} from "lit-translate";
 import {Nordpool} from "Frontend/src/nordpool";
 
 registerTranslateConfig({
@@ -54,23 +54,23 @@ export class BarChartTemplateTimo extends LitElement {
 
     private getChartOptions(): Options {
         return {
-            rangeSelector: {
-                enabled: true,
-                inputEnabled: false,
-                allButtonsEnabled: false,
-                verticalAlign: 'bottom',
-                x: 0,
-                y: 0,
-                selected: 0,
-                buttons: [{
-                    type: 'day',
-                    count: 1,
-                    text: get("column-chart.1d"),
-                }]
-            },
+            //rangeSelector: {
+            //    enabled: true,
+            //    inputEnabled: false,
+            //    allButtonsEnabled: false,
+            //    verticalAlign: 'bottom',
+            //    x: 0,
+            //    y: 0,
+            //    selected: 0,
+            //    buttons: [{
+            //        type: 'day',
+            //        count: 1,
+            //        text: get("column-chart.1d"),
+            //    }]
+            //},
             chart: {
                 type: "column",
-                height: '100%'
+                height: '95%'
             },
             legend: {
                 enabled: false

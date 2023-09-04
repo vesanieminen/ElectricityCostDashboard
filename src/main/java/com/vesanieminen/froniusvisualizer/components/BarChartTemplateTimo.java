@@ -12,12 +12,12 @@ import com.vesanieminen.froniusvisualizer.util.Utils;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getDateOfLatestFullDayData;
 import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7DaysList;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getPricesToday;
-import static com.vesanieminen.froniusvisualizer.util.Utils.calculateSpotAveragePriceOfMonth;
-import static com.vesanieminen.froniusvisualizer.util.Utils.getCombinedSpotData;
+import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 
 @Tag("bar-chart-template-timo")
 @JsModule("src/bar-chart-template-timo.ts")
@@ -28,12 +28,14 @@ public class BarChartTemplateTimo extends Component {
     private static final PropertyDescriptor<String, String> UNIT = PropertyDescriptors.propertyWithDefault("unit", "");
     private static final PropertyDescriptor<String, String> POST_FIX = PropertyDescriptors.propertyWithDefault("postfix", "");
     private static final PropertyDescriptor<String, String> AVERAGE_TEXT = PropertyDescriptors.propertyWithDefault("averageText", "");
-    private static final PropertyDescriptor<Double, Double> AVERAGE = PropertyDescriptors.propertyWithDefault("average", -10d);
+    private static final PropertyDescriptor<Double, Double> AVERAGE = PropertyDescriptors.propertyWithDefault("average", -100d);
     private static final PropertyDescriptor<Integer, Integer> CURRENT_HOUR = PropertyDescriptors.propertyWithDefault("currentHour", 0);
     private static final PropertyDescriptor<String, String> LANGUAGE = PropertyDescriptors.propertyWithDefault("language", "en");
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
+        final var epochOfLatestFullData = getDateOfLatestFullDayData().atZone(fiZoneID).toInstant().toEpochMilli();
+
         set(LANGUAGE, getLocale().getLanguage());
         String format = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(getLocale()).format(Utils.getCurrentLocalDateTimeHourPrecisionFinnishZone());
         set(CHART_TITLE, format);
@@ -42,15 +44,10 @@ public class BarChartTemplateTimo extends Component {
         set(POST_FIX, getTranslation("c/kWh"));
         set(AVERAGE_TEXT, getTranslation("column-chart.month.average"));
         final var pricesToday = getPricesToday();
-        var data = getLatest7DaysList();
+        var data = getLatest7DaysList().stream().filter(item -> item.time >= epochOfLatestFullData).collect(Collectors.toList());
         setNordpoolDataList(data);
         final var hour = (int) Utils.getCurrentInstantHourPrecision().getEpochSecond();
         set(CURRENT_HOUR, hour);
-
-        final var dateOfLatestFullData = getDateOfLatestFullDayData();
-        final var day = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(getLocale()).format(dateOfLatestFullData);
-        var monthAverage = calculateSpotAveragePriceOfMonth(dateOfLatestFullData.toLocalDate(), getCombinedSpotData());
-        //Utils.average(pricesToday).ifPresent(value -> set(AVERAGE, monthAverage));
     }
 
     public void setNordpoolDataList(List<NordpoolPrice> list) {
