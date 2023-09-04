@@ -209,13 +209,13 @@ public class Utils {
         final var day = localDate.getDayOfMonth();
         final var month = localDate.getMonthValue();
         final var year = localDate.getYear();
-        return data.entrySet().stream().filter(dayFilter(day, month, year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(dayFilter(day, month, year)).count();
+        return data.entrySet().stream().filter(dayFilter(day, month, year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / data.entrySet().stream().filter(dayFilter(day, month, year)).count();
     }
 
     public static double calculateSpotAveragePriceOfMonth(LocalDate localDate, LinkedHashMap<Instant, Double> data) {
         final var month = localDate.getMonthValue();
         final var year = localDate.getYear();
-        return data.entrySet().stream().filter(monthFilter(month, year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(monthFilter(month, year)).count();
+        return data.entrySet().stream().filter(monthFilter(month, year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / data.entrySet().stream().filter(monthFilter(month, year)).count();
     }
 
     public static LinkedHashMap<Instant, Double> getCombinedSpotData() {

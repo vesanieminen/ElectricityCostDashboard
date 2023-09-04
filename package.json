@@ -175,12 +175,12 @@
     "construct-style-sheets-polyfill": "$construct-style-sheets-polyfill",
     "lit": "$lit",
     "@polymer/polymer": "$@polymer/polymer",
-    "@vaadin-component-factory/vcf-nav": "$@vaadin-component-factory/vcf-nav",
     "proj4": "$proj4",
     "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
     "date-fns": "$date-fns",
     "lumo-css-framework": "$lumo-css-framework",
     "mobile-drag-drop": "$mobile-drag-drop",
+    "@vaadin-component-factory/vcf-nav": "$@vaadin-component-factory/vcf-nav",
     "line-awesome": "$line-awesome"
   },
   "vaadin": {

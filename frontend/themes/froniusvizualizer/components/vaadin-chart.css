@@ -63,7 +63,6 @@
     fill: var(--lumo-error-text-color);
 }
 
-
 :host([theme~="column-timo"]) .highcharts-point.zone-0 {
     fill: #b7ee58;
 }
@@ -80,7 +79,3 @@
     fill: #f0454a;
 }
 
-:host([theme~="column-timo"]) .highcharts-range-selector-group {
-    visibility: hidden;
-    display: none;
-}
