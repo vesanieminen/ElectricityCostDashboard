@@ -63,13 +63,13 @@ public class ChartTemplateViewForTimo extends Main {
         //final var entryPredicate = dayFilter(dateOfLatestFullData.getDayOfMonth(), dateOfLatestFullData.getMonthValue(), dateOfLatestFullData.getYear());
         //final var collect = instantDoubleLinkedHashMap.entrySet().stream().filter(entryPredicate).map(item -> item.getValue()).toList();
 
-        final var averageTodayLabel = new DoubleLabel(getTranslation("Average today"), numberFormat.format(calculateAverageOfDay(dateOfLatestFullData.toLocalDate(), combinedSpotData)) + " " + getTranslation("c/kWh"));
+        final var averageTodayLabel = new DoubleLabel(getTranslation("Day's average"), numberFormat.format(calculateAverageOfDay(dateOfLatestFullData.toLocalDate(), combinedSpotData)) + " " + getTranslation("c/kWh"));
         final var monthAverage = calculateSpotAveragePriceOfMonth(dateOfLatestFullData.toLocalDate(), combinedSpotData);
         final var averageThisMonthLabel = new DoubleLabel(getTranslation("Average this month"), numberFormat.format(monthAverage) + " " + getTranslation("c/kWh"));
         final NumberFormat decimalFormat = getNumberFormat(getLocale(), 2);
         decimalFormat.setMinimumFractionDigits(2);
-        final var lowestToday = new DoubleLabel(getTranslation("Lowest today"), decimalFormat.format(calculateMinimumOfDay(dateOfLatestFullData.toLocalDate(), combinedSpotData)) + " " + getTranslation("c/kWh"));
-        final var highestToday = new DoubleLabel(getTranslation("Highest today"), decimalFormat.format(calculateMaximumOfDay(dateOfLatestFullData.toLocalDate(), combinedSpotData)) + " " + getTranslation("c/kWh"));
+        final var lowestToday = new DoubleLabel(getTranslation("Day's lowest"), decimalFormat.format(calculateMinimumOfDay(dateOfLatestFullData.toLocalDate(), combinedSpotData)) + " " + getTranslation("c/kWh"));
+        final var highestToday = new DoubleLabel(getTranslation("Day's highest"), decimalFormat.format(calculateMaximumOfDay(dateOfLatestFullData.toLocalDate(), combinedSpotData)) + " " + getTranslation("c/kWh"));
         final var div = new Div(averageTodayLabel, averageThisMonthLabel, lowestToday, highestToday);
         div.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Width.FULL/*, LumoUtility.BorderRadius.LARGE, LumoUtility.Border.ALL, LumoUtility.BorderColor.CONTRAST_10*/);
         div.addClassNames(LumoUtility.Margin.Bottom.MEDIUM);

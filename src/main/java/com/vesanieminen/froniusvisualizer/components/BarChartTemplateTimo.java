@@ -48,6 +48,11 @@ public class BarChartTemplateTimo extends Component {
         setNordpoolDataList(data);
         final var hour = (int) Utils.getCurrentInstantHourPrecision().getEpochSecond();
         set(CURRENT_HOUR, hour);
+
+
+        //final var combinedSpotData = getCombinedSpotData();
+        //final var test = getPricesForMonth(getDateOfLatestFullDayData().toLocalDate(), combinedSpotData);
+        //int i = 0;
     }
 
     public void setNordpoolDataList(List<NordpoolPrice> list) {
@@ -58,5 +63,12 @@ public class BarChartTemplateTimo extends Component {
         //set(AVERAGE, average);
         getElement().setProperty("average", average);
     }
+
+    //public static List<Double> getPricesForMonth(LocalDate localDate, LinkedHashMap<Instant, Double> data) {
+    //    final var month = localDate.getMonthValue();
+    //    final var year = localDate.getYear();
+    //    return data.entrySet().stream().filter(monthFilter(month, year)).map(Map.Entry::getValue).collect(Collectors.toList());
+    //}
+
 
 }
