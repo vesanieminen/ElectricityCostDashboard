@@ -48,6 +48,7 @@ public class BarChartTemplateTimo extends Component {
         setNordpoolDataList(data);
         final var hour = (int) Utils.getCurrentInstantHourPrecision().getEpochSecond();
         set(CURRENT_HOUR, hour);
+        //getElement().setProperty("height", "calc(100vh - 5rem)");
 
 
         //final var combinedSpotData = getCombinedSpotData();
