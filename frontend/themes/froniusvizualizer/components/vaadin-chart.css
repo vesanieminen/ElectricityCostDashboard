@@ -16,6 +16,12 @@
     stroke-dasharray: 0, 0;
 }
 
+:host .highcharts-plot-line.average-none {
+    stroke: transparent;
+    stroke-width: 0;
+    stroke-dasharray: 0, 0;
+}
+
 :host .highcharts-plot-line.time {
     fill: none;
     stroke: rgb(242, 182, 50);

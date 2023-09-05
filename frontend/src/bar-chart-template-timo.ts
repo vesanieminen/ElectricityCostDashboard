@@ -44,6 +44,9 @@ export class BarChartTemplateTimo extends LitElement {
     averageText: string = '';
 
     @property()
+    averageClass: string = 'average-yellow';
+
+    @property()
     average?: number;
 
     @property()
@@ -54,23 +57,8 @@ export class BarChartTemplateTimo extends LitElement {
 
     private getChartOptions(): Options {
         return {
-            //rangeSelector: {
-            //    enabled: true,
-            //    inputEnabled: false,
-            //    allButtonsEnabled: false,
-            //    verticalAlign: 'bottom',
-            //    x: 0,
-            //    y: 0,
-            //    selected: 0,
-            //    buttons: [{
-            //        type: 'day',
-            //        count: 1,
-            //        text: get("column-chart.1d"),
-            //    }]
-            //},
             chart: {
                 type: "column",
-                //height: '95%',
             },
             legend: {
                 enabled: false
@@ -101,7 +89,7 @@ export class BarChartTemplateTimo extends LitElement {
                         //label: {
                         //    text: this.averageText
                         //},
-                        className: "average-yellow",
+                        className: this.averageClass,
                         value: this.average
                     }],
             }],

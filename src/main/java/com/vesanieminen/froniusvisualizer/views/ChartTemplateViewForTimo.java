@@ -75,9 +75,10 @@ public class ChartTemplateViewForTimo extends Main {
         div.addClassNames(LumoUtility.Margin.Bottom.MEDIUM);
         add(div);
 
+        barChartTemplateTimo.setAverage(monthAverage);
         final var näytäKeskiarvoviiva = new Checkbox(getTranslation("Show the monthly average line"));
         näytäKeskiarvoviiva.addValueChangeListener(e -> {
-            barChartTemplateTimo.setAverage(e.getValue() ? monthAverage : -100d);
+            barChartTemplateTimo.setAverageClass(e.getValue() ? "average-yellow" : "average-none");
             averageThisMonthLabel.getSpanBottom().getStyle().set("border-color", e.getValue() ? "rgb(242, 182, 50)" : "");
             averageThisMonthLabel.getSpanBottom().getStyle().set("border-width", e.getValue() ? "medium" : "");
             if (e.getValue()) {

@@ -28,6 +28,7 @@ public class BarChartTemplateTimo extends Component {
     private static final PropertyDescriptor<String, String> UNIT = PropertyDescriptors.propertyWithDefault("unit", "");
     private static final PropertyDescriptor<String, String> POST_FIX = PropertyDescriptors.propertyWithDefault("postfix", "");
     private static final PropertyDescriptor<String, String> AVERAGE_TEXT = PropertyDescriptors.propertyWithDefault("averageText", "");
+    private static final PropertyDescriptor<String, String> AVERAGE_CLASS = PropertyDescriptors.propertyWithDefault("averageClass", "average-yellow");
     private static final PropertyDescriptor<Double, Double> AVERAGE = PropertyDescriptors.propertyWithDefault("average", -100d);
     private static final PropertyDescriptor<Integer, Integer> CURRENT_HOUR = PropertyDescriptors.propertyWithDefault("currentHour", 0);
     private static final PropertyDescriptor<String, String> LANGUAGE = PropertyDescriptors.propertyWithDefault("language", "en");
@@ -63,6 +64,10 @@ public class BarChartTemplateTimo extends Component {
     public void setAverage(Double average) {
         //set(AVERAGE, average);
         getElement().setProperty("average", average);
+    }
+
+    public void setAverageClass(String className) {
+        getElement().setProperty("averageClass", className);
     }
 
     //public static List<Double> getPricesForMonth(LocalDate localDate, LinkedHashMap<Instant, Double> data) {
