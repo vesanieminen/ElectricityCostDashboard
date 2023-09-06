@@ -534,7 +534,7 @@ public class PriceCalculatorView extends Main {
         spotAverageSeries.setyAxis(spotYAxis);
 
         // Unweighted spot average series
-        final var unweightedSpotAverageSeries = new ListSeries(getTranslation("Unweighted spot average"));
+        final var unweightedSpotAverageSeries = new ListSeries(getTranslation("Unweighted spot average by the hour"));
         for (int i = 0; i < spotCalculation.spotAverage.length; ++i) {
             unweightedSpotAverageSeries.addData(spotCalculation.spotAverage[i]);
         }
@@ -547,6 +547,7 @@ public class PriceCalculatorView extends Main {
         unweightedSpotAverageSeries.setPlotOptions(unWeightedSpotAveragePlotOptionsColumn);
         chart.getConfiguration().addSeries(unweightedSpotAverageSeries);
         unweightedSpotAverageSeries.setyAxis(spotYAxis);
+        unweightedSpotAverageSeries.setVisible(false);
 
 
         // Fixed cost series
@@ -580,7 +581,6 @@ public class PriceCalculatorView extends Main {
         averagePriceSeries.setPlotOptions(averagePriceSeriesPlotOptionsColumn);
         chart.getConfiguration().addSeries(averagePriceSeries);
         averagePriceSeries.setyAxis(spotYAxis);
-        averagePriceSeries.setVisible(false);
 
         return chart;
     }

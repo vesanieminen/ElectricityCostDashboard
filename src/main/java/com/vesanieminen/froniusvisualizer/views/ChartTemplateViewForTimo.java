@@ -93,8 +93,4 @@ public class ChartTemplateViewForTimo extends Main {
         add(näytäKeskiarvoviiva);
     }
 
-    private DoubleLabel getLowestAndHighestPriceToday() {
-        return null;
-    }
-
 }
