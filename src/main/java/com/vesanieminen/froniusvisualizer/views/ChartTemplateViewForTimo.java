@@ -76,7 +76,7 @@ public class ChartTemplateViewForTimo extends Main {
         final var lowestHighestToday = new DoubleLabel(getTranslation("Lowest / highest today"), min + " / " + max);
         final var cheapestHours = calculateCheapest3HoursOfDay(dateOfLatestFullData.toLocalDate(), getLatest7DaysMap());
         final var from = cheapestHours.from().atZone(fiZoneID).getHour();
-        final var to = cheapestHours.to().atZone(fiZoneID).getHour();
+        final var to = cheapestHours.to().atZone(fiZoneID).getHour() + 1;
         final var cheapestPeriod = new DoubleLabel(getTranslation("Cheapest 3h period"), "%s:00 - %s:00, ".formatted(from, to) + getTranslation("avg.") + " " + numberFormat.format(cheapestHours.averagePrice()));
         final var div = new Div(averageTodayLabel, averageThisMonthLabel, lowestHighestToday, cheapestPeriod);
         div.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Width.FULL/*, LumoUtility.BorderRadius.LARGE, LumoUtility.Border.ALL, LumoUtility.BorderColor.CONTRAST_10*/);
