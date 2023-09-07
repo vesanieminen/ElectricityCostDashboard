@@ -195,14 +195,34 @@ public class Utils {
         final var day = localDate.getDayOfMonth();
         final var month = localDate.getMonthValue();
         final var year = localDate.getYear();
-        return data.entrySet().stream().filter(dayFilter(day, month, year)).map(item -> item.getValue() * getVAT(item.getKey())).min(Comparator.comparingDouble(p -> p)).get();
+        return data.entrySet().stream().filter(dayFilter(day, month, year)).map(item -> item.getValue() * getVAT(item.getKey())).min(Comparator.comparingDouble(p -> p)).orElse(0d);
     }
 
     public static double calculateMaximumOfDay(LocalDate localDate, LinkedHashMap<Instant, Double> data) {
         final var day = localDate.getDayOfMonth();
         final var month = localDate.getMonthValue();
         final var year = localDate.getYear();
-        return data.entrySet().stream().filter(dayFilter(day, month, year)).map(item -> item.getValue() * getVAT(item.getKey())).max(Comparator.comparingDouble(p -> p)).get();
+        return data.entrySet().stream().filter(dayFilter(day, month, year)).map(item -> item.getValue() * getVAT(item.getKey())).max(Comparator.comparingDouble(p -> p)).orElse(0d);
+    }
+
+    public static CheapestHours calculateCheapest3HoursOfDay(LocalDate localDate, LinkedHashMap<Instant, Double> data) {
+        final var day = localDate.getDayOfMonth();
+        final var month = localDate.getMonthValue();
+        final var year = localDate.getYear();
+        final var list = data.entrySet().stream().filter(dayFilter(day, month, year)).map(
+                item -> Map.entry(item.getKey(), item.getValue() * getVAT(item.getKey()))
+        ).toList();
+        var cheapestHours = new CheapestHours(list.get(0).getKey(), list.get(2).getKey(), (list.get(0).getValue() + list.get(1).getValue() + list.get(2).getValue()) / 3);
+        for (int i = 1; i < list.size() - 2; ++i) {
+            final var candidate = new CheapestHours(list.get(i).getKey(), list.get(i + 2).getKey(), (list.get(i).getValue() + list.get(i + 1).getValue() + list.get(i + 2).getValue()) / 3);
+            if (candidate.averagePrice() < cheapestHours.averagePrice()) {
+                cheapestHours = candidate;
+            }
+        }
+        return cheapestHours;
+    }
+
+    public record CheapestHours(Instant from, Instant to, double averagePrice) {
     }
 
     public static double calculateAverageOfDay(LocalDate localDate, LinkedHashMap<Instant, Double> data) {

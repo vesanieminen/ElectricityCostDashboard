@@ -18,10 +18,13 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 
 import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getDateOfLatestFullDayData;
+import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7DaysMap;
 import static com.vesanieminen.froniusvisualizer.util.Utils.calculateAverageOfDay;
+import static com.vesanieminen.froniusvisualizer.util.Utils.calculateCheapest3HoursOfDay;
 import static com.vesanieminen.froniusvisualizer.util.Utils.calculateMaximumOfDay;
 import static com.vesanieminen.froniusvisualizer.util.Utils.calculateMinimumOfDay;
 import static com.vesanieminen.froniusvisualizer.util.Utils.calculateSpotAveragePriceOfMonth;
+import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCombinedSpotData;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
@@ -68,16 +71,21 @@ public class ChartTemplateViewForTimo extends Main {
         final var averageThisMonthLabel = new DoubleLabel(getTranslation("Average this month"), numberFormat.format(monthAverage) + " " + getTranslation("c/kWh"));
         final NumberFormat decimalFormat = getNumberFormat(getLocale(), 2);
         decimalFormat.setMinimumFractionDigits(2);
-        final var lowestToday = new DoubleLabel(getTranslation("Day's lowest"), decimalFormat.format(calculateMinimumOfDay(dateOfLatestFullData.toLocalDate(), combinedSpotData)) + " " + getTranslation("c/kWh"));
-        final var highestToday = new DoubleLabel(getTranslation("Day's highest"), decimalFormat.format(calculateMaximumOfDay(dateOfLatestFullData.toLocalDate(), combinedSpotData)) + " " + getTranslation("c/kWh"));
-        final var div = new Div(averageTodayLabel, averageThisMonthLabel, lowestToday, highestToday);
+        final var min = decimalFormat.format(calculateMinimumOfDay(dateOfLatestFullData.toLocalDate(), combinedSpotData));
+        final var max = decimalFormat.format(calculateMaximumOfDay(dateOfLatestFullData.toLocalDate(), combinedSpotData));
+        final var lowestHighestToday = new DoubleLabel(getTranslation("Lowest / highest today"), min + " / " + max);
+        final var cheapestHours = calculateCheapest3HoursOfDay(dateOfLatestFullData.toLocalDate(), getLatest7DaysMap());
+        final var from = cheapestHours.from().atZone(fiZoneID).getHour();
+        final var to = cheapestHours.to().atZone(fiZoneID).getHour();
+        final var cheapestPeriod = new DoubleLabel(getTranslation("Cheapest 3h period"), "%s:00 - %s:00, ".formatted(from, to) + getTranslation("avg.") + " " + numberFormat.format(cheapestHours.averagePrice()));
+        final var div = new Div(averageTodayLabel, averageThisMonthLabel, lowestHighestToday, cheapestPeriod);
         div.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Width.FULL/*, LumoUtility.BorderRadius.LARGE, LumoUtility.Border.ALL, LumoUtility.BorderColor.CONTRAST_10*/);
         div.addClassNames(LumoUtility.Margin.Bottom.MEDIUM);
         add(div);
 
         barChartTemplateTimo.setAverage(monthAverage);
-        final var näytäKeskiarvoviiva = new Checkbox(getTranslation("Show the monthly average line"));
-        näytäKeskiarvoviiva.addValueChangeListener(e -> {
+        final var showTheMonthlyAverageLineCheckbox = new Checkbox(getTranslation("Show the monthly average line"));
+        showTheMonthlyAverageLineCheckbox.addValueChangeListener(e -> {
             barChartTemplateTimo.setAverageClass(e.getValue() ? "average-yellow" : "average-none");
             averageThisMonthLabel.getSpanBottom().getStyle().set("border-color", e.getValue() ? "rgb(242, 182, 50)" : "");
             averageThisMonthLabel.getSpanBottom().getStyle().set("border-width", e.getValue() ? "medium" : "");
@@ -87,10 +95,10 @@ public class ChartTemplateViewForTimo extends Main {
                 averageThisMonthLabel.getSpanBottom().removeClassName(LumoUtility.Border.BOTTOM);
             }
         });
-        näytäKeskiarvoviiva.setValue(true);
+        showTheMonthlyAverageLineCheckbox.setValue(true);
 
-        näytäKeskiarvoviiva.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER);
-        add(näytäKeskiarvoviiva);
+        showTheMonthlyAverageLineCheckbox.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER);
+        add(showTheMonthlyAverageLineCheckbox);
     }
 
 }
