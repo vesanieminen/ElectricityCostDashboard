@@ -21,6 +21,7 @@ import com.vaadin.flow.component.charts.model.RangeSelectorButton;
 import com.vaadin.flow.component.charts.model.RangeSelectorTimespan;
 import com.vaadin.flow.component.charts.model.Series;
 import com.vaadin.flow.component.charts.model.SeriesTooltip;
+import com.vaadin.flow.component.charts.model.Time;
 import com.vaadin.flow.component.charts.model.Tooltip;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
@@ -53,9 +54,7 @@ import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,12 +65,14 @@ import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisYear;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceToday;
 import static com.vesanieminen.froniusvisualizer.util.Utils.convertNordpoolLocalDateTimeToFinnish;
+import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.format;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentInstantHourPrecisionFinnishZone;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getVAT;
+import static com.vesanieminen.froniusvisualizer.util.Utils.nordpoolZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
-import static com.vesanieminen.froniusvisualizer.util.Utils.utcZone;
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
 @PageTitle("Chart" + URL_SUFFIX)
@@ -223,6 +224,10 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         add(pricesLayout);
 
         var chart = new Chart(ChartType.LINE);
+        final var time = new Time();
+        final var isDaylightSavings = fiZoneID.getRules().isDaylightSavings(getCurrentInstantHourPrecisionFinnishZone());
+        time.setTimezoneOffset((isDaylightSavings ? -3 : -2) * 60);
+        chart.getConfiguration().setTime(time);
         chart.setTimeline(true);
         chart.getConfiguration().getNavigator().setEnabled(false);
         chart.getConfiguration().getScrollbar().setEnabled(false);
@@ -293,7 +298,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
 
         add(chart);
 
-        if (nordpoolResponse != null && nordpoolResponse.isValid()) {
+        if (nordpoolResponse.isValid()) {
             final var spotDataUpdatedTime = convertNordpoolLocalDateTimeToFinnish(nordpoolResponse.data.DateUpdated);
             final var spotDataUpdated = format(spotDataUpdatedTime, getLocale());
             final var spotDataUpdatedSpan = new Span(getTranslation("price.data.updated") + ": " + spotDataUpdated + ", ");
@@ -417,8 +422,8 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         // Add plotline to point the current time:
         PlotLine plotLine = new PlotLine();
         plotLine.setClassName("time");
-        final LocalDateTime nowWithHourOnly = getCurrentTimeWithHourPrecision();
-        plotLine.setValue(nowWithHourOnly.toEpochSecond(ZoneOffset.UTC) * 1000);
+        final var nowWithHourOnly = getCurrentInstantHourPrecisionFinnishZone();
+        plotLine.setValue(nowWithHourOnly.getEpochSecond() * 1000);
         chart.getConfiguration().getxAxis().addPlotLine(plotLine);
     }
 
@@ -427,7 +432,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         dataSeries.setVisible(isVisible);
         for (FingridRealtimeResponse.Data data : datasource) {
             final var dataSeriesItem = new DataSeriesItem();
-            dataSeriesItem.setX(data.start_time.plusHours(3).withMinute(0).toInstant());
+            dataSeriesItem.setX(data.start_time.withMinute(0).toInstant());
             dataSeriesItem.setY(data.value);
             dataSeries.add(dataSeriesItem);
         }
@@ -440,7 +445,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         for (int i = 0; i < fingridResponse.WindPower.size() && i < fingridResponse.HydroPower.size() && i < fingridResponse.SolarPower.size(); ++i) {
             final var value = fingridResponse.WindPower.get(i).value + fingridResponse.HydroPower.get(i).value + fingridResponse.SolarPower.get(i).value;
             final var dataSeriesItem = new DataSeriesItem();
-            dataSeriesItem.setX(fingridResponse.WindPower.get(i).start_time.withMinute(0).plusHours(3).toInstant());
+            dataSeriesItem.setX(fingridResponse.WindPower.get(i).start_time.withMinute(0).toInstant());
             dataSeriesItem.setY(value);
             dataSeries.add(dataSeriesItem);
         }
@@ -455,7 +460,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         }
         for (FingridLiteResponse response : dataSource) {
             final var dataSeriesItem = new DataSeriesItem();
-            dataSeriesItem.setX(response.start_time.toInstant().plus(Duration.ofHours(3)));
+            dataSeriesItem.setX(response.start_time.toInstant());
             dataSeriesItem.setY(response.value);
             dataSeries.add(dataSeriesItem);
         }
@@ -471,7 +476,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
             for (FmiObservation observation : fmiObservations.getObservations()) {
                 final var dataSeriesItem = new DataSeriesItem();
                 var timestamp = FmiService.parseFmiTimestamp(observation.getLocaltime(), observation.getLocaltz());
-                dataSeriesItem.setX(timestamp.toInstant().plus(Duration.ofHours(3)));
+                dataSeriesItem.setX(timestamp.toInstant());
                 dataSeriesItem.setY(observation.getTemperature());
                 dataSeries.add(dataSeriesItem);
             }
@@ -480,7 +485,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         if (spotHintadataSource != null) {
             for (SpotHintaResponse response : spotHintadataSource) {
                 final var dataSeriesItem = new DataSeriesItem();
-                dataSeriesItem.setX(response.TimeStamp.toInstant().plus(Duration.ofHours(3)));
+                dataSeriesItem.setX(response.TimeStamp.toInstant());
                 dataSeriesItem.setY(response.Temperature);
                 dataSeries.add(dataSeriesItem);
             }
@@ -556,10 +561,9 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
                 final var time = row.StartTime.toString().split("T")[1];
                 NordpoolResponse.Column column = row.Columns.get(columnIndex);
                 final var dateTimeString = column.Name + " " + time;
-                final var dataLocalDataTime = LocalDateTime.parse(dateTimeString, dateTimeFormatter);
-                final var instant = dataLocalDataTime.toInstant(ZoneOffset.of("-01:00"));
-                final var localDateTime = LocalDateTime.ofInstant(instant, utcZone);
+                final var instant = LocalDateTime.parse(dateTimeString, dateTimeFormatter).atZone(nordpoolZoneID).toInstant();
                 dataSeriesItem.setX(instant);
+                final var localDateTime = LocalDateTime.ofInstant(instant, fiZoneID);
                 try {
                     var y = 0.0d;
                     if (hasVat) {
