@@ -31,6 +31,7 @@ import static com.vesanieminen.froniusvisualizer.util.Properties.getFingridAPIKe
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
+import static com.vesanieminen.froniusvisualizer.util.Utils.isDaylightSavingsInFinland;
 import static java.util.stream.Collectors.joining;
 
 public class FingridService {
@@ -222,7 +223,7 @@ public class FingridService {
     }
 
     private static String createDateTimeString(LocalDateTime localDateTime) {
-        return DateTimeFormatter.ofPattern("yyyy-MM-dd").format(localDateTime) + "T" + DateTimeFormatter.ofPattern("HH:mm:ss").format(localDateTime) + "+0300";
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd").format(localDateTime) + "T" + DateTimeFormatter.ofPattern("HH:mm:ss").format(localDateTime) + (isDaylightSavingsInFinland() ? "+0300" : "0200");
     }
 
     public static void writeToCSVFile() {

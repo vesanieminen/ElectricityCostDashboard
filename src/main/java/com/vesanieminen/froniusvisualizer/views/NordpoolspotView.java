@@ -59,6 +59,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import static com.vesanieminen.froniusvisualizer.services.FingridService.fingridDataUpdated;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
@@ -71,6 +72,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentInstantHou
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getVAT;
+import static com.vesanieminen.froniusvisualizer.util.Utils.isDaylightSavingsInFinland;
 import static com.vesanieminen.froniusvisualizer.util.Utils.nordpoolZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
@@ -225,8 +227,8 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
 
         var chart = new Chart(ChartType.LINE);
         final var time = new Time();
-        final var isDaylightSavings = fiZoneID.getRules().isDaylightSavings(getCurrentInstantHourPrecisionFinnishZone());
-        time.setTimezoneOffset((isDaylightSavings ? -3 : -2) * 60);
+        time.setUseUTC(false);
+        time.setTimezoneOffset((isDaylightSavingsInFinland() ? -3 : -2) * 60);
         chart.getConfiguration().setTime(time);
         chart.setTimeline(true);
         chart.getConfiguration().getNavigator().setEnabled(false);
@@ -314,7 +316,28 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
 
         final Span fingridFooter = createFingridLicenseSpan();
         add(fingridFooter);
+
+        //addUpdateFingridDataButton();
+
         return chart;
+    }
+
+    private void addUpdateFingridDataButton() {
+        final var updateFingrid = new Button(getTranslation("Update Fingrid data"));
+        updateFingrid.addClickListener(e -> {
+            FingridService.updateWindEstimateData();
+            try {
+                TimeUnit.MILLISECONDS.sleep(500);
+                FingridService.updateProductionEstimateData();
+                TimeUnit.MILLISECONDS.sleep(500);
+                FingridService.updateConsumptionEstimateData();
+                TimeUnit.MILLISECONDS.sleep(500);
+                FingridService.updateRealtimeData();
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        add(updateFingrid);
     }
 
     private static void configureTemperatureDataSeries(DataSeries temperatureDataSeries) {

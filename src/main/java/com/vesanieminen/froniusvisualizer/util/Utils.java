@@ -246,4 +246,9 @@ public class Utils {
         return combinedSpotData;
     }
 
+    public static boolean isDaylightSavingsInFinland() {
+        return fiZoneID.getRules().isDaylightSavings(getCurrentInstantHourPrecisionFinnishZone());
+    }
+
+
 }
