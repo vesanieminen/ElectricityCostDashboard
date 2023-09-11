@@ -14,14 +14,20 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.hasBeenUpdatedSuccessfullyToday;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.hasBeenUpdatedSuccessfullyYesterday;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.updateSpotData;
+import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentInstantDayPrecisionFinnishZone;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getStartOfDay;
+import static com.vesanieminen.froniusvisualizer.util.Utils.isAfter_13_50;
 import static java.util.stream.Collectors.joining;
 
 @Slf4j
@@ -32,6 +38,7 @@ public class PakastinSpotService {
     public static final String pakastinFile = "pakastin.json";
     public static final String pakastin2YearFile = "pakastin-2-year.json";
     public static final String pakastinTempFile = "src/main/resources/data/pakastin/spot.json";
+    public static int updated = 0;
 
     // Format with timestamps
     // https://pakastin.fi/hinnat/prices?start=2022-10-01T00:00:00.000Z&end=2022-10-31T23:59:00.000Z
@@ -100,6 +107,15 @@ public class PakastinSpotService {
     }
 
     public static void getAndWriteToFile2YearData() {
+        if (hasBeenUpdatedSuccessfullyToday()) {
+            log.info("skipped Pakastin update due to having been updated successfully today already");
+            return;
+        }
+        if (!isAfter_13_50(ZonedDateTime.now(fiZoneID)) && hasBeenUpdatedSuccessfullyYesterday()) {
+            log.info("skipped Pakastin update due to not having new data available yet");
+            return;
+        }
+
         final var stringHttpResponse = runQuery(createQuery(getStartOfDay(2020, 1, 1), Instant.now().plus(10, ChronoUnit.DAYS)));
         try {
             log.info("Writing file: " + Paths.get(pakastin2YearFile).getFileName());
@@ -107,6 +123,8 @@ public class PakastinSpotService {
         } catch (IOException e) {
             log.error("Error writing to file", e);
         }
+        log.info("PakastinService has been updated " + ++updated + " times.");
+        updateSpotData();
     }
 
 }

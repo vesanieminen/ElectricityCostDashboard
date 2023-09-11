@@ -38,10 +38,11 @@ public class NordpoolSpotService {
     private static final String url = "https://www.nordpoolspot.com/api/marketdata/page/35?currency=,,EUR,EUR";
     private static List<NordpoolPrice> nordpoolPrices;
     private static LinkedHashMap<Instant, Double> nordpoolPriceMap;
+    public static int updated = 0;
 
     public static void updateNordpoolData() {
         if (hasBeenUpdatedSuccessfullyToday()) {
-            log.info("skipped Nordpool update due to having been updated already today");
+            log.info("skipped Nordpool update due to having been updated already today successfully");
             return;
         }
         if (!isAfter_13_50(ZonedDateTime.now(fiZoneID)) && hasBeenUpdatedSuccessfullyYesterday()) {
@@ -64,6 +65,7 @@ public class NordpoolSpotService {
             nordpoolPrices = toPriceList(nordpoolResponse);
             nordpoolPriceMap = toPriceMap(nordpoolResponse);
         }
+        log.info("NordpoolService has been updated " + ++updated + " times.");
     }
 
     public static NordpoolResponse getLatest7Days() {

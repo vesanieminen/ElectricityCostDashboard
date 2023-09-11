@@ -25,9 +25,11 @@ public class AdminView extends Div {
         //add(updateFingrid);
 
 
-        //final var updateNordPoolData = new Button("Update Nordpool data");
-        //updateNordPoolData.addClickListener(e -> updateNordpoolData());
-        //add(updateNordPoolData);
+        //final var updateButton = new Button("Update Prices");
+        //updateButton.addClickListener(e -> updatePrices());
+        //add(updateButton);
+
+        //add(new H1(spotDataEnd.toString()));
     }
 
 }

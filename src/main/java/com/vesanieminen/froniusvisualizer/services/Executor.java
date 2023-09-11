@@ -7,7 +7,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.getAndWriteToFile2YearData;
-import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.updateSpotData;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getSecondsToNextEvenHour;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getSecondsToNext_13_50;
 
@@ -29,12 +28,11 @@ public class Executor {
         log.info("Ended updateAll");
     }
 
-    private static void updatePrices() {
+    public static void updatePrices() {
         log.info("Started updatePrices");
         final var startTime = System.currentTimeMillis();
         NordpoolSpotService.updateNordpoolData();
-        writeMarketPriceFile();
-        updateSpotData();
+        updatePakastinData();
         SpotHintaService.updateData();
         log.info("Ended updatePrices in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
     }
@@ -56,7 +54,7 @@ public class Executor {
         log.info("Ended updateFingridData in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
     }
 
-    private static void writeMarketPriceFile() {
+    private static void updatePakastinData() {
         //getAndWriteToFile();
         getAndWriteToFile2YearData();
     }

@@ -15,6 +15,8 @@ import java.nio.file.Path;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -380,6 +382,20 @@ public class PriceCalculatorService {
         public static HourValue Zero() {
             return new HourValue(0, 0);
         }
+    }
+
+    public static boolean hasBeenUpdatedSuccessfullyToday() {
+        if (spotPriceMap == null || spotDataEnd == null) {
+            return false;
+        }
+        return spotDataEnd.atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS).isAfter(ZonedDateTime.now(fiZoneID).truncatedTo(ChronoUnit.DAYS));
+    }
+
+    public static boolean hasBeenUpdatedSuccessfullyYesterday() {
+        if (spotPriceMap == null || spotDataEnd == null) {
+            return false;
+        }
+        return spotDataEnd.atZone(fiZoneID).getDayOfMonth() == ZonedDateTime.now(fiZoneID).getDayOfMonth();
     }
 
 }
