@@ -15,20 +15,34 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.getSecondsToNext_13_
 public class Executor {
 
     static {
-        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(3);
+        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
         executorService.schedule(Executor::updateAll, 0, TimeUnit.SECONDS);
-        executorService.scheduleAtFixedRate(Executor::updateAll, getSecondsToNextEvenHour(), TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(Executor::updatePrices, getSecondsToNextEvenHour(), TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(Executor::updateFingridData, getSecondsToNextEvenHour() + 90, TimeUnit.HOURS.toSeconds(1) + 90, TimeUnit.SECONDS);
         executorService.scheduleAtFixedRate(NordpoolSpotService::updateNordpoolData, getSecondsToNext_13_50(), TimeUnit.DAYS.toSeconds(1), TimeUnit.SECONDS);
     }
 
     private static void updateAll() {
         log.info("Started updateAll");
+        updatePrices();
+        updateFingridData();
+        log.info("Ended updateAll");
+    }
+
+    private static void updatePrices() {
+        log.info("Started updatePrices");
         final var startTime = System.currentTimeMillis();
         NordpoolSpotService.updateNordpoolData();
-        try {
-            writeMarketPriceFile();
-            updateSpotData();
+        writeMarketPriceFile();
+        updateSpotData();
+        SpotHintaService.updateData();
+        log.info("Ended updatePrices in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
+    }
 
+    private static void updateFingridData() {
+        log.info("Started updateFingridData");
+        final var startTime = System.currentTimeMillis();
+        try {
             FingridService.updateWindEstimateData();
             TimeUnit.MILLISECONDS.sleep(500);
             FingridService.updateProductionEstimateData();
@@ -36,12 +50,10 @@ public class Executor {
             FingridService.updateConsumptionEstimateData();
             TimeUnit.MILLISECONDS.sleep(500);
             FingridService.updateRealtimeData();
-
-            SpotHintaService.updateData();
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            log.error("Could not update Fingrid data");
         }
-        log.info("Ended updateAll in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
+        log.info("Ended updateFingridData in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
     }
 
     private static void writeMarketPriceFile() {
