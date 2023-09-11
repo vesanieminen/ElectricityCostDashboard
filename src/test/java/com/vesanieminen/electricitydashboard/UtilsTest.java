@@ -16,7 +16,10 @@ import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService
 import static com.vesanieminen.froniusvisualizer.util.Utils.dateTimeFormatter;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentInstantDayPrecisionFinnishZone;
+import static com.vesanieminen.froniusvisualizer.util.Utils.isAfter_13_50;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UtilsTest {
 
@@ -60,6 +63,14 @@ public class UtilsTest {
         final var fingridUsageData1 = getFingridUsageData("src/main/resources/META-INF/resources/data/consumption-with-null-only.csv");
         final var cost = calculateFixedElectricityPrice(fingridUsageData1.data(), 36);
         assertEquals(0.414, cost);
+    }
+
+    @Test
+    public void testIsAfter_13_50() {
+        final var isAfter = isAfter_13_50(ZonedDateTime.of(2023, 9, 11, 20, 52, 0, 0, fiZoneID));
+        assertTrue(isAfter);
+        final var isBefore = isAfter_13_50(ZonedDateTime.of(2023, 9, 11, 10, 52, 0, 0, fiZoneID));
+        assertFalse(isBefore);
     }
 
 }

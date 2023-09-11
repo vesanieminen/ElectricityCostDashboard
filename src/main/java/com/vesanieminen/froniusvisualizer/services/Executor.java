@@ -26,15 +26,17 @@ public class Executor {
         final var startTime = System.currentTimeMillis();
         NordpoolSpotService.updateNordpoolData();
         try {
+            writeMarketPriceFile();
+            updateSpotData();
+
             FingridService.updateWindEstimateData();
             TimeUnit.MILLISECONDS.sleep(500);
             FingridService.updateProductionEstimateData();
             TimeUnit.MILLISECONDS.sleep(500);
             FingridService.updateConsumptionEstimateData();
-            writeMarketPriceFile();
-            updateSpotData();
             TimeUnit.MILLISECONDS.sleep(500);
             FingridService.updateRealtimeData();
+
             SpotHintaService.updateData();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

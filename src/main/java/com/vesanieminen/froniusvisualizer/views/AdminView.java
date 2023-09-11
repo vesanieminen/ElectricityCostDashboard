@@ -23,6 +23,11 @@ public class AdminView extends Div {
         //    }
         //});
         //add(updateFingrid);
+
+
+        //final var updateNordPoolData = new Button("Update Nordpool data");
+        //updateNordPoolData.addClickListener(e -> updateNordpoolData());
+        //add(updateNordPoolData);
     }
 
 }

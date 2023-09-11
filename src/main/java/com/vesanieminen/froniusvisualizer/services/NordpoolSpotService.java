@@ -16,12 +16,16 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.vesanieminen.froniusvisualizer.util.Utils.dateTimeFormatter;
+import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
+import static com.vesanieminen.froniusvisualizer.util.Utils.isAfter_13_50;
 import static com.vesanieminen.froniusvisualizer.util.Utils.nordpoolZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
 
@@ -36,6 +40,15 @@ public class NordpoolSpotService {
     private static LinkedHashMap<Instant, Double> nordpoolPriceMap;
 
     public static void updateNordpoolData() {
+        if (hasBeenUpdatedSuccessfullyToday()) {
+            log.info("skipped Nordpool update due to having been updated already today");
+            return;
+        }
+        if (!isAfter_13_50(ZonedDateTime.now(fiZoneID)) && hasBeenUpdatedSuccessfullyYesterday()) {
+            log.info("skipped Nordpool update due to not having new data available yet");
+            return;
+        }
+
         final HttpRequest request;
         final HttpResponse<String> response;
         try {
@@ -124,6 +137,22 @@ public class NordpoolSpotService {
     public static LocalDateTime getDateOfLatestFullDayData() {
         final var latest7Days = getLatest7Days();
         return latest7Days.data.DataEnddate.minusDays(1);
+    }
+
+    public static boolean hasBeenUpdatedSuccessfullyToday() {
+        if (getLatest7Days() == null) {
+            return false;
+        }
+        final var dateUpdated = getLatest7Days().data.DateUpdated;
+        return dateUpdated.toLocalDate().getDayOfMonth() == LocalDate.now().getDayOfMonth();
+    }
+
+    public static boolean hasBeenUpdatedSuccessfullyYesterday() {
+        if (getLatest7Days() == null) {
+            return false;
+        }
+        final var dateUpdated = getLatest7Days().data.DateUpdated;
+        return dateUpdated.toLocalDate().getDayOfMonth() == LocalDate.now().minusDays(1).getDayOfMonth();
     }
 
 }
