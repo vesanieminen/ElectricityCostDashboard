@@ -29,7 +29,7 @@ public class AdminView extends Div {
         //updateButton.addClickListener(e -> updatePrices());
         //add(updateButton);
 
-        //add(new H1(spotDataEnd.toString()));
+        //add(new H1("" + (!isAfter_13_50(ZonedDateTime.now(fiZoneID)) && hasBeenUpdatedSuccessfullyYesterday())));
     }
 
 }

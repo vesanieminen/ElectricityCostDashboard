@@ -32,6 +32,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getVAT;
 import static com.vesanieminen.froniusvisualizer.util.Utils.monthFilter;
+import static com.vesanieminen.froniusvisualizer.util.Utils.nordpoolZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.sum;
 
@@ -388,14 +389,16 @@ public class PriceCalculatorService {
         if (spotPriceMap == null || spotDataEnd == null) {
             return false;
         }
-        return spotDataEnd.atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS).isAfter(ZonedDateTime.now(fiZoneID).truncatedTo(ChronoUnit.DAYS));
+        final var zonedDateTime = spotDataEnd.atZone(nordpoolZoneID).truncatedTo(ChronoUnit.DAYS);
+        final var other = ZonedDateTime.now(nordpoolZoneID).truncatedTo(ChronoUnit.DAYS);
+        return zonedDateTime.isAfter(other);
     }
 
     public static boolean hasBeenUpdatedSuccessfullyYesterday() {
         if (spotPriceMap == null || spotDataEnd == null) {
             return false;
         }
-        return spotDataEnd.atZone(fiZoneID).getDayOfMonth() == ZonedDateTime.now(fiZoneID).getDayOfMonth();
+        return spotDataEnd.atZone(nordpoolZoneID).getDayOfMonth() == ZonedDateTime.now(nordpoolZoneID).getDayOfMonth();
     }
 
 }
