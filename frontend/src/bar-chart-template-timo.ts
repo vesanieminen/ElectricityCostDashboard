@@ -59,6 +59,7 @@ export class BarChartTemplateTimo extends LitElement {
         return {
             chart: {
                 type: "column",
+                animation: false
             },
             legend: {
                 enabled: false
