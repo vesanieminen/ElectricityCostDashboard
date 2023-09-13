@@ -17,7 +17,7 @@ public class Executor {
         ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
         executorService.schedule(Executor::updateAll, 0, TimeUnit.SECONDS);
         executorService.scheduleAtFixedRate(Executor::updatePrices, getSecondsToNextEvenHour(), TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS);
-        executorService.scheduleAtFixedRate(Executor::updateFingridData, getSecondsToNextEvenHour() + 90, TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(Executor::updateFingridData, getSecondsToNextEvenHour() + 200, TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS);
         executorService.scheduleAtFixedRate(NordpoolSpotService::updateNordpoolData, getSecondsToNext_13_50(), TimeUnit.DAYS.toSeconds(1), TimeUnit.SECONDS);
     }
 
