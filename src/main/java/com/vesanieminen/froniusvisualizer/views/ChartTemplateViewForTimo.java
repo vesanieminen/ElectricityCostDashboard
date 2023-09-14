@@ -53,7 +53,6 @@ public class ChartTemplateViewForTimo extends Main {
     private final NumberFormat numberFormat;
     private final H2 dayH2;
     private final LocalDateTime dateOfLatestFullData;
-
     private LocalDateTime selectedDate;
 
     public ChartTemplateViewForTimo() {
@@ -162,7 +161,6 @@ public class ChartTemplateViewForTimo extends Main {
         final var from = cheapestHours.from().atZone(fiZoneID).getHour();
         final var to = cheapestHours.to().atZone(fiZoneID).getHour() + 1;
         cheapestPeriod.setTitleBottom("%s:00 - %s:00, ".formatted(from, to) + getTranslation("avg.") + " " + numberFormat.format(cheapestHours.averagePrice()));
-
     }
 
 }
