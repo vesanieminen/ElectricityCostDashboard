@@ -23,6 +23,7 @@ html {
     --fullscreen-height-list: calc(100vh - 4.5rem);
     --fullscreen-height-column: calc(100vh - 7.5rem);
     --fullscreen-height-timo-column: calc(100vh - 17rem);
+    --fullscreen-height-history: calc(100vh - 4.5rem);
 }
 
 :focus-visible {
@@ -36,6 +37,7 @@ html {
         --fullscreen-height-list: calc(100vh - 3.5rem);
         --fullscreen-height-column: calc(100vh - 14.5rem);
         --fullscreen-height-timo-column: calc(100vh - 17rem);
+        --fullscreen-height-history: calc(100vh - 6rem);
     }
 }
 

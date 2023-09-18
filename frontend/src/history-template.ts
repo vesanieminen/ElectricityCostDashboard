@@ -149,7 +149,7 @@ export class HistoryTemplate extends LitElement {
     render() {
         return html`
             <vaadin-chart
-                    style="height: 100%"
+                    style="height: var(--fullscreen-height-history); min-height: 300px"
                     .additionalOptions=${this.getChartOptions()}
             >
             </vaadin-chart>

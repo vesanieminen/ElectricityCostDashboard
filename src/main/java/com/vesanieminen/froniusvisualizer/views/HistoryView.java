@@ -1,6 +1,5 @@
 package com.vesanieminen.froniusvisualizer.views;
 
-import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -14,16 +13,6 @@ public class HistoryView extends Main {
 
     public HistoryView() {
         add(new HistoryTemplate());
-    }
-
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
-        attachEvent.getUI().getPage().retrieveExtendedClientDetails(details -> {
-            if (!details.isTouchDevice()) {
-                setHeight("var(--fullscreen-height)");
-                setMinHeight("300px");
-            }
-        });
     }
 
 }
