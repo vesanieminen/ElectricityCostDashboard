@@ -36,7 +36,7 @@ html {
         --fullscreen-height: calc(100vh - 10.5rem);
         --fullscreen-height-list: calc(100vh - 3.5rem);
         --fullscreen-height-column: calc(100vh - 14.5rem);
-        --fullscreen-height-timo-column: calc(100vh - 17rem);
+        --fullscreen-height-timo-column: calc(100vh - 24.5rem);
         --fullscreen-height-history: calc(100vh - 6rem);
     }
 }
