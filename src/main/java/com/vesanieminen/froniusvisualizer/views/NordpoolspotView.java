@@ -2,7 +2,6 @@ package com.vesanieminen.froniusvisualizer.views;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Unit;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.AxisType;
 import com.vaadin.flow.component.charts.model.ChartType;
@@ -10,7 +9,6 @@ import com.vaadin.flow.component.charts.model.Configuration;
 import com.vaadin.flow.component.charts.model.DataSeries;
 import com.vaadin.flow.component.charts.model.DataSeriesItem;
 import com.vaadin.flow.component.charts.model.DateTimeLabelFormats;
-import com.vaadin.flow.component.charts.model.Label;
 import com.vaadin.flow.component.charts.model.Labels;
 import com.vaadin.flow.component.charts.model.Marker;
 import com.vaadin.flow.component.charts.model.PlotLine;
@@ -58,7 +56,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 import static com.vesanieminen.froniusvisualizer.services.FingridService.fingridDataUpdated;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
@@ -217,12 +214,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         chart.getConfiguration().getScrollbar().setEnabled(false);
         chart.getConfiguration().getLegend().setEnabled(true);
         chart.getConfiguration().getChart().setStyledMode(true);
-        if (isFullscreen) {
-            chart.setHeight("calc(100vh - 13rem)");
-        } else {
-            chart.setHeight("500px");
-            chart.setMaxWidth("1400px");
-        }
+        chart.setHeight("calc(100vh - 13rem)");
 
         // create x and y-axis
         createXAxis(chart);
@@ -276,8 +268,6 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         rangeSelector.setEnabled(true);
         rangeSelector.setInputEnabled(true);
 
-        //addAveragePrice(nordpoolResponse, chart);
-
         setTouchDeviceConfiguration(chart, chart.getConfiguration());
 
         add(chart);
@@ -299,27 +289,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         final Span fingridFooter = createFingridLicenseSpan();
         add(fingridFooter);
 
-        //addUpdateFingridDataButton();
-
         return chart;
-    }
-
-    private void addUpdateFingridDataButton() {
-        final var updateFingrid = new Button(getTranslation("Update Fingrid data"));
-        updateFingrid.addClickListener(e -> {
-            FingridService.updateWindEstimateData();
-            try {
-                TimeUnit.MILLISECONDS.sleep(500);
-                FingridService.updateProductionEstimateData();
-                TimeUnit.MILLISECONDS.sleep(500);
-                FingridService.updateConsumptionEstimateData();
-                TimeUnit.MILLISECONDS.sleep(500);
-                FingridService.updateRealtimeData();
-            } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
-        add(updateFingrid);
     }
 
     private static void configureTemperatureDataSeries(DataSeries temperatureDataSeries) {
@@ -335,14 +305,6 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         plotOptionsLineSpot.setTooltip(seriesTooltipSpot);
         temperatureDataSeries.setPlotOptions(plotOptionsLineSpot);
         //temperatureDataSeries.setVisible(false);
-    }
-
-    private static void addAveragePrice(NordpoolResponse nordpoolResponse, Chart chart) {
-        // TODO: bring back the average price per day?
-        final var averageValue = nordpoolResponse.data.Rows.get(26);
-        PlotLine averagePrice = new PlotLine();
-        averagePrice.setLabel(new Label("Average price: " + averageValue + " c/kWh"));
-        chart.getConfiguration().getyAxis().addPlotLine(averagePrice);
     }
 
     private Span createFingridLicenseSpan() {
@@ -539,13 +501,6 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
                 case VAT0 -> ui.navigate(NordpoolspotView.class, vatDisabled);
             }
         }));
-    }
-
-    private static Button createButton(String text) {
-        Button button = new Button(text);
-        button.setWidthFull();
-        button.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.BorderRadius.NONE, LumoUtility.Margin.Vertical.NONE, LumoUtility.Height.MEDIUM, LumoUtility.BorderColor.CONTRAST_10, LumoUtility.Border.ALL);
-        return button;
     }
 
     private DataSeries createSpotPriceDataSeries(NordpoolResponse nordpoolResponse, Chart chart, DateTimeFormatter dateTimeFormatter, ArrayList<Series> series) {
