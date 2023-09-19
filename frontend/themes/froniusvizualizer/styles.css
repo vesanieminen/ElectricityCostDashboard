@@ -18,16 +18,16 @@ body {
     box-sizing: border-box;
 }
 
+:focus-visible {
+    outline-color: var(--lumo-primary-color-50pct);
+}
+
 html {
     --fullscreen-height: calc(100vh - 3.5rem);
     --fullscreen-height-list: calc(100vh - 4.5rem);
     --fullscreen-height-column: calc(100vh - 7.5rem);
     --fullscreen-height-timo-column: calc(100vh - 17rem);
     --fullscreen-height-history: calc(100vh - 4.5rem);
-}
-
-:focus-visible {
-    outline-color: var(--lumo-primary-color-50pct);
 }
 
 /* iOS specific height setting */

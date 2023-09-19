@@ -3,7 +3,6 @@ package com.vesanieminen.froniusvisualizer.views;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.AxisType;
 import com.vaadin.flow.component.charts.model.ChartType;
@@ -99,10 +98,8 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
     public static final Double vat10Value = 1.10d;
     private boolean hasVat = true;
 
-    private boolean isFullscreen = false;
+    private boolean isFullscreen = true;
     private boolean isTouchDevice = false;
-
-    private final Button fullScreenButton;
 
     private boolean isInitialRender = true;
 
@@ -124,20 +121,6 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         lowestAndHighest = new DoubleLabel(getTranslation("Lowest / highest today"), "");
         averagePrice7Days = new DoubleLabel(getTranslation("7 day average"), "");
         nextPrice = new DoubleLabel(getTranslation("Price in 1h"), "");
-
-        fullScreenButton = createButton(getTranslation("Fullscreen"));
-        fullScreenButton.setVisible(false);
-        if (isFullscreen) {
-            fullScreenButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        }
-        fullScreenButton.addClickListener(e -> {
-            isFullscreen = !isFullscreen;
-            fullScreenButton.removeThemeVariants(ButtonVariant.LUMO_PRIMARY);
-            if (isFullscreen) {
-                fullScreenButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-            }
-            renderView();
-        });
     }
 
     @Override
@@ -162,7 +145,6 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
                 screenWidth = details.getBodyClientWidth();
                 setTouchDeviceConfiguration(chart, conf);
             }
-            fullScreenButton.setVisible(!details.isTouchDevice());
         });
         // Scroll to the top after navigation
         e.getUI().scrollIntoView();
@@ -547,9 +529,8 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         vatComboBox.setItems(VAT.values());
         vatComboBox.setValue(hasVat ? VAT.VAT : VAT.VAT0);
         vatComboBox.setItemLabelGenerator(item -> getTranslation(item.getVatName()));
-        final var menuLayout = new FlexLayout(vatComboBox, fullScreenButton);
+        final var menuLayout = new FlexLayout(vatComboBox);
         menuLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Width.FULL);
-        menuLayout.setFlexShrink(1, fullScreenButton);
         add(menuLayout);
         // Add event listeners
         vatComboBox.addValueChangeListener(e -> getUI().ifPresent(ui -> {
