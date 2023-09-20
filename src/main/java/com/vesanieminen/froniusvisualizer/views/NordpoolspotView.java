@@ -214,7 +214,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         chart.getConfiguration().getScrollbar().setEnabled(false);
         chart.getConfiguration().getLegend().setEnabled(true);
         chart.getConfiguration().getChart().setStyledMode(true);
-        chart.setHeight("calc(100vh - 13rem)");
+        chart.setHeight("calc(100vh - 14rem)");
 
         // create x and y-axis
         createXAxis(chart);
