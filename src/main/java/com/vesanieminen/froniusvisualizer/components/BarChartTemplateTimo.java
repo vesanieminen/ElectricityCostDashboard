@@ -7,6 +7,7 @@ import com.vaadin.flow.component.PropertyDescriptors;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
+import com.vesanieminen.froniusvisualizer.services.model.Plotline;
 import com.vesanieminen.froniusvisualizer.util.Utils;
 
 import java.time.format.DateTimeFormatter;
@@ -22,7 +23,6 @@ public class BarChartTemplateTimo extends Component {
     private static final PropertyDescriptor<String, String> UNIT = PropertyDescriptors.propertyWithDefault("unit", "");
     private static final PropertyDescriptor<String, String> POST_FIX = PropertyDescriptors.propertyWithDefault("postfix", "");
     private static final PropertyDescriptor<String, String> AVERAGE_TEXT = PropertyDescriptors.propertyWithDefault("averageText", "");
-    private static final PropertyDescriptor<String, String> AVERAGE_CLASS = PropertyDescriptors.propertyWithDefault("averageClass", "average-yellow");
     private static final PropertyDescriptor<Double, Double> AVERAGE = PropertyDescriptors.propertyWithDefault("average", -100d);
     private static final PropertyDescriptor<String, String> LANGUAGE = PropertyDescriptors.propertyWithDefault("language", "en");
 
@@ -35,7 +35,6 @@ public class BarChartTemplateTimo extends Component {
         set(UNIT, getTranslation("column-chart.series.unit"));
         set(POST_FIX, getTranslation("c/kWh"));
         set(AVERAGE_TEXT, getTranslation("column-chart.month.average"));
-
     }
 
     public void setNordpoolDataList(List<NordpoolPrice> list) {
@@ -47,9 +46,8 @@ public class BarChartTemplateTimo extends Component {
         getElement().setProperty("average", average);
     }
 
-    public void setAverageClass(String className) {
-        getElement().setProperty("averageClass", className);
+    public void setPlotline(List<Plotline> plotlines) {
+        getElement().setPropertyList("plotLines", plotlines);
     }
-
 
 }

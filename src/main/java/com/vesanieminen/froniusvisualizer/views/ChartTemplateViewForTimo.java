@@ -15,6 +15,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.BarChartTemplateTimo;
 import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
 import com.vesanieminen.froniusvisualizer.components.MaterialIcon;
+import com.vesanieminen.froniusvisualizer.services.model.Plotline;
 
 import java.text.NumberFormat;
 import java.time.Duration;
@@ -22,6 +23,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getDateOfLatestFullDayData;
@@ -53,6 +56,7 @@ public class ChartTemplateViewForTimo extends Main {
     private final NumberFormat numberFormat;
     private final H2 dayH2;
     private final LocalDateTime dateOfLatestFullData;
+    private final Checkbox showTheMonthlyAverageLineCheckbox;
     private LocalDateTime selectedDate;
 
     public ChartTemplateViewForTimo() {
@@ -112,9 +116,8 @@ public class ChartTemplateViewForTimo extends Main {
         labelDiv.addClassNames(LumoUtility.Margin.Bottom.MEDIUM);
         add(labelDiv);
 
-        final var showTheMonthlyAverageLineCheckbox = new Checkbox(getTranslation("Show the monthly average line"));
+        showTheMonthlyAverageLineCheckbox = new Checkbox(getTranslation("Show the monthly average line"));
         showTheMonthlyAverageLineCheckbox.addValueChangeListener(e -> {
-            barChartTemplateTimo.setAverageClass(e.getValue() ? "average-yellow" : "average-none");
             averageThisMonthLabel.getSpanBottom().getStyle().set("border-color", e.getValue() ? "rgb(242, 182, 50)" : "");
             averageThisMonthLabel.getSpanBottom().getStyle().set("border-width", e.getValue() ? "medium" : "");
             if (e.getValue()) {
@@ -122,6 +125,7 @@ public class ChartTemplateViewForTimo extends Main {
             } else {
                 averageThisMonthLabel.getSpanBottom().removeClassName(LumoUtility.Border.BOTTOM);
             }
+            updateLabels(selectedDate);
         });
         showTheMonthlyAverageLineCheckbox.setValue(true);
 
@@ -152,7 +156,14 @@ public class ChartTemplateViewForTimo extends Main {
         final var combinedSpotData = getCombinedSpotData();
         averageTodayLabel.setTitleBottom(numberFormat.format(calculateAverageOfDay(selectedDay.toLocalDate(), combinedSpotData)) + " " + getTranslation("c/kWh"));
         final var monthAverage = calculateSpotAveragePriceOfMonth(selectedDay.toLocalDate(), combinedSpotData);
-        barChartTemplateTimo.setAverage(monthAverage);
+        if (showTheMonthlyAverageLineCheckbox.getValue()) {
+            barChartTemplateTimo.setAverage(monthAverage);
+            final var plotlines = List.of(new Plotline("average-yellow", monthAverage));
+            barChartTemplateTimo.setPlotline(plotlines);
+        } else {
+            barChartTemplateTimo.setAverage(-100d);
+            barChartTemplateTimo.setPlotline(new ArrayList<>());
+        }
         averageThisMonthLabel.setTitleBottom(numberFormat.format(monthAverage) + " " + getTranslation("c/kWh"));
         final var min = decimalFormat.format(calculateMinimumOfDay(selectedDay.toLocalDate(), combinedSpotData));
         final var max = decimalFormat.format(calculateMaximumOfDay(selectedDay.toLocalDate(), combinedSpotData));

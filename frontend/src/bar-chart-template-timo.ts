@@ -1,11 +1,11 @@
 import {html, LitElement, PropertyValues} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
-//import '@vaadin/button'
 import '@vaadin/charts';
 import '@vaadin/charts/src/vaadin-chart-series';
 import type {Options} from 'highcharts';
 import {registerTranslateConfig, use} from "lit-translate";
 import {Nordpool} from "Frontend/src/nordpool";
+import {Plotline} from "Frontend/src/plotline";
 
 registerTranslateConfig({
     loader: lang => fetch(`${lang}.json`).then(res => res.json())
@@ -44,9 +44,6 @@ export class BarChartTemplateTimo extends LitElement {
     averageText: string = '';
 
     @property()
-    averageClass: string = 'average-yellow';
-
-    @property()
     average?: number;
 
     @property()
@@ -54,6 +51,9 @@ export class BarChartTemplateTimo extends LitElement {
 
     @property()
     values?: Array<Nordpool>;
+
+    @property()
+    plotLines?: Array<Plotline>;
 
     private getChartOptions(): Options {
         return {
@@ -84,15 +84,9 @@ export class BarChartTemplateTimo extends LitElement {
                     text: ''
                     //text: get("general.price-type")
                 },
-                softMax: this.average! + 1,
+                softMax: this.average == -100 ? null : this.average,
                 plotLines:
-                    [{
-                        //label: {
-                        //    text: this.averageText
-                        //},
-                        className: this.averageClass,
-                        value: this.average
-                    }],
+                    this.plotLines!
             }],
             plotOptions: {
                 column: {
