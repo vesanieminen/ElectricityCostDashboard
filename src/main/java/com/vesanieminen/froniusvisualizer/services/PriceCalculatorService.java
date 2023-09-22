@@ -149,6 +149,10 @@ public class PriceCalculatorService {
                         final var _15Min = csvReader.readNext();
                         final var _30Min = csvReader.readNext();
                         final var _45Min = csvReader.readNext();
+                        // also skip if one of the 15min interval values is missing
+                        if ("MISSING".equals(_15Min[getColumnIndex(isNewFormat, 6)]) || "MISSING".equals(_30Min[getColumnIndex(isNewFormat, 6)]) || "MISSING".equals(_45Min[getColumnIndex(isNewFormat, 6)])) {
+                            break;
+                        }
                         final var value00Min = numberFormat.parse(line[6]).doubleValue();
                         final var value15Min = numberFormat.parse(_15Min[6]).doubleValue();
                         final var value30Min = numberFormat.parse(_30Min[6]).doubleValue();
