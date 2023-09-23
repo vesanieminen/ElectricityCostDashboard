@@ -1,5 +1,6 @@
 package com.vesanieminen.froniusvisualizer.views;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
@@ -22,6 +23,7 @@ import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.AnchorTarget;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.Span;
@@ -155,7 +157,7 @@ public class PriceCalculatorView extends Main {
         // Layouts
         createHelpLayout(content);
         final var resultLayout = new Div();
-        resultLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Margin.Top.MEDIUM);
+        resultLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.MEDIUM);
         final var chartLayout = new Div();
 
         // Consumption file
@@ -245,7 +247,7 @@ public class PriceCalculatorView extends Main {
         transferAndTaxField = new SuperDoubleField(getTranslation("calculator.transfer.and.tax"));
         transferAndTaxField.setMaximumFractionDigits(6);
         transferAndTaxField.setLocale(getLocale());
-        transferAndTaxField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(7.61) + " " + getTranslation("calculator.with.caruna"));
+        transferAndTaxField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(7.86) + " " + getTranslation("calculator.with.caruna"));
         transferAndTaxField.setRequiredIndicatorVisible(true);
         transferAndTaxField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         transferAndTaxField.addClassNames(LumoUtility.Flex.GROW);
@@ -292,9 +294,10 @@ public class PriceCalculatorView extends Main {
                 final NumberFormat sixDecimals = getNumberFormat(getLocale(), 6);
                 final var twoDecimalsWithPlusPrefix = getNumberFormatMaxTwoDecimalsWithPlusPrefix(getLocale());
 
+                final Div overviewDiv = addSection(resultLayout, "Overview");
                 // Total labels
-                resultLayout.add(new DoubleLabel(getTranslation("Calculation period (start times)"), start + " - " + end, true));
-                resultLayout.add(new DoubleLabel(getTranslation("Total consumption over period"), numberFormat.format(spotCalculation.totalConsumption) + "kWh", true));
+                overviewDiv.add(new DoubleLabel(getTranslation("Calculation period (start times)"), start + " - " + end, true));
+                overviewDiv.add(new DoubleLabel(getTranslation("Total consumption over period"), numberFormat.format(spotCalculation.totalConsumption) + "kWh", true));
 
                 // Spot labels
                 final var totalCost = new BigDecimal(spotCalculation.totalCost).setScale(2, RoundingMode.HALF_UP).doubleValue();
@@ -302,24 +305,27 @@ public class PriceCalculatorView extends Main {
                 final var weightedAverage = totalCost / spotCalculation.totalConsumption * 100;
                 // Helen calculates spot average like this:
                 //final var weightedAverage = totalCost / ((int) spotCalculation.totalAmount) * 100;
-                resultLayout.add(new DoubleLabel(getTranslation("Average spot price (incl. margin)"), sixDecimals.format(weightedAverage) + " " + getTranslation("c/kWh"), true));
-                resultLayout.add(new DoubleLabel(getTranslation("Total spot cost (incl. margin)"), numberFormat.format(spotCalculation.totalCost) + "€", true));
-                resultLayout.add(new DoubleLabel(getTranslation("Total spot cost (without margin)"), numberFormat.format(spotCalculation.totalCostWithoutMargin) + "€", true));
-                resultLayout.add(new DoubleLabel(getTranslation("Unweighted spot average"), numberFormat.format(spotCalculation.averagePriceWithoutMargin) + " " + getTranslation("c/kWh"), true));
+                overviewDiv.add(new DoubleLabel(getTranslation("Average spot price (incl. margin)"), sixDecimals.format(weightedAverage) + " " + getTranslation("c/kWh"), true));
+                overviewDiv.add(new DoubleLabel(getTranslation("Total spot cost (incl. margin)"), numberFormat.format(spotCalculation.totalCost) + "€", true));
+                overviewDiv.add(new DoubleLabel(getTranslation("Total spot cost (without margin)"), numberFormat.format(spotCalculation.totalCostWithoutMargin) + "€", true));
+                overviewDiv.add(new DoubleLabel(getTranslation("Unweighted spot average"), numberFormat.format(spotCalculation.averagePriceWithoutMargin) + " " + getTranslation("c/kWh"), true));
                 final var loweredCost = (spotCalculation.totalCostWithoutMargin / spotCalculation.totalConsumption * 100 - spotCalculation.averagePriceWithoutMargin) / spotCalculation.averagePriceWithoutMargin * 100;
                 final var formattedOwnSpotVsAverage = twoDecimalsWithPlusPrefix.format(loweredCost);
-                resultLayout.add(new DoubleLabel(getTranslation("calculator.spot.difference.percentage"), formattedOwnSpotVsAverage + "%", true));
+                overviewDiv.add(new DoubleLabel(getTranslation("calculator.spot.difference.percentage"), formattedOwnSpotVsAverage + "%", true));
                 final var costEffect = (spotCalculation.totalCostWithoutMargin * 100 - spotCalculation.averagePriceWithoutMargin * spotCalculation.totalConsumption) / spotCalculation.totalConsumption;
                 final var costEffectFormatted = twoDecimalsWithPlusPrefix.format(costEffect);
-                resultLayout.add(new DoubleLabel(getTranslation("calculator.spot.difference.cents"), costEffectFormatted + " " + getTranslation("c/kWh"), true));
+                overviewDiv.add(new DoubleLabel(getTranslation("calculator.spot.difference.cents"), costEffectFormatted + " " + getTranslation("c/kWh"), true));
 
                 if (isCalculatingFixed()) {
-                    resultLayout.add(new DoubleLabel(getTranslation("Fixed price"), fixedPriceField.getValue() + " " + getTranslation("c/kWh"), true));
+                    final Div fixedPriceDiv = addSection(resultLayout, "Fixed Price details");
+                    resultLayout.add(fixedPriceDiv);
+                    fixedPriceDiv.add(new DoubleLabel(getTranslation("Fixed price"), fixedPriceField.getValue() + " " + getTranslation("c/kWh"), true));
                     var fixedCost = calculateFixedElectricityPrice(consumptionData.data(), fixedPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
-                    resultLayout.add(new DoubleLabel(getTranslation("Fixed cost total"), numberFormat.format(fixedCost) + "€", true));
+                    fixedPriceDiv.add(new DoubleLabel(getTranslation("Fixed cost total"), numberFormat.format(fixedCost) + "€", true));
                 }
 
                 if (isCalculatingTransferAndTax()) {
+                    final var transferAndTaxHeader = new H2("");
                     resultLayout.add(new DoubleLabel(getTranslation("calculator.transfer.and.tax"), transferAndTaxField.getValue() + " " + getTranslation("c/kWh"), true));
                     var transferAndTaxTotalCost = calculateFixedElectricityPrice(consumptionData.data(), transferAndTaxField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     resultLayout.add(new DoubleLabel(getTranslation("calculator.transfer.and.tax.total"), numberFormat.format(transferAndTaxTotalCost) + "€", true));
@@ -362,6 +368,25 @@ public class PriceCalculatorView extends Main {
         content.add(button);
         add(resultLayout);
         add(chartLayout);
+    }
+
+    private Div createWrapDiv(Component... components) {
+        final var wrapDiv = new Div(components);
+        wrapDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Margin.Top.MEDIUM);
+        return wrapDiv;
+    }
+
+    private Component createSectionHeader(String title) {
+        final var header = new H2(title);
+        header.addClassNames(LumoUtility.FontSize.MEDIUM, LumoUtility.Margin.NONE);
+        return header;
+    }
+
+    private Div addSection(Div div, String title) {
+        final var overviewDiv = createWrapDiv();
+        final var overviewHeader = createSectionHeader(title);
+        div.add(overviewHeader, overviewDiv);
+        return overviewDiv;
     }
 
     private void addErrorHandling(Upload upload) {
