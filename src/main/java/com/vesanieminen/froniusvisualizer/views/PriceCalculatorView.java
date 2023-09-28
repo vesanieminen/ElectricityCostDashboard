@@ -297,7 +297,7 @@ public class PriceCalculatorView extends Main {
                 final Div overviewDiv = addSection(resultLayout, "Overview");
                 // Total labels
                 overviewDiv.add(new DoubleLabel(getTranslation("Calculation period (start times)"), start + " - " + end, true));
-                overviewDiv.add(new DoubleLabel(getTranslation("Total consumption over period"), numberFormat.format(spotCalculation.totalConsumption) + "kWh", true));
+                overviewDiv.add(new DoubleLabel(getTranslation("Total consumption over period"), numberFormat.format(spotCalculation.totalConsumption) + " kWh", true));
 
                 // Spot labels
                 final var totalCost = new BigDecimal(spotCalculation.totalCost).setScale(2, RoundingMode.HALF_UP).doubleValue();
@@ -306,12 +306,12 @@ public class PriceCalculatorView extends Main {
                 // Helen calculates spot average like this:
                 //final var weightedAverage = totalCost / ((int) spotCalculation.totalAmount) * 100;
                 overviewDiv.add(new DoubleLabel(getTranslation("Average spot price (incl. margin)"), sixDecimals.format(weightedAverage) + " " + getTranslation("c/kWh"), true));
-                overviewDiv.add(new DoubleLabel(getTranslation("Total spot cost (incl. margin)"), numberFormat.format(spotCalculation.totalCost) + "€", true));
-                overviewDiv.add(new DoubleLabel(getTranslation("Total spot cost (without margin)"), numberFormat.format(spotCalculation.totalCostWithoutMargin) + "€", true));
+                overviewDiv.add(new DoubleLabel(getTranslation("Total spot cost (incl. margin)"), numberFormat.format(spotCalculation.totalCost) + " €", true));
+                overviewDiv.add(new DoubleLabel(getTranslation("Total spot cost (without margin)"), numberFormat.format(spotCalculation.totalCostWithoutMargin) + " €", true));
                 overviewDiv.add(new DoubleLabel(getTranslation("Unweighted spot average"), numberFormat.format(spotCalculation.averagePriceWithoutMargin) + " " + getTranslation("c/kWh"), true));
                 final var loweredCost = (spotCalculation.totalCostWithoutMargin / spotCalculation.totalConsumption * 100 - spotCalculation.averagePriceWithoutMargin) / spotCalculation.averagePriceWithoutMargin * 100;
                 final var formattedOwnSpotVsAverage = twoDecimalsWithPlusPrefix.format(loweredCost);
-                overviewDiv.add(new DoubleLabel(getTranslation("calculator.spot.difference.percentage"), formattedOwnSpotVsAverage + "%", true));
+                overviewDiv.add(new DoubleLabel(getTranslation("calculator.spot.difference.percentage"), formattedOwnSpotVsAverage + " %", true));
                 final var costEffect = (spotCalculation.totalCostWithoutMargin * 100 - spotCalculation.averagePriceWithoutMargin * spotCalculation.totalConsumption) / spotCalculation.totalConsumption;
                 final var costEffectFormatted = twoDecimalsWithPlusPrefix.format(costEffect);
                 overviewDiv.add(new DoubleLabel(getTranslation("calculator.spot.difference.cents"), costEffectFormatted + " " + getTranslation("c/kWh"), true));
@@ -321,15 +321,15 @@ public class PriceCalculatorView extends Main {
                     resultLayout.add(fixedPriceDiv);
                     fixedPriceDiv.add(new DoubleLabel(getTranslation("Fixed price"), fixedPriceField.getValue() + " " + getTranslation("c/kWh"), true));
                     var fixedCost = calculateFixedElectricityPrice(consumptionData.data(), fixedPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
-                    fixedPriceDiv.add(new DoubleLabel(getTranslation("Fixed cost total"), numberFormat.format(fixedCost) + "€", true));
+                    fixedPriceDiv.add(new DoubleLabel(getTranslation("Fixed cost total"), numberFormat.format(fixedCost) + " €", true));
                 }
 
                 if (isCalculatingTransferAndTax()) {
                     final Div transferAndTaxDiv = addSection(resultLayout, "Transfer and tax");
                     transferAndTaxDiv.add(new DoubleLabel(getTranslation("calculator.transfer.and.tax"), transferAndTaxField.getValue() + " " + getTranslation("c/kWh"), true));
                     var transferAndTaxTotalCost = calculateFixedElectricityPrice(consumptionData.data(), transferAndTaxField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
-                    transferAndTaxDiv.add(new DoubleLabel(getTranslation("calculator.transfer.and.tax.total"), numberFormat.format(transferAndTaxTotalCost) + "€", true));
-                    transferAndTaxDiv.add(new DoubleLabel(getTranslation("calculator.spot.cost.and.transfer"), numberFormat.format(spotCalculation.totalCost + transferAndTaxTotalCost) + "€", true));
+                    transferAndTaxDiv.add(new DoubleLabel(getTranslation("calculator.transfer.and.tax.total"), numberFormat.format(transferAndTaxTotalCost) + " €", true));
+                    transferAndTaxDiv.add(new DoubleLabel(getTranslation("calculator.spot.cost.and.transfer"), numberFormat.format(spotCalculation.totalCost + transferAndTaxTotalCost) + " €", true));
                 }
 
                 // Create spot consumption chart
@@ -339,12 +339,12 @@ public class PriceCalculatorView extends Main {
                     final var productionData = getFingridUsageData(lastProductionData);
                     final var spotProductionCalculation = calculateSpotElectricityPriceDetails(productionData.data(), -spotProductionMarginField.getValue(), 1, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     final Div productionDiv = addSection(resultLayout, "Production");
-                    productionDiv.add(new DoubleLabel(getTranslation("Total production over period"), numberFormat.format(spotProductionCalculation.totalConsumption) + "kWh", true));
-                    productionDiv.add(new DoubleLabel(getTranslation("Net spot cost (consumption - production)"), numberFormat.format(spotCalculation.totalCost - spotProductionCalculation.totalCost) + "€", true));
-                    productionDiv.add(new DoubleLabel(getTranslation("Net usage (consumption - production)"), numberFormat.format(spotCalculation.totalConsumption - spotProductionCalculation.totalConsumption) + "kWh", true));
-                    productionDiv.add(new DoubleLabel(getTranslation("Average production price (incl. margin)"), numberFormat.format(spotProductionCalculation.totalCost / spotProductionCalculation.totalConsumption * 100) + getTranslation("c/kWh"), true));
-                    productionDiv.add(new DoubleLabel(getTranslation("Total production value (incl. margin)"), numberFormat.format(spotProductionCalculation.totalCost) + "€", true));
-                    productionDiv.add(new DoubleLabel(getTranslation("Total production value (without margin)"), numberFormat.format(spotProductionCalculation.totalCostWithoutMargin) + "€", true));
+                    productionDiv.add(new DoubleLabel(getTranslation("Total production over period"), numberFormat.format(spotProductionCalculation.totalConsumption) + " kWh", true));
+                    productionDiv.add(new DoubleLabel(getTranslation("Net spot cost (consumption - production)"), numberFormat.format(spotCalculation.totalCost - spotProductionCalculation.totalCost) + " €", true));
+                    productionDiv.add(new DoubleLabel(getTranslation("Net usage (consumption - production)"), numberFormat.format(spotCalculation.totalConsumption - spotProductionCalculation.totalConsumption) + " kWh", true));
+                    productionDiv.add(new DoubleLabel(getTranslation("Average production price (incl. margin)"), numberFormat.format(spotProductionCalculation.totalCost / spotProductionCalculation.totalConsumption * 100) + " " + getTranslation("c/kWh"), true));
+                    productionDiv.add(new DoubleLabel(getTranslation("Total production value (incl. margin)"), numberFormat.format(spotProductionCalculation.totalCost) + " €", true));
+                    productionDiv.add(new DoubleLabel(getTranslation("Total production value (without margin)"), numberFormat.format(spotProductionCalculation.totalCostWithoutMargin) + " €", true));
                     // Create spot production chart
                     chartLayout.add(createChart(spotProductionCalculation, false, getTranslation("Production / value per hour"), "Production", "Production value"));
                 }
