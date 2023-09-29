@@ -217,7 +217,7 @@ public class PriceCalculatorView extends Main {
         // Fixed price field
         fixedPriceField = new SuperDoubleField(getTranslation("Fixed price"));
         fixedPriceField.setLocale(getLocale());
-        fixedPriceField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(12.68));
+        fixedPriceField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(5.41));
         fixedPriceField.setRequiredIndicatorVisible(true);
         fixedPriceField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         fixedPriceField.addClassNames(LumoUtility.Flex.GROW);
