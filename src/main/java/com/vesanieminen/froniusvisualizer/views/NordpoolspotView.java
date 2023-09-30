@@ -89,17 +89,12 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
     private final String consumptionTitle;
     private final String importExportTitle;
     private final String totalRenewablesTitle;
-
     private static final String vatDisabled = "vat=off";
     public static final Double vat24Value = 1.24d;
     public static final Double vat10Value = 1.10d;
     private boolean hasVat = true;
-
-    private boolean isFullscreen = true;
     private boolean isTouchDevice = false;
-
     private boolean isInitialRender = true;
-
     private int screenWidth;
 
     public NordpoolspotView() {
