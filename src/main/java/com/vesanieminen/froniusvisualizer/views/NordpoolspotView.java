@@ -99,7 +99,6 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
 
     public NordpoolspotView() {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.CENTER);
-
         fiElectricityPriceTitle = getTranslation("FI electricity price");
         hydroPowerProductionTitle = getTranslation("Hydro production");
         windPowerProductionTitle = getTranslation("Wind production");
@@ -108,7 +107,6 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         consumptionTitle = getTranslation("Consumption");
         importExportTitle = getTranslation("Net export - import");
         totalRenewablesTitle = getTranslation("Total renewables");
-
         priceNow = new DoubleLabel(getTranslation("Price now"), "");
         lowestAndHighest = new DoubleLabel(getTranslation("Lowest / highest today"), "");
         averagePrice7Days = new DoubleLabel(getTranslation("7 day average"), "");
@@ -299,7 +297,6 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         seriesTooltipSpot.setDateTimeLabelFormats(dateTimeLabelFormats);
         plotOptionsLineSpot.setTooltip(seriesTooltipSpot);
         temperatureDataSeries.setPlotOptions(plotOptionsLineSpot);
-        //temperatureDataSeries.setVisible(false);
     }
 
     private Span createFingridLicenseSpan() {
