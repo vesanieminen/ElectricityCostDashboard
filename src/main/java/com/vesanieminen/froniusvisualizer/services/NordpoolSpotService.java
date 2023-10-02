@@ -25,7 +25,7 @@ import java.util.List;
 
 import static com.vesanieminen.froniusvisualizer.util.Utils.dateTimeFormatter;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
-import static com.vesanieminen.froniusvisualizer.util.Utils.isAfter_13_50;
+import static com.vesanieminen.froniusvisualizer.util.Utils.isAfter_13_45;
 import static com.vesanieminen.froniusvisualizer.util.Utils.nordpoolZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
 
@@ -45,7 +45,7 @@ public class NordpoolSpotService {
             log.info("skipped Nordpool update due to having been updated already today successfully");
             return;
         }
-        if (!isAfter_13_50(ZonedDateTime.now(fiZoneID)) && hasBeenUpdatedSuccessfullyYesterday()) {
+        if (!isAfter_13_45(ZonedDateTime.now(fiZoneID)) && hasBeenUpdatedSuccessfullyYesterday()) {
             log.info("skipped Nordpool update due to not having new data available yet");
             return;
         }

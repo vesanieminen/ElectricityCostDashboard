@@ -134,8 +134,8 @@ public class Utils {
         return Duration.between(now, next_13_50).getSeconds();
     }
 
-    public static boolean isAfter_13_50(ZonedDateTime zonedDateTime) {
-        return zonedDateTime.isAfter(zonedDateTime.withHour(13).withMinute(49));
+    public static boolean isAfter_13_45(ZonedDateTime zonedDateTime) {
+        return zonedDateTime.isAfter(zonedDateTime.withHour(13).withMinute(45));
     }
 
     public static Instant getStartOfDay(int year, int month, int day) {

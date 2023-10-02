@@ -16,7 +16,7 @@ import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService
 import static com.vesanieminen.froniusvisualizer.util.Utils.dateTimeFormatter;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentInstantDayPrecisionFinnishZone;
-import static com.vesanieminen.froniusvisualizer.util.Utils.isAfter_13_50;
+import static com.vesanieminen.froniusvisualizer.util.Utils.isAfter_13_45;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -67,10 +67,12 @@ public class UtilsTest {
 
     @Test
     public void testIsAfter_13_50() {
-        final var isAfter = isAfter_13_50(ZonedDateTime.of(2023, 9, 11, 20, 52, 0, 0, fiZoneID));
+        final var isAfter = isAfter_13_45(ZonedDateTime.of(2023, 9, 11, 20, 52, 0, 0, fiZoneID));
         assertTrue(isAfter);
-        final var isBefore = isAfter_13_50(ZonedDateTime.of(2023, 9, 11, 10, 52, 0, 0, fiZoneID));
+        final var isBefore = isAfter_13_45(ZonedDateTime.of(2023, 9, 11, 10, 52, 0, 0, fiZoneID));
         assertFalse(isBefore);
+        final var isAfterExactly = isAfter_13_45(ZonedDateTime.of(2023, 10, 2, 13, 49, 7, 0, fiZoneID));
+        assertTrue(isAfterExactly);
     }
 
 }

@@ -27,7 +27,7 @@ import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentInstantDayPrecisionFinnishZone;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getStartOfDay;
-import static com.vesanieminen.froniusvisualizer.util.Utils.isAfter_13_50;
+import static com.vesanieminen.froniusvisualizer.util.Utils.isAfter_13_45;
 import static java.util.stream.Collectors.joining;
 
 @Slf4j
@@ -111,7 +111,7 @@ public class PakastinSpotService {
             log.info("skipped Pakastin update due to having been updated successfully today already");
             return;
         }
-        if (!isAfter_13_50(ZonedDateTime.now(fiZoneID)) && hasBeenUpdatedSuccessfullyYesterday()) {
+        if (!isAfter_13_45(ZonedDateTime.now(fiZoneID)) && hasBeenUpdatedSuccessfullyYesterday()) {
             log.info("skipped Pakastin update due to not having new data available yet");
             return;
         }
