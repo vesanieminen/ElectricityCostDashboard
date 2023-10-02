@@ -294,7 +294,7 @@ public class PriceCalculatorView extends Main {
                 final NumberFormat sixDecimals = getNumberFormat(getLocale(), 6);
                 final var twoDecimalsWithPlusPrefix = getNumberFormatMaxTwoDecimalsWithPlusPrefix(getLocale());
 
-                final Div overviewDiv = addSection(resultLayout, "Overview");
+                final Div overviewDiv = addSection(resultLayout, getTranslation("Spot price"));
                 // Total labels
                 overviewDiv.add(new DoubleLabel(getTranslation("Calculation period (start times)"), start + " - " + end, true));
                 overviewDiv.add(new DoubleLabel(getTranslation("Total consumption over period"), numberFormat.format(spotCalculation.totalConsumption) + " kWh", true));
@@ -317,7 +317,7 @@ public class PriceCalculatorView extends Main {
                 overviewDiv.add(new DoubleLabel(getTranslation("calculator.spot.difference.cents"), costEffectFormatted + " " + getTranslation("c/kWh"), true));
 
                 if (isCalculatingFixed()) {
-                    final Div fixedPriceDiv = addSection(resultLayout, "Fixed Price details");
+                    final Div fixedPriceDiv = addSection(resultLayout, getTranslation("Fixed Price details"));
                     resultLayout.add(fixedPriceDiv);
                     fixedPriceDiv.add(new DoubleLabel(getTranslation("Fixed price"), fixedPriceField.getValue() + " " + getTranslation("c/kWh"), true));
                     var fixedCost = calculateFixedElectricityPrice(consumptionData.data(), fixedPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
@@ -325,7 +325,7 @@ public class PriceCalculatorView extends Main {
                 }
 
                 if (isCalculatingTransferAndTax()) {
-                    final Div transferAndTaxDiv = addSection(resultLayout, "Transfer and tax");
+                    final Div transferAndTaxDiv = addSection(resultLayout, getTranslation("Transfer and tax"));
                     transferAndTaxDiv.add(new DoubleLabel(getTranslation("calculator.transfer.and.tax"), transferAndTaxField.getValue() + " " + getTranslation("c/kWh"), true));
                     var transferAndTaxTotalCost = calculateFixedElectricityPrice(consumptionData.data(), transferAndTaxField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     transferAndTaxDiv.add(new DoubleLabel(getTranslation("calculator.transfer.and.tax.total"), numberFormat.format(transferAndTaxTotalCost) + " €", true));
@@ -338,7 +338,7 @@ public class PriceCalculatorView extends Main {
                 if (isCalculatingProduction()) {
                     final var productionData = getFingridUsageData(lastProductionData);
                     final var spotProductionCalculation = calculateSpotElectricityPriceDetails(productionData.data(), -spotProductionMarginField.getValue(), 1, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
-                    final Div productionDiv = addSection(resultLayout, "Production");
+                    final Div productionDiv = addSection(resultLayout, getTranslation("Production"));
                     productionDiv.add(new DoubleLabel(getTranslation("Total production over period"), numberFormat.format(spotProductionCalculation.totalConsumption) + " kWh", true));
                     productionDiv.add(new DoubleLabel(getTranslation("Net spot cost (consumption - production)"), numberFormat.format(spotCalculation.totalCost - spotProductionCalculation.totalCost) + " €", true));
                     productionDiv.add(new DoubleLabel(getTranslation("Net usage (consumption - production)"), numberFormat.format(spotCalculation.totalConsumption - spotProductionCalculation.totalConsumption) + " kWh", true));
