@@ -75,4 +75,11 @@ public class UtilsTest {
         assertTrue(isAfterExactly);
     }
 
+    @Test
+    public void test2() {
+        final var now = ZonedDateTime.now(fiZoneID);
+        final var b = !isAfter_13_45(now);
+        int i = 0;
+    }
+
 }
