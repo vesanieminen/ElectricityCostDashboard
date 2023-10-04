@@ -31,14 +31,14 @@ public class Executor {
     public static void updateNordpool_13_50() {
         log.info("Started update Nordpool at 13:50");
         final var startTime = System.currentTimeMillis();
-        NordpoolSpotService.updateNordpoolData();
+        NordpoolSpotService.updateNordpoolData(true);
         log.info("Ended update Nordpool at 13:50 in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
     }
 
     public static void updatePrices() {
         log.info("Started updatePrices");
         final var startTime = System.currentTimeMillis();
-        NordpoolSpotService.updateNordpoolData();
+        NordpoolSpotService.updateNordpoolData(false);
         updatePakastinData();
         SpotHintaService.updateData();
         log.info("Ended updatePrices in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");

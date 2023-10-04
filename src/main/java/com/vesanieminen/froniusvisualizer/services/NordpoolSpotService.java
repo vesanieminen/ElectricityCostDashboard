@@ -40,12 +40,12 @@ public class NordpoolSpotService {
     private static LinkedHashMap<Instant, Double> nordpoolPriceMap;
     public static int updated = 0;
 
-    public static void updateNordpoolData() {
-        if (hasBeenUpdatedSuccessfullyToday()) {
+    public static void updateNordpoolData(boolean forceUpdate) {
+        if (hasBeenUpdatedSuccessfullyToday() && !forceUpdate) {
             log.info("skipped Nordpool update due to having been updated already today successfully");
             return;
         }
-        if (!isAfter_13_45(ZonedDateTime.now(fiZoneID)) && hasBeenUpdatedSuccessfullyYesterday()) {
+        if (!isAfter_13_45(ZonedDateTime.now(fiZoneID)) && hasBeenUpdatedSuccessfullyYesterday() && !forceUpdate) {
             log.info("skipped Nordpool update due to not having new data available yet");
             return;
         }
