@@ -32,22 +32,16 @@ public class MonthlyPricesView extends Main {
         final var startYear = spotDataStart.atZone(fiZoneID).getYear();
         final var startMonth = spotDataStart.atZone(fiZoneID).getMonth().getValue();
         add(new Span("Start year: " + startYear + ", start month: " + startMonth));
-
         final var endYear = spotDataEnd.atZone(fiZoneID).getYear();
         final var b = spotDataEnd.atZone(fiZoneID).getDayOfMonth() == spotDataEnd.atZone(fiZoneID).getDayOfMonth();
         final var endMonth = spotDataEnd.atZone(fiZoneID).getMonth().getValue();
         add(new Span("End year: " + endYear + ", end month: " + endMonth));
-
-        //final var timeRangeSpan = new Span(format(spotDataStart, getLocale()) + " - " + format(spotDataEnd, getLocale()));
-
-
         for (int year = startYear; year <= endYear; ++year) {
             for (int month = startMonth; year == endYear ? month <= endMonth : month <= 12; ++month) {
                 final var average = calculateSpotAveragePriceOnMonth(year, month);
                 add(new Span("Average price %d/%d: %.2f".formatted(year, month, average)));
             }
         }
-
     }
 
 }
