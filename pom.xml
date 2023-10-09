@@ -147,7 +147,7 @@
         <dependency>
             <groupId>org.openjdk.jol</groupId>
             <artifactId>jol-core</artifactId>
-            <version>0.10</version>
+            <version>0.17</version>
         </dependency>
         <dependency>
             <groupId>com.opencsv</groupId>
@@ -166,7 +166,7 @@
         <dependency>
             <groupId>in.virit</groupId>
             <artifactId>viritin</artifactId>
-            <version>1.7.4</version>
+            <version>2.0.1</version>
         </dependency>
     </dependencies>
     <build>
