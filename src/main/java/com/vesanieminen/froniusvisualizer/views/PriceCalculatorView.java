@@ -1,5 +1,6 @@
 package com.vesanieminen.froniusvisualizer.views;
 
+import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.Unit;
@@ -349,7 +350,7 @@ public class PriceCalculatorView extends Main {
                     chartLayout.add(createChart(spotProductionCalculation, false, getTranslation("Production / value per hour"), "Production", "Production value"));
                 }
 
-            } catch (IOException | ParseException ex) {
+            } catch (IOException | ParseException | CsvValidationException ex) {
                 throw new RuntimeException(ex);
             }
         });
@@ -432,7 +433,7 @@ public class PriceCalculatorView extends Main {
 
                 updateCalculateButtonState();
                 setFieldsEnabled(true);
-            } catch (IOException | ParseException e) {
+            } catch (IOException | ParseException | CsvValidationException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -459,7 +460,7 @@ public class PriceCalculatorView extends Main {
                 endProduction = productionDataEnd;
                 updateCalculateButtonState();
                 setFieldsEnabled(true);
-            } catch (IOException | ParseException e) {
+            } catch (IOException | ParseException | CsvValidationException e) {
                 throw new RuntimeException(e);
             }
         });

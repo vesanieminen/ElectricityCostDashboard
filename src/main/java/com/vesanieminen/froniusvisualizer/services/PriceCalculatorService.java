@@ -4,6 +4,7 @@ import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
+import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import lombok.extern.slf4j.Slf4j;
@@ -76,7 +77,7 @@ public class PriceCalculatorService {
         }
     }
 
-    public static FingridUsageData getFingridUsageData(String filePath) throws IOException, ParseException {
+    public static FingridUsageData getFingridUsageData(String filePath) throws IOException, ParseException, CsvValidationException {
         var start = Instant.MAX;
         var end = Instant.MIN;
         final var map = new LinkedHashMap<Instant, Double>();
@@ -117,7 +118,7 @@ public class PriceCalculatorService {
         return new FingridUsageData(map, start, end);
     }
 
-    public static FingridUsageData getFingridUsageData(MemoryBuffer memoryBuffer) throws IOException, ParseException {
+    public static FingridUsageData getFingridUsageData(MemoryBuffer memoryBuffer) throws IOException, ParseException, CsvValidationException {
         var start = Instant.MAX;
         var end = Instant.MIN;
         final var map = new LinkedHashMap<Instant, Double>();

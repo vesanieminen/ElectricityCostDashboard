@@ -1,5 +1,6 @@
 package com.vesanieminen.electricitydashboard;
 
+import com.opencsv.exceptions.CsvValidationException;
 import com.vesanieminen.froniusvisualizer.util.Utils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -58,7 +59,7 @@ public class UtilsTest {
     }
 
     @Test
-    public void testReadFileWithNulls() throws IOException, ParseException {
+    public void testReadFileWithNulls() throws IOException, ParseException, CsvValidationException {
         //final var fingridUsageData = getFingridUsageData("src/main/resources/META-INF/resources/data/consumption.csv");
         final var fingridUsageData1 = getFingridUsageData("src/main/resources/META-INF/resources/data/consumption-with-null-only.csv");
         final var cost = calculateFixedElectricityPrice(fingridUsageData1.data(), 36);
