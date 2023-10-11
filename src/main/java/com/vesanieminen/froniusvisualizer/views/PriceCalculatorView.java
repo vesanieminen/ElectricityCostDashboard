@@ -302,11 +302,14 @@ public class PriceCalculatorView extends Main {
 
                 // Spot labels
                 final var totalCost = new BigDecimal(spotCalculation.totalCost).setScale(2, RoundingMode.HALF_UP).doubleValue();
+                final var totalCostWithoutMargin = new BigDecimal(spotCalculation.totalCostWithoutMargin).setScale(2, RoundingMode.HALF_UP).doubleValue();
                 // Accurate:
                 final var weightedAverage = totalCost / spotCalculation.totalConsumption * 100;
+                final var weightedAverageWithoutMargin = totalCostWithoutMargin / spotCalculation.totalConsumption * 100;
                 // Helen calculates spot average like this:
                 //final var weightedAverage = totalCost / ((int) spotCalculation.totalAmount) * 100;
                 overviewDiv.add(new DoubleLabel(getTranslation("Average spot price (incl. margin)"), sixDecimals.format(weightedAverage) + " " + getTranslation("c/kWh"), true));
+                overviewDiv.add(new DoubleLabel(getTranslation("Average spot price (without margin)"), sixDecimals.format(weightedAverageWithoutMargin) + " " + getTranslation("c/kWh"), true));
                 overviewDiv.add(new DoubleLabel(getTranslation("Total spot cost (incl. margin)"), numberFormat.format(spotCalculation.totalCost) + " €", true));
                 overviewDiv.add(new DoubleLabel(getTranslation("Total spot cost (without margin)"), numberFormat.format(spotCalculation.totalCostWithoutMargin) + " €", true));
                 overviewDiv.add(new DoubleLabel(getTranslation("Unweighted spot average"), numberFormat.format(spotCalculation.averagePriceWithoutMargin) + " " + getTranslation("c/kWh"), true));

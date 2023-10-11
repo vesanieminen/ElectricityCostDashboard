@@ -134,7 +134,6 @@ public class PriceCalculatorService {
 
         String[] line;
         while ((line = csvReader.readNext()) != null) {
-
             // in case the Fingrid csv data has rows that contain: "null;MISSING", skip them
             if ("MISSING".equals(line[getColumnIndex(isNewFormat, 6)])) {
                 break;
