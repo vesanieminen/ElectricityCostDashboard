@@ -25,13 +25,14 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
 
 import static com.vesanieminen.froniusvisualizer.util.Properties.getFingridAPIKey;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
 import static com.vesanieminen.froniusvisualizer.util.Utils.isDaylightSavingsInFinland;
+import static com.vesanieminen.froniusvisualizer.util.Utils.keepEveryFirstItem;
+import static com.vesanieminen.froniusvisualizer.util.Utils.keepEveryNthItem;
 import static java.util.stream.Collectors.joining;
 
 public class FingridService {
@@ -99,12 +100,12 @@ public class FingridService {
             return;
         }
         cachedFingridRealtimeResponse = newFingridRealtimeResponse;
-        cachedFingridRealtimeResponse.HydroPower = keepEveryNthItem(cachedFingridRealtimeResponse.HydroPower, 20);
-        cachedFingridRealtimeResponse.NuclearPower = keepEveryNthItem(cachedFingridRealtimeResponse.NuclearPower, 20);
-        cachedFingridRealtimeResponse.WindPower = keepEveryNthItem(cachedFingridRealtimeResponse.WindPower, 20);
-        cachedFingridRealtimeResponse.SolarPower = keepEveryNthItem(cachedFingridRealtimeResponse.SolarPower, 20);
-        cachedFingridRealtimeResponse.Consumption = keepEveryNthItem(cachedFingridRealtimeResponse.Consumption, 20);
-        cachedFingridRealtimeResponse.NetImportExport = keepEveryNthItem(cachedFingridRealtimeResponse.NetImportExport, 20);
+        cachedFingridRealtimeResponse.HydroPower = keepEveryFirstItem(cachedFingridRealtimeResponse.HydroPower);
+        cachedFingridRealtimeResponse.NuclearPower = keepEveryFirstItem(cachedFingridRealtimeResponse.NuclearPower);
+        cachedFingridRealtimeResponse.WindPower = keepEveryFirstItem(cachedFingridRealtimeResponse.WindPower);
+        cachedFingridRealtimeResponse.SolarPower = keepEveryFirstItem(cachedFingridRealtimeResponse.SolarPower);
+        cachedFingridRealtimeResponse.Consumption = keepEveryFirstItem(cachedFingridRealtimeResponse.Consumption);
+        cachedFingridRealtimeResponse.NetImportExport = keepEveryFirstItem(cachedFingridRealtimeResponse.NetImportExport);
     }
 
     public static FingridRealtimeResponse runRealtimeDataQuery(String query) {
@@ -144,10 +145,6 @@ public class FingridService {
         requestParams.put("start", createFingridDateTimeString(start));
         requestParams.put("end", createFingridDateTimeString(end));
         return requestParams.keySet().stream().map(key -> key + "=" + requestParams.get(key)).collect(joining("&", fingridRealtimeBaseUrl, ""));
-    }
-
-    public static <T> List<T> keepEveryNthItem(List<T> input, int n) {
-        return IntStream.range(0, input.size()).filter(item -> item % n == 0).mapToObj(input::get).toList();
     }
 
     public static FingridRealtimeResponse getLatest7Days() throws URISyntaxException, IOException, InterruptedException {

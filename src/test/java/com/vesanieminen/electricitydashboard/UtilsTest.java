@@ -11,6 +11,7 @@ import java.text.ParseException;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateFixedElectricityPrice;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getFingridUsageData;
@@ -83,4 +84,12 @@ public class UtilsTest {
         int i = 0;
     }
 
+    @Test
+    void keepEveryNthItem() {
+        final var integers = IntStream.range(0, 20).boxed().toList();
+        final var result = Utils.keepEveryNthItem(integers, 10, 9);
+        assertEquals(2, result.size());
+        assertEquals(9, result.get(0));
+        assertEquals(19, result.get(1));
+    }
 }

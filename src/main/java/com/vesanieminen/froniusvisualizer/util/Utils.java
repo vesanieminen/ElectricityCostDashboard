@@ -1,5 +1,6 @@
 package com.vesanieminen.froniusvisualizer.util;
 
+import com.vesanieminen.froniusvisualizer.services.model.FingridRealtimeResponse;
 import org.openjdk.jol.info.GraphLayout;
 
 import java.io.UnsupportedEncodingException;
@@ -26,6 +27,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.OptionalDouble;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7DaysMap;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getSpotData;
@@ -254,5 +257,21 @@ public class Utils {
         return fiZoneID.getRules().isDaylightSavings(getCurrentInstantHourPrecisionFinnishZone());
     }
 
+
+    public static <T> List<T> keepEveryNthItem(List<T> input, int n, int offset) {
+        return IntStream.range(0, input.size()).filter(item -> item % n == 0).mapToObj(i -> input.get(i + offset)).toList();
+    }
+
+    public static <T> List<T> keepEveryNthItem(List<T> input, int n) {
+        return keepEveryNthItem(input, n, 0);
+    }
+
+    public static <T> List<T> keepEveryNthItemBackwards(List<T> input, int n) {
+        return keepEveryNthItem(input, n, n - 1);
+    }
+
+    public static List<FingridRealtimeResponse.Data> keepEveryFirstItem(List<FingridRealtimeResponse.Data> input) {
+        return input.stream().filter(item -> item.start_time.getMinute() == 1).collect(Collectors.toList());
+    }
 
 }
