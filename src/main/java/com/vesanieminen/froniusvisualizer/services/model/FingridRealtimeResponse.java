@@ -15,7 +15,6 @@ public class FingridRealtimeResponse implements ResponseValidator {
     public static class Data {
         public double value;
         public ZonedDateTime start_time;
-        //public ZonedDateTime end_time;
     }
 
     @Override
