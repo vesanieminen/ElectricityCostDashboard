@@ -29,7 +29,6 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.PageTitle;
@@ -39,6 +38,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
 import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService;
 import lombok.extern.slf4j.Slf4j;
+import org.vaadin.miki.superfields.numbers.SuperDoubleField;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -77,10 +77,10 @@ public class PriceCalculatorView extends Main {
 
     private final DateTimePicker fromDateTimePicker;
     private final DateTimePicker toDateTimePicker;
-    private final NumberField fixedPriceField;
-    private final NumberField spotMarginField;
-    private final NumberField transferAndTaxField;
-    private final NumberField spotProductionMarginField;
+    private final SuperDoubleField fixedPriceField;
+    private final SuperDoubleField spotMarginField;
+    private final SuperDoubleField transferAndTaxField;
+    private final SuperDoubleField spotProductionMarginField;
     private final List<HasEnabled> fields;
     private final Button calculateButton;
     private final CheckboxGroup<Calculations> calculationsCheckboxGroup;
@@ -216,7 +216,8 @@ public class PriceCalculatorView extends Main {
         content.add(fieldRow);
 
         // Fixed price field
-        fixedPriceField = new NumberField(getTranslation("Fixed price"));
+        fixedPriceField = new SuperDoubleField(getTranslation("Fixed price"));
+        fixedPriceField.setLocale(getLocale());
         fixedPriceField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(5.41));
         fixedPriceField.setRequiredIndicatorVisible(true);
         fixedPriceField.setSuffixComponent(new Span(getTranslation("c/kWh")));
@@ -224,16 +225,18 @@ public class PriceCalculatorView extends Main {
         fixedPriceField.setVisible(false);
         fieldRow.add(fixedPriceField);
 
-        // Spot price field
-        spotMarginField = new NumberField(getTranslation("Spot margin"));
+        // Spot margin field
+        spotMarginField = new SuperDoubleField(getTranslation("Spot margin"));
+        spotMarginField.setLocale(getLocale());
         spotMarginField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(0.30) + " " + getTranslation("calculator.with.helen"));
         spotMarginField.setRequiredIndicatorVisible(true);
         spotMarginField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         spotMarginField.addClassNames(LumoUtility.Flex.GROW);
         fieldRow.add(spotMarginField);
 
-        // Spot price field
-        spotProductionMarginField = new NumberField(getTranslation("Production margin"));
+        // Spot production field
+        spotProductionMarginField = new SuperDoubleField(getTranslation("Production margin"));
+        spotProductionMarginField.setLocale(getLocale());
         spotProductionMarginField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(0.3));
         spotProductionMarginField.setRequiredIndicatorVisible(true);
         spotProductionMarginField.setSuffixComponent(new Span(getTranslation("c/kWh")));
@@ -241,8 +244,10 @@ public class PriceCalculatorView extends Main {
         spotProductionMarginField.setVisible(false);
         fieldRow.add(spotProductionMarginField);
 
-        // Fixed price field
-        transferAndTaxField = new NumberField(getTranslation("calculator.transfer.and.tax"));
+        // transfer and tax price field
+        transferAndTaxField = new SuperDoubleField(getTranslation("calculator.transfer.and.tax"));
+        transferAndTaxField.setMaximumFractionDigits(6);
+        transferAndTaxField.setLocale(getLocale());
         transferAndTaxField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(7.86) + " " + getTranslation("calculator.with.caruna"));
         transferAndTaxField.setRequiredIndicatorVisible(true);
         transferAndTaxField.setSuffixComponent(new Span(getTranslation("c/kWh")));
