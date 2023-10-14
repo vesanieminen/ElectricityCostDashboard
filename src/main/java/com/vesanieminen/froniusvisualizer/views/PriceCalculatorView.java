@@ -29,6 +29,7 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.PageTitle;
@@ -38,7 +39,6 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
 import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService;
 import lombok.extern.slf4j.Slf4j;
-import org.vaadin.miki.superfields.numbers.SuperDoubleField;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -77,10 +77,10 @@ public class PriceCalculatorView extends Main {
 
     private final DateTimePicker fromDateTimePicker;
     private final DateTimePicker toDateTimePicker;
-    private final SuperDoubleField fixedPriceField;
-    private final SuperDoubleField spotMarginField;
-    private final SuperDoubleField transferAndTaxField;
-    private final SuperDoubleField spotProductionMarginField;
+    private final NumberField fixedPriceField;
+    private final NumberField spotMarginField;
+    private final NumberField transferAndTaxField;
+    private final NumberField spotProductionMarginField;
     private final List<HasEnabled> fields;
     private final Button calculateButton;
     private final CheckboxGroup<Calculations> calculationsCheckboxGroup;
@@ -216,8 +216,7 @@ public class PriceCalculatorView extends Main {
         content.add(fieldRow);
 
         // Fixed price field
-        fixedPriceField = new SuperDoubleField(getTranslation("Fixed price"));
-        fixedPriceField.setLocale(getLocale());
+        fixedPriceField = new NumberField(getTranslation("Fixed price"));
         fixedPriceField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(5.41));
         fixedPriceField.setRequiredIndicatorVisible(true);
         fixedPriceField.setSuffixComponent(new Span(getTranslation("c/kWh")));
@@ -226,8 +225,7 @@ public class PriceCalculatorView extends Main {
         fieldRow.add(fixedPriceField);
 
         // Spot price field
-        spotMarginField = new SuperDoubleField(getTranslation("Spot margin"));
-        spotMarginField.setLocale(getLocale());
+        spotMarginField = new NumberField(getTranslation("Spot margin"));
         spotMarginField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(0.30) + " " + getTranslation("calculator.with.helen"));
         spotMarginField.setRequiredIndicatorVisible(true);
         spotMarginField.setSuffixComponent(new Span(getTranslation("c/kWh")));
@@ -235,8 +233,7 @@ public class PriceCalculatorView extends Main {
         fieldRow.add(spotMarginField);
 
         // Spot price field
-        spotProductionMarginField = new SuperDoubleField(getTranslation("Production margin"));
-        spotProductionMarginField.setLocale(getLocale());
+        spotProductionMarginField = new NumberField(getTranslation("Production margin"));
         spotProductionMarginField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(0.3));
         spotProductionMarginField.setRequiredIndicatorVisible(true);
         spotProductionMarginField.setSuffixComponent(new Span(getTranslation("c/kWh")));
@@ -245,9 +242,7 @@ public class PriceCalculatorView extends Main {
         fieldRow.add(spotProductionMarginField);
 
         // Fixed price field
-        transferAndTaxField = new SuperDoubleField(getTranslation("calculator.transfer.and.tax"));
-        transferAndTaxField.setMaximumFractionDigits(6);
-        transferAndTaxField.setLocale(getLocale());
+        transferAndTaxField = new NumberField(getTranslation("calculator.transfer.and.tax"));
         transferAndTaxField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(7.86) + " " + getTranslation("calculator.with.caruna"));
         transferAndTaxField.setRequiredIndicatorVisible(true);
         transferAndTaxField.setSuffixComponent(new Span(getTranslation("c/kWh")));
@@ -301,15 +296,19 @@ public class PriceCalculatorView extends Main {
                 overviewDiv.add(new DoubleLabel(getTranslation("Total consumption over period"), numberFormat.format(spotCalculation.totalConsumption) + " kWh", true));
 
                 // Spot labels
+                //final var totalCost = new BigDecimal(spotCalculation.totalCost).doubleValue();
+                //final var totalCostWithoutMargin = new BigDecimal(spotCalculation.totalCostWithoutMargin).doubleValue();
+                // electricity companies calculate the euros with max 2 decimals:
                 final var totalCost = new BigDecimal(spotCalculation.totalCost).setScale(2, RoundingMode.HALF_UP).doubleValue();
-                final var totalCostWithoutMargin = new BigDecimal(spotCalculation.totalCostWithoutMargin).setScale(2, RoundingMode.HALF_UP).doubleValue();
+                // the following method provides rounding errors between the total cost with margin and without.
+                //final var totalCostWithoutMargin = new BigDecimal(spotCalculation.totalCostWithoutMargin).setScale(2, RoundingMode.HALF_UP).doubleValue();
                 // Accurate:
                 final var weightedAverage = totalCost / spotCalculation.totalConsumption * 100;
-                final var weightedAverageWithoutMargin = totalCostWithoutMargin / spotCalculation.totalConsumption * 100;
+                //final var weightedAverageWithoutMargin = totalCostWithoutMargin / spotCalculation.totalConsumption * 100;
                 // Helen calculates spot average like this:
                 //final var weightedAverage = totalCost / ((int) spotCalculation.totalAmount) * 100;
                 overviewDiv.add(new DoubleLabel(getTranslation("Average spot price (incl. margin)"), sixDecimals.format(weightedAverage) + " " + getTranslation("c/kWh"), true));
-                overviewDiv.add(new DoubleLabel(getTranslation("Average spot price (without margin)"), sixDecimals.format(weightedAverageWithoutMargin) + " " + getTranslation("c/kWh"), true));
+                overviewDiv.add(new DoubleLabel(getTranslation("Average spot price (without margin)"), sixDecimals.format(weightedAverage - spotMarginField.getValue()) + " " + getTranslation("c/kWh"), true));
                 overviewDiv.add(new DoubleLabel(getTranslation("Total spot cost (incl. margin)"), numberFormat.format(spotCalculation.totalCost) + " €", true));
                 overviewDiv.add(new DoubleLabel(getTranslation("Total spot cost (without margin)"), numberFormat.format(spotCalculation.totalCostWithoutMargin) + " €", true));
                 overviewDiv.add(new DoubleLabel(getTranslation("Unweighted spot average"), numberFormat.format(spotCalculation.averagePriceWithoutMargin) + " " + getTranslation("c/kWh"), true));
@@ -678,7 +677,7 @@ public class PriceCalculatorView extends Main {
     enum Calculations {
         SPOT("Spot price"),
         FIXED("Fixed price"),
-        //COST_EFFECT("cost.effect"),
+        //COST_FACTOR("cost.factor"),
         TRANSFER_AND_TAX("calculator.transfer.and.tax"),
         SPOT_PRODUCTION("Spot production price");
 
