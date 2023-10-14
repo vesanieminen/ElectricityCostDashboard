@@ -82,7 +82,7 @@ public class PriceCalculatorView extends Main {
     private final SuperDoubleField transferAndTaxField;
     private final SuperDoubleField spotProductionMarginField;
     private final List<HasEnabled> fields;
-    private final Button button;
+    private final Button calculateButton;
     private final CheckboxGroup<Calculations> calculationsCheckboxGroup;
     private MemoryBuffer lastConsumptionData;
     private MemoryBuffer lastProductionData;
@@ -264,7 +264,7 @@ public class PriceCalculatorView extends Main {
         });
         fields = Arrays.asList(fromDateTimePicker, toDateTimePicker, fixedPriceField, spotMarginField, transferAndTaxField, spotProductionMarginField);
 
-        button = new Button(getTranslation("Calculate costs"), e -> {
+        calculateButton = new Button(getTranslation("Calculate costs"), e -> {
             try {
                 if (spotMarginField.getValue() == null) {
                     spotMarginField.setValue(0d);
@@ -357,7 +357,7 @@ public class PriceCalculatorView extends Main {
                 throw new RuntimeException(ex);
             }
         });
-        button.addClassNames(LumoUtility.Margin.Top.MEDIUM);
+        calculateButton.addClassNames(LumoUtility.Margin.Top.MEDIUM);
 
         addConsumptionSucceededListener(consumptionFileBuffer, consumptionUpload);
         addProductionSucceededListener(productionFileBuffer, productionUpload);
@@ -369,8 +369,8 @@ public class PriceCalculatorView extends Main {
         fromDateTimePicker.addValueChangeListener(e -> updateCalculateButtonState());
         toDateTimePicker.addValueChangeListener(e -> updateCalculateButtonState());
         setFieldsEnabled(false);
-        button.setEnabled(false);
-        content.add(button);
+        calculateButton.setEnabled(false);
+        content.add(calculateButton);
         add(resultLayout);
         add(chartLayout);
     }
@@ -440,7 +440,7 @@ public class PriceCalculatorView extends Main {
                 throw new RuntimeException(e);
             }
         });
-        consumptionUpload.addFailedListener(e -> setEnabled(false, fixedPriceField, spotMarginField, transferAndTaxField, spotProductionMarginField, fromDateTimePicker, toDateTimePicker, button));
+        consumptionUpload.addFailedListener(e -> setEnabled(false, fixedPriceField, spotMarginField, transferAndTaxField, spotProductionMarginField, fromDateTimePicker, toDateTimePicker, calculateButton));
     }
 
     private void addProductionSucceededListener(MemoryBuffer fileBuffer, Upload productionUpload) {
@@ -467,7 +467,7 @@ public class PriceCalculatorView extends Main {
                 throw new RuntimeException(e);
             }
         });
-        productionUpload.addFailedListener(e -> setEnabled(false, fixedPriceField, spotMarginField, transferAndTaxField, spotProductionMarginField, fromDateTimePicker, toDateTimePicker, button));
+        productionUpload.addFailedListener(e -> setEnabled(false, fixedPriceField, spotMarginField, transferAndTaxField, spotProductionMarginField, fromDateTimePicker, toDateTimePicker, calculateButton));
     }
 
     private Chart createChart(PriceCalculatorService.SpotCalculation spotCalculation, boolean isCalculatingFixed, String title, String yAxisTitle, String spotTitle) {
@@ -672,7 +672,7 @@ public class PriceCalculatorView extends Main {
     private void updateCalculateButtonState() {
         final var isDateValid = fromDateTimePicker.getValue() != null && toDateTimePicker.getValue() != null && fromDateTimePicker.getValue().isBefore(toDateTimePicker.getValue()) && !fromDateTimePicker.isInvalid() && !toDateTimePicker.isInvalid();
         final var isCalculatingProductionValid = (isCalculatingProduction() && lastProductionData != null) || !isCalculatingProduction();
-        button.setEnabled(lastConsumptionData != null && isCalculatingProductionValid && isDateValid);
+        calculateButton.setEnabled(lastConsumptionData != null && isCalculatingProductionValid && isDateValid);
     }
 
     enum Calculations {
