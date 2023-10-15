@@ -196,9 +196,9 @@ public class MainLayout extends AppLayout {
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         final var priimaImage = new Image("images/Priima_pks-200x100 (002).png", "PKS Priima");
-        priimaImage.setHeight(40, Unit.PIXELS);
+        priimaImage.addClassNames(LumoUtility.Height.MEDIUM);
         final var priimaAnchor = new Anchor("https://www.pks.fi/sahkotarjoukset/kotiin/sahkotuotteet/priima-alykkaampi-sahko/", priimaImage);
-        priimaAnchor.setHeight(40, Unit.PIXELS);
+        priimaAnchor.addClassNames(LumoUtility.Height.MEDIUM);
         priimaAnchor.setTarget(AnchorTarget.BLANK);
         header.add(priimaAnchor);
 
