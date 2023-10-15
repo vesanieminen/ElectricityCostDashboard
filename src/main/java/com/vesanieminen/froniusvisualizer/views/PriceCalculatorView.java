@@ -140,19 +140,32 @@ public class PriceCalculatorView extends Main {
         final var calculations = new HashSet<Calculations>();
         calculations.add(Calculations.SPOT);
         calculationsCheckboxGroup.setValue(calculations);
+
+        final var priimaImage = new Image("images/Priima_pks-200x100 (002).png", "PKS Priima");
+        priimaImage.addClassNames(LumoUtility.Margin.Vertical.SMALL, LumoUtility.BorderRadius.MEDIUM, LumoUtility.Border.ALL, LumoUtility.BoxShadow.MEDIUM);
+        priimaImage.setMaxWidth("100%");
+        priimaImage.setWidth("200px");
+        priimaImage.getStyle().set("border-color", "#FFFFFF");
+        final var recommendationSpan = new Span(getTranslation("Electricity contract recommendation"));
+        recommendationSpan.addClassNames(LumoUtility.FlexDirection.COLUMN, LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER);
+        final var priimaAnchor = new Anchor("https://www.pks.fi/sahkotarjoukset/kotiin/sahkotuotteet/priima-alykkaampi-sahko/", recommendationSpan, priimaImage);
+        priimaAnchor.setTarget(AnchorTarget.BLANK);
+
         final var image = new Image("images/fingrid_dh_white.png", getTranslation("login.to.fingrid"));
         final var openDatahub = new Span(getTranslation("open.datahub"));
         openDatahub.addClassNames(LumoUtility.FlexDirection.COLUMN, LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER);
         final var datahubAnchor = new Anchor("https://oma.datahub.fi", openDatahub, image);
         datahubAnchor.setTarget(AnchorTarget.BLANK);
-        datahubAnchor.addClassNames(LumoUtility.Margin.Top.XLARGE);
         image.addClassNames(LumoUtility.Margin.Vertical.SMALL, LumoUtility.BorderRadius.MEDIUM, LumoUtility.Border.ALL, LumoUtility.BoxShadow.MEDIUM);
         image.getStyle().set("background-color", "#d4121e");
         image.getStyle().set("border-color", "#d4121e");
         image.setMaxWidth("100%");
         image.setWidth("200px");
-        final var checkBoxesAndDatahubLink = new Div(calculationsCheckboxGroup, datahubAnchor);
-        checkBoxesAndDatahubLink.addClassNames(LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.BETWEEN);
+
+        final var linkDiv = new Div(datahubAnchor, priimaAnchor);
+        linkDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Gap.MEDIUM);
+        final var checkBoxesAndDatahubLink = new Div(calculationsCheckboxGroup, linkDiv);
+        checkBoxesAndDatahubLink.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.BETWEEN, LumoUtility.AlignItems.BASELINE);
         content.add(checkBoxesAndDatahubLink);
 
         // Layouts
