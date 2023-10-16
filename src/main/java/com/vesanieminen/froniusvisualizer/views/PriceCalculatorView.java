@@ -141,7 +141,7 @@ public class PriceCalculatorView extends Main {
         calculations.add(Calculations.SPOT);
         calculationsCheckboxGroup.setValue(calculations);
 
-        final var priimaImage = new Image("images/Priima_pks-200x100 (002).png", "PKS Priima");
+        final var priimaImage = new Image("images/Priima 2-200x100 (banneri2).png", "PKS Priima");
         priimaImage.addClassNames(LumoUtility.Margin.Vertical.SMALL, LumoUtility.BorderRadius.MEDIUM, LumoUtility.Border.ALL, LumoUtility.BoxShadow.MEDIUM);
         priimaImage.setMaxWidth("100%");
         priimaImage.setWidth("200px");

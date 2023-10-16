@@ -10,7 +10,6 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.charts.ChartOptions;
 import com.vaadin.flow.component.charts.model.Lang;
 import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.html.AnchorTarget;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Header;
@@ -159,20 +158,7 @@ public class MainLayout extends AppLayout {
         var row = new Div(githubLink, discordLink);
         row.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER);
 
-        final var priimaImage = new Image("images/Priima_pks-200x100 (002).png", "PKS Priima");
-        priimaImage.addClassNames(LumoUtility.Margin.Vertical.SMALL, LumoUtility.BorderRadius.MEDIUM, LumoUtility.Border.ALL, LumoUtility.BoxShadow.MEDIUM);
-        priimaImage.setMaxWidth("100%");
-        priimaImage.setWidth("200px");
-        priimaImage.getStyle().set("border-color", "#FFFFFF");
-        final var priimaAnchor = new Anchor("https://www.pks.fi/sahkotarjoukset/kotiin/sahkotuotteet/priima-alykkaampi-sahko/", priimaImage);
-        priimaAnchor.setTarget(AnchorTarget.BLANK);
-        priimaAnchor.addClassNames(
-                LumoUtility.AlignItems.CENTER,
-                LumoUtility.Display.FLEX,
-                LumoUtility.JustifyContent.CENTER
-        );
-
-        var footer = new Div(kofiLink, vaadinLink, priimaAnchor, hr, row);
+        var footer = new Div(kofiLink, vaadinLink, hr, row);
         footer.addClassNames(
                 LumoUtility.Display.FLEX,
                 LumoUtility.FlexDirection.COLUMN,
@@ -195,13 +181,6 @@ public class MainLayout extends AppLayout {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        final var priimaImage = new Image("images/Priima_pks-200x100 (002).png", "PKS Priima");
-        priimaImage.addClassNames(LumoUtility.Height.MEDIUM);
-        final var priimaAnchor = new Anchor("https://www.pks.fi/sahkotarjoukset/kotiin/sahkotuotteet/priima-alykkaampi-sahko/", priimaImage);
-        priimaAnchor.addClassNames(LumoUtility.Height.MEDIUM);
-        priimaAnchor.setTarget(AnchorTarget.BLANK);
-        header.add(priimaAnchor);
-
         Button theme = new Button(MaterialIcon.DARK_MODE.create());
         theme.getElement().setAttribute("aria-label", getTranslation("Switch to dark mode"));
         theme.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
