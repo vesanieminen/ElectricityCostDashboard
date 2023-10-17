@@ -141,9 +141,9 @@ public class PriceCalculatorView extends Main {
         final var priimaAnchor = new Anchor("https://www.pks.fi/sahkotarjoukset/kotiin/sahkotuotteet/priima-alykkaampi-sahko/", recommendationSpan, priimaImage);
         priimaAnchor.setTarget(AnchorTarget.BLANK);
 
-        final var div = new Div(div1, priimaAnchor);
-        div.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.BETWEEN);
-        content.add(div);
+        final var topRowDiv = new Div(div1, priimaAnchor);
+        topRowDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.BETWEEN, LumoUtility.Gap.MEDIUM);
+        content.add(topRowDiv);
 
         calculationsCheckboxGroup = new CheckboxGroup<>(getTranslation("Select calculations"));
         calculationsCheckboxGroup.addThemeVariants(CheckboxGroupVariant.LUMO_VERTICAL);
@@ -158,7 +158,6 @@ public class PriceCalculatorView extends Main {
         openDatahub.addClassNames(LumoUtility.FlexDirection.COLUMN, LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER);
         final var datahubAnchor = new Anchor("https://oma.datahub.fi", openDatahub, image);
         datahubAnchor.setTarget(AnchorTarget.BLANK);
-        datahubAnchor.addClassNames(LumoUtility.Margin.Top.XLARGE);
         image.addClassNames(LumoUtility.Margin.Vertical.SMALL, LumoUtility.BorderRadius.MEDIUM, LumoUtility.Border.ALL, LumoUtility.BoxShadow.MEDIUM);
         image.getStyle().set("background-color", "#d4121e");
         image.getStyle().set("border-color", "#d4121e");
