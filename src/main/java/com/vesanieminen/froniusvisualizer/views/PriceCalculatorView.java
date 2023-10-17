@@ -114,15 +114,12 @@ public class PriceCalculatorView extends Main {
 
         final var title = new Span(getTranslation("calculator.title"));
         title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
-        content.add(title);
         final var spotAverage = PriceCalculatorService.calculateSpotAveragePriceThisYear();
         final var span = new Span(getTranslation("Spot average this year") + ": " + numberFormat.format(spotAverage) + " " + getTranslation("c/kWh"));
         span.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
-        content.add(span);
         final var spotAverageMonth = PriceCalculatorService.calculateSpotAveragePriceThisMonth();
         final var spanMonth = new Span(getTranslation("Spot average this month") + ": " + numberFormat.format(spotAverageMonth) + " " + getTranslation("c/kWh"));
         spanMonth.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
-        content.add(spanMonth);
 
         final var timeRangeSpanCaption = new Span(getTranslation("calculator.spot.prices.available") + ":");
         timeRangeSpanCaption.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
@@ -130,7 +127,23 @@ public class PriceCalculatorView extends Main {
         timeRangeSpan.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
         final var spotDataDiv = new Div(timeRangeSpanCaption, timeRangeSpan);
         spotDataDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Gap.Column.XSMALL);
-        content.add(spotDataDiv);
+
+        final var div1 = new Div(title, span, spanMonth, spotDataDiv);
+        div1.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
+
+        final var priimaImage = new Image("images/Priima 2-200x100 (banneri2).png", "PKS Priima");
+        priimaImage.addClassNames(LumoUtility.Margin.Vertical.SMALL, LumoUtility.BorderRadius.MEDIUM, LumoUtility.Border.ALL, LumoUtility.BoxShadow.MEDIUM);
+        priimaImage.setMaxWidth("100%");
+        priimaImage.setWidth("200px");
+        priimaImage.getStyle().set("border-color", "#FFFFFF");
+        final var recommendationSpan = new Span(getTranslation("Electricity contract recommendation"));
+        recommendationSpan.addClassNames(LumoUtility.FlexDirection.COLUMN, LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER);
+        final var priimaAnchor = new Anchor("https://www.pks.fi/sahkotarjoukset/kotiin/sahkotuotteet/priima-alykkaampi-sahko/", recommendationSpan, priimaImage);
+        priimaAnchor.setTarget(AnchorTarget.BLANK);
+
+        final var div = new Div(div1, priimaAnchor);
+        div.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.BETWEEN);
+        content.add(div);
 
         calculationsCheckboxGroup = new CheckboxGroup<>(getTranslation("Select calculations"));
         calculationsCheckboxGroup.addThemeVariants(CheckboxGroupVariant.LUMO_VERTICAL);
