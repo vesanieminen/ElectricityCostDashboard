@@ -128,20 +128,22 @@ public class PriceCalculatorView extends Main {
         final var spotDataDiv = new Div(timeRangeSpanCaption, timeRangeSpan);
         spotDataDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Gap.Column.XSMALL);
 
-        final var div1 = new Div(title, span, spanMonth, spotDataDiv);
-        div1.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
+        final var topDiv = new Div(title, span, spanMonth, spotDataDiv);
+        topDiv.setMinWidth("228px");
+        topDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
 
         final var priimaImage = new Image("images/Priima 2-200x100 (banneri2).png", "PKS Priima");
         priimaImage.addClassNames(LumoUtility.Margin.Vertical.SMALL, LumoUtility.BorderRadius.MEDIUM, LumoUtility.Border.ALL, LumoUtility.BoxShadow.MEDIUM);
         priimaImage.setMaxWidth("100%");
         priimaImage.setWidth("200px");
+        priimaImage.setMinWidth("50px");
         priimaImage.getStyle().set("border-color", "#FFFFFF");
         final var recommendationSpan = new Span(getTranslation("Electricity contract recommendation"));
         recommendationSpan.addClassNames(LumoUtility.FlexDirection.COLUMN, LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER);
-        final var priimaAnchor = new Anchor("https://www.pks.fi/sahkotarjoukset/kotiin/sahkotuotteet/priima-alykkaampi-sahko/", recommendationSpan, priimaImage);
+        final var priimaAnchor = new Anchor("https://www.pks.fi/sahkotarjoukset/kotiin/sahkotuotteet/priima-alykkaampi-sahko/", priimaImage);
         priimaAnchor.setTarget(AnchorTarget.BLANK);
 
-        final var topRowDiv = new Div(div1, priimaAnchor);
+        final var topRowDiv = new Div(topDiv, priimaAnchor);
         topRowDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.BETWEEN, LumoUtility.Gap.MEDIUM);
         content.add(topRowDiv);
 
