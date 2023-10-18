@@ -149,7 +149,6 @@ public class PriceCalculatorView extends Main {
 
         calculationsCheckboxGroup = new CheckboxGroup<>(getTranslation("Select calculations"));
         calculationsCheckboxGroup.addThemeVariants(CheckboxGroupVariant.LUMO_VERTICAL);
-        calculationsCheckboxGroup.setMinWidth("215px");
         calculationsCheckboxGroup.setItems(Calculations.values());
         calculationsCheckboxGroup.setItemLabelGenerator(item -> getTranslation(item.getName()));
         calculationsCheckboxGroup.setItemEnabledProvider(item -> !(Objects.equals(item.getName(), Calculations.SPOT.getName())));
