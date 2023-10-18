@@ -138,9 +138,9 @@ public class PriceCalculatorView extends Main {
         priimaImage.setWidth("200px");
         priimaImage.setMinWidth("50px");
         priimaImage.getStyle().set("border-color", "#FFFFFF");
-        final var recommendationSpan = new Span(getTranslation("Electricity contract recommendation"));
-        recommendationSpan.addClassNames(LumoUtility.FlexDirection.COLUMN, LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER);
-        final var priimaAnchor = new Anchor("https://www.pks.fi/sahkotarjoukset/kotiin/sahkotuotteet/priima-alykkaampi-sahko/", priimaImage);
+        final var recommendationSpan = new Span(getTranslation("PKS.ad"));
+        recommendationSpan.addClassNames(LumoUtility.FlexDirection.COLUMN, LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER, LumoUtility.Whitespace.NOWRAP);
+        final var priimaAnchor = new Anchor("https://www.pks.fi/sahkotarjoukset/kotiin/sahkotuotteet/priima-alykkaampi-sahko/", recommendationSpan, priimaImage);
         priimaAnchor.setTarget(AnchorTarget.BLANK);
 
         final var topRowDiv = new Div(topDiv, priimaAnchor);
@@ -149,6 +149,7 @@ public class PriceCalculatorView extends Main {
 
         calculationsCheckboxGroup = new CheckboxGroup<>(getTranslation("Select calculations"));
         calculationsCheckboxGroup.addThemeVariants(CheckboxGroupVariant.LUMO_VERTICAL);
+        calculationsCheckboxGroup.setMinWidth("215px");
         calculationsCheckboxGroup.setItems(Calculations.values());
         calculationsCheckboxGroup.setItemLabelGenerator(item -> getTranslation(item.getName()));
         calculationsCheckboxGroup.setItemEnabledProvider(item -> !(Objects.equals(item.getName(), Calculations.SPOT.getName())));
