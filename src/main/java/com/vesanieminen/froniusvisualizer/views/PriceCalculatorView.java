@@ -126,7 +126,7 @@ public class PriceCalculatorView extends Main {
         final var timeRangeSpan = new Span(format(spotDataStart, getLocale()) + " - " + format(spotDataEnd, getLocale()));
         timeRangeSpan.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
         final var spotDataDiv = new Div(timeRangeSpanCaption, timeRangeSpan);
-        spotDataDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Gap.Column.XSMALL);
+        spotDataDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.FlexWrap.WRAP, LumoUtility.Gap.Column.XSMALL);
 
         final var topDiv = new Div(title, span, spanMonth, spotDataDiv);
         topDiv.setMinWidth("228px");
@@ -141,6 +141,7 @@ public class PriceCalculatorView extends Main {
         final var recommendationSpan = new Span(getTranslation("PKS.ad"));
         recommendationSpan.addClassNames(LumoUtility.FlexDirection.COLUMN, LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER, LumoUtility.Whitespace.NOWRAP);
         final var priimaAnchor = new Anchor("https://www.pks.fi/sahkotarjoukset/kotiin/sahkotuotteet/priima-alykkaampi-sahko/", recommendationSpan, priimaImage);
+        priimaAnchor.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.JustifyContent.CENTER);
         priimaAnchor.setTarget(AnchorTarget.BLANK);
 
         final var topRowDiv = new Div(topDiv, priimaAnchor);
