@@ -140,7 +140,7 @@ public class PriceCalculatorView extends Main {
         priimaImage.getStyle().set("border-color", "#FFFFFF");
         final var recommendationSpan = new Span(getTranslation("PKS.ad"));
         recommendationSpan.addClassNames(LumoUtility.FlexDirection.COLUMN, LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER, LumoUtility.Whitespace.NOWRAP);
-        final var priimaAnchor = new Anchor("https://www.pks.fi/sahkotarjoukset/kotiin/sahkotuotteet/priima-alykkaampi-sahko/", recommendationSpan, priimaImage);
+        final var priimaAnchor = new Anchor("https://bit.ly/priima-sahkosopimus", recommendationSpan, priimaImage);
         priimaAnchor.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.JustifyContent.CENTER);
         priimaAnchor.setTarget(AnchorTarget.BLANK);
 
