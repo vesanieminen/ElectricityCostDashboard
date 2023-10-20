@@ -112,14 +112,18 @@ public class PriceCalculatorView extends Main {
         //final var newSpan = new Span(new Anchor("https://www.fingrid.fi/sahkomarkkinat/markkinoiden-yhtenaisyys/pohjoismainen-tasehallinta/varttitase/#taustaa", getTranslation("price.calculator.readmore"), AnchorTarget.BLANK));
         //content.add(newSpan);
 
-        final var title = new Span(getTranslation("calculator.title"));
+        final var title = new H2(getTranslation("calculator.title"));
         title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
         final var spotAverage = PriceCalculatorService.calculateSpotAveragePriceThisYear();
-        final var span = new Span(getTranslation("Spot average this year") + ": " + numberFormat.format(spotAverage) + " " + getTranslation("c/kWh"));
-        span.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
+        final var spotAverageThisYear = new Span(getTranslation("Spot average this year") + ":");
+        spotAverageThisYear.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
+        final var spotAverageThisYearValue = new Span(numberFormat.format(spotAverage) + " " + getTranslation("c/kWh"));
+        spotAverageThisYearValue.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY, LumoUtility.Padding.Left.MEDIUM);
         final var spotAverageMonth = PriceCalculatorService.calculateSpotAveragePriceThisMonth();
-        final var spanMonth = new Span(getTranslation("Spot average this month") + ": " + numberFormat.format(spotAverageMonth) + " " + getTranslation("c/kWh"));
+        final var spanMonth = new Span(getTranslation("Spot average this month") + ":");
         spanMonth.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
+        final var spotAverageThisMonthValue = new Span(numberFormat.format(spotAverageMonth) + " " + getTranslation("c/kWh"));
+        spotAverageThisMonthValue.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY, LumoUtility.Padding.Left.MEDIUM);
 
         final var timeRangeSpanCaption = new Span(getTranslation("calculator.spot.prices.available") + ":");
         timeRangeSpanCaption.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
@@ -128,7 +132,7 @@ public class PriceCalculatorView extends Main {
         final var spotDataDiv = new Div(timeRangeSpanCaption, timeRangeSpan);
         spotDataDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.FlexWrap.WRAP, LumoUtility.Gap.Column.XSMALL);
 
-        final var topDiv = new Div(title, span, spanMonth, spotDataDiv);
+        final var topDiv = new Div(title, spotAverageThisYear, spotAverageThisYearValue, spanMonth, spotAverageThisMonthValue, spotDataDiv);
         topDiv.setMinWidth("228px");
         topDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
 
