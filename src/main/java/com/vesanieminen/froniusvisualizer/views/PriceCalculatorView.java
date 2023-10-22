@@ -113,7 +113,7 @@ public class PriceCalculatorView extends Main {
         //content.add(newSpan);
 
         final var title = new H2(getTranslation("calculator.title"));
-        title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
+        title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM, LumoUtility.Margin.Bottom.MEDIUM);
         final var spotAverage = PriceCalculatorService.calculateSpotAveragePriceThisYear();
         final var spotAverageThisYear = new Span(getTranslation("Spot average this year") + ":");
         spotAverageThisYear.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
@@ -172,7 +172,7 @@ public class PriceCalculatorView extends Main {
         image.setMaxWidth("100%");
         image.setWidth("200px");
         final var checkBoxesAndDatahubLink = new Div(calculationsCheckboxGroup, datahubAnchor);
-        checkBoxesAndDatahubLink.addClassNames(LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.BETWEEN);
+        checkBoxesAndDatahubLink.addClassNames(LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.BETWEEN, LumoUtility.Margin.Top.MEDIUM);
         content.add(checkBoxesAndDatahubLink);
 
         // Layouts
