@@ -31,6 +31,9 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
@@ -70,7 +73,7 @@ import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 @RouteAlias(value = "hintalaskuri", layout = MainLayout.class)
 @RouteAlias(value = "price-calculator", layout = MainLayout.class)
 @Slf4j
-public class PriceCalculatorView extends Main {
+public class PriceCalculatorView extends Main implements HasUrlParameter<String> {
 
     private static int consumptionFilesUploaded = 0;
     private static int productionFilesUploaded = 0;
@@ -84,6 +87,7 @@ public class PriceCalculatorView extends Main {
     private final List<HasEnabled> fields;
     private final Button calculateButton;
     private final CheckboxGroup<Calculations> calculationsCheckboxGroup;
+    private final Div topRowDiv;
     private MemoryBuffer lastConsumptionData;
     private MemoryBuffer lastProductionData;
 
@@ -113,7 +117,7 @@ public class PriceCalculatorView extends Main {
         //content.add(newSpan);
 
         final var title = new H2(getTranslation("calculator.title"));
-        title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM, LumoUtility.Margin.Bottom.MEDIUM);
+        title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.LARGE, LumoUtility.Margin.Bottom.MEDIUM);
         final var spotAverage = PriceCalculatorService.calculateSpotAveragePriceThisYear();
         final var spotAverageThisYear = new DoubleLabel(getTranslation("Spot average this year"), numberFormat.format(spotAverage) + " " + getTranslation("c/kWh"));
 
@@ -124,20 +128,7 @@ public class PriceCalculatorView extends Main {
         final var topDiv = new Div(title, spotAverageThisYear, spotAverageThisMonth, spotDateRange);
         topDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
 
-        final var priimaImage = new Image("images/Priima 2-200x100 (banneri2).png", "PKS Priima");
-        priimaImage.addClassNames(LumoUtility.Margin.Vertical.SMALL, LumoUtility.BorderRadius.MEDIUM, LumoUtility.Border.ALL, LumoUtility.BoxShadow.MEDIUM);
-        priimaImage.setMaxWidth("100%");
-        priimaImage.setWidth("200px");
-        priimaImage.setMinWidth("50px");
-        priimaImage.getStyle().set("border-color", "#FFFFFF");
-
-        final var pksAd = new Span(getTranslation("PKS.ad"));
-        pksAd.addClassNames(LumoUtility.FlexDirection.COLUMN, LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER/*, LumoUtility.Whitespace.NOWRAP*/);
-        final var priimaAnchor = new Anchor("https://bit.ly/priima-sahkosopimus", pksAd, priimaImage);
-        priimaAnchor.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.JustifyContent.CENTER);
-        priimaAnchor.setTarget(AnchorTarget.BLANK);
-
-        final var topRowDiv = new Div(topDiv, priimaAnchor);
+        topRowDiv = new Div(topDiv);
         topRowDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.BETWEEN, LumoUtility.Gap.MEDIUM);
         content.add(topRowDiv);
 
@@ -685,6 +676,26 @@ public class PriceCalculatorView extends Main {
         final var isDateValid = fromDateTimePicker.getValue() != null && toDateTimePicker.getValue() != null && fromDateTimePicker.getValue().isBefore(toDateTimePicker.getValue()) && !fromDateTimePicker.isInvalid() && !toDateTimePicker.isInvalid();
         final var isCalculatingProductionValid = (isCalculatingProduction() && lastProductionData != null) || !isCalculatingProduction();
         calculateButton.setEnabled(lastConsumptionData != null && isCalculatingProductionValid && isDateValid);
+    }
+
+    @Override
+    public void setParameter(BeforeEvent beforeEvent, @OptionalParameter String parameter) {
+        if ("show-ad".equals(parameter)) {
+            final var priimaImage = new Image("images/Priima 2-200x100 (banneri2).png", "PKS Priima");
+            priimaImage.addClassNames(LumoUtility.Margin.Vertical.SMALL, LumoUtility.BorderRadius.MEDIUM, LumoUtility.Border.ALL, LumoUtility.BoxShadow.MEDIUM);
+            priimaImage.setMaxWidth("100%");
+            priimaImage.setWidth("200px");
+            priimaImage.setMinWidth("50px");
+            priimaImage.getStyle().set("border-color", "#FFFFFF");
+
+            final var pksAd = new Span(getTranslation("PKS.ad"));
+            pksAd.addClassNames(LumoUtility.FlexDirection.COLUMN, LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER/*, LumoUtility.Whitespace.NOWRAP*/);
+            final var priimaAnchor = new Anchor("https://bit.ly/priima-sahkosopimus", pksAd, priimaImage);
+            priimaAnchor.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.JustifyContent.CENTER);
+            priimaAnchor.setTarget(AnchorTarget.BLANK);
+
+            topRowDiv.add(priimaAnchor);
+        }
     }
 
     enum Calculations {
