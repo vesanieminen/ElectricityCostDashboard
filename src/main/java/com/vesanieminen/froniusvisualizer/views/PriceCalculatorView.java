@@ -128,7 +128,7 @@ public class PriceCalculatorView extends Main {
         final var timeRangeSpanCaption = new Span(getTranslation("calculator.spot.prices.available") + ":");
         timeRangeSpanCaption.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
         final var timeRangeSpan = new Span(format(spotDataStart, getLocale()) + " - " + format(spotDataEnd, getLocale()));
-        timeRangeSpan.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
+        timeRangeSpan.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY, LumoUtility.Padding.Left.MEDIUM);
         final var spotDataDiv = new Div(timeRangeSpanCaption, timeRangeSpan);
         spotDataDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.FlexWrap.WRAP, LumoUtility.Gap.Column.XSMALL);
 
