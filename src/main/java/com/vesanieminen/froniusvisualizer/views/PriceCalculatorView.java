@@ -115,25 +115,13 @@ public class PriceCalculatorView extends Main {
         final var title = new H2(getTranslation("calculator.title"));
         title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM, LumoUtility.Margin.Bottom.MEDIUM);
         final var spotAverage = PriceCalculatorService.calculateSpotAveragePriceThisYear();
-        final var spotAverageThisYear = new Span(getTranslation("Spot average this year") + ":");
-        spotAverageThisYear.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
-        final var spotAverageThisYearValue = new Span(numberFormat.format(spotAverage) + " " + getTranslation("c/kWh"));
-        spotAverageThisYearValue.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY, LumoUtility.Padding.Left.MEDIUM);
+        final var spotAverageThisYear = new DoubleLabel(getTranslation("Spot average this year"), numberFormat.format(spotAverage) + " " + getTranslation("c/kWh"));
+
         final var spotAverageMonth = PriceCalculatorService.calculateSpotAveragePriceThisMonth();
-        final var spanMonth = new Span(getTranslation("Spot average this month") + ":");
-        spanMonth.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
-        final var spotAverageThisMonthValue = new Span(numberFormat.format(spotAverageMonth) + " " + getTranslation("c/kWh"));
-        spotAverageThisMonthValue.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY, LumoUtility.Padding.Left.MEDIUM);
+        final var spotAverageThisMonth = new DoubleLabel(getTranslation("Spot average this month"), numberFormat.format(spotAverageMonth) + " " + getTranslation("c/kWh"));
+        final var spotDateRange = new DoubleLabel(getTranslation("calculator.spot.prices.available"), format(spotDataStart, getLocale()) + " - " + format(spotDataEnd, getLocale()));
 
-        final var timeRangeSpanCaption = new Span(getTranslation("calculator.spot.prices.available") + ":");
-        timeRangeSpanCaption.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
-        final var timeRangeSpan = new Span(format(spotDataStart, getLocale()) + " - " + format(spotDataEnd, getLocale()));
-        timeRangeSpan.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY, LumoUtility.Padding.Left.MEDIUM);
-        final var spotDataDiv = new Div(timeRangeSpanCaption, timeRangeSpan);
-        spotDataDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.FlexWrap.WRAP, LumoUtility.Gap.Column.XSMALL);
-
-        final var topDiv = new Div(title, spotAverageThisYear, spotAverageThisYearValue, spanMonth, spotAverageThisMonthValue, spotDataDiv);
-        //topDiv.setMinWidth("228px");
+        final var topDiv = new Div(title, spotAverageThisYear, spotAverageThisMonth, spotDateRange);
         topDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
 
         final var priimaImage = new Image("images/Priima 2-200x100 (banneri2).png", "PKS Priima");
