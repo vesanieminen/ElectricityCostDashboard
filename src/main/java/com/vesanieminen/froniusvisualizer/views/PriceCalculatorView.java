@@ -689,8 +689,11 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
             priimaImage.getStyle().set("border-color", "#FFFFFF");
 
             final var pksAd = new Span(getTranslation("PKS.ad"));
+            pksAd.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.CENTER);
             final var priimaAnchor = new Anchor("https://bit.ly/priima-sahkosopimus", pksAd, priimaImage);
             priimaAnchor.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
+            priimaAnchor.setMaxWidth(200, Unit.PIXELS);
+
             priimaAnchor.setTarget(AnchorTarget.BLANK);
             final var wrapper = new Div(priimaAnchor);
             wrapper.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.JustifyContent.CENTER, LumoUtility.Flex.GROW_NONE);
