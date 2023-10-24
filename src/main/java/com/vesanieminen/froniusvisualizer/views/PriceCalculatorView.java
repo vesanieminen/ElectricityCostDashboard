@@ -140,10 +140,11 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
         final var calculations = new HashSet<Calculations>();
         calculations.add(Calculations.SPOT);
         calculationsCheckboxGroup.setValue(calculations);
+
         final var image = new Image("images/fingrid_dh_white.png", getTranslation("login.to.fingrid"));
         final var openDatahub = new Span(getTranslation("open.datahub"));
         openDatahub.addClassNames(LumoUtility.FlexDirection.COLUMN, LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER);
-        final var datahubAnchor = new Anchor("https://oma.datahub.fi", openDatahub, image);
+        final var datahubAnchor = new Anchor("https://oma.datahub.fi", image, openDatahub);
         datahubAnchor.setTarget(AnchorTarget.BLANK);
         image.addClassNames(LumoUtility.Margin.Vertical.SMALL, LumoUtility.BorderRadius.MEDIUM, LumoUtility.Border.ALL, LumoUtility.BoxShadow.MEDIUM);
         image.getStyle().set("background-color", "#d4121e");
@@ -690,7 +691,7 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
 
             final var pksAd = new Span(getTranslation("PKS.ad"));
             pksAd.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.CENTER);
-            final var priimaAnchor = new Anchor("https://bit.ly/priima-sahkosopimus", pksAd, priimaImage);
+            final var priimaAnchor = new Anchor("https://bit.ly/priima-sahkosopimus", priimaImage, pksAd);
             priimaAnchor.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
             priimaAnchor.setMaxWidth(200, Unit.PIXELS);
 
