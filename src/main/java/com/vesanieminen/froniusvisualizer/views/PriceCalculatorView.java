@@ -692,6 +692,9 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
             final var pksAd = new Span(getTranslation("PKS.ad"));
             pksAd.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.CENTER);
             final var priimaAnchor = new Anchor("https://bit.ly/priima-sahkosopimus", priimaImage, pksAd);
+            final var tooltip = com.vaadin.flow.component.shared.Tooltip.forComponent(priimaAnchor);
+
+            tooltip.setText(getTranslation("PKS.ad.tooltip"));
             priimaAnchor.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
             priimaAnchor.setMaxWidth(200, Unit.PIXELS);
 
