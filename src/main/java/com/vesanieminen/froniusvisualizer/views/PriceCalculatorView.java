@@ -347,6 +347,7 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
                     final var productionData = getFingridUsageData(lastProductionData);
                     final var spotProductionCalculation = calculateSpotElectricityPriceDetails(productionData.data(), -spotProductionMarginField.getValue(), 1, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     final Div productionDiv = addSection(resultLayout, getTranslation("Production"));
+
                     productionDiv.add(new DoubleLabel(getTranslation("Surplus production over period"), numberFormat.format(spotProductionCalculation.totalConsumption) + " kWh", true));
                     productionDiv.add(new DoubleLabel(getTranslation("Net spot cost (consumption - production)"), numberFormat.format(spotCalculation.totalCost - spotProductionCalculation.totalCost) + " €", true));
                     productionDiv.add(new DoubleLabel(getTranslation("Net usage (consumption - production)"), numberFormat.format(spotCalculation.totalConsumption - spotProductionCalculation.totalConsumption) + " kWh", true));
