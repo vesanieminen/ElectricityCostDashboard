@@ -347,12 +347,12 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
                     final var productionData = getFingridUsageData(lastProductionData);
                     final var spotProductionCalculation = calculateSpotElectricityPriceDetails(productionData.data(), -spotProductionMarginField.getValue(), 1, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     final Div productionDiv = addSection(resultLayout, getTranslation("Production"));
-                    productionDiv.add(new DoubleLabel(getTranslation("Total production over period"), numberFormat.format(spotProductionCalculation.totalConsumption) + " kWh", true));
+                    productionDiv.add(new DoubleLabel(getTranslation("Surplus production over period"), numberFormat.format(spotProductionCalculation.totalConsumption) + " kWh", true));
                     productionDiv.add(new DoubleLabel(getTranslation("Net spot cost (consumption - production)"), numberFormat.format(spotCalculation.totalCost - spotProductionCalculation.totalCost) + " €", true));
                     productionDiv.add(new DoubleLabel(getTranslation("Net usage (consumption - production)"), numberFormat.format(spotCalculation.totalConsumption - spotProductionCalculation.totalConsumption) + " kWh", true));
                     productionDiv.add(new DoubleLabel(getTranslation("Average production price (incl. margin)"), numberFormat.format(spotProductionCalculation.totalCost / spotProductionCalculation.totalConsumption * 100) + " " + getTranslation("c/kWh"), true));
-                    productionDiv.add(new DoubleLabel(getTranslation("Total production value (incl. margin)"), numberFormat.format(spotProductionCalculation.totalCost) + " €", true));
-                    productionDiv.add(new DoubleLabel(getTranslation("Total production value (without margin)"), numberFormat.format(spotProductionCalculation.totalCostWithoutMargin) + " €", true));
+                    productionDiv.add(new DoubleLabel(getTranslation("Production value (incl. margin)"), numberFormat.format(spotProductionCalculation.totalCost) + " €", true));
+                    productionDiv.add(new DoubleLabel(getTranslation("Production value (without margin)"), numberFormat.format(spotProductionCalculation.totalCostWithoutMargin) + " €", true));
                     // Create spot production chart
                     chartLayout.add(createChart(spotProductionCalculation, false, getTranslation("Production / value per hour"), "Production", "Production value"));
                 }
