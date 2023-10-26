@@ -14,7 +14,7 @@ import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 public class ChartTemplateView extends Main {
 
     public ChartTemplateView() {
-        setHeight("var(--fullscreen-height)");
+        setHeight("var(--fullscreen-height-column)");
         setMinHeight("300px");
         add(new BarChartTemplate());
     }
