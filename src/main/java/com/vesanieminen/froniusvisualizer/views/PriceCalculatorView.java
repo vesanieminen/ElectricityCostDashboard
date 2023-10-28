@@ -275,15 +275,16 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
         nightTransferNightPriceField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         nightTransferNightPriceField.addClassNames(LumoUtility.Flex.GROW);
 
-        //final var nightTransferNightPriceField = new SuperDoubleField(getTranslation("calculator.night-transfer.night-price"));
-        //nightTransferNightPriceField.setMaximumFractionDigits(6);
-        //nightTransferNightPriceField.setLocale(getLocale());
-        //nightTransferNightPriceField.setHelperText(getTranslation("calculator.night-transfer.night-helper"));
-        //nightTransferNightPriceField.setRequiredIndicatorVisible(true);
-        //nightTransferNightPriceField.setSuffixComponent(new Span(getTranslation("c/kWh")));
-        //nightTransferNightPriceField.addClassNames(LumoUtility.Flex.GROW);
+        final var nightTransferMonthlyPriceField = new SuperDoubleField(getTranslation("calculator.night-transfer.monthly-price"));
+        nightTransferMonthlyPriceField.setMaximumFractionDigits(6);
+        nightTransferMonthlyPriceField.setLocale(getLocale());
+        nightTransferMonthlyPriceField.setHelperText(getTranslation("calculator.night-transfer.monthly-price-helper"));
 
-        final var nightTransferDiv = new Div(nightTransferDayPriceField, nightTransferNightPriceField);
+        nightTransferMonthlyPriceField.setRequiredIndicatorVisible(true);
+        nightTransferMonthlyPriceField.setSuffixComponent(new Span("€"));
+        nightTransferMonthlyPriceField.addClassNames(LumoUtility.Flex.GROW);
+
+        final var nightTransferDiv = new Div(nightTransferDayPriceField, nightTransferNightPriceField, nightTransferMonthlyPriceField);
         nightTransferDiv.setVisible(false);
         nightTransferDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Gap.Column.MEDIUM, LumoUtility.FlexWrap.WRAP);
         content.add(nightTransferDiv);
