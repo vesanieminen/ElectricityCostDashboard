@@ -186,6 +186,10 @@ public class Utils {
         return list.stream().mapToDouble(d -> d).average();
     }
 
+    public static Predicate<Map.Entry<Instant, Double>> isBetweenHours(int startHour, int endHour) {
+        return item -> startHour <= item.getKey().atZone(fiZoneID).getHour() && item.getKey().atZone(fiZoneID).getHour() <= endHour;
+    }
+
     public static Predicate<Map.Entry<Instant, Double>> isAfter(int month, int year) {
         return item -> item.getKey().atZone(fiZoneID).getMonthValue() == month && item.getKey().atZone(fiZoneID).getYear() == year;
     }

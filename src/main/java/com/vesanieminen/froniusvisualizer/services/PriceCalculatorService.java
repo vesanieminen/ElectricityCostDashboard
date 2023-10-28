@@ -32,6 +32,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.divide;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getVAT;
+import static com.vesanieminen.froniusvisualizer.util.Utils.isBetweenHours;
 import static com.vesanieminen.froniusvisualizer.util.Utils.monthFilter;
 import static com.vesanieminen.froniusvisualizer.util.Utils.nordpoolZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
@@ -329,6 +330,21 @@ public class PriceCalculatorService {
     public static double calculateFixedElectricityPrice(LinkedHashMap<Instant, Double> fingridConsumptionData, double fixed, Instant start, Instant end) {
         final LinkedHashMap<Instant, Double> filtered = getDateTimeRange(fingridConsumptionData, start, end);
         return calculateFixedElectricityPrice(filtered, fixed);
+    }
+
+    private static LinkedHashMap<Instant, Double> getDateTimeRangeWithFilter(LinkedHashMap<Instant, Double> fingridConsumptionData, Instant start, Instant end, int hourAfter, int hourBefore) {
+        return getDateTimeRange(fingridConsumptionData, start, end).entrySet().stream().filter(isBetweenHours(hourAfter, hourBefore))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
+    }
+
+    public static double calculateDayPrice(LinkedHashMap<Instant, Double> fingridConsumptionData, double price, Instant start, Instant end) {
+        final LinkedHashMap<Instant, Double> filtered = getDateTimeRangeWithFilter(fingridConsumptionData, start, end, 7, 22);
+        return calculateFixedElectricityPrice(filtered, price);
+    }
+
+    public static double calculateNightPrice(LinkedHashMap<Instant, Double> fingridConsumptionData, double price, Instant start, Instant end) {
+        final LinkedHashMap<Instant, Double> filtered = getDateTimeRangeWithFilter(fingridConsumptionData, start, end, 22, 7);
+        return calculateFixedElectricityPrice(filtered, price);
     }
 
     /**

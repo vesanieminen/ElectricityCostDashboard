@@ -56,6 +56,7 @@ import java.util.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateDayPrice;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateFixedElectricityPrice;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotElectricityPriceDetails;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getFingridUsageData;
@@ -88,6 +89,8 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
     private final Button calculateButton;
     private final CheckboxGroup<Calculations> calculationsCheckboxGroup;
     private final Div topRowDiv;
+    private final SuperDoubleField nightTransferDayPriceField = new SuperDoubleField(getTranslation("calculator.night-transfer.day-price"));
+    private final SuperDoubleField nightTransferNightPriceField = new SuperDoubleField(getTranslation("calculator.night-transfer.night-price"));
     private MemoryBuffer lastConsumptionData;
     private MemoryBuffer lastProductionData;
 
@@ -255,14 +258,33 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
         transferAndTaxField.setVisible(false);
         fieldRow.add(transferAndTaxField);
 
+        // night transfer
+        nightTransferDayPriceField.setMaximumFractionDigits(6);
+        nightTransferDayPriceField.setLocale(getLocale());
+        nightTransferDayPriceField.setHelperText(getTranslation("calculator.night-transfer.day-helper"));
+        nightTransferDayPriceField.setRequiredIndicatorVisible(true);
+        nightTransferDayPriceField.setSuffixComponent(new Span(getTranslation("c/kWh")));
+        nightTransferDayPriceField.addClassNames(LumoUtility.Flex.GROW);
+        nightTransferNightPriceField.setMaximumFractionDigits(6);
+        nightTransferNightPriceField.setLocale(getLocale());
+        nightTransferNightPriceField.setHelperText(getTranslation("calculator.night-transfer.night-helper"));
+        nightTransferNightPriceField.setRequiredIndicatorVisible(true);
+        nightTransferNightPriceField.setSuffixComponent(new Span(getTranslation("c/kWh")));
+        nightTransferNightPriceField.addClassNames(LumoUtility.Flex.GROW);
+        final var nightTransferDiv = new Div(nightTransferDayPriceField, nightTransferNightPriceField);
+        nightTransferDiv.setVisible(false);
+        nightTransferDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Gap.Column.MEDIUM, LumoUtility.FlexWrap.WRAP);
+        content.add(nightTransferDiv);
+
         calculationsCheckboxGroup.addValueChangeListener(e -> {
             fixedPriceField.setVisible(e.getValue().contains(Calculations.FIXED));
             spotProductionMarginField.setVisible(e.getValue().contains(Calculations.SPOT_PRODUCTION));
             transferAndTaxField.setVisible(e.getValue().contains(Calculations.TRANSFER_AND_TAX));
+            nightTransferDiv.setVisible(e.getValue().contains(Calculations.NIGHT_TRANSFER));
             productionUpload.setVisible(e.getValue().contains(Calculations.SPOT_PRODUCTION));
             updateCalculateButtonState();
         });
-        fields = Arrays.asList(fromDateTimePicker, toDateTimePicker, fixedPriceField, spotMarginField, transferAndTaxField, spotProductionMarginField);
+        fields = Arrays.asList(fromDateTimePicker, toDateTimePicker, fixedPriceField, spotMarginField, transferAndTaxField, nightTransferDiv, spotProductionMarginField);
 
         calculateButton = new Button(getTranslation("Calculate costs"), e -> {
             try {
@@ -277,6 +299,14 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
                 if (isCalculatingTransferAndTax()) {
                     if (transferAndTaxField.getValue() == null) {
                         transferAndTaxField.setValue(0d);
+                    }
+                }
+                if (isCalculatingNightTransfer()) {
+                    if (nightTransferDayPriceField.getValue() == null) {
+                        nightTransferDayPriceField.setValue(0d);
+                    }
+                    if (nightTransferNightPriceField.getValue() == null) {
+                        nightTransferNightPriceField.setValue(0d);
                     }
                 }
                 if (isCalculatingProduction()) {
@@ -338,6 +368,18 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
                     var transferAndTaxTotalCost = calculateFixedElectricityPrice(consumptionData.data(), transferAndTaxField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     transferAndTaxDiv.add(new DoubleLabel(getTranslation("calculator.transfer.and.tax.total"), numberFormat.format(transferAndTaxTotalCost) + " €", true));
                     transferAndTaxDiv.add(new DoubleLabel(getTranslation("calculator.spot.cost.and.transfer"), numberFormat.format(spotCalculation.totalCost + transferAndTaxTotalCost) + " €", true));
+                }
+
+                if (isCalculatingNightTransfer()) {
+                    final Div nightTransferSection = addSection(resultLayout, getTranslation("calculator.night-transfer.title"));
+                    nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.day-price"), nightTransferDayPriceField.getValue() + " " + getTranslation("c/kWh"), true));
+                    nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.night-price"), nightTransferNightPriceField.getValue() + " " + getTranslation("c/kWh"), true));
+                    var dayCost = calculateDayPrice(consumptionData.data(), nightTransferDayPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    var nightCost = calculateDayPrice(consumptionData.data(), nightTransferNightPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    var dayAndNightCost = dayCost + nightCost;
+                    nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.day-cost"), numberFormat.format(dayCost) + " €", true));
+                    nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.night-cost"), numberFormat.format(nightCost) + " €", true));
+                    nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.total-cost"), numberFormat.format(dayAndNightCost) + " €", true));
                 }
 
                 // Create spot consumption chart
@@ -414,6 +456,10 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
 
     private boolean isCalculatingTransferAndTax() {
         return calculationsCheckboxGroup.getValue().contains(Calculations.TRANSFER_AND_TAX);
+    }
+
+    private boolean isCalculatingNightTransfer() {
+        return calculationsCheckboxGroup.getValue().contains(Calculations.NIGHT_TRANSFER);
     }
 
     private boolean isCalculatingProduction() {
@@ -712,6 +758,7 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
         FIXED("Fixed price"),
         //COST_FACTOR("cost.factor"),
         TRANSFER_AND_TAX("calculator.transfer.and.tax"),
+        NIGHT_TRANSFER("calculator.night-transfer.title"),
         SPOT_PRODUCTION("Spot production price");
 
         private String name;
