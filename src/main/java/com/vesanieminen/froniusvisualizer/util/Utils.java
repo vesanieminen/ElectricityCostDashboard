@@ -190,6 +190,14 @@ public class Utils {
         return item -> startHour <= item.getKey().atZone(fiZoneID).getHour() && item.getKey().atZone(fiZoneID).getHour() <= endHour;
     }
 
+    public static Predicate<Map.Entry<Instant, Double>> isAfter(int hour) {
+        return item -> hour <= item.getKey().atZone(fiZoneID).getHour();
+    }
+
+    public static Predicate<Map.Entry<Instant, Double>> isBefore(int hour) {
+        return item -> item.getKey().atZone(fiZoneID).getHour() <= hour;
+    }
+
     public static Predicate<Map.Entry<Instant, Double>> isAfter(int month, int year) {
         return item -> item.getKey().atZone(fiZoneID).getMonthValue() == month && item.getKey().atZone(fiZoneID).getYear() == year;
     }

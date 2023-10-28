@@ -32,6 +32,8 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.divide;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getVAT;
+import static com.vesanieminen.froniusvisualizer.util.Utils.isAfter;
+import static com.vesanieminen.froniusvisualizer.util.Utils.isBefore;
 import static com.vesanieminen.froniusvisualizer.util.Utils.isBetweenHours;
 import static com.vesanieminen.froniusvisualizer.util.Utils.monthFilter;
 import static com.vesanieminen.froniusvisualizer.util.Utils.nordpoolZoneID;
@@ -342,8 +344,13 @@ public class PriceCalculatorService {
         return calculateFixedElectricityPrice(filtered, price);
     }
 
+    private static LinkedHashMap<Instant, Double> getDateTimeRangeNightFilter(LinkedHashMap<Instant, Double> fingridConsumptionData, Instant start, Instant end, int hourAfter, int hourBefore) {
+        return getDateTimeRange(fingridConsumptionData, start, end).entrySet().stream().filter(isBefore(hourBefore).or(isAfter(hourAfter)))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
+    }
+
     public static double calculateNightPrice(LinkedHashMap<Instant, Double> fingridConsumptionData, double price, Instant start, Instant end) {
-        final LinkedHashMap<Instant, Double> filtered = getDateTimeRangeWithFilter(fingridConsumptionData, start, end, 22, 7);
+        final LinkedHashMap<Instant, Double> filtered = getDateTimeRangeNightFilter(fingridConsumptionData, start, end, 22, 7);
         return calculateFixedElectricityPrice(filtered, price);
     }
 

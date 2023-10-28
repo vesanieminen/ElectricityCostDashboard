@@ -58,6 +58,7 @@ import java.util.stream.Stream;
 
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateDayPrice;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateFixedElectricityPrice;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateNightPrice;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotElectricityPriceDetails;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getFingridUsageData;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataEnd;
@@ -375,7 +376,7 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
                     nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.day-price"), nightTransferDayPriceField.getValue() + " " + getTranslation("c/kWh"), true));
                     nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.night-price"), nightTransferNightPriceField.getValue() + " " + getTranslation("c/kWh"), true));
                     var dayCost = calculateDayPrice(consumptionData.data(), nightTransferDayPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
-                    var nightCost = calculateDayPrice(consumptionData.data(), nightTransferNightPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    var nightCost = calculateNightPrice(consumptionData.data(), nightTransferNightPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     var dayAndNightCost = dayCost + nightCost;
                     nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.day-cost"), numberFormat.format(dayCost) + " €", true));
                     nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.night-cost"), numberFormat.format(nightCost) + " €", true));
