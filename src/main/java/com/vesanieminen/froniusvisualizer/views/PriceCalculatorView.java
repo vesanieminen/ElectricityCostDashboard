@@ -29,6 +29,7 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.BeforeEvent;
@@ -41,7 +42,6 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
 import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService;
 import lombok.extern.slf4j.Slf4j;
-import org.vaadin.miki.superfields.numbers.SuperDoubleField;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -83,18 +83,18 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
 
     private final DateTimePicker fromDateTimePicker;
     private final DateTimePicker toDateTimePicker;
-    private final SuperDoubleField fixedPriceField;
-    private final SuperDoubleField spotMarginField;
-    private final SuperDoubleField generalTransferField;
-    private final SuperDoubleField spotProductionMarginField;
+    private final NumberField fixedPriceField;
+    private final NumberField spotMarginField;
+    private final NumberField generalTransferField;
+    private final NumberField spotProductionMarginField;
     private final List<HasEnabled> fields;
     private final Button calculateButton;
     private final CheckboxGroup<Calculations> calculationsCheckboxGroup;
     private final Div topRowDiv;
-    private final SuperDoubleField nightTransferDayPriceField;
-    private final SuperDoubleField nightTransferNightPriceField;
-    private final SuperDoubleField nightTransferMonthlyPriceField;
-    private final SuperDoubleField transferMonthlyPriceField;
+    private final NumberField nightTransferDayPriceField;
+    private final NumberField nightTransferNightPriceField;
+    private final NumberField nightTransferMonthlyPriceField;
+    private final NumberField transferMonthlyPriceField;
     private MemoryBuffer lastConsumptionData;
     private MemoryBuffer lastProductionData;
 
@@ -223,8 +223,8 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
         content.add(fieldRow);
 
         // Fixed price field
-        fixedPriceField = new SuperDoubleField(null, getTranslation("Fixed price"));
-        fixedPriceField.setLocale(getLocale());
+        fixedPriceField = new NumberField(getTranslation("Fixed price"));
+        //fixedPriceField.setLocale(getLocale());
         fixedPriceField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(5.41));
         fixedPriceField.setRequiredIndicatorVisible(true);
         fixedPriceField.setSuffixComponent(new Span(getTranslation("c/kWh")));
@@ -233,8 +233,7 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
         fieldRow.add(fixedPriceField);
 
         // Spot margin field
-        spotMarginField = new SuperDoubleField(null, getTranslation("Spot margin"));
-        spotMarginField.setLocale(getLocale());
+        spotMarginField = new NumberField(getTranslation("Spot margin"));
         spotMarginField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(0.30) + " " + getTranslation("calculator.with.helen"));
         spotMarginField.setRequiredIndicatorVisible(true);
         spotMarginField.setSuffixComponent(new Span(getTranslation("c/kWh")));
@@ -242,8 +241,7 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
         fieldRow.add(spotMarginField);
 
         // Spot production field
-        spotProductionMarginField = new SuperDoubleField(null, getTranslation("Production margin"));
-        spotProductionMarginField.setLocale(getLocale());
+        spotProductionMarginField = new NumberField(getTranslation("Production margin"));
         spotProductionMarginField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(0.3));
         spotProductionMarginField.setRequiredIndicatorVisible(true);
         spotProductionMarginField.setSuffixComponent(new Span(getTranslation("c/kWh")));
@@ -252,16 +250,12 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
         fieldRow.add(spotProductionMarginField);
 
         // transfer field
-        generalTransferField = new SuperDoubleField(null, getTranslation("calculator.general-transfer"));
-        generalTransferField.setMaximumFractionDigits(6);
-        generalTransferField.setLocale(getLocale());
+        generalTransferField = new NumberField(getTranslation("calculator.general-transfer"));
         generalTransferField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(5.07) + " " + getTranslation("calculator.with.caruna"));
         generalTransferField.setRequiredIndicatorVisible(true);
         generalTransferField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         generalTransferField.addClassNames(LumoUtility.Flex.GROW);
-        transferMonthlyPriceField = new SuperDoubleField(null, getTranslation("calculator.general-transfer.monthly-price"));
-        transferMonthlyPriceField.setMaximumFractionDigits(6);
-        transferMonthlyPriceField.setLocale(getLocale());
+        transferMonthlyPriceField = new NumberField(getTranslation("calculator.general-transfer.monthly-price"));
         transferMonthlyPriceField.setHelperText(getTranslation("calculator.general-transfer.monthly-price-helper"));
         transferMonthlyPriceField.setRequiredIndicatorVisible(true);
         transferMonthlyPriceField.setSuffixComponent(new Span("€"));
@@ -272,23 +266,17 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
         content.add(transferDiv);
 
         // night transfer
-        nightTransferDayPriceField = new SuperDoubleField(null, getTranslation("calculator.night-transfer.day-price"));
-        nightTransferDayPriceField.setMaximumFractionDigits(6);
-        nightTransferDayPriceField.setLocale(getLocale());
+        nightTransferDayPriceField = new NumberField(getTranslation("calculator.night-transfer.day-price"));
         nightTransferDayPriceField.setHelperText(getTranslation("calculator.night-transfer.day-helper"));
         nightTransferDayPriceField.setRequiredIndicatorVisible(true);
         nightTransferDayPriceField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         nightTransferDayPriceField.addClassNames(LumoUtility.Flex.GROW);
-        nightTransferNightPriceField = new SuperDoubleField(null, getTranslation("calculator.night-transfer.night-price"));
-        nightTransferNightPriceField.setMaximumFractionDigits(6);
-        nightTransferNightPriceField.setLocale(getLocale());
+        nightTransferNightPriceField = new NumberField(getTranslation("calculator.night-transfer.night-price"));
         nightTransferNightPriceField.setHelperText(getTranslation("calculator.night-transfer.night-helper"));
         nightTransferNightPriceField.setRequiredIndicatorVisible(true);
         nightTransferNightPriceField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         nightTransferNightPriceField.addClassNames(LumoUtility.Flex.GROW);
-        nightTransferMonthlyPriceField = new SuperDoubleField(null, getTranslation("calculator.night-transfer.monthly-price"));
-        nightTransferMonthlyPriceField.setMaximumFractionDigits(6);
-        nightTransferMonthlyPriceField.setLocale(getLocale());
+        nightTransferMonthlyPriceField = new NumberField(getTranslation("calculator.night-transfer.monthly-price"));
         nightTransferMonthlyPriceField.setHelperText(getTranslation("calculator.night-transfer.monthly-price-helper"));
         nightTransferMonthlyPriceField.setRequiredIndicatorVisible(true);
         nightTransferMonthlyPriceField.setSuffixComponent(new Span("€"));
