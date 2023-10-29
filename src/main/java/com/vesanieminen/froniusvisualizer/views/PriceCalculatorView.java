@@ -94,6 +94,7 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
     private final SuperDoubleField nightTransferDayPriceField;
     private final SuperDoubleField nightTransferNightPriceField;
     private final SuperDoubleField nightTransferMonthlyPriceField;
+    private final SuperDoubleField transferMonthlyPriceField;
     private MemoryBuffer lastConsumptionData;
     private MemoryBuffer lastProductionData;
 
@@ -258,8 +259,17 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
         generalTransferField.setRequiredIndicatorVisible(true);
         generalTransferField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         generalTransferField.addClassNames(LumoUtility.Flex.GROW);
-        generalTransferField.setVisible(false);
-        fieldRow.add(generalTransferField);
+        transferMonthlyPriceField = new SuperDoubleField(null, getTranslation("calculator.general-transfer.monthly-price"));
+        transferMonthlyPriceField.setMaximumFractionDigits(6);
+        transferMonthlyPriceField.setLocale(getLocale());
+        transferMonthlyPriceField.setHelperText(getTranslation("calculator.general-transfer.monthly-price-helper"));
+        transferMonthlyPriceField.setRequiredIndicatorVisible(true);
+        transferMonthlyPriceField.setSuffixComponent(new Span("€"));
+        transferMonthlyPriceField.addClassNames(LumoUtility.Flex.GROW);
+        final var transferDiv = new Div(generalTransferField, transferMonthlyPriceField);
+        transferDiv.setVisible(false);
+        transferDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Gap.Column.MEDIUM, LumoUtility.FlexWrap.WRAP);
+        content.add(transferDiv);
 
         // night transfer
         nightTransferDayPriceField = new SuperDoubleField(null, getTranslation("calculator.night-transfer.day-price"));
@@ -291,12 +301,12 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
         calculationsCheckboxGroup.addValueChangeListener(e -> {
             fixedPriceField.setVisible(e.getValue().contains(Calculations.FIXED));
             spotProductionMarginField.setVisible(e.getValue().contains(Calculations.SPOT_PRODUCTION));
-            generalTransferField.setVisible(e.getValue().contains(Calculations.GENERAL_TRANSFER));
+            transferDiv.setVisible(e.getValue().contains(Calculations.GENERAL_TRANSFER));
             nightTransferDiv.setVisible(e.getValue().contains(Calculations.NIGHT_TRANSFER));
             productionUpload.setVisible(e.getValue().contains(Calculations.SPOT_PRODUCTION));
             updateCalculateButtonState();
         });
-        fields = Arrays.asList(fromDateTimePicker, toDateTimePicker, fixedPriceField, spotMarginField, generalTransferField, nightTransferDiv, spotProductionMarginField);
+        fields = Arrays.asList(fromDateTimePicker, toDateTimePicker, fixedPriceField, spotMarginField, transferDiv, nightTransferDiv, spotProductionMarginField);
 
         calculateButton = new Button(getTranslation("Calculate costs"), e -> {
             try {
@@ -311,6 +321,9 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
                 if (isCalculatingGeneralTransfer()) {
                     if (generalTransferField.getValue() == null) {
                         generalTransferField.setValue(0d);
+                    }
+                    if (transferMonthlyPriceField.getValue() == null) {
+                        transferMonthlyPriceField.setValue(0d);
                     }
                 }
                 if (isCalculatingNightTransfer()) {
@@ -378,11 +391,17 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
                 }
 
                 if (isCalculatingGeneralTransfer()) {
-                    final Div transferAndTaxDiv = addSection(resultLayout, getTranslation("calculator.general-transfer"));
-                    transferAndTaxDiv.add(new DoubleLabel(getTranslation("calculator.general-transfer"), generalTransferField.getValue() + " " + getTranslation("c/kWh"), true));
-                    var transferAndTaxTotalCost = calculateFixedElectricityPrice(consumptionData.data(), generalTransferField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
-                    transferAndTaxDiv.add(new DoubleLabel(getTranslation("calculator.general-transfer.total"), numberFormat.format(transferAndTaxTotalCost) + " €", true));
-                    transferAndTaxDiv.add(new DoubleLabel(getTranslation("calculator.spot.cost.and.transfer"), numberFormat.format(spotCalculation.totalCost + transferAndTaxTotalCost) + " €", true));
+                    final Div generalTransferDiv = addSection(resultLayout, getTranslation("calculator.general-transfer"));
+                    generalTransferDiv.add(new DoubleLabel(getTranslation("calculator.general-transfer"), generalTransferField.getValue() + " " + getTranslation("c/kWh"), true));
+                    var transferTotalCost = calculateFixedElectricityPrice(consumptionData.data(), generalTransferField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    generalTransferDiv.add(new DoubleLabel(getTranslation("calculator.general-transfer.total"), numberFormat.format(transferTotalCost) + " €", true));
+                    generalTransferDiv.add(new DoubleLabel(getTranslation("calculator.spot.cost.and.transfer"), numberFormat.format(spotCalculation.totalCost + transferTotalCost) + " €", true));
+
+                    final var monthsInvolved = calculateMonthsInvolved(fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    final var monthlyCost = monthsInvolved * transferMonthlyPriceField.getValue();
+                    generalTransferDiv.add(new DoubleLabel(getTranslation("calculator.general-transfer.montly-cost"), numberFormat.format(monthlyCost) + " €", true));
+                    final var totalTransferCost = monthlyCost + transferTotalCost;
+                    generalTransferDiv.add(new DoubleLabel(getTranslation("calculator.general-transfer.total-cost.including-monthly"), numberFormat.format(totalTransferCost) + " €", true));
 
                 }
 
