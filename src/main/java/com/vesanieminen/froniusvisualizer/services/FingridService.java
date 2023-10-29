@@ -220,7 +220,7 @@ public class FingridService {
     }
 
     private static String createDateTimeString(LocalDateTime localDateTime) {
-        return DateTimeFormatter.ofPattern("yyyy-MM-dd").format(localDateTime) + "T" + DateTimeFormatter.ofPattern("HH:mm:ss").format(localDateTime) + (isDaylightSavingsInFinland() ? "+0300" : "0200");
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd").format(localDateTime) + "T" + DateTimeFormatter.ofPattern("HH:mm:ss").format(localDateTime) + (isDaylightSavingsInFinland() ? "+0300" : "+0200");
     }
 
     public static void writeToCSVFile() {
