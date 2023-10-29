@@ -48,13 +48,13 @@ public class Executor {
         log.info("Started updateFingridData");
         final var startTime = System.currentTimeMillis();
         try {
-            FingridService.updateWindEstimateData();
+            FingridService.updateRealtimeData();
             TimeUnit.MILLISECONDS.sleep(500);
             FingridService.updateProductionEstimateData();
             TimeUnit.MILLISECONDS.sleep(500);
             FingridService.updateConsumptionEstimateData();
             TimeUnit.MILLISECONDS.sleep(500);
-            FingridService.updateRealtimeData();
+            FingridService.updateWindEstimateData();
         } catch (InterruptedException e) {
             log.error("Could not update Fingrid data");
         }

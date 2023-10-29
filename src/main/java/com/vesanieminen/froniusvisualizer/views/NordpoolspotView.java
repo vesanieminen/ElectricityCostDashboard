@@ -504,6 +504,9 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         var total = 0d;
         var amount = 0;
         final var dataSeries = new DataSeries(fiElectricityPriceTitle);
+        if (nordpoolResponse == null) {
+            return dataSeries;
+        }
         final var rows = nordpoolResponse.data.Rows;
         int columnIndex = 6;
         while (columnIndex >= 0) {
