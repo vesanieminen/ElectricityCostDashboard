@@ -56,8 +56,10 @@ import java.util.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateDayConsumption;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateDayPrice;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateFixedElectricityPrice;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateNightConsumption;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateNightPrice;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotElectricityPriceDetails;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getFingridUsageData;
@@ -385,14 +387,14 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
                 if (isCalculatingFixed()) {
                     final Div fixedPriceDiv = addSection(resultLayout, getTranslation("Fixed Price details"));
                     resultLayout.add(fixedPriceDiv);
-                    fixedPriceDiv.add(new DoubleLabel(getTranslation("Fixed price"), fixedPriceField.getValue() + " " + getTranslation("c/kWh"), true));
+                    fixedPriceDiv.add(new DoubleLabel(getTranslation("Fixed price"), numberFormat.format(fixedPriceField.getValue()) + " " + getTranslation("c/kWh"), true));
                     var fixedCost = calculateFixedElectricityPrice(consumptionData.data(), fixedPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     fixedPriceDiv.add(new DoubleLabel(getTranslation("Fixed cost total"), numberFormat.format(fixedCost) + " €", true));
                 }
 
                 if (isCalculatingGeneralTransfer()) {
                     final Div generalTransferDiv = addSection(resultLayout, getTranslation("calculator.general-transfer"));
-                    generalTransferDiv.add(new DoubleLabel(getTranslation("calculator.general-transfer"), generalTransferField.getValue() + " " + getTranslation("c/kWh"), true));
+                    generalTransferDiv.add(new DoubleLabel(getTranslation("calculator.general-transfer"), numberFormat.format(generalTransferField.getValue()) + " " + getTranslation("c/kWh"), true));
                     var transferTotalCost = calculateFixedElectricityPrice(consumptionData.data(), generalTransferField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     generalTransferDiv.add(new DoubleLabel(getTranslation("calculator.general-transfer.total"), numberFormat.format(transferTotalCost) + " €", true));
                     generalTransferDiv.add(new DoubleLabel(getTranslation("calculator.spot.cost.and.transfer"), numberFormat.format(spotCalculation.totalCost + transferTotalCost) + " €", true));
@@ -407,15 +409,23 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
 
                 if (isCalculatingNightTransfer()) {
                     final Div nightTransferSection = addSection(resultLayout, getTranslation("calculator.night-transfer.title"));
-                    nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.day-price"), nightTransferDayPriceField.getValue() + " " + getTranslation("c/kWh"), true));
-                    nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.night-price"), nightTransferNightPriceField.getValue() + " " + getTranslation("c/kWh"), true));
-                    nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.monthly-price"), nightTransferMonthlyPriceField.getValue() + " €", true));
-                    var dayCost = calculateDayPrice(consumptionData.data(), nightTransferDayPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
-                    var nightCost = calculateNightPrice(consumptionData.data(), nightTransferNightPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
-                    var dayAndNightCost = dayCost + nightCost;
+                    nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.day-price"), numberFormat.format(nightTransferDayPriceField.getValue()) + " " + getTranslation("c/kWh"), true));
+                    nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.night-price"), numberFormat.format(nightTransferNightPriceField.getValue()) + " " + getTranslation("c/kWh"), true));
+                    nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.monthly-price"), numberFormat.format(nightTransferMonthlyPriceField.getValue()) + " €", true));
+                    final var dayCost = calculateDayPrice(consumptionData.data(), nightTransferDayPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    final var nightCost = calculateNightPrice(consumptionData.data(), nightTransferNightPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    final var dayAndNightCost = dayCost + nightCost;
+                    final var dayConsumption = calculateDayConsumption(consumptionData.data(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    final var nightConsumption = calculateNightConsumption(consumptionData.data(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    final var totalConsumption = dayConsumption + nightConsumption;
+                    final var dayPercentage = dayConsumption / totalConsumption * 100;
+                    final var nightPercentage = nightConsumption / totalConsumption * 100;
                     nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.day-cost"), numberFormat.format(dayCost) + " €", true));
                     nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.night-cost"), numberFormat.format(nightCost) + " €", true));
                     nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.total-cost"), numberFormat.format(dayAndNightCost) + " €", true));
+                    nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.day-consumption"), numberFormat.format(dayConsumption) + " kWh", true));
+                    nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.night-consumption"), numberFormat.format(nightConsumption) + " kWh", true));
+                    nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.percentage"), "%s %% / %s %%".formatted(numberFormat.format(dayPercentage), numberFormat.format(nightPercentage)), true));
                     final var monthsInvolved = calculateMonthsInvolved(fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     final var monthlyCost = monthsInvolved * nightTransferMonthlyPriceField.getValue();
                     nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.montly-cost"), numberFormat.format(monthlyCost) + " €", true));

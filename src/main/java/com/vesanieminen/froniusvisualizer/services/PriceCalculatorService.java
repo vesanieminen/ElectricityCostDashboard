@@ -344,6 +344,20 @@ public class PriceCalculatorService {
         return calculateFixedElectricityPrice(filtered, price);
     }
 
+    public static double calculateConsumption(LinkedHashMap<Instant, Double> fingridConsumptionData) {
+        return fingridConsumptionData.values().stream().reduce(0d, Double::sum);
+    }
+
+    public static double calculateDayConsumption(LinkedHashMap<Instant, Double> fingridConsumptionData, Instant start, Instant end) {
+        final LinkedHashMap<Instant, Double> filtered = getDateTimeRangeWithFilter(fingridConsumptionData, start, end, 7, 22);
+        return calculateConsumption(filtered);
+    }
+
+    public static double calculateNightConsumption(LinkedHashMap<Instant, Double> fingridConsumptionData, Instant start, Instant end) {
+        final LinkedHashMap<Instant, Double> filtered = getDateTimeRangeNightFilter(fingridConsumptionData, start, end, 22, 7);
+        return calculateConsumption(filtered);
+    }
+
     private static LinkedHashMap<Instant, Double> getDateTimeRangeNightFilter(LinkedHashMap<Instant, Double> fingridConsumptionData, Instant start, Instant end, int hourAfter, int hourBefore) {
         return getDateTimeRange(fingridConsumptionData, start, end).entrySet().stream().filter(isBefore(hourBefore).or(isAfter(hourAfter)))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
