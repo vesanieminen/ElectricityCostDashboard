@@ -50,11 +50,11 @@ public class Executor {
         try {
             FingridService.updateRealtimeData();
             TimeUnit.MILLISECONDS.sleep(500);
+            FingridService.updateWindEstimateData();
+            TimeUnit.MILLISECONDS.sleep(500);
             FingridService.updateProductionEstimateData();
             TimeUnit.MILLISECONDS.sleep(500);
             FingridService.updateConsumptionEstimateData();
-            TimeUnit.MILLISECONDS.sleep(500);
-            FingridService.updateWindEstimateData();
         } catch (InterruptedException e) {
             log.error("Could not update Fingrid data");
         }
