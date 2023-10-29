@@ -390,13 +390,14 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
                     final Div nightTransferSection = addSection(resultLayout, getTranslation("calculator.night-transfer.title"));
                     nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.day-price"), nightTransferDayPriceField.getValue() + " " + getTranslation("c/kWh"), true));
                     nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.night-price"), nightTransferNightPriceField.getValue() + " " + getTranslation("c/kWh"), true));
+                    nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.monthly-price"), nightTransferMonthlyPriceField.getValue() + " €", true));
                     var dayCost = calculateDayPrice(consumptionData.data(), nightTransferDayPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     var nightCost = calculateNightPrice(consumptionData.data(), nightTransferNightPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     var dayAndNightCost = dayCost + nightCost;
                     nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.day-cost"), numberFormat.format(dayCost) + " €", true));
                     nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.night-cost"), numberFormat.format(nightCost) + " €", true));
                     nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.total-cost"), numberFormat.format(dayAndNightCost) + " €", true));
-                    final var monthsInvolved = calculateMonthsInvolved(fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    final var monthsInvolved = calculateMonthsInvolved(fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     final var monthlyCost = monthsInvolved * nightTransferMonthlyPriceField.getValue();
                     nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.montly-cost"), numberFormat.format(monthlyCost) + " €", true));
                     final var totalNightTransferCost = monthlyCost + dayAndNightCost;
