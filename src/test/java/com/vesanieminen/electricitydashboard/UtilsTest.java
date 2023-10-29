@@ -9,12 +9,14 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateFixedElectricityPrice;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getFingridUsageData;
+import static com.vesanieminen.froniusvisualizer.util.Utils.calculateMonthsInvolved;
 import static com.vesanieminen.froniusvisualizer.util.Utils.dateTimeFormatter;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentInstantDayPrecisionFinnishZone;
@@ -91,5 +93,28 @@ public class UtilsTest {
         assertEquals(2, result.size());
         assertEquals(9, result.get(0));
         assertEquals(19, result.get(1));
+    }
+
+    @Test
+    void testMonthsBetween() {
+        var start = Instant.from(ZonedDateTime.of(2023, 9, 10, 20, 52, 0, 0, fiZoneID));
+        var end = Instant.from(ZonedDateTime.of(2023, 10, 11, 20, 52, 0, 0, fiZoneID));
+        var between = calculateMonthsInvolved(start, end);
+        assertEquals(2, between);
+
+        start = Instant.from(ZonedDateTime.of(2023, 9, 12, 20, 52, 0, 0, fiZoneID));
+        end = Instant.from(ZonedDateTime.of(2023, 10, 11, 20, 52, 0, 0, fiZoneID));
+        between = calculateMonthsInvolved(start, end);
+        assertEquals(2, between);
+
+        start = Instant.from(ZonedDateTime.of(2023, 10, 10, 20, 52, 0, 0, fiZoneID));
+        end = Instant.from(ZonedDateTime.of(2023, 10, 11, 20, 52, 0, 0, fiZoneID));
+        between = calculateMonthsInvolved(start, end);
+        assertEquals(1, between);
+
+        start = Instant.from(ZonedDateTime.of(2023, 10, 28, 0, 0, 0, 0, fiZoneID));
+        end = Instant.from(ZonedDateTime.of(2023, 10, 29, 0, 0, 0, 0, fiZoneID));
+        between = calculateMonthsInvolved(start, end);
+        assertEquals(1, between);
     }
 }

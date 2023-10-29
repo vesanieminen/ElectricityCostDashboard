@@ -63,6 +63,7 @@ import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getFingridUsageData;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataEnd;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataStart;
+import static com.vesanieminen.froniusvisualizer.util.Utils.calculateMonthsInvolved;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.format;
@@ -92,6 +93,7 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
     private final Div topRowDiv;
     private final SuperDoubleField nightTransferDayPriceField;
     private final SuperDoubleField nightTransferNightPriceField;
+    private final SuperDoubleField nightTransferMonthlyPriceField;
     private MemoryBuffer lastConsumptionData;
     private MemoryBuffer lastProductionData;
 
@@ -220,7 +222,7 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
         content.add(fieldRow);
 
         // Fixed price field
-        fixedPriceField = new SuperDoubleField(getTranslation("Fixed price"));
+        fixedPriceField = new SuperDoubleField(null, getTranslation("Fixed price"));
         fixedPriceField.setLocale(getLocale());
         fixedPriceField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(5.41));
         fixedPriceField.setRequiredIndicatorVisible(true);
@@ -230,7 +232,7 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
         fieldRow.add(fixedPriceField);
 
         // Spot margin field
-        spotMarginField = new SuperDoubleField(getTranslation("Spot margin"));
+        spotMarginField = new SuperDoubleField(null, getTranslation("Spot margin"));
         spotMarginField.setLocale(getLocale());
         spotMarginField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(0.30) + " " + getTranslation("calculator.with.helen"));
         spotMarginField.setRequiredIndicatorVisible(true);
@@ -239,7 +241,7 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
         fieldRow.add(spotMarginField);
 
         // Spot production field
-        spotProductionMarginField = new SuperDoubleField(getTranslation("Production margin"));
+        spotProductionMarginField = new SuperDoubleField(null, getTranslation("Production margin"));
         spotProductionMarginField.setLocale(getLocale());
         spotProductionMarginField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(0.3));
         spotProductionMarginField.setRequiredIndicatorVisible(true);
@@ -248,8 +250,8 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
         spotProductionMarginField.setVisible(false);
         fieldRow.add(spotProductionMarginField);
 
-        // transfer and tax price field
-        generalTransferField = new SuperDoubleField(getTranslation("calculator.general-transfer"));
+        // transfer field
+        generalTransferField = new SuperDoubleField(null, getTranslation("calculator.general-transfer"));
         generalTransferField.setMaximumFractionDigits(6);
         generalTransferField.setLocale(getLocale());
         generalTransferField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(5.07) + " " + getTranslation("calculator.with.caruna"));
@@ -260,30 +262,27 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
         fieldRow.add(generalTransferField);
 
         // night transfer
-        nightTransferDayPriceField = new SuperDoubleField(getTranslation("calculator.night-transfer.day-price"));
+        nightTransferDayPriceField = new SuperDoubleField(null, getTranslation("calculator.night-transfer.day-price"));
         nightTransferDayPriceField.setMaximumFractionDigits(6);
         nightTransferDayPriceField.setLocale(getLocale());
         nightTransferDayPriceField.setHelperText(getTranslation("calculator.night-transfer.day-helper"));
         nightTransferDayPriceField.setRequiredIndicatorVisible(true);
         nightTransferDayPriceField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         nightTransferDayPriceField.addClassNames(LumoUtility.Flex.GROW);
-        nightTransferNightPriceField = new SuperDoubleField(getTranslation("calculator.night-transfer.night-price"));
+        nightTransferNightPriceField = new SuperDoubleField(null, getTranslation("calculator.night-transfer.night-price"));
         nightTransferNightPriceField.setMaximumFractionDigits(6);
         nightTransferNightPriceField.setLocale(getLocale());
         nightTransferNightPriceField.setHelperText(getTranslation("calculator.night-transfer.night-helper"));
         nightTransferNightPriceField.setRequiredIndicatorVisible(true);
         nightTransferNightPriceField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         nightTransferNightPriceField.addClassNames(LumoUtility.Flex.GROW);
-
-        final var nightTransferMonthlyPriceField = new SuperDoubleField(getTranslation("calculator.night-transfer.monthly-price"));
+        nightTransferMonthlyPriceField = new SuperDoubleField(null, getTranslation("calculator.night-transfer.monthly-price"));
         nightTransferMonthlyPriceField.setMaximumFractionDigits(6);
         nightTransferMonthlyPriceField.setLocale(getLocale());
         nightTransferMonthlyPriceField.setHelperText(getTranslation("calculator.night-transfer.monthly-price-helper"));
-
         nightTransferMonthlyPriceField.setRequiredIndicatorVisible(true);
         nightTransferMonthlyPriceField.setSuffixComponent(new Span("€"));
         nightTransferMonthlyPriceField.addClassNames(LumoUtility.Flex.GROW);
-
         final var nightTransferDiv = new Div(nightTransferDayPriceField, nightTransferNightPriceField, nightTransferMonthlyPriceField);
         nightTransferDiv.setVisible(false);
         nightTransferDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Gap.Column.MEDIUM, LumoUtility.FlexWrap.WRAP);
@@ -320,6 +319,9 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
                     }
                     if (nightTransferNightPriceField.getValue() == null) {
                         nightTransferNightPriceField.setValue(0d);
+                    }
+                    if (nightTransferMonthlyPriceField.getValue() == null) {
+                        nightTransferMonthlyPriceField.setValue(0d);
                     }
                 }
                 if (isCalculatingProduction()) {
@@ -394,6 +396,11 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
                     nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.day-cost"), numberFormat.format(dayCost) + " €", true));
                     nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.night-cost"), numberFormat.format(nightCost) + " €", true));
                     nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.total-cost"), numberFormat.format(dayAndNightCost) + " €", true));
+                    final var monthsInvolved = calculateMonthsInvolved(fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    final var monthlyCost = monthsInvolved * nightTransferMonthlyPriceField.getValue();
+                    nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.montly-cost"), numberFormat.format(monthlyCost) + " €", true));
+                    final var totalNightTransferCost = monthlyCost + dayAndNightCost;
+                    nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.total-cost.including-monthly"), numberFormat.format(totalNightTransferCost) + " €", true));
                 }
 
                 // Create spot consumption chart

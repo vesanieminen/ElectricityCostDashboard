@@ -13,6 +13,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -284,6 +285,19 @@ public class Utils {
 
     public static List<FingridRealtimeResponse.Data> keepEveryFirstItem(List<FingridRealtimeResponse.Data> input) {
         return input.stream().filter(item -> item.start_time.getMinute() == 1).collect(Collectors.toList());
+    }
+
+    public static int calculateMonthsInvolved(Instant start, Instant end) {
+        final var startZone = start.atZone(fiZoneID);
+        final var endZone = end.atZone(fiZoneID);
+
+        // Convert the local dates to year-month.
+        final var startYearMonth = YearMonth.from(startZone);
+        final var endYearMonth = YearMonth.from(endZone);
+
+        // Calculate the difference in months.
+        return (endYearMonth.getYear() - startYearMonth.getYear()) * 12 +
+                (endYearMonth.getMonthValue() - startYearMonth.getMonthValue()) + 1;
     }
 
 }
