@@ -59,7 +59,9 @@ import java.util.Objects;
 
 import static com.vesanieminen.froniusvisualizer.services.FingridService.fingridDataUpdated;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonthWithoutVAT;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisYear;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisYearWithoutVAT;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceToday;
 import static com.vesanieminen.froniusvisualizer.util.Utils.convertNordpoolLocalDateTimeToFinnish;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
@@ -190,8 +192,8 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         createMenuLayout();
         final NumberFormat numberFormat = getNumberFormat(getLocale(), 2);
         numberFormat.setMinimumFractionDigits(2);
-        final var averageThisMonthLabel = new DoubleLabel(getTranslation("Average this month"), numberFormat.format(calculateSpotAveragePriceThisMonth()));
-        final var averageThisYearLabel = new DoubleLabel(getTranslation("Average this year"), numberFormat.format(calculateSpotAveragePriceThisYear()));
+        final var averageThisMonthLabel = new DoubleLabel(getTranslation("Average this month"), numberFormat.format(hasVat ? calculateSpotAveragePriceThisMonth() : calculateSpotAveragePriceThisMonthWithoutVAT()));
+        final var averageThisYearLabel = new DoubleLabel(getTranslation("Average this year"), numberFormat.format(hasVat ? calculateSpotAveragePriceThisYear() : calculateSpotAveragePriceThisYearWithoutVAT()));
         final var averageTodayLabel = new DoubleLabel(getTranslation("Day's average"), numberFormat.format(calculateSpotAveragePriceToday()));
         var pricesLayout = new Div(priceNow, nextPrice, averageTodayLabel, averagePrice7Days, averageThisMonthLabel, averageThisYearLabel, lowestAndHighest);
         pricesLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Width.FULL/*, LumoUtility.BorderRadius.LARGE, LumoUtility.Border.ALL, LumoUtility.BorderColor.CONTRAST_10*/);

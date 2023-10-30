@@ -199,6 +199,11 @@ public class PriceCalculatorService {
         //return spotAverageThisYear;
     }
 
+    public static double calculateSpotAveragePriceThisYearWithoutVAT() {
+        final var year = getCurrentTimeWithHourPrecision().getYear();
+        return getSpotData().entrySet().stream().filter(yearFilter(year)).map(Map.Entry::getValue).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(yearFilter(year)).count();
+    }
+
     private static Predicate<Map.Entry<Instant, Double>> yearFilter(int year) {
         return item -> item.getKey().atZone(fiZoneID).getYear() == year;
     }
@@ -212,6 +217,13 @@ public class PriceCalculatorService {
         final var month = now.getMonthValue();
         final var year = now.getYear();
         return getSpotData().entrySet().stream().filter(monthFilter(month, year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(monthFilter(month, year)).count();
+    }
+
+    public static double calculateSpotAveragePriceThisMonthWithoutVAT() {
+        final var now = getCurrentTimeWithHourPrecision();
+        final var month = now.getMonthValue();
+        final var year = now.getYear();
+        return getSpotData().entrySet().stream().filter(monthFilter(month, year)).map(Map.Entry::getValue).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(monthFilter(month, year)).count();
     }
 
     public static double calculateSpotAveragePriceToday() {
