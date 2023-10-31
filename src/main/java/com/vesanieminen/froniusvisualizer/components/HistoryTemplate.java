@@ -12,6 +12,7 @@ import com.vesanieminen.froniusvisualizer.util.Utils;
 import java.util.List;
 
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getPrices;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentLocalDateTimeDayPrecisionFinnishZone;
 
 @Tag("history-template")
 @JsModule("src/history-template.ts")
@@ -21,6 +22,7 @@ public class HistoryTemplate extends Component {
     private static final PropertyDescriptor<String, String> UNIT = PropertyDescriptors.propertyWithDefault("unit", "");
     private static final PropertyDescriptor<String, String> POST_FIX = PropertyDescriptors.propertyWithDefault("postfix", "");
     private static final PropertyDescriptor<Integer, Integer> CURRENT_HOUR = PropertyDescriptors.propertyWithDefault("currentHour", 0);
+    private static final PropertyDescriptor<Integer, Integer> DAY_OF_MONTH = PropertyDescriptors.propertyWithDefault("dayOfMonth", 1);
     private static final PropertyDescriptor<String, String> LANGUAGE = PropertyDescriptors.propertyWithDefault("language", "en");
 
     @Override
@@ -29,6 +31,8 @@ public class HistoryTemplate extends Component {
         set(SERIES_TITLE, getTranslation("history-chart.series.title"));
         set(UNIT, getTranslation("column-chart.series.unit"));
         set(POST_FIX, getTranslation("c/kWh"));
+        final var dayOfMonth = getCurrentLocalDateTimeDayPrecisionFinnishZone().getDayOfMonth() + 1;
+        set(DAY_OF_MONTH, dayOfMonth);
         var data = getPrices();
         setNordpoolDataList(data);
         final var hour = (int) Utils.getCurrentInstantHourPrecision().getEpochSecond();

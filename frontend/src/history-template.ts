@@ -40,6 +40,9 @@ export class HistoryTemplate extends LitElement {
     currentHour: number = 0;
 
     @property()
+    dayOfMonth: number = 1;
+
+    @property()
     values?: Array<Nordpool>;
 
     private getChartOptions(): Options {
@@ -59,6 +62,10 @@ export class HistoryTemplate extends LitElement {
                         type: 'day',
                         count: 14,
                         text: get("column-chart.14d")
+                    }, {
+                        type: 'day',
+                        count: this.dayOfMonth,
+                        text: get("column-chart.mtd")
                     }, {
                         type: 'month',
                         count: 1,
