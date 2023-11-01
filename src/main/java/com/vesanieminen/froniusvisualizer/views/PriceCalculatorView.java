@@ -779,29 +779,27 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
 
     @Override
     public void setParameter(BeforeEvent beforeEvent, @OptionalParameter String parameter) {
-        if ("show-ad".equals(parameter)) {
-            final var priimaImage = new Image("images/Banneri_versio 3.png", "PKS Priima");
-            priimaImage.addClassNames(LumoUtility.Margin.Vertical.SMALL, LumoUtility.BorderRadius.MEDIUM, LumoUtility.Border.ALL, LumoUtility.BoxShadow.MEDIUM);
-            priimaImage.setMaxWidth("100%");
-            priimaImage.setWidth("200px");
-            priimaImage.setMinWidth("50px");
-            priimaImage.getStyle().set("border-color", "#FFFFFF");
+        final var priimaImage = new Image("images/Banneri_versio 3.png", "PKS Priima");
+        priimaImage.addClassNames(LumoUtility.Margin.Vertical.SMALL, LumoUtility.BorderRadius.MEDIUM, LumoUtility.Border.ALL, LumoUtility.BoxShadow.MEDIUM);
+        priimaImage.setMaxWidth("100%");
+        priimaImage.setWidth("200px");
+        priimaImage.setMinWidth("50px");
+        priimaImage.getStyle().set("border-color", "#FFFFFF");
 
-            final var pksAd = new Span(getTranslation("PKS.ad"));
-            pksAd.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.CENTER);
-            final var priimaAnchor = new Anchor("https://bit.ly/priima-sahkosopimus", priimaImage, pksAd);
-            final var tooltip = com.vaadin.flow.component.shared.Tooltip.forComponent(priimaAnchor);
+        final var pksAd = new Span(getTranslation("PKS.ad"));
+        pksAd.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.CENTER);
+        final var priimaAnchor = new Anchor("https://bit.ly/priima-sahkosopimus", priimaImage, pksAd);
+        final var tooltip = com.vaadin.flow.component.shared.Tooltip.forComponent(priimaAnchor);
 
-            tooltip.setText(getTranslation("PKS.ad.tooltip"));
-            priimaAnchor.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
-            priimaAnchor.setMaxWidth(200, Unit.PIXELS);
+        tooltip.setText(getTranslation("PKS.ad.tooltip"));
+        priimaAnchor.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
+        priimaAnchor.setMaxWidth(200, Unit.PIXELS);
 
-            priimaAnchor.setTarget(AnchorTarget.BLANK);
-            final var wrapper = new Div(priimaAnchor);
-            wrapper.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.JustifyContent.CENTER, LumoUtility.Flex.GROW_NONE);
+        priimaAnchor.setTarget(AnchorTarget.BLANK);
+        final var wrapper = new Div(priimaAnchor);
+        wrapper.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.JustifyContent.CENTER, LumoUtility.Flex.GROW_NONE);
 
-            topRowDiv.add(wrapper);
-        }
+        topRowDiv.add(wrapper);
     }
 
     enum Calculations {
