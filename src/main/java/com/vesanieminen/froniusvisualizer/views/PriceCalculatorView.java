@@ -779,7 +779,7 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
 
     @Override
     public void setParameter(BeforeEvent beforeEvent, @OptionalParameter String parameter) {
-        final var priimaImage = new Image("images/Banneri_versio 3.png", "PKS Priima");
+        final var priimaImage = new Image("images/priimabannerivalkoinenpohja (002).png", "PKS Priima");
         priimaImage.addClassNames(LumoUtility.Margin.Vertical.SMALL, LumoUtility.BorderRadius.MEDIUM, LumoUtility.Border.ALL, LumoUtility.BoxShadow.MEDIUM);
         priimaImage.setMaxWidth("100%");
         priimaImage.setWidth("200px");
