@@ -3,7 +3,7 @@ import {customElement, property, state} from 'lit/decorators.js';
 import '@vaadin/charts';
 import '@vaadin/charts/src/vaadin-chart-series';
 import type {Options} from 'highcharts';
-import {get, registerTranslateConfig, use} from "lit-translate";
+import {registerTranslateConfig, use} from "lit-translate";
 import {Nordpool} from "Frontend/src/nordpool";
 import {Plotline} from "Frontend/src/plotline";
 
@@ -81,8 +81,8 @@ export class BarChartTemplateTimo extends LitElement {
             },
             yAxis: [{
                 title: {
-                    //text: ''
-                    text: get("general.price-type")
+                    text: ''
+                    //text: get("general.price-type")
                 },
                 softMax: this.average == -100 ? undefined : this.average,
                 plotLines:
