@@ -42,7 +42,6 @@ public class BarChartTemplateTimo extends Component {
     }
 
     public void setAverage(Double average) {
-        //set(AVERAGE, average);
         getElement().setProperty("average", average);
     }
 
