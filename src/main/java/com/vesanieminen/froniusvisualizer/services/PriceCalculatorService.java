@@ -234,6 +234,14 @@ public class PriceCalculatorService {
         return getSpotData().entrySet().stream().filter(dayFilter(day, month, year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(dayFilter(day, month, year)).count();
     }
 
+    public static double calculateSpotAveragePriceTodayWithoutVAT() {
+        final var now = getCurrentTimeWithHourPrecision();
+        final var day = now.getDayOfMonth();
+        final var month = now.getMonthValue();
+        final var year = now.getYear();
+        return getSpotData().entrySet().stream().filter(dayFilter(day, month, year)).map(Map.Entry::getValue).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(dayFilter(day, month, year)).count();
+    }
+
     public static List<Double> getPricesToday() {
         final var now = getCurrentTimeWithHourPrecision();
         final var day = now.getDayOfMonth();

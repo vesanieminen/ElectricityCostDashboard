@@ -63,6 +63,7 @@ import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisYear;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisYearWithoutVAT;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceToday;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceTodayWithoutVAT;
 import static com.vesanieminen.froniusvisualizer.util.Utils.convertNordpoolLocalDateTimeToFinnish;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.format;
@@ -194,7 +195,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         numberFormat.setMinimumFractionDigits(2);
         final var averageThisMonthLabel = new DoubleLabel(getTranslation("Average this month"), numberFormat.format(hasVat ? calculateSpotAveragePriceThisMonth() : calculateSpotAveragePriceThisMonthWithoutVAT()));
         final var averageThisYearLabel = new DoubleLabel(getTranslation("Average this year"), numberFormat.format(hasVat ? calculateSpotAveragePriceThisYear() : calculateSpotAveragePriceThisYearWithoutVAT()));
-        final var averageTodayLabel = new DoubleLabel(getTranslation("Day's average"), numberFormat.format(calculateSpotAveragePriceToday()));
+        final var averageTodayLabel = new DoubleLabel(getTranslation("Day's average"), numberFormat.format(hasVat ? calculateSpotAveragePriceToday() : calculateSpotAveragePriceTodayWithoutVAT()));
         var pricesLayout = new Div(priceNow, nextPrice, averageTodayLabel, averagePrice7Days, averageThisMonthLabel, averageThisYearLabel, lowestAndHighest);
         pricesLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Width.FULL/*, LumoUtility.BorderRadius.LARGE, LumoUtility.Border.ALL, LumoUtility.BorderColor.CONTRAST_10*/);
         add(pricesLayout);
