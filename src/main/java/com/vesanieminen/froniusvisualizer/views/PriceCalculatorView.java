@@ -31,9 +31,6 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
-import com.vaadin.flow.router.BeforeEvent;
-import com.vaadin.flow.router.HasUrlParameter;
-import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
@@ -78,7 +75,7 @@ import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 @RouteAlias(value = "hintalaskuri", layout = MainLayout.class)
 @RouteAlias(value = "price-calculator", layout = MainLayout.class)
 @Slf4j
-public class PriceCalculatorView extends Main implements HasUrlParameter<String> {
+public class PriceCalculatorView extends Main {
 
     private static int consumptionFilesUploaded = 0;
     private static int productionFilesUploaded = 0;
@@ -140,6 +137,7 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
         topRowDiv = new Div(topDiv);
         topRowDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.BETWEEN, LumoUtility.Gap.MEDIUM);
         content.add(topRowDiv);
+        addAd();
 
         calculationsCheckboxGroup = new CheckboxGroup<>(getTranslation("Select calculations"));
         calculationsCheckboxGroup.addThemeVariants(CheckboxGroupVariant.LUMO_VERTICAL);
@@ -777,8 +775,7 @@ public class PriceCalculatorView extends Main implements HasUrlParameter<String>
         calculateButton.setEnabled(lastConsumptionData != null && isCalculatingProductionValid && isDateValid);
     }
 
-    @Override
-    public void setParameter(BeforeEvent beforeEvent, @OptionalParameter String parameter) {
+    public void addAd() {
         final var priimaImage = new Image("images/priimabannerivalkoinenpohja (002).png", "PKS Priima");
         priimaImage.addClassNames(LumoUtility.Margin.Vertical.SMALL, LumoUtility.BorderRadius.MEDIUM, LumoUtility.Border.ALL, LumoUtility.BoxShadow.MEDIUM);
         priimaImage.setMaxWidth("100%");
