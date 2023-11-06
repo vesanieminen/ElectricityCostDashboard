@@ -6,13 +6,13 @@ import com.vaadin.flow.component.PropertyDescriptor;
 import com.vaadin.flow.component.PropertyDescriptors;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import com.vesanieminen.froniusvisualizer.util.Utils;
 
 import java.util.List;
 
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getPrices;
-import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentLocalDateTimeDayPrecisionFinnishZone;
 
 @Tag("history-template")
 @JsModule("src/history-template.ts")
@@ -31,7 +31,7 @@ public class HistoryTemplate extends Component {
         set(SERIES_TITLE, getTranslation("history-chart.series.title"));
         set(UNIT, getTranslation("column-chart.series.unit"));
         set(POST_FIX, getTranslation("c/kWh"));
-        final var dayOfMonth = getCurrentLocalDateTimeDayPrecisionFinnishZone().getDayOfMonth() + 1;
+        final var dayOfMonth = PriceCalculatorService.getLatestDayOfMonth() - 1;
         set(DAY_OF_MONTH, dayOfMonth);
         var data = getPrices();
         setNordpoolDataList(data);

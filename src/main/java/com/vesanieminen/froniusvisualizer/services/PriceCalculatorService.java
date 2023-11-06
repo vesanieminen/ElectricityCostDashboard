@@ -388,6 +388,11 @@ public class PriceCalculatorService {
         return calculateFixedElectricityPrice(filtered, price);
     }
 
+
+    public static int getLatestDayOfMonth() {
+        return getPrices().get(getPrices().size() - 1).timeInstant().atZone(fiZoneID).getDayOfMonth();
+    }
+
     /**
      * Groups together different calculation values.
      * Has multiple arrays that acts as buckets that are filled of data from different days for periods of 24h.
