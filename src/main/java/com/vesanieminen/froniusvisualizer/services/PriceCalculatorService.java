@@ -152,6 +152,10 @@ public class PriceCalculatorService {
                         final var _15Min = csvReader.readNext();
                         final var _30Min = csvReader.readNext();
                         final var _45Min = csvReader.readNext();
+                        // skip if there are no values to combine for a full hour
+                        if (_15Min == null || _30Min == null || _45Min == null) {
+                            break;
+                        }
                         // also skip if one of the 15min interval values is missing
                         if ("MISSING".equals(_15Min[getColumnIndex(isNewFormat, 6)]) || "MISSING".equals(_30Min[getColumnIndex(isNewFormat, 6)]) || "MISSING".equals(_45Min[getColumnIndex(isNewFormat, 6)])) {
                             break;

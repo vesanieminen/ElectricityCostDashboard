@@ -117,4 +117,10 @@ public class UtilsTest {
         between = calculateMonthsInvolved(start, end);
         assertEquals(1, between);
     }
+
+    @Test
+    void testExtra15Min_Error() {
+
+    }
+
 }
