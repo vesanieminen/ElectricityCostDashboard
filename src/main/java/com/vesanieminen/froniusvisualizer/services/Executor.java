@@ -66,7 +66,6 @@ public class Executor {
         getAndWriteToFile2YearData();
     }
 
-
     public static void init() {
         // NOP
     }
