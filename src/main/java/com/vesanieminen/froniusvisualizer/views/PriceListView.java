@@ -13,10 +13,10 @@ import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.Ping;
 import com.vesanieminen.froniusvisualizer.components.list.PriceListItem;
+import com.vesanieminen.froniusvisualizer.components.list.UnorderedPriceList;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import com.vesanieminen.froniusvisualizer.util.css.Background;
 import com.vesanieminen.froniusvisualizer.util.css.BorderColor;
-import com.vesanieminen.froniusvisualizer.util.css.FontFamily;
 import com.vesanieminen.froniusvisualizer.util.css.Layout;
 import com.vesanieminen.froniusvisualizer.util.css.Transform;
 import com.vesanieminen.froniusvisualizer.util.css.Transition;
@@ -138,7 +138,7 @@ public class PriceListView extends Main {
                 currentDayTime = currentDay;
                 day = createDayH2();
                 containerList.add(day);
-                list = createUnorderedList();
+                list = new UnorderedPriceList();
                 containerList.add(list);
                 daySpan = createDaySpan();
                 daySpan.setText(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale).format(entry.timeInstant().atZone(fiZoneID)));
@@ -224,20 +224,6 @@ public class PriceListView extends Main {
         );
         return day;
     }
-
-    private static UnorderedList createUnorderedList() {
-        var list = new UnorderedList();
-        list.addClassNames(
-                FontFamily.MONO,
-                LumoUtility.ListStyleType.NONE,
-                LumoUtility.Margin.Horizontal.AUTO,
-                LumoUtility.Margin.Vertical.NONE,
-                LumoUtility.MaxWidth.SCREEN_SMALL,
-                LumoUtility.Padding.NONE
-        );
-        return list;
-    }
-
 
     private Span createDaySpan() {
         final var daySpan = new Span();
