@@ -13,6 +13,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.Ping;
+import com.vesanieminen.froniusvisualizer.components.list.PriceListItem;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import com.vesanieminen.froniusvisualizer.util.css.Background;
 import com.vesanieminen.froniusvisualizer.util.css.BorderColor;
@@ -152,7 +153,7 @@ public class PriceListView extends Main {
             numberFormat.setMinimumFractionDigits(2);
             final var priceSpan = new Span(numberFormat.format(vatPrice) + "¢");
 
-            final ListItem item = createListItem(timeSpan, priceSpan);
+            final ListItem item = new PriceListItem(timeSpan, priceSpan);
 
             setPriceTextColor(vatPrice, priceSpan);
 
@@ -205,16 +206,6 @@ public class PriceListView extends Main {
         }
     }
 
-    private static ListItem createListItem(Span timeSpan, Span priceSpan) {
-        final var item = new ListItem(timeSpan, priceSpan);
-        item.addClassNames(
-                LumoUtility.Border.BOTTOM,
-                LumoUtility.Display.FLEX,
-                LumoUtility.JustifyContent.BETWEEN,
-                LumoUtility.Padding.SMALL
-        );
-        return item;
-    }
 
     private H2 createDayH2() {
         final var day = new H2();
