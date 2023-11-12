@@ -200,7 +200,9 @@ public class PriceListView extends Main {
             }
         }
         add(containerList);
-        currentItem.scrollIntoView();
+        if (currentItem != null) {
+            currentItem.scrollIntoView();
+        }
     }
 
     private static ListItem createListItem(Span timeSpan, Span priceSpan) {
