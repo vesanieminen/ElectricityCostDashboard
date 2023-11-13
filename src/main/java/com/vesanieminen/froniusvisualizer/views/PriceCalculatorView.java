@@ -115,13 +115,6 @@ public class PriceCalculatorView extends Main {
 
         final NumberFormat numberFormat = getNumberFormat(getLocale(), 2);
 
-        //final var warning = new Span(getTranslation("price.calculator.warning"));
-        //warning.addClassNames(LumoUtility.TextColor.SUCCESS);
-        //content.add(warning);
-
-        //final var newSpan = new Span(new Anchor("https://www.fingrid.fi/sahkomarkkinat/markkinoiden-yhtenaisyys/pohjoismainen-tasehallinta/varttitase/#taustaa", getTranslation("price.calculator.readmore"), AnchorTarget.BLANK));
-        //content.add(newSpan);
-
         final var title = new H2(getTranslation("calculator.title"));
         title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.LARGE, LumoUtility.Margin.Bottom.MEDIUM);
         final var spotAverage = PriceCalculatorService.calculateSpotAveragePriceThisYear();
