@@ -25,7 +25,7 @@ public class FmiService {
 
     private static LocalDateTime nextUpdate = LocalDateTime.now(fiZoneID).minusHours(1);
     private static FmiObservationResponse lastResponse;
-    private static SimpleDateFormat dateparser = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
+    private static final SimpleDateFormat dateparser = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
 
 
     private static String buildFmiUrl() {
@@ -33,13 +33,10 @@ public class FmiService {
     }
 
     private static boolean isCacheStale() {
-        if (LocalDateTime.now(fiZoneID).compareTo(nextUpdate) > 0)
-            return true;
-        return false;
+        return LocalDateTime.now(fiZoneID).compareTo(nextUpdate) > 0;
     }
 
     public static FmiObservationResponse fetchLatestObservations() {
-
         final var nowWithoutMinutes = LocalDateTime.now(fiZoneID);
         nextUpdate = nowWithoutMinutes.plusHours(1);
         final HttpRequest request;
