@@ -104,11 +104,9 @@ public class PriceCalculatorView extends Main {
 
     public PriceCalculatorView() {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Top.MEDIUM);
-        final var wrapper = new Div();
-        wrapper.addClassNames(LumoUtility.Margin.Horizontal.AUTO);
-        wrapper.setWidthFull();
-        wrapper.setMaxWidth(1024, Unit.PIXELS);
-        add(wrapper);
+
+        final Div wrapper = createWrapper();
+
         final var content = new Div();
         content.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Padding.Horizontal.MEDIUM);
         wrapper.add(content);
@@ -464,6 +462,15 @@ public class PriceCalculatorView extends Main {
         add(chartLayout);
     }
 
+    private Div createWrapper() {
+        final var wrapper = new Div();
+        wrapper.addClassNames(LumoUtility.Margin.Horizontal.AUTO);
+        wrapper.setWidthFull();
+        wrapper.setMaxWidth(1024, Unit.PIXELS);
+        add(wrapper);
+        return wrapper;
+    }
+
     private Div createWrapDiv(Component... components) {
         final var wrapDiv = new Div(components);
         wrapDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Margin.Top.MEDIUM);
@@ -751,7 +758,6 @@ public class PriceCalculatorView extends Main {
         final var additionalInfo = new Span(getTranslation("calculator.help.notice"));
         additionalInfo.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
         helpLayout.add(additionalInfo);
-
     }
 
     private void setEnabled(boolean isEnabled, HasEnabled... hasEnableds) {
