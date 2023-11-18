@@ -37,14 +37,16 @@ export class AboutView extends LitElement {
 
     render() {
         return html`
-            <h2>${translate("about.liukuri.title")}</h2>
-            <div>${translateUnsafeHTML("about.liukuri.descriptionHTML")}</div>
+            <div class="flex flex-col gap-s">
+                <h2>${translate("about.liukuri.title")}</h2>
+                <div>${translateUnsafeHTML("about.liukuri.descriptionHTML")}</div>
 
-            <h2>${translate("about.design.title")}</h2>
-            <div>${translate("about.design.description")}</div>
+                <h2>${translate("about.design.title")}</h2>
+                <div>${translate("about.design.description")}</div>
 
-            <h2>${translate("about.logo.title")}</h2>
-            <div>${translateUnsafeHTML("about.logo.descriptionHTML")}</div>
+                <h2>${translate("about.logo.title")}</h2>
+                <div>${translateUnsafeHTML("about.logo.descriptionHTML")}</div>
+            </div>
             <div class="m-auto">
                 <img class="w-full h-full" src="icons/Liukurikettu1c.png" alt="logo"/>
             </div>
