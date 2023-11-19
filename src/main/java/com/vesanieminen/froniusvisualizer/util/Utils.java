@@ -126,16 +126,16 @@ public class Utils {
         return Duration.between(now, nextHour).getSeconds();
     }
 
-    public static ZonedDateTime getNext_13_50() {
+    public static ZonedDateTime getNextTimeAt(int hour, int minute) {
         final var now = ZonedDateTime.now(fiZoneID);
-        final var today_1350 = ZonedDateTime.now(fiZoneID).withHour(13).withMinute(50);
-        return now.isAfter(today_1350) ? today_1350.plusDays(1) : today_1350;
+        final var todayAt = ZonedDateTime.now(fiZoneID).withHour(hour).withMinute(minute);
+        return now.isAfter(todayAt) ? todayAt.plusDays(1) : todayAt;
     }
 
-    public static long getSecondsToNext_13_50() {
+    public static long getSecondsToNextTimeAt(int hour, int minute) {
         ZonedDateTime now = ZonedDateTime.now(Utils.fiZoneID);
-        ZonedDateTime next_13_50 = Utils.getNext_13_50();
-        return Duration.between(now, next_13_50).getSeconds();
+        ZonedDateTime nextTime = Utils.getNextTimeAt(hour, minute);
+        return Duration.between(now, nextTime).getSeconds();
     }
 
     public static boolean isAfter_13_45(ZonedDateTime zonedDateTime) {

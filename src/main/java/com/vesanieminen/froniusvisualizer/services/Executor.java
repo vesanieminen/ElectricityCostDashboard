@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.getAndWriteToFile2YearData;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getSecondsToNextEvenHour;
-import static com.vesanieminen.froniusvisualizer.util.Utils.getSecondsToNext_13_50;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getSecondsToNextTimeAt;
 
 @Slf4j
 public class Executor {
@@ -18,7 +18,7 @@ public class Executor {
         executorService.schedule(Executor::updateAll, 0, TimeUnit.SECONDS);
         executorService.scheduleAtFixedRate(Executor::updatePrices, getSecondsToNextEvenHour(), TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS);
         executorService.scheduleAtFixedRate(Executor::updateFingridData, getSecondsToNextEvenHour() + 120, TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS);
-        executorService.scheduleAtFixedRate(Executor::updateNordpool_13_50, getSecondsToNext_13_50(), TimeUnit.DAYS.toSeconds(1), TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(Executor::updateNordpoolData, getSecondsToNextTimeAt(13, 52), TimeUnit.DAYS.toSeconds(1), TimeUnit.SECONDS);
     }
 
     private static void updateAll() {
@@ -28,11 +28,11 @@ public class Executor {
         log.info("Ended updateAll");
     }
 
-    public static void updateNordpool_13_50() {
-        log.info("Started update Nordpool at 13:50");
+    public static void updateNordpoolData() {
+        log.info("Started update Nordpool");
         final var startTime = System.currentTimeMillis();
         NordpoolSpotService.updateNordpoolData(true);
-        log.info("Ended update Nordpool at 13:50 in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
+        log.info("Ended update Nordpool in " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds");
     }
 
     public static void updatePrices() {
