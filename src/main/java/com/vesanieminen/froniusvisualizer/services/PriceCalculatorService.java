@@ -157,7 +157,7 @@ public class PriceCalculatorService {
                             break;
                         }
                         // also skip if one of the 15min interval values is missing
-                        if ("MISSING".equals(_15Min[getColumnIndex(isNewFormat, 6)]) || "MISSING".equals(_30Min[getColumnIndex(isNewFormat, 6)]) || "MISSING".equals(_45Min[getColumnIndex(isNewFormat, 6)])) {
+                        if ("MISSING".equals(_15Min[getColumnIndex(true, 6)]) || "MISSING".equals(_30Min[getColumnIndex(isNewFormat, 6)]) || "MISSING".equals(_45Min[getColumnIndex(isNewFormat, 6)])) {
                             break;
                         }
                         final var value00Min = numberFormat.parse(line[6]).doubleValue();
