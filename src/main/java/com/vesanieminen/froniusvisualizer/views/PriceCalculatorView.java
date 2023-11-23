@@ -366,7 +366,8 @@ public class PriceCalculatorView extends Main {
                 overviewDiv.add(new DoubleLabel(getTranslation("Total spot cost (incl. margin)"), numberFormat.format(spotCalculation.totalCost) + " €", true));
                 overviewDiv.add(new DoubleLabel(getTranslation("Total spot cost (without margin)"), numberFormat.format(spotCalculation.totalCostWithoutMargin) + " €", true));
                 overviewDiv.add(new DoubleLabel(getTranslation("Unweighted spot average"), numberFormat.format(spotCalculation.averagePriceWithoutMargin) + " " + getTranslation("c/kWh"), true));
-                final var loweredCost = (spotCalculation.totalCostWithoutMargin / spotCalculation.totalConsumption * 100 - spotCalculation.averagePriceWithoutMargin) / spotCalculation.averagePriceWithoutMargin * 100;
+                final var priceWithoutMargin = spotCalculation.totalCostWithoutMargin / spotCalculation.totalConsumption * 100;
+                final var loweredCost = (priceWithoutMargin - spotCalculation.averagePriceWithoutMargin) / Math.abs(spotCalculation.averagePriceWithoutMargin) * 100;
                 final var formattedOwnSpotVsAverage = twoDecimalsWithPlusPrefix.format(loweredCost);
                 overviewDiv.add(new DoubleLabel(getTranslation("calculator.spot.difference.percentage"), formattedOwnSpotVsAverage + " %", true));
                 final var costEffect = (spotCalculation.totalCostWithoutMargin * 100 - spotCalculation.averagePriceWithoutMargin * spotCalculation.totalConsumption) / spotCalculation.totalConsumption;
