@@ -206,7 +206,7 @@ public class MainLayout extends AppLayout {
             lang.setMonths(new String[]{"Tammikuu", "Helmikuu", "Maaliskuu", "Huhtikuu", "Toukokuu", "Kesäkuu", "Heinäkuu", "Elokuu", "Syyskuu", "Lokakuu", "Marraskuu", "Joulukuu"});
             lang.setShortMonths(new String[]{"Tammi", "Helmi", "Maalis", "Huhti", "Touko", "Kesä", "Heinä", "Elo", "Syys", "Loka", "Marras", "Joulu"});
             lang.setWeekdays(new String[]{"Sunnuntai", "Maanantai", "Tiistai", "Keskiviikko", "Torstai", "Perjantai", "Lauantai"});
-            //lang.setRangeSelectorZoom("");
+            lang.setRangeSelectorZoom("Aikaväli");
             var decimalFormat = (DecimalFormat) DecimalFormat.getInstance(getLocale());
             lang.setDecimalPoint(decimalFormat.getDecimalFormatSymbols().getDecimalSeparator() + "");
             chartOptions.setLang(lang);
