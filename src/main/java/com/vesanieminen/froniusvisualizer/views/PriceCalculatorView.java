@@ -301,6 +301,15 @@ public class PriceCalculatorView extends Main {
         taxClassSelect.setHelperText(getTranslation("calculator.tax.helper.text"));
         content.add(taxClassSelect);
 
+        // Locked price
+        final var lockedPriceField = new SuperDoubleField(null, getTranslation("locked.price"));
+        lockedPriceField.setLocale(getLocale());
+        lockedPriceField.setHelperText(getTranslation("locked.price.example"));
+        lockedPriceField.setRequiredIndicatorVisible(true);
+        lockedPriceField.setSuffixComponent(new Span(getTranslation("c/kWh")));
+        lockedPriceField.addClassNames(LumoUtility.Flex.GROW);
+        content.add(lockedPriceField);
+
         calculationsCheckboxGroup.addValueChangeListener(e -> {
             fixedPriceField.setVisible(e.getValue().contains(Calculations.FIXED));
             spotProductionMarginField.setVisible(e.getValue().contains(Calculations.SPOT_PRODUCTION));
@@ -308,9 +317,10 @@ public class PriceCalculatorView extends Main {
             nightTransferDiv.setVisible(e.getValue().contains(Calculations.NIGHT_TRANSFER));
             productionUpload.setVisible(e.getValue().contains(Calculations.SPOT_PRODUCTION));
             taxClassSelect.setVisible(e.getValue().contains(Calculations.TAXES));
+            lockedPriceField.setVisible(e.getValue().contains(Calculations.LOCKED_PRICE));
             updateCalculateButtonState();
         });
-        fields = Arrays.asList(fromDateTimePicker, toDateTimePicker, fixedPriceField, spotMarginField, transferDiv, nightTransferDiv, spotProductionMarginField, taxClassSelect);
+        fields = Arrays.asList(fromDateTimePicker, toDateTimePicker, fixedPriceField, spotMarginField, transferDiv, nightTransferDiv, spotProductionMarginField, taxClassSelect, lockedPriceField);
 
         calculateButton = new Button(getTranslation("Calculate costs"), e -> {
             try {
@@ -339,6 +349,11 @@ public class PriceCalculatorView extends Main {
                     }
                     if (nightTransferMonthlyPriceField.getValue() == null) {
                         nightTransferMonthlyPriceField.setValue(0d);
+                    }
+                }
+                if (isCalculatingLockedPrice()) {
+                    if (lockedPriceField.getValue() == null) {
+                        lockedPriceField.setValue(0d);
                     }
                 }
                 if (isCalculatingProduction()) {
@@ -393,6 +408,18 @@ public class PriceCalculatorView extends Main {
                     fixedPriceDiv.add(new DoubleLabel(getTranslation("Fixed price"), numberFormat.format(fixedPriceField.getValue()) + " " + getTranslation("c/kWh"), true));
                     var fixedCost = calculateFixedElectricityPrice(consumptionData.data(), fixedPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     fixedPriceDiv.add(new DoubleLabel(getTranslation("Fixed cost total"), numberFormat.format(fixedCost) + " €", true));
+                }
+
+                if (isCalculatingLockedPrice()) {
+                    final Div lockedPriceDiv = addSection(resultLayout, getTranslation("locked.price"));
+                    resultLayout.add(lockedPriceDiv);
+                    final NumberFormat threeDecimals = getNumberFormat(getLocale(), 3);
+                    lockedPriceDiv.add(new DoubleLabel(getTranslation("locked.price"), threeDecimals.format(lockedPriceField.getValue()) + " " + getTranslation("c/kWh"), true));
+                    lockedPriceDiv.add(new DoubleLabel(getTranslation("Spot margin"), numberFormat.format(spotMarginField.getValue()) + " " + getTranslation("c/kWh"), true));
+                    final var lockedPriceTotal = lockedPriceField.getValue() + spotMarginField.getValue() + costEffect;
+                    lockedPriceDiv.add(new DoubleLabel(getTranslation("locked.price.total"), numberFormat.format(lockedPriceTotal) + " " + getTranslation("c/kWh"), true));
+                    final var lockedPriceCost = lockedPriceTotal * spotCalculation.totalConsumption / 100;
+                    lockedPriceDiv.add(new DoubleLabel(getTranslation("locked.price.cost"), numberFormat.format(lockedPriceCost) + " " + "€", true));
                 }
 
                 if (isCalculatingGeneralTransfer()) {
@@ -540,6 +567,10 @@ public class PriceCalculatorView extends Main {
 
     private boolean isCalculatingTax() {
         return calculationsCheckboxGroup.getValue().contains(Calculations.TAXES);
+    }
+
+    private boolean isCalculatingLockedPrice() {
+        return calculationsCheckboxGroup.getValue().contains(Calculations.LOCKED_PRICE);
     }
 
     private void addConsumptionSucceededListener(MemoryBuffer fileBuffer, Upload consumptionUpload) {
@@ -828,7 +859,7 @@ public class PriceCalculatorView extends Main {
     enum Calculations {
         SPOT("Spot price"),
         FIXED("Fixed price"),
-        //COST_FACTOR("cost.factor"),
+        LOCKED_PRICE("locked.price"),
         GENERAL_TRANSFER("calculator.general-transfer"),
         NIGHT_TRANSFER("calculator.night-transfer.title"),
         TAXES("calculator.taxes"),
