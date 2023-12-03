@@ -29,6 +29,7 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.PageTitle;
@@ -289,15 +290,27 @@ public class PriceCalculatorView extends Main {
         nightTransferDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Gap.Column.MEDIUM, LumoUtility.FlexWrap.WRAP);
         content.add(nightTransferDiv);
 
+        // electricity taxes
+        final var taxClassSelect = new Select<TaxClass>();
+        taxClassSelect.setLabel(getTranslation("calculator.taxes"));
+        taxClassSelect.setItemLabelGenerator(item -> getTranslation(item.getClassName()));
+        taxClassSelect.setItems(TaxClass.values());
+        taxClassSelect.setValue(TaxClass.CLASS_ONE);
+        taxClassSelect.addClassNames(LumoUtility.Flex.GROW);
+        taxClassSelect.setVisible(false);
+        taxClassSelect.setHelperText(getTranslation("calculator.tax.helper.text"));
+        content.add(taxClassSelect);
+
         calculationsCheckboxGroup.addValueChangeListener(e -> {
             fixedPriceField.setVisible(e.getValue().contains(Calculations.FIXED));
             spotProductionMarginField.setVisible(e.getValue().contains(Calculations.SPOT_PRODUCTION));
             transferDiv.setVisible(e.getValue().contains(Calculations.GENERAL_TRANSFER));
             nightTransferDiv.setVisible(e.getValue().contains(Calculations.NIGHT_TRANSFER));
             productionUpload.setVisible(e.getValue().contains(Calculations.SPOT_PRODUCTION));
+            taxClassSelect.setVisible(e.getValue().contains(Calculations.TAXES));
             updateCalculateButtonState();
         });
-        fields = Arrays.asList(fromDateTimePicker, toDateTimePicker, fixedPriceField, spotMarginField, transferDiv, nightTransferDiv, spotProductionMarginField);
+        fields = Arrays.asList(fromDateTimePicker, toDateTimePicker, fixedPriceField, spotMarginField, transferDiv, nightTransferDiv, spotProductionMarginField, taxClassSelect);
 
         calculateButton = new Button(getTranslation("Calculate costs"), e -> {
             try {
@@ -423,6 +436,15 @@ public class PriceCalculatorView extends Main {
                     nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.total-cost.including-monthly"), numberFormat.format(totalNightTransferCost) + " €", true));
                 }
 
+                if (isCalculatingTax()) {
+                    final Div taxSection = addSection(resultLayout, getTranslation("calculator.taxes"));
+                    final var taxPrice = taxClassSelect.getValue().getTaxPrice();
+                    final NumberFormat fiveDecimals = getNumberFormat(getLocale(), 5);
+                    taxSection.add(new DoubleLabel(getTranslation("calculator.taxes"), fiveDecimals.format(taxPrice) + " " + getTranslation("c/kWh"), true));
+                    var taxCost = calculateFixedElectricityPrice(consumptionData.data(), taxPrice, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    taxSection.add(new DoubleLabel(getTranslation("calculator.tax.total"), numberFormat.format(taxCost) + " €", true));
+                }
+
                 // Create spot consumption chart
                 chartLayout.add(createChart(spotCalculation, isCalculatingFixed(), getTranslation("Consumption / cost per hour"), getTranslation("Consumption"), getTranslation("Spot cost")));
 
@@ -514,6 +536,10 @@ public class PriceCalculatorView extends Main {
 
     private boolean isCalculatingProduction() {
         return calculationsCheckboxGroup.getValue().contains(Calculations.SPOT_PRODUCTION);
+    }
+
+    private boolean isCalculatingTax() {
+        return calculationsCheckboxGroup.getValue().contains(Calculations.TAXES);
     }
 
     private void addConsumptionSucceededListener(MemoryBuffer fileBuffer, Upload consumptionUpload) {
@@ -805,9 +831,10 @@ public class PriceCalculatorView extends Main {
         //COST_FACTOR("cost.factor"),
         GENERAL_TRANSFER("calculator.general-transfer"),
         NIGHT_TRANSFER("calculator.night-transfer.title"),
+        TAXES("calculator.taxes"),
         SPOT_PRODUCTION("Spot production price");
 
-        private String name;
+        private final String name;
 
         Calculations(String name) {
             this.name = name;
@@ -815,6 +842,27 @@ public class PriceCalculatorView extends Main {
 
         public String getName() {
             return name;
+        }
+    }
+
+    enum TaxClass {
+        CLASS_ONE("tax.class.one", 2.79372),
+        CLASS_TWO("tax.class.two", 0.07812);
+
+        private final String className;
+        private final double taxPrice;
+
+        TaxClass(String className, double taxPrice) {
+            this.className = className;
+            this.taxPrice = taxPrice;
+        }
+
+        public String getClassName() {
+            return className;
+        }
+
+        public double getTaxPrice() {
+            return taxPrice;
         }
     }
 
