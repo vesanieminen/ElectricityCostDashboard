@@ -303,7 +303,6 @@ public class PriceCalculatorView extends Main {
         taxClassSelect.setItems(TaxClass.values());
         taxClassSelect.setValue(TaxClass.CLASS_ONE);
         taxClassSelect.addClassNames(LumoUtility.Flex.GROW);
-        taxClassSelect.setVisible(false);
         taxClassSelect.setHelperText(getTranslation("calculator.tax.helper.text"));
         content.add(taxClassSelect);
 
@@ -611,7 +610,7 @@ public class PriceCalculatorView extends Main {
 
     private Div createWrapDiv(Component... components) {
         final var wrapDiv = new Div(components);
-        wrapDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Margin.Top.MEDIUM);
+        wrapDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Margin.Top.MEDIUM, LumoUtility.Padding.Left.SMALL);
         return wrapDiv;
     }
 
