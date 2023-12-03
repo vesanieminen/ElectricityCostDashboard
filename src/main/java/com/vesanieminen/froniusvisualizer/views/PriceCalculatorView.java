@@ -494,19 +494,64 @@ public class PriceCalculatorView extends Main {
                     { // spot summary
                         var spotTotal = spotCalculation.totalCost;
                         String spotText = getTranslation("Spot + margin");
+                        summarySection.add(new DoubleLabel(spotText, numberFormat.format(spotTotal) + " €", true));
                         if (summaryDTO.getTaxCost() != null) {
                             spotTotal += summaryDTO.getTaxCost();
-                            spotText += " + %s".formatted(getTranslation("calculator.taxes"));
+                            spotText += " + %s".formatted(getTranslation("calculator.taxes").toLowerCase());
                             summarySection.add(new DoubleLabel(spotText, numberFormat.format(spotTotal) + " €", true));
                         }
                         if (summaryDTO.getGeneralTransferCost() != null) {
                             var spotAndGeneralTransferCost = spotTotal + summaryDTO.getGeneralTransferCost();
-                            final var formatted = "%s + %s".formatted(spotText, getTranslation("calculator.general-transfer"));
+                            final var formatted = "%s + %s".formatted(spotText, getTranslation("calculator.general-transfer").toLowerCase());
                             summarySection.add(new DoubleLabel(formatted, numberFormat.format(spotAndGeneralTransferCost) + " €", true));
                         }
                         if (summaryDTO.getNighTransferCost() != null) {
                             var spotAndNightTransferCost = spotTotal + summaryDTO.getNighTransferCost();
-                            final var formatted = "%s + %s".formatted(spotText, getTranslation("calculator.night-transfer.title"));
+                            final var formatted = "%s + %s".formatted(spotText, getTranslation("calculator.night-transfer.title").toLowerCase());
+                            summarySection.add(new DoubleLabel(formatted, numberFormat.format(spotAndNightTransferCost) + " €", true));
+                        }
+                    }
+
+                    // Fixed summary
+                    if (summaryDTO.getFixedCost() != null) {
+                        var fixedCost = summaryDTO.getFixedCost();
+                        String fixedCostText = getTranslation("Fixed");
+                        summarySection.add(new DoubleLabel(fixedCostText, numberFormat.format(fixedCost) + " €", true));
+                        if (summaryDTO.getTaxCost() != null) {
+                            fixedCost += summaryDTO.getTaxCost();
+                            fixedCostText += " + %s".formatted(getTranslation("calculator.taxes").toLowerCase());
+                            summarySection.add(new DoubleLabel(fixedCostText, numberFormat.format(fixedCost) + " €", true));
+                        }
+                        if (summaryDTO.getGeneralTransferCost() != null) {
+                            var spotAndGeneralTransferCost = fixedCost + summaryDTO.getGeneralTransferCost();
+                            final var formatted = "%s + %s".formatted(fixedCostText, getTranslation("calculator.general-transfer").toLowerCase());
+                            summarySection.add(new DoubleLabel(formatted, numberFormat.format(spotAndGeneralTransferCost) + " €", true));
+                        }
+                        if (summaryDTO.getNighTransferCost() != null) {
+                            var spotAndNightTransferCost = fixedCost + summaryDTO.getNighTransferCost();
+                            final var formatted = "%s + %s".formatted(fixedCostText, getTranslation("calculator.night-transfer.title").toLowerCase());
+                            summarySection.add(new DoubleLabel(formatted, numberFormat.format(spotAndNightTransferCost) + " €", true));
+                        }
+                    }
+
+                    // Locked price summary
+                    if (summaryDTO.getLockedPriceCost() != null) {
+                        var lockedPriceCost = summaryDTO.getLockedPriceCost();
+                        String fixedCostText = getTranslation("locked.price");
+                        summarySection.add(new DoubleLabel(fixedCostText, numberFormat.format(lockedPriceCost) + " €", true));
+                        if (summaryDTO.getTaxCost() != null) {
+                            lockedPriceCost += summaryDTO.getTaxCost();
+                            fixedCostText += " + %s".formatted(getTranslation("calculator.taxes").toLowerCase());
+                            summarySection.add(new DoubleLabel(fixedCostText, numberFormat.format(lockedPriceCost) + " €", true));
+                        }
+                        if (summaryDTO.getGeneralTransferCost() != null) {
+                            var spotAndGeneralTransferCost = lockedPriceCost + summaryDTO.getGeneralTransferCost();
+                            final var formatted = "%s + %s".formatted(fixedCostText, getTranslation("calculator.general-transfer").toLowerCase());
+                            summarySection.add(new DoubleLabel(formatted, numberFormat.format(spotAndGeneralTransferCost) + " €", true));
+                        }
+                        if (summaryDTO.getNighTransferCost() != null) {
+                            var spotAndNightTransferCost = lockedPriceCost + summaryDTO.getNighTransferCost();
+                            final var formatted = "%s + %s".formatted(fixedCostText, getTranslation("calculator.night-transfer.title").toLowerCase());
                             summarySection.add(new DoubleLabel(formatted, numberFormat.format(spotAndNightTransferCost) + " €", true));
                         }
                     }
