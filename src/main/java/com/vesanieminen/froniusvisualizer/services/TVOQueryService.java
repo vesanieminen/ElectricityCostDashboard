@@ -10,7 +10,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 @Service
-public class QueryService {
+public class TVOQueryService {
 
     public HttpResponse<String> getTVOPage() throws URISyntaxException, IOException, InterruptedException {
         var url = "https://www.tvo.fi/tuotanto/laitosyksikot/ol3/ol3ennusteet.html";
