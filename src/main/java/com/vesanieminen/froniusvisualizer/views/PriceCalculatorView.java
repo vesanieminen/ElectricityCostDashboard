@@ -38,6 +38,9 @@ import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
 import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.vaadin.miki.superfields.numbers.SuperDoubleField;
 
@@ -138,6 +141,7 @@ public class PriceCalculatorView extends Main {
         calculationsCheckboxGroup.setItemEnabledProvider(item -> !(Objects.equals(item.getName(), Calculations.SPOT.getName())));
         final var calculations = new HashSet<Calculations>();
         calculations.add(Calculations.SPOT);
+        calculations.add(Calculations.TAXES);
         calculationsCheckboxGroup.setValue(calculations);
 
         final var image = new Image("images/fingrid_dh_white.png", getTranslation("login.to.fingrid"));
@@ -400,12 +404,16 @@ public class PriceCalculatorView extends Main {
                 final var costEffectFormatted = twoDecimalsWithPlusPrefix.format(costEffect);
                 overviewDiv.add(new DoubleLabel(getTranslation("calculator.spot.difference.cents"), costEffectFormatted + " " + getTranslation("c/kWh"), true));
 
+                final var summaryDTO = new SummaryDTO();
+
                 if (isCalculatingFixed()) {
                     final Div fixedPriceDiv = addSection(resultLayout, getTranslation("Fixed Price details"));
                     resultLayout.add(fixedPriceDiv);
                     fixedPriceDiv.add(new DoubleLabel(getTranslation("Fixed price"), numberFormat.format(fixedPriceField.getValue()) + " " + getTranslation("c/kWh"), true));
                     var fixedCost = calculateFixedElectricityPrice(consumptionData.data(), fixedPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     fixedPriceDiv.add(new DoubleLabel(getTranslation("Fixed cost total"), numberFormat.format(fixedCost) + " €", true));
+
+                    summaryDTO.setFixedCost(fixedCost);
                 }
 
                 if (isCalculatingLockedPrice()) {
@@ -418,6 +426,8 @@ public class PriceCalculatorView extends Main {
                     lockedPriceDiv.add(new DoubleLabel(getTranslation("locked.price.total"), numberFormat.format(lockedPriceTotal) + " " + getTranslation("c/kWh"), true));
                     final var lockedPriceCost = lockedPriceTotal * spotCalculation.totalConsumption / 100;
                     lockedPriceDiv.add(new DoubleLabel(getTranslation("locked.price.cost"), numberFormat.format(lockedPriceCost) + " " + "€", true));
+
+                    summaryDTO.setLockedPriceCost(lockedPriceCost);
                 }
 
                 if (isCalculatingGeneralTransfer()) {
@@ -433,6 +443,7 @@ public class PriceCalculatorView extends Main {
                     final var totalTransferCost = monthlyCost + transferTotalCost;
                     generalTransferDiv.add(new DoubleLabel(getTranslation("calculator.general-transfer.total-cost.including-monthly"), numberFormat.format(totalTransferCost) + " €", true));
 
+                    summaryDTO.setGeneralTransferCost(totalTransferCost);
                 }
 
                 if (isCalculatingNightTransfer()) {
@@ -459,6 +470,8 @@ public class PriceCalculatorView extends Main {
                     nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.montly-cost"), numberFormat.format(monthlyCost) + " €", true));
                     final var totalNightTransferCost = monthlyCost + dayAndNightCost;
                     nightTransferSection.add(new DoubleLabel(getTranslation("calculator.night-transfer.total-cost.including-monthly"), numberFormat.format(totalNightTransferCost) + " €", true));
+
+                    summaryDTO.setNighTransferCost(totalNightTransferCost);
                 }
 
                 if (isCalculatingTax()) {
@@ -468,6 +481,8 @@ public class PriceCalculatorView extends Main {
                     taxSection.add(new DoubleLabel(getTranslation("calculator.taxes"), fiveDecimals.format(taxPrice) + " " + getTranslation("c/kWh"), true));
                     var taxCost = calculateFixedElectricityPrice(consumptionData.data(), taxPrice, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     taxSection.add(new DoubleLabel(getTranslation("calculator.tax.total"), numberFormat.format(taxCost) + " €", true));
+
+                    summaryDTO.setTaxCost(taxCost);
                 }
 
                 // summary section
@@ -475,6 +490,27 @@ public class PriceCalculatorView extends Main {
                     final Div summarySection = addSection(resultLayout, getTranslation("calculator.summary"));
                     summarySection.add(new DoubleLabel(getTranslation("Calculation period (start times)"), start + " - " + end, true));
                     summarySection.add(new DoubleLabel(getTranslation("Total consumption over period"), numberFormat.format(spotCalculation.totalConsumption) + " kWh", true));
+
+                    { // spot summary
+                        var spotTotal = spotCalculation.totalCost;
+                        String spotText = getTranslation("Spot + margin");
+                        if (summaryDTO.getTaxCost() != null) {
+                            spotTotal += summaryDTO.getTaxCost();
+                            spotText += " + %s".formatted(getTranslation("calculator.taxes"));
+                            summarySection.add(new DoubleLabel(spotText, numberFormat.format(spotTotal) + " €", true));
+                        }
+                        if (summaryDTO.getGeneralTransferCost() != null) {
+                            var spotAndGeneralTransferCost = spotTotal + summaryDTO.getGeneralTransferCost();
+                            final var formatted = "%s + %s".formatted(spotText, getTranslation("calculator.general-transfer"));
+                            summarySection.add(new DoubleLabel(formatted, numberFormat.format(spotAndGeneralTransferCost) + " €", true));
+                        }
+                        if (summaryDTO.getNighTransferCost() != null) {
+                            var spotAndNightTransferCost = spotTotal + summaryDTO.getNighTransferCost();
+                            final var formatted = "%s + %s".formatted(spotText, getTranslation("calculator.night-transfer.title"));
+                            summarySection.add(new DoubleLabel(formatted, numberFormat.format(spotAndNightTransferCost) + " €", true));
+                        }
+                    }
+
                 }
 
                 // Create spot consumption chart
@@ -900,6 +936,17 @@ public class PriceCalculatorView extends Main {
         public double getTaxPrice() {
             return taxPrice;
         }
+    }
+
+    @NoArgsConstructor
+    @Getter
+    @Setter
+    private static class SummaryDTO {
+        private Double fixedCost;
+        private Double generalTransferCost;
+        private Double nighTransferCost;
+        private Double taxCost;
+        private Double lockedPriceCost;
     }
 
 }
