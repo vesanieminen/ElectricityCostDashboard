@@ -308,6 +308,7 @@ public class PriceCalculatorView extends Main {
         lockedPriceField.setRequiredIndicatorVisible(true);
         lockedPriceField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         lockedPriceField.addClassNames(LumoUtility.Flex.GROW);
+        lockedPriceField.setVisible(false);
         content.add(lockedPriceField);
 
         calculationsCheckboxGroup.addValueChangeListener(e -> {
@@ -373,9 +374,6 @@ public class PriceCalculatorView extends Main {
                 final var twoDecimalsWithPlusPrefix = getNumberFormatMaxTwoDecimalsWithPlusPrefix(getLocale());
 
                 final Div overviewDiv = addSection(resultLayout, getTranslation("Spot price"));
-                // Total labels
-                overviewDiv.add(new DoubleLabel(getTranslation("Calculation period (start times)"), start + " - " + end, true));
-                overviewDiv.add(new DoubleLabel(getTranslation("Total consumption over period"), numberFormat.format(spotCalculation.totalConsumption) + " kWh", true));
 
                 // Spot labels
                 //final var totalCost = new BigDecimal(spotCalculation.totalCost).doubleValue();
@@ -470,6 +468,13 @@ public class PriceCalculatorView extends Main {
                     taxSection.add(new DoubleLabel(getTranslation("calculator.taxes"), fiveDecimals.format(taxPrice) + " " + getTranslation("c/kWh"), true));
                     var taxCost = calculateFixedElectricityPrice(consumptionData.data(), taxPrice, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     taxSection.add(new DoubleLabel(getTranslation("calculator.tax.total"), numberFormat.format(taxCost) + " €", true));
+                }
+
+                // summary section
+                {
+                    final Div summarySection = addSection(resultLayout, getTranslation("calculator.summary"));
+                    summarySection.add(new DoubleLabel(getTranslation("Calculation period (start times)"), start + " - " + end, true));
+                    summarySection.add(new DoubleLabel(getTranslation("Total consumption over period"), numberFormat.format(spotCalculation.totalConsumption) + " kWh", true));
                 }
 
                 // Create spot consumption chart
