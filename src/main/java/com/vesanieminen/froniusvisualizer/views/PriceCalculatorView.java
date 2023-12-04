@@ -502,14 +502,10 @@ public class PriceCalculatorView extends Main {
                             summarySection.add(new DoubleLabel(spotText, numberFormat.format(spotTotal) + " €", true));
                         }
                         if (summaryDTO.getGeneralTransferCost() != null) {
-                            var spotAndGeneralTransferCost = spotTotal + summaryDTO.getGeneralTransferCost();
-                            final var formatted = "%s + %s".formatted(spotText, getTranslation("calculator.general-transfer").toLowerCase());
-                            summarySection.add(new DoubleLabel(formatted, numberFormat.format(spotAndGeneralTransferCost) + " €", true));
+                            addCostsAndCreateLabel(spotTotal, summaryDTO.getGeneralTransferCost(), spotText, "calculator.general-transfer", summarySection, numberFormat);
                         }
                         if (summaryDTO.getNighTransferCost() != null) {
-                            var spotAndNightTransferCost = spotTotal + summaryDTO.getNighTransferCost();
-                            final var formatted = "%s + %s".formatted(spotText, getTranslation("calculator.night-transfer.title").toLowerCase());
-                            summarySection.add(new DoubleLabel(formatted, numberFormat.format(spotAndNightTransferCost) + " €", true));
+                            addCostsAndCreateLabel(spotTotal, summaryDTO.getNighTransferCost(), spotText, "calculator.night-transfer.title", summarySection, numberFormat);
                         }
                     }
 
@@ -524,14 +520,10 @@ public class PriceCalculatorView extends Main {
                             summarySection.add(new DoubleLabel(fixedCostText, numberFormat.format(fixedCost) + " €", true));
                         }
                         if (summaryDTO.getGeneralTransferCost() != null) {
-                            var spotAndGeneralTransferCost = fixedCost + summaryDTO.getGeneralTransferCost();
-                            final var formatted = "%s + %s".formatted(fixedCostText, getTranslation("calculator.general-transfer").toLowerCase());
-                            summarySection.add(new DoubleLabel(formatted, numberFormat.format(spotAndGeneralTransferCost) + " €", true));
+                            addCostsAndCreateLabel(fixedCost, summaryDTO.getGeneralTransferCost(), fixedCostText, "calculator.general-transfer", summarySection, numberFormat);
                         }
                         if (summaryDTO.getNighTransferCost() != null) {
-                            var spotAndNightTransferCost = fixedCost + summaryDTO.getNighTransferCost();
-                            final var formatted = "%s + %s".formatted(fixedCostText, getTranslation("calculator.night-transfer.title").toLowerCase());
-                            summarySection.add(new DoubleLabel(formatted, numberFormat.format(spotAndNightTransferCost) + " €", true));
+                            addCostsAndCreateLabel(fixedCost, summaryDTO.getNighTransferCost(), fixedCostText, "calculator.night-transfer.title", summarySection, numberFormat);
                         }
                     }
 
@@ -546,14 +538,10 @@ public class PriceCalculatorView extends Main {
                             summarySection.add(new DoubleLabel(fixedCostText, numberFormat.format(lockedPriceCost) + " €", true));
                         }
                         if (summaryDTO.getGeneralTransferCost() != null) {
-                            var spotAndGeneralTransferCost = lockedPriceCost + summaryDTO.getGeneralTransferCost();
-                            final var formatted = "%s + %s".formatted(fixedCostText, getTranslation("calculator.general-transfer").toLowerCase());
-                            summarySection.add(new DoubleLabel(formatted, numberFormat.format(spotAndGeneralTransferCost) + " €", true));
+                            addCostsAndCreateLabel(lockedPriceCost, summaryDTO.getGeneralTransferCost(), fixedCostText, "calculator.general-transfer", summarySection, numberFormat);
                         }
                         if (summaryDTO.getNighTransferCost() != null) {
-                            var spotAndNightTransferCost = lockedPriceCost + summaryDTO.getNighTransferCost();
-                            final var formatted = "%s + %s".formatted(fixedCostText, getTranslation("calculator.night-transfer.title").toLowerCase());
-                            summarySection.add(new DoubleLabel(formatted, numberFormat.format(spotAndNightTransferCost) + " €", true));
+                            addCostsAndCreateLabel(lockedPriceCost, summaryDTO.getNighTransferCost(), fixedCostText, "calculator.night-transfer.title", summarySection, numberFormat);
                         }
                     }
 
@@ -597,6 +585,12 @@ public class PriceCalculatorView extends Main {
         content.add(calculateButton);
         add(resultLayout);
         add(chartLayout);
+    }
+
+    private void addCostsAndCreateLabel(Double cost, Double addedCost, String text, String translate, Div summarySection, NumberFormat numberFormat) {
+        var spotAndGeneralTransferCost = cost + addedCost;
+        final var formatted = "%s + %s".formatted(text, getTranslation(translate).toLowerCase());
+        summarySection.add(new DoubleLabel(formatted, numberFormat.format(spotAndGeneralTransferCost) + " €", true));
     }
 
     private Div createWrapper() {
