@@ -4,6 +4,8 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
+import static com.vesanieminen.froniusvisualizer.util.css.Layout.FLEX_BASIS_300_PIXELS;
+
 public class DoubleLabel extends Div {
     private final Span spanTop;
     private final Span spanBottom;
@@ -23,7 +25,8 @@ public class DoubleLabel extends Div {
         if (noBorders) {
             removeClassNames(LumoUtility.Border.BOTTOM);
         }
-        getStyle().set("flex-basis", "50%");
+        addClassNames(FLEX_BASIS_300_PIXELS);
+        removeClassNames(LumoUtility.Flex.GROW);
     }
 
     public Span getSpanTop() {

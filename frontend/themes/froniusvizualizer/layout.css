@@ -5,3 +5,19 @@
 .z-10 {
     z-index: 10;
 }
+
+.flex-basis-25-percent {
+    flex-basis: 25%;
+}
+
+.flex-basis-33-percent {
+    flex-basis: 33%;
+}
+
+.flex-basis-50-percent {
+    flex-basis: 50%;
+}
+
+.flex-basis-300-pixels {
+    flex-basis: 300px;
+}
