@@ -161,7 +161,7 @@ public class PriceCalculatorView extends Main {
         // Layouts
         createHelpLayout(content);
         final var resultLayout = new Div();
-        resultLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Vertical.MEDIUM, LumoUtility.Padding.SMALL);
+        resultLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Vertical.MEDIUM, LumoUtility.Padding.MEDIUM);
         final var chartLayout = new Div();
 
         // Consumption file

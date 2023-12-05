@@ -16,7 +16,7 @@ public class DoubleLabel extends Div {
         spanBottom = new Span(titleBottom);
         spanBottom.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.TextColor.SECONDARY);
         add(spanTop, spanBottom);
-        addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Flex.GROW, LumoUtility.Flex.SHRINK_NONE, LumoUtility.AlignItems.START);
+        addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Flex.GROW, LumoUtility.Flex.SHRINK_NONE, LumoUtility.AlignItems.CENTER);
         addClassNames(LumoUtility.Border.BOTTOM, LumoUtility.BorderColor.CONTRAST_10, LumoUtility.Padding.SMALL);
     }
 
@@ -25,8 +25,8 @@ public class DoubleLabel extends Div {
         if (noBorders) {
             removeClassNames(LumoUtility.Border.BOTTOM);
         }
-        addClassNames(FLEX_BASIS_300_PIXELS);
-        removeClassNames(LumoUtility.Flex.GROW);
+        addClassNames(FLEX_BASIS_300_PIXELS, LumoUtility.AlignItems.START);
+        removeClassNames(LumoUtility.Flex.GROW, LumoUtility.AlignItems.CENTER);
     }
 
     public Span getSpanTop() {
