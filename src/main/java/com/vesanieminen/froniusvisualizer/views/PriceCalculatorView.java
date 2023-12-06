@@ -21,6 +21,7 @@ import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.checkbox.CheckboxGroupVariant;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
+import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.AnchorTarget;
 import com.vaadin.flow.component.html.Div;
@@ -410,7 +411,6 @@ public class PriceCalculatorView extends Main {
 
                 if (isCalculatingFixed()) {
                     final Div fixedPriceDiv = addSection(resultLayout, getTranslation("Fixed Price details"));
-                    resultLayout.add(fixedPriceDiv);
                     fixedPriceDiv.add(new DoubleLabel(getTranslation("Fixed price"), numberFormat.format(fixedPriceField.getValue()) + " " + getTranslation("c/kWh"), true));
                     var fixedCost = calculateFixedElectricityPrice(consumptionData.data(), fixedPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     fixedPriceDiv.add(new DoubleLabel(getTranslation("Fixed cost total"), numberFormat.format(fixedCost) + " €", true));
@@ -420,7 +420,6 @@ public class PriceCalculatorView extends Main {
 
                 if (isCalculatingLockedPrice()) {
                     final Div lockedPriceDiv = addSection(resultLayout, getTranslation("locked.price"));
-                    resultLayout.add(lockedPriceDiv);
                     final NumberFormat threeDecimals = getNumberFormat(getLocale(), 3);
                     lockedPriceDiv.add(new DoubleLabel(getTranslation("locked.price"), threeDecimals.format(lockedPriceField.getValue()) + " " + getTranslation("c/kWh"), true));
                     lockedPriceDiv.add(new DoubleLabel(getTranslation("Spot margin"), numberFormat.format(spotMarginField.getValue()) + " " + getTranslation("c/kWh"), true));
@@ -618,7 +617,9 @@ public class PriceCalculatorView extends Main {
     private Div addSection(Div div, String title) {
         final var overviewDiv = createWrapDiv();
         final var overviewHeader = createSectionHeader(title);
-        div.add(overviewHeader, overviewDiv);
+        final var details = new Details(overviewHeader, overviewDiv);
+        details.setOpened(true);
+        div.add(details);
         return overviewDiv;
     }
 
