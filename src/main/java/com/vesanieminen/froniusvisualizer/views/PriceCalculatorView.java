@@ -121,10 +121,13 @@ public class PriceCalculatorView extends Main {
         title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.LARGE, LumoUtility.Margin.Bottom.MEDIUM);
         final var spotAverage = PriceCalculatorService.calculateSpotAveragePriceThisYear();
         final var spotAverageThisYear = new DoubleLabel(getTranslation("Spot average this year"), numberFormat.format(spotAverage) + " " + getTranslation("c/kWh"));
+        spotAverageThisYear.setAlignLeft();
 
         final var spotAverageMonth = PriceCalculatorService.calculateSpotAveragePriceThisMonth();
         final var spotAverageThisMonth = new DoubleLabel(getTranslation("Spot average this month"), numberFormat.format(spotAverageMonth) + " " + getTranslation("c/kWh"));
+        spotAverageThisMonth.setAlignLeft();
         final var spotDateRange = new DoubleLabel(getTranslation("calculator.spot.prices.available"), format(spotDataStart, getLocale()) + " - " + format(spotDataEnd, getLocale()));
+        spotDateRange.setAlignLeft();
 
         final var topDiv = new Div(title, spotAverageThisYear, spotAverageThisMonth, spotDateRange);
         topDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);

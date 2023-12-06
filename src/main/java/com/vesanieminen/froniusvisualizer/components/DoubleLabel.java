@@ -25,8 +25,18 @@ public class DoubleLabel extends Div {
         if (noBorders) {
             removeClassNames(LumoUtility.Border.BOTTOM);
         }
-        addClassNames(FLEX_BASIS_300_PIXELS, LumoUtility.AlignItems.START);
-        removeClassNames(LumoUtility.Flex.GROW, LumoUtility.AlignItems.CENTER);
+        setAlignLeft();
+        setFixedWidth();
+    }
+
+    public void setAlignLeft() {
+        addClassNames(LumoUtility.AlignItems.START);
+        removeClassNames(LumoUtility.AlignItems.CENTER);
+    }
+
+    public void setFixedWidth() {
+        addClassNames(FLEX_BASIS_300_PIXELS);
+        removeClassNames(LumoUtility.Flex.GROW);
     }
 
     public Span getSpanTop() {
