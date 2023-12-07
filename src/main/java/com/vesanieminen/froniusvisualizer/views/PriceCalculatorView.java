@@ -489,23 +489,28 @@ public class PriceCalculatorView extends Main {
                 // summary section
                 {
                     final Div summarySection = addSection(resultLayout, getTranslation("calculator.summary"));
-                    summarySection.add(new DoubleLabel(getTranslation("Calculation period (start times)"), start + " - " + end, true));
-                    summarySection.add(new DoubleLabel(getTranslation("Total consumption over period"), numberFormat.format(spotCalculation.totalConsumption) + " kWh", true));
+                    summarySection.removeClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexWrap.WRAP, LumoUtility.Margin.Top.MEDIUM, LumoUtility.Padding.Left.SMALL);
+                    final var summaryDiv = createWrapDiv();
+                    summarySection.add(summaryDiv);
+                    summaryDiv.add(new DoubleLabel(getTranslation("Calculation period (start times)"), start + " - " + end, true));
+                    summaryDiv.add(new DoubleLabel(getTranslation("Total consumption over period"), numberFormat.format(spotCalculation.totalConsumption) + " kWh", true));
 
                     { // spot summary
                         var spotTotal = spotCalculation.totalCost;
                         String spotText = getTranslation("Spot + margin");
-                        summarySection.add(new DoubleLabel(spotText, numberFormat.format(spotTotal) + " €", true));
+                        final var spotDiv = createWrapDiv();
+                        summarySection.add(spotDiv);
+                        spotDiv.add(new DoubleLabel(spotText, numberFormat.format(spotTotal) + " €", true));
                         if (summaryDTO.getTaxCost() != null) {
                             spotTotal += summaryDTO.getTaxCost();
                             spotText += " + %s".formatted(getTranslation("calculator.taxes").toLowerCase());
-                            summarySection.add(new DoubleLabel(spotText, numberFormat.format(spotTotal) + " €", true));
+                            spotDiv.add(new DoubleLabel(spotText, numberFormat.format(spotTotal) + " €", true));
                         }
                         if (summaryDTO.getGeneralTransferCost() != null) {
-                            addCostsAndCreateLabel(spotTotal, summaryDTO.getGeneralTransferCost(), spotText, "calculator.general-transfer", summarySection, numberFormat);
+                            addCostsAndCreateLabel(spotTotal, summaryDTO.getGeneralTransferCost(), spotText, "calculator.general-transfer", spotDiv, numberFormat);
                         }
                         if (summaryDTO.getNighTransferCost() != null) {
-                            addCostsAndCreateLabel(spotTotal, summaryDTO.getNighTransferCost(), spotText, "calculator.night-transfer.title", summarySection, numberFormat);
+                            addCostsAndCreateLabel(spotTotal, summaryDTO.getNighTransferCost(), spotText, "calculator.night-transfer.title", spotDiv, numberFormat);
                         }
                     }
 
@@ -513,17 +518,19 @@ public class PriceCalculatorView extends Main {
                     if (summaryDTO.getFixedCost() != null) {
                         var fixedCost = summaryDTO.getFixedCost();
                         String fixedCostText = getTranslation("Fixed");
-                        summarySection.add(new DoubleLabel(fixedCostText, numberFormat.format(fixedCost) + " €", true));
+                        final var fixedDiv = createWrapDiv();
+                        summarySection.add(fixedDiv);
+                        fixedDiv.add(new DoubleLabel(fixedCostText, numberFormat.format(fixedCost) + " €", true));
                         if (summaryDTO.getTaxCost() != null) {
                             fixedCost += summaryDTO.getTaxCost();
                             fixedCostText += " + %s".formatted(getTranslation("calculator.taxes").toLowerCase());
-                            summarySection.add(new DoubleLabel(fixedCostText, numberFormat.format(fixedCost) + " €", true));
+                            fixedDiv.add(new DoubleLabel(fixedCostText, numberFormat.format(fixedCost) + " €", true));
                         }
                         if (summaryDTO.getGeneralTransferCost() != null) {
-                            addCostsAndCreateLabel(fixedCost, summaryDTO.getGeneralTransferCost(), fixedCostText, "calculator.general-transfer", summarySection, numberFormat);
+                            addCostsAndCreateLabel(fixedCost, summaryDTO.getGeneralTransferCost(), fixedCostText, "calculator.general-transfer", fixedDiv, numberFormat);
                         }
                         if (summaryDTO.getNighTransferCost() != null) {
-                            addCostsAndCreateLabel(fixedCost, summaryDTO.getNighTransferCost(), fixedCostText, "calculator.night-transfer.title", summarySection, numberFormat);
+                            addCostsAndCreateLabel(fixedCost, summaryDTO.getNighTransferCost(), fixedCostText, "calculator.night-transfer.title", fixedDiv, numberFormat);
                         }
                     }
 
@@ -531,17 +538,19 @@ public class PriceCalculatorView extends Main {
                     if (summaryDTO.getLockedPriceCost() != null) {
                         var lockedPriceCost = summaryDTO.getLockedPriceCost();
                         String fixedCostText = getTranslation("locked.price");
-                        summarySection.add(new DoubleLabel(fixedCostText, numberFormat.format(lockedPriceCost) + " €", true));
+                        final var lockedPriceDiv = createWrapDiv();
+                        summarySection.add(lockedPriceDiv);
+                        lockedPriceDiv.add(new DoubleLabel(fixedCostText, numberFormat.format(lockedPriceCost) + " €", true));
                         if (summaryDTO.getTaxCost() != null) {
                             lockedPriceCost += summaryDTO.getTaxCost();
                             fixedCostText += " + %s".formatted(getTranslation("calculator.taxes").toLowerCase());
-                            summarySection.add(new DoubleLabel(fixedCostText, numberFormat.format(lockedPriceCost) + " €", true));
+                            lockedPriceDiv.add(new DoubleLabel(fixedCostText, numberFormat.format(lockedPriceCost) + " €", true));
                         }
                         if (summaryDTO.getGeneralTransferCost() != null) {
-                            addCostsAndCreateLabel(lockedPriceCost, summaryDTO.getGeneralTransferCost(), fixedCostText, "calculator.general-transfer", summarySection, numberFormat);
+                            addCostsAndCreateLabel(lockedPriceCost, summaryDTO.getGeneralTransferCost(), fixedCostText, "calculator.general-transfer", lockedPriceDiv, numberFormat);
                         }
                         if (summaryDTO.getNighTransferCost() != null) {
-                            addCostsAndCreateLabel(lockedPriceCost, summaryDTO.getNighTransferCost(), fixedCostText, "calculator.night-transfer.title", summarySection, numberFormat);
+                            addCostsAndCreateLabel(lockedPriceCost, summaryDTO.getNighTransferCost(), fixedCostText, "calculator.night-transfer.title", lockedPriceDiv, numberFormat);
                         }
                     }
 
@@ -587,10 +596,10 @@ public class PriceCalculatorView extends Main {
         add(chartLayout);
     }
 
-    private void addCostsAndCreateLabel(Double cost, Double addedCost, String text, String translate, Div summarySection, NumberFormat numberFormat) {
+    private void addCostsAndCreateLabel(Double cost, Double addedCost, String text, String translate, Div div, NumberFormat numberFormat) {
         var spotAndGeneralTransferCost = cost + addedCost;
         final var formatted = "%s + %s".formatted(text, getTranslation(translate).toLowerCase());
-        summarySection.add(new DoubleLabel(formatted, numberFormat.format(spotAndGeneralTransferCost) + " €", true));
+        div.add(new DoubleLabel(formatted, numberFormat.format(spotAndGeneralTransferCost) + " €", true));
     }
 
     private Div createWrapper() {
