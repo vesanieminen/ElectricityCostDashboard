@@ -2,12 +2,60 @@
   "name": "no-name",
   "license": "UNLICENSED",
   "dependencies": {
-    "lit-translate": "^2.0.1"
+    "lit-translate": "^2.0.1",
+    "@vaadin/common-frontend": "0.0.19",
+    "construct-style-sheets-polyfill": "3.1.0",
+    "lit": "3.1.0",
+    "@vaadin/router": "1.7.5",
+    "@polymer/polymer": "3.5.1"
   },
   "devDependencies": {
-    
+    "strip-css-comments": "5.0.0",
+    "@vitejs/plugin-react-swc": "3.5.0",
+    "workbox-build": "7.0.0",
+    "rollup-plugin-visualizer": "5.9.2",
+    "glob": "10.3.3",
+    "@rollup/plugin-replace": "5.0.4",
+    "async": "3.2.4",
+    "workbox-core": "7.0.0",
+    "vite": "5.0.6",
+    "rollup-plugin-brotli": "3.1.0",
+    "@rollup/pluginutils": "5.0.5",
+    "vite-plugin-checker": "0.6.2",
+    "workbox-precaching": "7.0.0",
+    "transform-ast": "2.4.4",
+    "typescript": "5.3.3",
+    "@vitejs/plugin-react": "4.2.0"
   },
   "overrides": {
     "lit-translate": "$lit-translate"
+  },
+  "vaadin": {
+    "dependencies": {
+      "@vaadin/common-frontend": "0.0.19",
+      "construct-style-sheets-polyfill": "3.1.0",
+      "lit": "3.1.0",
+      "@vaadin/router": "1.7.5",
+      "@polymer/polymer": "3.5.1"
+    },
+    "devDependencies": {
+      "strip-css-comments": "5.0.0",
+      "@vitejs/plugin-react-swc": "3.5.0",
+      "workbox-build": "7.0.0",
+      "rollup-plugin-visualizer": "5.9.2",
+      "glob": "10.3.3",
+      "@rollup/plugin-replace": "5.0.4",
+      "async": "3.2.4",
+      "workbox-core": "7.0.0",
+      "vite": "5.0.6",
+      "rollup-plugin-brotli": "3.1.0",
+      "@rollup/pluginutils": "5.0.5",
+      "vite-plugin-checker": "0.6.2",
+      "workbox-precaching": "7.0.0",
+      "transform-ast": "2.4.4",
+      "typescript": "5.3.3",
+      "@vitejs/plugin-react": "4.2.0"
+    },
+    "hash": ""
   }
 }
