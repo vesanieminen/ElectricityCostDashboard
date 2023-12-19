@@ -1,34 +1,9 @@
-package com.vesanieminen.froniusvisualizer.services.model;
+package com.vesanieminen.froniusvisualizer.services.model
 
-import java.io.Serializable;
+import java.io.Serializable
 
-public class APIVersion implements Serializable {
-
-    private String APIVersion;
-    private String BaseURL;
-    private String CompatibilityRange;
-
-    public String getAPIVersion() {
-        return APIVersion;
-    }
-
-    public void setAPIVersion(String APIVersion) {
-        this.APIVersion = APIVersion;
-    }
-
-    public String getBaseURL() {
-        return BaseURL;
-    }
-
-    public void setBaseURL(String baseURL) {
-        BaseURL = baseURL;
-    }
-
-    public String getCompatibilityRange() {
-        return CompatibilityRange;
-    }
-
-    public void setCompatibilityRange(String compatibilityRange) {
-        CompatibilityRange = compatibilityRange;
-    }
+class APIVersion : Serializable {
+    var aPIVersion: String? = null
+    var baseURL: String? = null
+    var compatibilityRange: String? = null
 }
