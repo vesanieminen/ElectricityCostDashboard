@@ -1,9 +1,11 @@
-package com.vesanieminen.froniusvisualizer.services.model;
+package com.vesanieminen.froniusvisualizer.services.model
 
-import java.util.Date;
+import java.util.*
 
-public class FingridLiteResponse {
-    public double value;
-    public Date start_time;
-    //public Date end_time;
+class FingridLiteResponse {
+    @JvmField
+    var value = 0.0
+
+    @JvmField
+    var start_time: Date? = null
 }
