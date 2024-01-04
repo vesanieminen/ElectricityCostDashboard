@@ -524,9 +524,9 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
                 try {
                     var y = 0.0d;
                     if (hasVat) {
-                        y = numberFormat.parse(column.Value).doubleValue() * getVAT(instant) / 10;
+                        y = numberFormat.parse(column.Value.replaceAll(" ", "")).doubleValue() * getVAT(instant) / 10;
                     } else {
-                        y = numberFormat.parse(column.Value).doubleValue() / 10;
+                        y = numberFormat.parse(column.Value.replaceAll(" ", "")).doubleValue() / 10;
                     }
                     total += y;
                     ++amount;
