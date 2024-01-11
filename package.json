@@ -3,6 +3,7 @@
   "license": "UNLICENSED",
   "dependencies": {
     "@polymer/polymer": "3.5.1",
+    "@vaadin-component-factory/vcf-nav": "1.0.6",
     "@vaadin/a11y-base": "24.3.2",
     "@vaadin/accordion": "24.3.2",
     "@vaadin/app-layout": "24.3.2",
@@ -75,6 +76,7 @@
     "@vaadin/virtual-list": "24.3.2",
     "construct-style-sheets-polyfill": "3.1.0",
     "date-fns": "2.29.3",
+    "line-awesome": "1.3.0",
     "lit": "3.1.0",
     "lit-translate": "^2.0.1",
     "lumo-css-framework": "3.0.11",
@@ -175,11 +177,14 @@
     "proj4": "$proj4",
     "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
     "date-fns": "$date-fns",
-    "lumo-css-framework": "$lumo-css-framework"
+    "lumo-css-framework": "$lumo-css-framework",
+    "@vaadin-component-factory/vcf-nav": "$@vaadin-component-factory/vcf-nav",
+    "line-awesome": "$line-awesome"
   },
   "vaadin": {
     "dependencies": {
       "@polymer/polymer": "3.5.1",
+      "@vaadin-component-factory/vcf-nav": "1.0.6",
       "@vaadin/a11y-base": "24.3.2",
       "@vaadin/accordion": "24.3.2",
       "@vaadin/app-layout": "24.3.2",
@@ -252,6 +257,7 @@
       "@vaadin/virtual-list": "24.3.2",
       "construct-style-sheets-polyfill": "3.1.0",
       "date-fns": "2.29.3",
+      "line-awesome": "1.3.0",
       "lit": "3.1.0",
       "lumo-css-framework": "3.0.11",
       "proj4": "2.9.2"
@@ -274,6 +280,6 @@
       "workbox-core": "7.0.0",
       "workbox-precaching": "7.0.0"
     },
-    "hash": "f3b0132fc5d34fdba08c6f4a467bf8085608a685bf075f2793c3642aff955f70"
+    "hash": "d77f0e927cb1e8595b0af22475877d94d269d18290f632d8a9f39f832e0a1b07"
   }
 }
