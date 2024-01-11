@@ -13,7 +13,7 @@
         <java.version>17</java.version>
         <kotlin.version>1.8.0</kotlin.version>
         <!--kotlin.compiler.incremental>true</kotlin.compiler.incremental-->
-        <vaadin.version>24.3.0</vaadin.version>
+        <vaadin.version>24.3.2</vaadin.version>
         <selenium.version>4.8.3</selenium.version>
     </properties>
 
@@ -313,7 +313,6 @@
                         </executions>
                         <configuration>
                             <productionMode>true</productionMode>
-                            <optimizeBundle>false</optimizeBundle>
                         </configuration>
                     </plugin>
                 </plugins>
