@@ -2,7 +2,7 @@
 # See README.md for more details.
 #
 # 1. Build the image with: docker build --no-cache -t test/electricity-cost-dashboard:latest --build-arg offlinekey="offline key" .
-# 2. Run the image with: docker run --rm -ti -p8080:8080 -e FINGRID_API_KEY='abcxyz' -e staging=true test/electricity-cost-dashboard
+# 2. Run the image with: docker run --rm -ti -p8080:8080 -e FINGRID_API_KEY='abcxyz' -e staging=true -e VAPID_PRIVATE_KEY='abc123' test/electricity-cost-dashboard
 #
 # Uses Docker Multi-stage builds: https://docs.docker.com/build/building/multi-stage/
 

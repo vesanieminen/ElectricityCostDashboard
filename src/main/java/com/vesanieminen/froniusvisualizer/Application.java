@@ -3,6 +3,7 @@ package com.vesanieminen.froniusvisualizer;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.page.AppShellConfigurator;
+import com.vaadin.flow.server.LoadDependenciesOnStartup;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import com.vesanieminen.froniusvisualizer.services.Executor;
@@ -23,6 +24,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @NpmPackage(value = "@vaadin-component-factory/vcf-nav", version = "1.0.6")
 @JsModule("src/prefers-color-scheme.js")
 @EnableScheduling
+@LoadDependenciesOnStartup
 public class Application implements AppShellConfigurator {
 
     public static void main(String[] args) {

@@ -313,6 +313,7 @@
                         </executions>
                         <configuration>
                             <productionMode>true</productionMode>
+                            <optimizeBundle>false</optimizeBundle>
                         </configuration>
                     </plugin>
                 </plugins>
