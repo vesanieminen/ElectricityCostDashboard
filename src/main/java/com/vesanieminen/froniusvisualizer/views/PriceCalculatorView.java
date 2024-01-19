@@ -178,6 +178,8 @@ public class PriceCalculatorView extends Main {
         consumptionUpload.setDropAllowed(true);
         consumptionUpload.addClassNames(LumoUtility.Margin.Top.XSMALL);
         content.add(consumptionUpload);
+        addConsumptionSucceededListener(consumptionFileBuffer, consumptionUpload);
+        addErrorHandling(consumptionUpload);
 
         // Consumption file
         final var productionFileBuffer = new MemoryBuffer();
@@ -190,6 +192,8 @@ public class PriceCalculatorView extends Main {
         productionUpload.addClassNames(LumoUtility.Margin.Top.XSMALL);
         content.add(productionUpload);
         productionUpload.setVisible(false);
+        addProductionSucceededListener(productionFileBuffer, productionUpload);
+        addErrorHandling(productionUpload);
 
         fromDateTimePicker = new DateTimePicker(getTranslation("Start period"));
         fromDateTimePicker.setWeekNumbersVisible(true);
@@ -579,11 +583,6 @@ public class PriceCalculatorView extends Main {
             }
         });
         calculateButton.addClassNames(LumoUtility.Margin.Top.MEDIUM);
-
-        addConsumptionSucceededListener(consumptionFileBuffer, consumptionUpload);
-        addProductionSucceededListener(productionFileBuffer, productionUpload);
-        addErrorHandling(consumptionUpload);
-        addErrorHandling(productionUpload);
 
         fixedPriceField.addValueChangeListener(e -> updateCalculateButtonState());
         spotMarginField.addValueChangeListener(e -> updateCalculateButtonState());
