@@ -231,13 +231,11 @@ public class MainLayout extends AppLayout {
         if (fiLocale.equals(ui.getLocale())) {
             // TODO: Translation
             image = new Image("icons/finnish.png", "Finnish");
-            changeLanguage.getElement().setAttribute("aria-label", "Switch to English");
-            changeLanguage.getElement().setAttribute("title", "Switch to English");
+            changeLanguage.setAriaLabel( "Switch to English");
         } else {
             // TODO: Translation
             image = new Image("icons/english.png", "English");
-            changeLanguage.getElement().setAttribute("aria-label", "Switch to Finnish");
-            changeLanguage.getElement().setAttribute("title", "Switch to Finnish");
+            changeLanguage.setAriaLabel("Switch to Finnish");
         }
         image.setHeightFull();
 

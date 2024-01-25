@@ -28,6 +28,30 @@ You can also import the project to your IDE of choice as you would with any
 Maven project. Read more on [how to import Vaadin projects to different 
 IDEs](https://vaadin.com/docs/latest/flow/guide/step-by-step/importing) (Eclipse, IntelliJ IDEA, NetBeans, and VS Code).
 
+## Running the database locally in docker
+
+To create the container the first time: 
+```
+docker run --name postgres-liukuri -p 5456:5432 -e POSTGRES_PASSWORD=mysecretpassword -d postgres
+```
+
+To run it:
+```
+docker start postgres-liukuri
+```
+
+To stop it:
+```
+docker stop postgres-liukuri
+```
+
+To remove it:
+```
+docker remove postgres-liukuri
+```
+
+
+
 ## Deploying to Production
 
 To create a production build, call `mvnw clean package -Pproduction` (Windows),
