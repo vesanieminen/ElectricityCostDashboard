@@ -30,5 +30,8 @@
     "6m": "6kk",
     "12m": "12kk",
     "ytd": "Vuosi"
+  },
+  "help": {
+    "title": "Ohjeet"
   }
 }

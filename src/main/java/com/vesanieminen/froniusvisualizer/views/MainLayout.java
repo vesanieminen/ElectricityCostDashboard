@@ -81,6 +81,7 @@ public class MainLayout extends AppLayout {
         //nav.addItem(new SideNavItem(getTranslation("Monthly Prices"), MonthlyPricesView.class, MaterialIcon.CALENDAR_VIEW_MONTH.create()));
         nav.addItem(new SideNavItem(getTranslation("Calculator"), PriceCalculatorView.class, MaterialIcon.CALCULATE.create()));
         nav.addItem(new SideNavItem(getTranslation("view.notifications"), NotificationsView.class, MaterialIcon.WARNING.create()));
+        nav.addItem(new SideNavItem(getTranslation("view.help"), HelpView.class, MaterialIcon.QUESTION_MARK.create()));
         nav.addItem(new SideNavItem(getTranslation("view.about"), AboutView.class, MaterialIcon.INFO.create()));
 
         addToDrawer(new Div(app, nav), createLinkDiv());
