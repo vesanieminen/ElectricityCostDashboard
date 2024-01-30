@@ -42,6 +42,7 @@ public class MainLayout extends AppLayout {
 
     private final Header header;
     private final H1 title;
+    private boolean isLiukuriVideoAdShown;
 
     public MainLayout() {
         setPrimarySection(Section.DRAWER);
@@ -73,6 +74,7 @@ public class MainLayout extends AppLayout {
 
         final var nav = new SideNav();
         nav.addClassNames(LumoUtility.Padding.Horizontal.SMALL);
+        nav.addItem(new SideNavItem(getTranslation("view.help"), HelpView.class, MaterialIcon.QUESTION_MARK.create()));
         nav.addItem(new SideNavItem(getTranslation("Chart"), NordpoolspotView.class, MaterialIcon.TIMELINE.create()));
         nav.addItem(new SideNavItem(getTranslation("column.chart"), ChartTemplateView.class, MaterialIcon.BAR_CHART.create()));
         nav.addItem(new SideNavItem(getTranslation("Market electricity group"), ChartTemplateViewForTimo.class, MaterialIcon.BAR_CHART.create()));
@@ -81,7 +83,6 @@ public class MainLayout extends AppLayout {
         //nav.addItem(new SideNavItem(getTranslation("Monthly Prices"), MonthlyPricesView.class, MaterialIcon.CALENDAR_VIEW_MONTH.create()));
         nav.addItem(new SideNavItem(getTranslation("Calculator"), PriceCalculatorView.class, MaterialIcon.CALCULATE.create()));
         nav.addItem(new SideNavItem(getTranslation("view.notifications"), NotificationsView.class, MaterialIcon.WARNING.create()));
-        nav.addItem(new SideNavItem(getTranslation("view.help"), HelpView.class, MaterialIcon.QUESTION_MARK.create()));
         nav.addItem(new SideNavItem(getTranslation("view.about"), AboutView.class, MaterialIcon.INFO.create()));
 
         addToDrawer(new Div(app, nav), createLinkDiv());
@@ -212,6 +213,19 @@ public class MainLayout extends AppLayout {
             lang.setDecimalPoint(decimalFormat.getDecimalFormatSymbols().getDecimalSeparator() + "");
             chartOptions.setLang(lang);
         }
+
+        //if (!isLiukuriVideoAdShown) {
+        //    isLiukuriVideoAdShown = true;
+        //    final var dialog = new Dialog();
+        //    final var routerLink = new RouterLink(getTranslation("help.ad"), HelpView.class);
+        //    dialog.add(routerLink);
+        //    dialog.setHeaderTitle("User details");
+
+        //    Button closeButton = new Button(MaterialIcon.CLOSE.create(), (e) -> dialog.close());
+        //    closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        //    dialog.getHeader().add(closeButton);
+        //    dialog.open();
+        //}
 
     }
 
