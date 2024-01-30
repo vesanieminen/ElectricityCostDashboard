@@ -39,14 +39,19 @@ export class HelpView extends LitElement {
         return html`
             <div class="flex flex-col gap-s">
                 <h2>${translate("help.title")}</h2>
-                <div class="flex-col">
+                <h3>${translate("help.liukuri-presentation-title")}</h3>
+                <div class="flex-col mt-m">
                     <iframe style="aspect-ratio: 16 / 9; width: 100%;"
                             src="https://www.youtube.com/embed/Y4Uo0EcBMMI?si=87BnZEjPTaOyd64R"
                             title="YouTube video player" frameborder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            allowfullscreen></iframe>
-                    </divclass>
+                            allowfullscreen>
+                    </iframe>
+
                 </div>
+                <p>${translate("help.liukuri-presentation-description")}</p>
+
+                <p>${translate("help.liukuri-presentation-description-2")}</p>
         `;
     }
 

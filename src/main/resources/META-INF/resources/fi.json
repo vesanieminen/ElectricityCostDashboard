@@ -32,6 +32,9 @@
     "ytd": "Vuosi"
   },
   "help": {
-    "title": "Ohjeet"
+    "title": "Ohjeet",
+    "liukuri-presentation-title": "Liukuri esitys 26.1.2024",
+    "liukuri-presentation-description": "Käyn läpi tässä videossa mikä Liukuri on ja mitä sillä voi tehdä. Kerron lyhyesti sovelluksen luonnin historian, paneudun tarkemmin sen käyttöön ja annan yleisiä vinkkejä. Esittelen myös hintakiinnitys ja kuluttusvaikutus -käsitteet ja kerron oman näkemykseni siitä millainen sähkösopimus on mielestäni järkevä tässä maailmantilanteessa itselleni.",
+    "liukuri-presentation-description-2": "(Pahoittelut huonosta äänenlaadusta. Mokasin mikrofonin valinnan kanssa. Ensi kerralla ääni tulee olemaan parempi.)"
   }
 }
