@@ -74,7 +74,6 @@ public class MainLayout extends AppLayout {
 
         final var nav = new SideNav();
         nav.addClassNames(LumoUtility.Padding.Horizontal.SMALL);
-        nav.addItem(new SideNavItem(getTranslation("view.help"), HelpView.class, MaterialIcon.QUESTION_MARK.create()));
         nav.addItem(new SideNavItem(getTranslation("Chart"), NordpoolspotView.class, MaterialIcon.TIMELINE.create()));
         nav.addItem(new SideNavItem(getTranslation("column.chart"), ChartTemplateView.class, MaterialIcon.BAR_CHART.create()));
         nav.addItem(new SideNavItem(getTranslation("Market electricity group"), ChartTemplateViewForTimo.class, MaterialIcon.BAR_CHART.create()));
@@ -82,6 +81,7 @@ public class MainLayout extends AppLayout {
         nav.addItem(new SideNavItem(getTranslation("List"), PriceListView.class, MaterialIcon.LIST.create()));
         //nav.addItem(new SideNavItem(getTranslation("Monthly Prices"), MonthlyPricesView.class, MaterialIcon.CALENDAR_VIEW_MONTH.create()));
         nav.addItem(new SideNavItem(getTranslation("Calculator"), PriceCalculatorView.class, MaterialIcon.CALCULATE.create()));
+        nav.addItem(new SideNavItem(getTranslation("view.help"), HelpView.class, MaterialIcon.QUESTION_MARK.create()));
         nav.addItem(new SideNavItem(getTranslation("view.notifications"), NotificationsView.class, MaterialIcon.WARNING.create()));
         nav.addItem(new SideNavItem(getTranslation("view.about"), AboutView.class, MaterialIcon.INFO.create()));
 
