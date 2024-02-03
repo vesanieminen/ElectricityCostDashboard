@@ -32,9 +32,11 @@
     "ytd": "Vuosi"
   },
   "help": {
-    "title": "Ohjeet",
-    "liukuri-presentation-title": "Liukuri esitys 26.1.2024",
+    "title": "Videot",
+    "liukuri-presentation-title": "Liukuri Live 26.1.2024",
     "liukuri-presentation-description": "Käyn läpi tässä videossa mikä Liukuri on ja mitä sillä voi tehdä. Kerron lyhyesti sovelluksen luonnin historian, paneudun tarkemmin sen käyttöön ja annan yleisiä vinkkejä. Esittelen myös hintakiinnitys ja kuluttusvaikutus -käsitteet ja kerron oman näkemykseni siitä millainen sähkösopimus on mielestäni järkevä tässä maailmantilanteessa itselleni.",
-    "liukuri-presentation-description-2": "(Pahoittelut huonosta äänenlaadusta. Mokasin mikrofonin valinnan kanssa. Ensi kerralla ääni tulee olemaan parempi.)"
+    "liukuri-presentation-description-2": "(Pahoittelut huonosta äänenlaadusta. Mokasin mikrofonin valinnan kanssa. Ensi kerralla ääni tulee olemaan parempi.)",
+    "liukuri-how-to-1-title": "Liukuri - Laskurin käyttö",
+    "liukuri-how-to-1-description": "Käyn läpi videossa Liukuri.fi palvelun laskurin käyttöä omakohtaisen tammikuu 2024 kulutustiedoston avulla."
   }
 }

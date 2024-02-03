@@ -10,7 +10,8 @@ import com.vaadin.flow.router.RouteAlias;
 
 @Tag("help-view")
 @JsModule("src/help-view.ts")
-@Route(value = "ohjeet", layout = MainLayout.class)
+@Route(value = "videot", layout = MainLayout.class)
+@RouteAlias(value = "ohjeet", layout = MainLayout.class)
 @RouteAlias(value = "instructions", layout = MainLayout.class)
 public class HelpView extends Component {
 

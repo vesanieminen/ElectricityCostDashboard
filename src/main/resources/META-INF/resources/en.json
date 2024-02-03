@@ -32,9 +32,11 @@
     "ytd": "YTD"
   },
   "help": {
-    "title": "Help",
+    "title": "Videos",
     "liukuri-presentation-title": "Liukuri presentation from 26th of January 2024 in Finnish",
     "liukuri-presentation-description": "In this video, I go through what Liukuri is and what you can do with it. I briefly talk about the history of the application's creation, delve more into its use, and give general tips. I also introduce the concepts of price fixing and consumption impact and share my own view on what kind of electricity contract makes sense for me in the current world situation.",
-    "liukuri-presentation-description-2": "Apologies for the poor sound quality. I messed up with the microphone choice. Next time the sound will be better."
+    "liukuri-presentation-description-2": "Apologies for the poor sound quality. I messed up with the microphone choice. Next time the sound will be better.",
+    "liukuri-how-to-1-title": "Liukuri - Using the calculator (In Finnish)",
+    "liukuri-how-to-1-description": "In the video, I go through the use of the Liukuri.fi calculator with my personal January 2024 consumption file."
   }
 }
