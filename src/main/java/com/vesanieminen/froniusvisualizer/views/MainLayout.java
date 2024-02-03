@@ -23,6 +23,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.MaterialIcon;
+import com.vesanieminen.froniusvisualizer.components.Ping;
 import com.vesanieminen.froniusvisualizer.util.css.FontFamily;
 import jakarta.servlet.http.Cookie;
 
@@ -81,7 +82,11 @@ public class MainLayout extends AppLayout {
         nav.addItem(new SideNavItem(getTranslation("List"), PriceListView.class, MaterialIcon.LIST.create()));
         //nav.addItem(new SideNavItem(getTranslation("Monthly Prices"), MonthlyPricesView.class, MaterialIcon.CALENDAR_VIEW_MONTH.create()));
         nav.addItem(new SideNavItem(getTranslation("Calculator"), PriceCalculatorView.class, MaterialIcon.CALCULATE.create()));
-        nav.addItem(new SideNavItem(getTranslation("view.videos"), HelpView.class, MaterialIcon.QUESTION_MARK.create()));
+        final var sideNavItem = new SideNavItem(getTranslation("view.videos"), HelpView.class, MaterialIcon.QUESTION_MARK.create());
+        final var current = new Ping(getTranslation("New"), LumoUtility.Background.PRIMARY);
+        current.getStyle().set("margin-right", "4em");
+        sideNavItem.setSuffixComponent(current);
+        nav.addItem(sideNavItem);
 
         nav.addItem(new SideNavItem(getTranslation("view.notifications"), NotificationsView.class, MaterialIcon.WARNING.create()));
         nav.addItem(new SideNavItem(getTranslation("view.about"), AboutView.class, MaterialIcon.INFO.create()));
