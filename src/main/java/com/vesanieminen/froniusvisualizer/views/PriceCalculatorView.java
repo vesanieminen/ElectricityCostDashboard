@@ -793,6 +793,7 @@ public class PriceCalculatorView extends Main {
         spotCostHoursSeries.setPlotOptions(spotCostHoursPlotOptionsColumn);
         chart.getConfiguration().addSeries(spotCostHoursSeries);
         spotCostHoursSeries.setyAxis(costYAxis);
+        spotCostHoursSeries.setVisible(false);
 
         // Weighted spot average series
         final var spotAverageSeries = new ListSeries(getTranslation("Spot average (incl. margin)"));
@@ -827,7 +828,6 @@ public class PriceCalculatorView extends Main {
         chart.getConfiguration().addSeries(unweightedSpotAverageSeries);
         unweightedSpotAverageSeries.setyAxis(spotYAxis);
         unweightedSpotAverageSeries.setVisible(false);
-
 
         // Fixed cost series
         if (isCalculatingFixed) {
