@@ -796,7 +796,7 @@ public class PriceCalculatorView extends Main {
         spotCostHoursSeries.setVisible(false);
 
         // Weighted spot average series
-        final var spotAverageSeries = new ListSeries(getTranslation("Spot average (incl. margin)"));
+        final var spotAverageSeries = new ListSeries(getTranslation("Spot average (without margin)"));
         for (int i = 0; i < spotCalculation.spotAverage.length; ++i) {
             final var consumptionHour = spotCalculation.consumptionHours[i];
             final var costHoursWithoutMargin = spotCalculation.costHoursWithoutMargin[i];
