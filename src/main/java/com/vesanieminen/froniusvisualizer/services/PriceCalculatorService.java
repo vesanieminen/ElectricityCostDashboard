@@ -304,6 +304,7 @@ public class PriceCalculatorService {
                         item,
                         new HourValue(item.atZone(fiZoneID).getHour(), fingridConsumptionData.get(item)),
                         new HourValue(item.atZone(fiZoneID).getHour(), (spotData.get(item) * getVAT(item, vat) + margin) * fingridConsumptionData.get(item) / 100),
+                        new HourValue(item.atZone(fiZoneID).getHour(), (spotData.get(item) * getVAT(item, vat)) * fingridConsumptionData.get(item) / 100),
                         new HourValue(item.atZone(fiZoneID).getHour(), spotData.get(item) * getVAT(item, vat))
                 ))
                 .reduce(new SpotCalculation(
@@ -314,6 +315,7 @@ public class PriceCalculatorService {
                         0,
                         Instant.MAX,
                         Instant.MIN,
+                        HourValue.Zero(),
                         HourValue.Zero(),
                         HourValue.Zero(),
                         HourValue.Zero()
@@ -327,6 +329,7 @@ public class PriceCalculatorService {
                         i1.end.compareTo(i2.end) > 0 ? i1.end : i2.end,
                         sum(i1.consumptionHours, i2.consumptionHours),
                         sum(i1.costHours, i2.costHours),
+                        sum(i1.costHoursWithoutMargin, i2.costHoursWithoutMargin),
                         sum(i1.spotAverage, i2.spotAverage)
                 ));
         final var count = fingridConsumptionData.keySet().stream().filter(spotData::containsKey).count();
@@ -413,6 +416,7 @@ public class PriceCalculatorService {
         public Instant end;
         public double[] consumptionHours = new double[24];
         public double[] costHours = new double[24];
+        public double[] costHoursWithoutMargin = new double[24];
         public double[] spotAverage = new double[24];
 
         public SpotCalculation(double totalSpotPrice, double totalSpotPriceWithoutMargin, double totalCost, double totalCostWithoutMargin, double totalConsumption, Instant start, Instant end) {
@@ -425,17 +429,19 @@ public class PriceCalculatorService {
             this.end = end;
         }
 
-        public SpotCalculation(double totalSpotPrice, double totalSpotPriceWithoutMargin, double totalCost, double totalCostWithoutMargin, double totalConsumption, Instant start, Instant end, HourValue consumption, HourValue cost, HourValue spot) {
+        public SpotCalculation(double totalSpotPrice, double totalSpotPriceWithoutMargin, double totalCost, double totalCostWithoutMargin, double totalConsumption, Instant start, Instant end, HourValue consumption, HourValue cost, HourValue costWithoutMargin, HourValue spot) {
             this(totalSpotPrice, totalSpotPriceWithoutMargin, totalCost, totalCostWithoutMargin, totalConsumption, start, end);
             consumptionHours[consumption.hour] = consumption.value;
             costHours[cost.hour] = cost.value;
+            costHoursWithoutMargin[costWithoutMargin.hour] = costWithoutMargin.value;
             spotAverage[spot.hour] = spot.value;
         }
 
-        public SpotCalculation(double totalSpotPrice, double totalSpotPriceWithoutMargin, double totalCost, double totalCostWithoutMargin, double totalConsumption, Instant start, Instant end, double[] consumptionHours, double[] costHours, double[] spotAverage) {
+        public SpotCalculation(double totalSpotPrice, double totalSpotPriceWithoutMargin, double totalCost, double totalCostWithoutMargin, double totalConsumption, Instant start, Instant end, double[] consumptionHours, double[] costHours, double[] costHoursWithoutMargin, double[] spotAverage) {
             this(totalSpotPrice, totalSpotPriceWithoutMargin, totalCost, totalCostWithoutMargin, totalConsumption, start, end);
             this.consumptionHours = consumptionHours;
             this.costHours = costHours;
+            this.costHoursWithoutMargin = costHoursWithoutMargin;
             this.spotAverage = spotAverage;
         }
 
