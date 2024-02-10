@@ -1,8 +1,6 @@
 package com.vesanieminen.froniusvisualizer.util;
 
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.ServiceInitEvent;
-import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 import com.vaadin.flow.server.VaadinSession;
 import jakarta.servlet.http.Cookie;
@@ -20,10 +18,12 @@ public class ApplicationServiceInitListener implements VaadinServiceInitListener
         setProperty("vaadin.i18n.provider", TranslationProvider.class.getName());
 
         serviceInitEvent.addIndexHtmlRequestListener(indexHtmlResponse -> {
-            String lang = readCookie(indexHtmlResponse.getVaadinRequest().getCookies(), "locale").orElse("en-GB");
+            // Try to use Vaadin's browser locale detection
+            final var browserLocale = indexHtmlResponse.getVaadinRequest().getLocale();
+
+            String lang = readCookie(indexHtmlResponse.getVaadinRequest().getCookies(), "locale").orElse(browserLocale.toLanguageTag());
             Locale locale = Locale.forLanguageTag(lang);
-            indexHtmlResponse.getDocument().getElementsByTag("html")
-                    .attr("lang", locale.getLanguage());
+            indexHtmlResponse.getDocument().getElementsByTag("html").attr("lang", locale.getLanguage());
 
             VaadinSession.getCurrent().setLocale(locale);
         });
@@ -35,4 +35,5 @@ public class ApplicationServiceInitListener implements VaadinServiceInitListener
                 .map(Cookie::getValue)
                 .findFirst();
     }
+
 }
