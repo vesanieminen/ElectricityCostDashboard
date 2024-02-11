@@ -1,8 +1,9 @@
 package com.vesanieminen.froniusvisualizer.util;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.ServiceInitEvent;
+import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServiceInitListener;
-import com.vaadin.flow.server.VaadinSession;
 import jakarta.servlet.http.Cookie;
 
 import java.util.Arrays;
@@ -16,24 +17,26 @@ public class ApplicationServiceInitListener implements VaadinServiceInitListener
     @Override
     public void serviceInit(ServiceInitEvent serviceInitEvent) {
         setProperty("vaadin.i18n.provider", TranslationProvider.class.getName());
-
-        serviceInitEvent.addIndexHtmlRequestListener(indexHtmlResponse -> {
-            // Try to use Vaadin's browser locale detection
-            final var browserLocale = indexHtmlResponse.getVaadinRequest().getLocale();
-
-            String lang = readCookie(indexHtmlResponse.getVaadinRequest().getCookies(), "locale").orElse(browserLocale.toLanguageTag());
-            Locale locale = Locale.forLanguageTag(lang);
-            indexHtmlResponse.getDocument().getElementsByTag("html").attr("lang", locale.getLanguage());
-
-            VaadinSession.getCurrent().setLocale(locale);
+        serviceInitEvent.getSource().addUIInitListener(uiInitEvent -> {
+            // Whenever a new user arrives, determine locale
+            initLanguage(uiInitEvent.getUI());
+            //uiInitEvent.getUI().setLocale(fiLocale);
         });
     }
 
-    public Optional<String> readCookie(Cookie[] cookies, String key) {
-        return Arrays.stream(cookies)
-                .filter(c -> key.equals(c.getName()))
-                .map(Cookie::getValue)
-                .findFirst();
+    private void initLanguage(UI ui) {
+        Optional<Cookie> localeCookie = Optional.empty();
+        Cookie[] cookies = VaadinService.getCurrentRequest().getCookies();
+        if (cookies != null) {
+            localeCookie = Arrays.stream(cookies).filter(cookie -> "locale".equals(cookie.getName())).findFirst();
+        }
+        if (localeCookie.isPresent() && !"".equals(localeCookie.get().getValue())) {
+            // Cookie found, use that
+            ui.setLocale(Locale.forLanguageTag(localeCookie.get().getValue()));
+        } else {
+            // Try to use Vaadin's browser locale detection
+            ui.setLocale(VaadinService.getCurrentRequest().getLocale());
+        }
     }
 
 }
