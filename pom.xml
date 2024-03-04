@@ -13,7 +13,7 @@
         <java.version>17</java.version>
         <kotlin.version>1.8.0</kotlin.version>
         <!--kotlin.compiler.incremental>true</kotlin.compiler.incremental-->
-        <vaadin.version>24.3.3</vaadin.version>
+        <vaadin.version>24.3.6</vaadin.version>
         <selenium.version>4.8.3</selenium.version>
     </properties>
 
