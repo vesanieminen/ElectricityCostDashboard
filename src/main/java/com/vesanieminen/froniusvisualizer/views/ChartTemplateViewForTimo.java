@@ -22,6 +22,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.calculateCheapest3Ho
 import static com.vesanieminen.froniusvisualizer.util.Utils.calculateMaximumOfDay;
 import static com.vesanieminen.froniusvisualizer.util.Utils.calculateMinimumOfDay;
 import static com.vesanieminen.froniusvisualizer.util.Utils.calculateSpotAveragePriceOfMonth;
+import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCombinedSpotData;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
@@ -152,7 +154,12 @@ public class ChartTemplateViewForTimo extends Main {
 
     private void updateLabels(LocalDateTime selectedDay) {
         final var day = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(getLocale()).format(selectedDay);
-        dayH2.setText("%s".formatted(day));
+        if (fiLocale.equals(getLocale())) {
+            final var weekDay = selectedDate.getDayOfWeek().getDisplayName(TextStyle.SHORT, getLocale());
+            dayH2.setText("%s %s".formatted(weekDay, day));
+        } else {
+            dayH2.setText("%s".formatted(day));
+        }
         final var combinedSpotData = getCombinedSpotData();
         averageTodayLabel.setTitleBottom(numberFormat.format(calculateAverageOfDay(selectedDay.toLocalDate(), combinedSpotData)) + " " + getTranslation("c/kWh"));
         final var monthAverage = calculateSpotAveragePriceOfMonth(selectedDay.toLocalDate(), combinedSpotData);
