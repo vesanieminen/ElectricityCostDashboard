@@ -39,6 +39,8 @@ html {
     --green-500: #1BA875;
 
     --red-500: #FF3A49;
+
+    --upcloud-color: #7b00ff;
 }
 
 [theme~="dark"] {
@@ -103,5 +105,9 @@ html {
 
 .bg-yellow-900 {
     background-color: var(--yellow-900);
+}
+
+.color-upcloud {
+    color: var(--upcloud-color);
 }
 
