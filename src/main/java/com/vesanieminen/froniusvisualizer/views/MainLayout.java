@@ -19,7 +19,13 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.Location;
+import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.QueryParameters;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.MaterialIcon;
@@ -31,7 +37,7 @@ import java.text.DecimalFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.enLocale;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
 
-public class MainLayout extends AppLayout {
+public class MainLayout extends AppLayout implements BeforeEnterObserver {
 
     public static final String URL_SUFFIX = " ⋅ Liukuri";
 
@@ -44,6 +50,8 @@ public class MainLayout extends AppLayout {
     private final Header header;
     private final H1 title;
     private boolean isLiukuriVideoAdShown;
+    private boolean showUpCloudAd;
+    private Anchor upcloudLink;
 
     public MainLayout() {
         setPrimarySection(Section.DRAWER);
@@ -125,7 +133,7 @@ public class MainLayout extends AppLayout {
         // UpCloud link
         final var upcloudIcon = new Image("images/upcloud_logo_icon_purple-e1542796638720-1.png", getTranslation("Upcloud icon"));
         upcloudIcon.setWidth("var(--lumo-icon-size-l)");
-        final var upcloudLink = new Anchor("https://upcloud.com/", getTranslation("upcloud.ad"));
+        upcloudLink = new Anchor("https://upcloud.com/", getTranslation("upcloud.ad"));
         upcloudLink.addClassNames(
                 LumoUtility.AlignItems.CENTER,
                 LumoUtility.BorderRadius.LARGE,
@@ -137,7 +145,7 @@ public class MainLayout extends AppLayout {
                 LumoUtility.JustifyContent.CENTER
         );
         upcloudLink.add(upcloudIcon);
-
+        upcloudLink.setVisible(false);
 
         // GitHub link
         final var githubIcon = new Span();
@@ -179,6 +187,7 @@ public class MainLayout extends AppLayout {
         row.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER);
 
         var footer = new Div(kofiLink, vaadinLink, upcloudLink, hr, row);
+
         footer.addClassNames(
                 LumoUtility.Display.FLEX,
                 LumoUtility.FlexDirection.COLUMN,
@@ -245,6 +254,7 @@ public class MainLayout extends AppLayout {
         //    dialog.open();
         //}
 
+        upcloudLink.setVisible(showUpCloudAd);
     }
 
     private Button createChangeLanguageButton(AttachEvent attachEvent) {
@@ -284,4 +294,16 @@ public class MainLayout extends AppLayout {
         );
         changeLanguage.setIcon(icon);
     }
+
+
+    public void setParameter(BeforeEvent beforeEvent, @OptionalParameter String parameter) {
+    }
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
+        Location location = beforeEnterEvent.getLocation();
+        QueryParameters queryParameters = location.getQueryParameters();
+        showUpCloudAd = "show-upcloud-ad".equals(queryParameters.getQueryString());
+    }
+
 }
