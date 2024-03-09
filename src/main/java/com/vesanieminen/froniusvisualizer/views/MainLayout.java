@@ -50,7 +50,6 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     private final Header header;
     private final H1 title;
     private boolean isLiukuriVideoAdShown;
-    private boolean showUpCloudAd;
     private Anchor upcloudLink;
 
     public MainLayout() {
@@ -254,7 +253,6 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         //    dialog.open();
         //}
 
-        upcloudLink.setVisible(showUpCloudAd);
     }
 
     private Button createChangeLanguageButton(AttachEvent attachEvent) {
@@ -303,7 +301,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
         Location location = beforeEnterEvent.getLocation();
         QueryParameters queryParameters = location.getQueryParameters();
-        showUpCloudAd = "show-upcloud-ad".equals(queryParameters.getQueryString());
+        upcloudLink.setVisible("show-upcloud-ad".equals(queryParameters.getQueryString()));
     }
 
 }
