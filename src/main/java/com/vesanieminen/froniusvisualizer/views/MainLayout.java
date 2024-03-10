@@ -130,7 +130,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         vaadinLink.add(vaadinIcon);
 
         // UpCloud link
-        final var upcloudIcon = new Image("images/upcloud_logo_icon_purple-e1542796638720-1.png", getTranslation("Upcloud icon"));
+        final var upcloudIcon = new Image("images/upcloud_logo_icon_purple-e1542796638720-1.png", getTranslation("upcloud.icon"));
         upcloudIcon.setWidth("var(--lumo-icon-size-l)");
         upcloudLink = new Anchor("https://upcloud.com/", getTranslation("upcloud.ad"));
         upcloudLink.addClassNames(
