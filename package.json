@@ -3,7 +3,6 @@
   "license": "UNLICENSED",
   "dependencies": {
     "@polymer/polymer": "3.5.1",
-    "@vaadin-component-factory/vcf-nav": "1.0.6",
     "@vaadin/a11y-base": "24.3.10",
     "@vaadin/accordion": "24.3.10",
     "@vaadin/app-layout": "24.3.10",
@@ -76,7 +75,6 @@
     "@vaadin/virtual-list": "24.3.10",
     "construct-style-sheets-polyfill": "3.1.0",
     "date-fns": "2.29.3",
-    "line-awesome": "1.3.0",
     "lit": "3.1.2",
     "lit-translate": "^2.0.1",
     "proj4": "2.9.2"
@@ -173,16 +171,13 @@
     "construct-style-sheets-polyfill": "$construct-style-sheets-polyfill",
     "lit": "$lit",
     "@polymer/polymer": "$@polymer/polymer",
-    "@vaadin-component-factory/vcf-nav": "$@vaadin-component-factory/vcf-nav",
     "proj4": "$proj4",
     "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
-    "date-fns": "$date-fns",
-    "line-awesome": "$line-awesome"
+    "date-fns": "$date-fns"
   },
   "vaadin": {
     "dependencies": {
       "@polymer/polymer": "3.5.1",
-      "@vaadin-component-factory/vcf-nav": "1.0.6",
       "@vaadin/a11y-base": "24.3.10",
       "@vaadin/accordion": "24.3.10",
       "@vaadin/app-layout": "24.3.10",
@@ -255,7 +250,6 @@
       "@vaadin/virtual-list": "24.3.10",
       "construct-style-sheets-polyfill": "3.1.0",
       "date-fns": "2.29.3",
-      "line-awesome": "1.3.0",
       "lit": "3.1.2",
       "proj4": "2.9.2"
     },
@@ -277,6 +271,6 @@
       "workbox-core": "7.0.0",
       "workbox-precaching": "7.0.0"
     },
-    "hash": "4182d70951d5f32eed65454dd72cffcce8a59045242eaec98c28225a22d64e55"
+    "hash": "869356abed49962d5b9c1303eaa4fbf1cb2b21494201e1f932d4c61e40ca6aca"
   }
 }
