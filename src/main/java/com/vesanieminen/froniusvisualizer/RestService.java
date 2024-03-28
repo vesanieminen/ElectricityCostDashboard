@@ -69,7 +69,7 @@ public class RestService {
         private String endDate;
 
         public PriceWithVAT(double priceWithVAT, String startDateUTC, String endDateUTC) {
-            this.price = price;
+            this.price = priceWithVAT;
             this.startDate = startDateUTC;
             this.endDate = endDateUTC;
         }
