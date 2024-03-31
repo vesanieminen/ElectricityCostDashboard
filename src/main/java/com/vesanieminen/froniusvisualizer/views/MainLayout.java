@@ -256,7 +256,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
 
         String url = ((VaadinServletRequest) VaadinService.getCurrentRequest()).getServerName();
         final var upcloudDomains = Arrays.asList("94.237.37.229", "94-237-37-229.fi-hel1.upcloud.host");
-        upcloudLink.setVisible((upcloudDomains.contains(url)));
+        upcloudLink.setVisible((upcloudDomains.contains(url) || url.contains("upcloud")));
     }
 
     private Button createChangeLanguageButton(AttachEvent attachEvent) {
