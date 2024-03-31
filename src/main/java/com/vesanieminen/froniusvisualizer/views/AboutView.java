@@ -7,6 +7,7 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+import com.vesanieminen.froniusvisualizer.AppVersions;
 
 @Tag("about-view")
 @JsModule("src/about-view.ts")
@@ -16,8 +17,12 @@ public class AboutView extends Component {
 
     private static final PropertyDescriptor<String, String> LANGUAGE = PropertyDescriptors.propertyWithDefault("language", "en");
 
-    public AboutView() {
+    private static final PropertyDescriptor<String, String> VERSION_INFO = PropertyDescriptors.propertyWithDefault("versioninfo", "n/a");
+
+    public AboutView(AppVersions versions) {
         set(LANGUAGE, getLocale().getLanguage());
+        set(VERSION_INFO, versions.getBuildTime()+" / "+versions.getGitCommit());
+
     }
 
 }

@@ -15,6 +15,9 @@ export class AboutView extends LitElement {
     @property()
     language: string = 'en';
 
+    @property()
+    versioninfo: string = 'n/a';
+
     // Defer the first update of the component until the strings has been loaded to avoid empty strings being shown
     @state() hasLoadedStrings = false;
 
@@ -50,6 +53,7 @@ export class AboutView extends LitElement {
             <div class="m-auto">
                 <img class="w-full h-full" src="icons/Liukurikettu1c.png" alt="logo"/>
             </div>
+            <p>${this.versioninfo}</p>
         `;
     }
 
