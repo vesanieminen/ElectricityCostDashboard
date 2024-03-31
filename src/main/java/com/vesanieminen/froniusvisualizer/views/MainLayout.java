@@ -22,17 +22,17 @@ import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.BeforeEvent;
-import com.vaadin.flow.router.Location;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.QueryParameters;
 import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.MaterialIcon;
 import com.vesanieminen.froniusvisualizer.util.css.FontFamily;
 import jakarta.servlet.http.Cookie;
 
 import java.text.DecimalFormat;
+import java.util.Arrays;
 
 import static com.vesanieminen.froniusvisualizer.util.Utils.enLocale;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
@@ -131,6 +131,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
 
         // UpCloud link
         final var upcloudIcon = new Image("images/upcloud_logo_icon_purple-e1542796638720-1.png", getTranslation("upcloud.icon"));
+        //final var upcloudIcon = new Image("images/upcloud_logo_icon_purple.svg", getTranslation("upcloud.icon"));
         upcloudIcon.setWidth("var(--lumo-icon-size-l)");
         upcloudLink = new Anchor("https://upcloud.com/", getTranslation("upcloud.ad"));
         upcloudLink.addClassNames(
@@ -253,6 +254,9 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         //    dialog.open();
         //}
 
+        String url = ((VaadinServletRequest) VaadinService.getCurrentRequest()).getServerName();
+        final var upcloudDomains = Arrays.asList("94.237.37.229", "94-237-37-229.fi-hel1.upcloud.host");
+        upcloudLink.setVisible((upcloudDomains.contains(url)));
     }
 
     private Button createChangeLanguageButton(AttachEvent attachEvent) {
@@ -272,7 +276,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         if (fiLocale.equals(ui.getLocale())) {
             // TODO: Translation
             image = new Image("icons/finnish.png", "Finnish");
-            changeLanguage.setAriaLabel( "Switch to English");
+            changeLanguage.setAriaLabel("Switch to English");
         } else {
             // TODO: Translation
             image = new Image("icons/english.png", "English");
@@ -299,9 +303,6 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
-        Location location = beforeEnterEvent.getLocation();
-        QueryParameters queryParameters = location.getQueryParameters();
-        upcloudLink.setVisible("show-upcloud-ad".equals(queryParameters.getQueryString()));
     }
 
 }
