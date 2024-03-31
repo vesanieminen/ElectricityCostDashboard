@@ -177,7 +177,33 @@
     </dependencies>
     <build>
         <defaultGoal>spring-boot:run</defaultGoal>
+        <resources>
+            <!--
+                 We filter the files for variables to replace them
+                 only in versions.properties with build time values.
+            -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>versions.properties</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>versions.properties</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
+            <plugin>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
+                <configuration>
+                    <generateGitPropertiesFile>false</generateGitPropertiesFile>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
