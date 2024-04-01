@@ -145,7 +145,6 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
                 LumoUtility.JustifyContent.CENTER
         );
         upcloudLink.add(upcloudIcon);
-        upcloudLink.setVisible(false);
 
         // GitHub link
         final var githubIcon = new Span();
@@ -255,8 +254,8 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         //}
 
         String url = ((VaadinServletRequest) VaadinService.getCurrentRequest()).getServerName();
-        final var upcloudDomains = Arrays.asList("94.237.37.229", "94-237-37-229.fi-hel1.upcloud.host");
-        upcloudLink.setVisible((upcloudDomains.contains(url) || url.contains("upcloud")));
+        final var notProduction = Arrays.asList("localhost", "staging");
+        upcloudLink.setVisible(!(notProduction.contains(url)));
     }
 
     private Button createChangeLanguageButton(AttachEvent attachEvent) {
