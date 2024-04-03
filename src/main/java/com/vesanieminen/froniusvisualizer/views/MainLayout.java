@@ -254,7 +254,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         //}
 
         String url = ((VaadinServletRequest) VaadinService.getCurrentRequest()).getServerName();
-        final var notProduction = Arrays.asList("localhost", "staging");
+        final var notProduction = Arrays.asList("staging");
         upcloudLink.setVisible(!(notProduction.contains(url)));
     }
 
