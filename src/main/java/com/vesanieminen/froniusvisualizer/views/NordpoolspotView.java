@@ -438,6 +438,9 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
             for (FmiObservation observation : fmiObservations.getObservations()) {
                 final var dataSeriesItem = new DataSeriesItem();
                 var timestamp = FmiService.parseFmiTimestamp(observation.getLocaltime(), observation.getLocaltz());
+                if (timestamp == null) {
+                    continue;
+                }
                 dataSeriesItem.setX(timestamp.toInstant());
                 dataSeriesItem.setY(observation.getTemperature());
                 dataSeries.add(dataSeriesItem);
