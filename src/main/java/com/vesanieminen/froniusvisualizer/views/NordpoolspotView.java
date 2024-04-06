@@ -176,7 +176,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         List<FingridLiteResponse> productionEstimateResponses;
         List<FingridLiteResponse> consumptionEstimateResponses;
         List<SpotHintaResponse> temperatureForecastList;
-        FmiObservationResponse temperatureObservations = null;
+        FmiObservationResponse temperatureObservations;
         try {
             nordpoolResponse = NordpoolSpotService.getLatest7Days();
             fingridResponse = FingridService.getLatest7Days();
@@ -184,7 +184,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
             productionEstimateResponses = FingridService.getProductionEstimate();
             consumptionEstimateResponses = FingridService.getConsumptionEstimate();
             temperatureForecastList = SpotHintaService.getLatest();
-            //temperatureObservations = FmiService.getObservations();
+            temperatureObservations = FmiService.getObservations();
         } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }

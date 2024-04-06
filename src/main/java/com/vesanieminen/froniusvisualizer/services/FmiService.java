@@ -68,7 +68,7 @@ public class FmiService {
 
     public static Date parseFmiTimestamp(String fmiTimestamp, String fmiTimezone) {
         try {
-            dateparser.setTimeZone(TimeZone.getTimeZone(fmiTimezone));
+            dateparser.setTimeZone(fmiTimezone == null ? TimeZone.getTimeZone(fiZoneID) : (TimeZone.getTimeZone(fmiTimezone)));
             return dateparser.parse(fmiTimestamp);
         } catch (ParseException e) {
             e.printStackTrace();
