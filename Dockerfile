@@ -18,6 +18,8 @@
 # The "Run" stage. Start with a clean image, and copy over just the app itself, omitting gradle, npm and any intermediate build files.
 FROM eclipse-temurin:17-jre-alpine
 COPY target/froniusvizualizer-1.0-SNAPSHOT.jar /app/
+COPY observability-kit-agent-2.2.1.jar /app/
+COPY agent.properties /app/
 WORKDIR /app/
 EXPOSE 8080
-ENTRYPOINT java -jar froniusvizualizer-1.0-SNAPSHOT.jar 8080
+ENTRYPOINT java -javaagent:observability-kit-agent-2.2.1.jar -Dotel.javaagent.configuration-file=agent.properties -Dotel.exporter.otlp.headers=api-key=${NEW_RELIC_API_KEY} -jar froniusvizualizer-1.0-SNAPSHOT.jar 8080
