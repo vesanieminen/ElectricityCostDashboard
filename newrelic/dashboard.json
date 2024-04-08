@@ -1,0 +1,992 @@
+{
+  "name": "Liukuri production",
+  "description": "Java",
+  "permissions": "PUBLIC_READ_WRITE",
+  "pages": [
+    {
+      "name": "Overview",
+      "description": null,
+      "widgets": [
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 12,
+            "height": 1
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "## Vaadin Observability Kit\n\nUse the tabs above to get more details, or dive deep into [metrics](/data-explorer) or [distributed tracing](/distributed-tracing) for root cause analysis.\n"
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 2,
+            "width": 1,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "# ⇆ \nTRANSACTIONS\n\n[Traces](/distributed-tracing)"
+          }
+        },
+        {
+          "title": "Transactions Overview",
+          "layout": {
+            "column": 2,
+            "row": 2,
+            "width": 11,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "FROM Span SELECT count(*) as 'Total transactions', average(duration.ms) as 'Avg duration (ms)', percentile(duration.ms, 99) as 'Slowest 1% (ms)', percentage(count(*), WHERE otel.status_code != 'ERROR') AS 'Success rate' SINCE 1 WEEK AGO WHERE (span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer') AND service.name LIKE 'Liukuri app'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 1,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "# ⊗︎\nERRORS\n\n[Traces](/distributed-tracing)"
+          }
+        },
+        {
+          "title": "Errors Overview",
+          "layout": {
+            "column": 2,
+            "row": 4,
+            "width": 8,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "FROM Span SELECT percentage(uniqueCount(traceId), WHERE otel.status_code = 'ERROR') as 'Failed transactions (%)', uniqueCount(traceId) * percentage(uniqueCount(traceId), WHERE otel.status_code = 'ERROR') / 100 as 'Failed transactions', count(*) as 'Total transactions' SINCE 1 week ago WHERE (span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer') AND service.name like 'Liukuri app'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Latest Error",
+          "layout": {
+            "column": 10,
+            "row": 4,
+            "width": 3,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "FROM Span SELECT latest(timestamp) as 'Latest Error' SINCE last week WHERE otel.status_code = 'ERROR' AND (span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer') AND service.name like 'Liukuri app'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 6,
+            "width": 1,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "# ⚖︎\nMETRICS\n\n[Data explorer](/data-explorer)"
+          }
+        },
+        {
+          "title": "CPU Utilization",
+          "layout": {
+            "column": 2,
+            "row": 6,
+            "width": 5,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "SELECT max(process.runtime.jvm.cpu.utilization) * 100 as cpuUsage FROM Metric SINCE 30 minutes ago TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Heap memory usage",
+          "layout": {
+            "column": 7,
+            "row": 6,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "SELECT sum(used) as Used,sum(committed) as Committed FROM (\n              SELECT average(process.runtime.jvm.memory.usage) as used,average(process.runtime.jvm.memory.committed) as committed FROM Metric WHERE (service.name like 'Liukuri app') AND (type = 'heap') FACET `pool`, `type`, `service.instance.id` TIMESERIES)  SINCE 30 minutes ago TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Application",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Max users (sessions) day by day",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "SELECT max(vaadin.session.count) FROM Metric since 7 days ago TIMESERIES 1 day WHERE service.name like 'Liukuri app'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Users (sessions) vs previous week",
+          "layout": {
+            "column": 5,
+            "row": 1,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "SELECT max(`vaadin.session.count`) as 'Sessions' FROM Metric SINCE 7 days ago COMPARE WITH 1 week ago TIMESERIES 1 day WHERE service.name like 'Liukuri app'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Agerage users (sessions) hour by hour",
+          "layout": {
+            "column": 9,
+            "row": 1,
+            "width": 4,
+            "height": 9
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "SELECT average(vaadin.session.count) FROM Metric FACET hourOf(timestamp) SINCE 7 days ago WHERE service.name like 'Liukuri app'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Sessions, UIs, Threads, Memory",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "SELECT average(`process.runtime.jvm.threads.count`) AS 'Threads', average(`vaadin.session.count`) AS 'Sessions', average(`vaadin.ui.count`) AS 'UIs', average(`process.runtime.jvm.memory.usage`) / average(`vaadin.session.count`)/(1024*1024) AS 'Memory / Session' FROM Metric SINCE today TIMESERIES WHERE service.name like 'Liukuri app' AND type != 'non_heap'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Sessions per instance",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "SELECT max(`vaadin.session.count`) AS 'Sessions' FROM Metric  SINCE today TIMESERIES auto WHERE service.name like 'Liukuri app'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Errors",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Errors Overview",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 7,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "FROM Span SELECT percentage(uniqueCount(traceId), WHERE otel.status_code = 'ERROR') as 'Failed transactions (%)', uniqueCount(traceId) * percentage(uniqueCount(traceId), WHERE otel.status_code = 'ERROR') / 100 as 'Failed transactions', uniqueCount(traceId) as 'Total transactions' SINCE 1 week ago WHERE (span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer') AND service.name like 'Liukuri app'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Latest Error",
+          "layout": {
+            "column": 8,
+            "row": 1,
+            "width": 5,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "FROM Span SELECT latest(timestamp) as 'Latest Error' SINCE last week WHERE otel.status_code = 'ERROR' AND (span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer') AND service.name like 'Liukuri app'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Top 10 Transactions With Errors",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "SELECT count(*) FROM Span WHERE (otel.status_code = 'ERROR') AND (span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer') AND service.name like 'Liukuri app' FACET `name` LIMIT 10 SINCE 1 week ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Errors by day",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "SELECT count(*) AS 'Errors' from Span WHERE otel.status_code = 'ERROR' AND (span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer') AND service.name like 'Liukuri app' since last week TIMESERIES 1 day"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Transactions Errors Today Compared With 1 Week Ago",
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "SELECT count(*) AS 'Errors' from Span WHERE otel.status_code = 'ERROR' AND (span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer') AND service.name like 'Liukuri app' since today COMPARE WITH 1 week ago TIMESERIES max"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "description": null,
+      "widgets": [
+        {
+          "title": "Transactions Overview",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 7,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "dataFormatters": [],
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "FROM Span SELECT count(*) as 'Total transactions', average(duration.ms) as 'Avg duration (ms)', percentile(duration.ms, 99) as 'Slowest 1% (ms)', percentage(count(*), WHERE otel.status_code != 'ERROR') AS 'Success rate' SINCE 1 WEEK AGO WHERE (span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer') AND service.name like 'Liukuri app'"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Most Popular Transactions",
+          "layout": {
+            "column": 8,
+            "row": 1,
+            "width": 5,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "SELECT count(*) FROM Span WHERE (span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer') AND service.name like 'Liukuri app' SINCE today EXTRAPOLATE FACET name"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Adpex  Score Today Compared With 1 Week Ago (T=400ms)",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "SELECT apdex(duration.ms,t: 400) FROM Span WHERE (span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer') AND service.name like 'Liukuri app' TIMESERIES SINCE today COMPARE WITH 1 week ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Throughput Today Compared With 1 Week Ago",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "SELECT count(*) from Span WHERE (span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer') AND service.name like 'Liukuri app' TIMESERIES 1 hour since today COMPARE WITH 1 week ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Average Transaction Duration Today Compared With 1 Week Ago",
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "SELECT average(duration.ms) FROM Span WHERE (span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer') AND service.name like 'Liukuri app' TIMESERIES SINCE today COMPARE WITH 1 week ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Top 5 Slowest Transactions",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.bar"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "SELECT average(duration.ms) FROM Span WHERE (span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer') AND service.name like 'Liukuri app' FACET `name` LIMIT 5 SINCE 1 week ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Transactions day by day",
+          "layout": {
+            "column": 5,
+            "row": 7,
+            "width": 8,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "SELECT count(*) AS 'Transactions' from Span WHERE (span.kind LIKE 'server' OR span.kind LIKE 'consumer' OR kind LIKE 'server' OR kind LIKE 'consumer') AND service.name like 'Liukuri app' since last week TIMESERIES 1 day"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "VM Metrics",
+      "description": null,
+      "widgets": [
+        {
+          "title": "CPU Utilization",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "SELECT max(process.runtime.jvm.cpu.utilization) * 100 as cpuUsage FROM Metric  SINCE today TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Max system load",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "SELECT max(process.runtime.jvm.system.cpu.load_1m) as cpuLoad FROM Metric SINCE 30 minutes ago TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Heap memory usage",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "SELECT sum(used) as Used,sum(committed) as Committed FROM (\n              SELECT average(process.runtime.jvm.memory.usage) as used,average(process.runtime.jvm.memory.committed) as committed FROM Metric WHERE (service.name like 'Liukuri app') AND (type = 'heap') FACET `pool`, `type`, `service.instance.id` TIMESERIES)  SINCE 30 minutes ago TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Non-heap memory usage",
+          "layout": {
+            "column": 5,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "SELECT sum(used) as Used,sum(committed) as Committed FROM (\n              SELECT average(process.runtime.jvm.memory.usage) as used,average(process.runtime.jvm.memory.committed) as committed FROM Metric WHERE (service.name like 'Liukuri app') AND (type = 'non_heap') FACET `pool`, `type`, `service.instance.id` TIMESERIES)  SINCE 30 minutes ago TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Classes loaded",
+          "layout": {
+            "column": 9,
+            "row": 4,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "SELECT sum(process.runtime.jvm.classes.current_loaded) as 'Classes loaded' FROM Metric WHERE (service.name like 'Liukuri app')  SINCE 30 minutes ago TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            },
+            "yAxisLeft": {
+              "zero": true
+            }
+          }
+        },
+        {
+          "title": "Memory usage by pool (Used)",
+          "layout": {
+            "column": 1,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "SELECT sum(Usage) FROM (SELECT average(process.runtime.jvm.memory.usage) as Usage FROM Metric WHERE (service.name like 'Liukuri app') FACET `pool`, `service.instance.id` TIMESERIES) FACET `pool` SINCE 30 minutes ago TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Memory usage by pool (Committed)",
+          "layout": {
+            "column": 5,
+            "row": 7,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "facet": {
+              "showOtherSeries": false
+            },
+            "legend": {
+              "enabled": true
+            },
+            "nrqlQueries": [
+              {
+                "accountId": <account-id>,
+                "query": "SELECT sum(Committed) FROM (SELECT average(process.runtime.jvm.memory.committed) as Committed FROM Metric WHERE (service.name like 'Liukuri app') FACET `pool`, `service.instance.id` TIMESERIES) FACET `pool` SINCE 30 minutes ago TIMESERIES"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
