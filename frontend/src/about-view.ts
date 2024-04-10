@@ -53,7 +53,7 @@ export class AboutView extends LitElement {
             <div class="m-auto">
                 <img class="w-full h-full" src="icons/Liukurikettu1c.png" alt="logo"/>
             </div>
-            <p>${this.versioninfo}</p>
+            <p>${translate("about.version")}: ${this.versioninfo}</p>
         `;
     }
 

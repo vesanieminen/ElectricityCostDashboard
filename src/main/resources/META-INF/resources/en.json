@@ -14,7 +14,8 @@
     "logo": {
       "title": "Logo",
       "descriptionHTML": "<p>The logo has been created by graphical designer <a href='mailto:topi.saavalainen@gmail.com'>Topi Saavalainen</a>.</p>"
-    }
+    },
+    "version": "Version"
   },
   "column-chart": {
     "now": "Now",
