@@ -73,9 +73,9 @@ public class ChartTemplateViewForTimo extends Main {
         icon.setMaxWidth(30, Unit.PIXELS);
         icon.setMaxHeight(30, Unit.PIXELS);
         final var span = new H2("Liukuri.fi");
-        span.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.TextColor.SECONDARY, LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER);
+        span.addClassNames(LumoUtility.FontSize.MEDIUM, LumoUtility.TextColor.SECONDARY, LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER);
         dayH2 = new H2();
-        dayH2.addClassNames(LumoUtility.FontSize.XLARGE);
+        dayH2.addClassNames(LumoUtility.FontSize.LARGE);
         final var liukuriAd = new Div(span, icon);
         liukuriAd.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Gap.SMALL, LumoUtility.JustifyContent.CENTER);
         final var title = new Div(dayH2, liukuriAd);
@@ -88,7 +88,7 @@ public class ChartTemplateViewForTimo extends Main {
                 selectDate(selectedDate);
             }
         });
-        previousButton.addClassNames(LumoUtility.Padding.Horizontal.MEDIUM);
+        previousButton.addClassNames(LumoUtility.Padding.Horizontal.SMALL);
         previousButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         nextButton = new Button(MaterialIcon.CHEVRON_RIGHT.create(LumoUtility.IconSize.MEDIUM));
         nextButton.addClickListener(e -> {
@@ -97,7 +97,7 @@ public class ChartTemplateViewForTimo extends Main {
                 selectDate(selectedDate);
             }
         });
-        nextButton.addClassNames(LumoUtility.Padding.Horizontal.MEDIUM);
+        nextButton.addClassNames(LumoUtility.Padding.Horizontal.SMALL);
         nextButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         header.add(previousButton, title, nextButton);
 
