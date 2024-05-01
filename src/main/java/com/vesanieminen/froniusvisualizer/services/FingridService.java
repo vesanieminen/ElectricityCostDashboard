@@ -16,6 +16,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
@@ -28,6 +29,7 @@ import static com.vesanieminen.froniusvisualizer.util.Properties.getFingridAPIKe
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentZonedDateTimeHourPrecision;
 import static com.vesanieminen.froniusvisualizer.util.Utils.keepEveryFirstItem;
 import static com.vesanieminen.froniusvisualizer.util.Utils.keepEveryFirstItemLite;
 import static com.vesanieminen.froniusvisualizer.util.Utils.keepEveryNthItem;
@@ -153,25 +155,25 @@ public class FingridService {
     }
 
     public static void updateWindEstimateData() {
-        final var start = getCurrentTimeWithHourPrecision();
-        final var newWindEstimateResponses = runQuery(createHourlyQuery(QueryType.WIND_PREDICTION, start, start.plusDays(2)));
-        if (newWindEstimateResponses.size() > 0) {
+        final var start = getCurrentZonedDateTimeHourPrecision();
+        final var newWindEstimateResponses = runQuery(createHourlyQuery(QueryType.WIND_PREDICTION, start));
+        if (!newWindEstimateResponses.isEmpty()) {
             cachedWindEstimateResponses = keepEveryFirstItemLite(newWindEstimateResponses);
         }
     }
 
     public static void updateProductionEstimateData() {
-        final var start = getCurrentTimeWithHourPrecision();
-        final var newProductionEstimateResponses = runQuery(createHourlyQuery(QueryType.PRODUCTION_ESTIMATE, start, start.plusDays(2)));
-        if (newProductionEstimateResponses.size() > 0) {
+        final var start = getCurrentZonedDateTimeHourPrecision();
+        final var newProductionEstimateResponses = runQuery(createHourlyQuery(QueryType.PRODUCTION_ESTIMATE, start));
+        if (!newProductionEstimateResponses.isEmpty()) {
             cachedProductionEstimateResponses = newProductionEstimateResponses;
         }
     }
 
     public static void updateConsumptionEstimateData() {
-        final var start = getCurrentTimeWithHourPrecision();
-        final var newConsumptionEstimateResponses = runQuery(createHourlyQuery(QueryType.CONSUMPTION_ESTIMATE, start, start.plusDays(2)));
-        if (newConsumptionEstimateResponses.size() > 0) {
+        final var start = getCurrentZonedDateTimeHourPrecision();
+        final var newConsumptionEstimateResponses = runQuery(createHourlyQuery(QueryType.CONSUMPTION_ESTIMATE, start));
+        if (!newConsumptionEstimateResponses.isEmpty()) {
             cachedConsumptionEstimateResponses = keepEveryNthItem(newConsumptionEstimateResponses, 12);
         }
     }
@@ -202,11 +204,10 @@ public class FingridService {
         return cachedConsumptionEstimateResponses;
     }
 
-    public static String createHourlyQuery(QueryType queryType, LocalDateTime start, LocalDateTime end) {
+    public static String createHourlyQuery(QueryType queryType, ZonedDateTime start) {
         var query = fingridHourlyBaseUrl + queryType.id + fingridHourlyUrlPostfix;
         Map<String, String> requestParams = new HashMap<>();
         requestParams.put("startTime", createDateTimeString(start));
-        requestParams.put("endTime", createDateTimeString(end));
         return requestParams.keySet().stream().map(key -> {
             //return key + "=" + Utils.encodeUrl(requestParams.get(key));
             return key + "=" + requestParams.get(key);
@@ -217,8 +218,8 @@ public class FingridService {
         return DateTimeFormatter.ofPattern("yyyy-MM-dd").format(localDateTime);
     }
 
-    private static String createDateTimeString(LocalDateTime localDateTime) {
-        return DateTimeFormatter.ofPattern("yyyy-MM-dd").format(localDateTime) + "T" + DateTimeFormatter.ofPattern("HH:mm:ss").format(localDateTime);
+    private static String createDateTimeString(ZonedDateTime zonedDateTime) {
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd").format(zonedDateTime) + "T" + DateTimeFormatter.ofPattern("HH:mm:ss").format(zonedDateTime);
     }
 
     public static void writeToCSVFile() {

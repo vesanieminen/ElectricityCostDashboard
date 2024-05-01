@@ -66,6 +66,10 @@ public class Utils {
         return Instant.now().truncatedTo(ChronoUnit.HOURS);
     }
 
+    public static ZonedDateTime getCurrentZonedDateTimeHourPrecision() {
+        return ZonedDateTime.now(utcZone).truncatedTo(ChronoUnit.HOURS);
+    }
+
     public static Instant getCurrentInstantMonthPrecision() {
         return Instant.now().truncatedTo(ChronoUnit.MONTHS);
     }
