@@ -394,7 +394,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         dataSeries.setVisible(isVisible);
         for (FingridRealtimeResponse.Data data : datasource) {
             final var dataSeriesItem = new DataSeriesItem();
-            dataSeriesItem.setX(data.start_time.withMinute(0).toInstant());
+            dataSeriesItem.setX(data.startTime.withMinute(0).toInstant());
             dataSeriesItem.setY(data.value);
             dataSeries.add(dataSeriesItem);
         }
@@ -407,7 +407,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         for (int i = 0; i < fingridResponse.WindPower.size() && i < fingridResponse.HydroPower.size() && i < fingridResponse.SolarPower.size(); ++i) {
             final var value = fingridResponse.WindPower.get(i).value + fingridResponse.HydroPower.get(i).value + fingridResponse.SolarPower.get(i).value;
             final var dataSeriesItem = new DataSeriesItem();
-            dataSeriesItem.setX(fingridResponse.WindPower.get(i).start_time.withMinute(0).toInstant());
+            dataSeriesItem.setX(fingridResponse.WindPower.get(i).startTime.withMinute(0).toInstant());
             dataSeriesItem.setY(value);
             dataSeries.add(dataSeriesItem);
         }
@@ -422,10 +422,10 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         }
         for (FingridLiteResponse response : dataSource) {
             final var dataSeriesItem = new DataSeriesItem();
-            if (response.start_time == null) {
+            if (response.startTime == null) {
                 continue;
             }
-            dataSeriesItem.setX(response.start_time.toInstant());
+            dataSeriesItem.setX(response.startTime.toInstant());
             dataSeriesItem.setY(response.value);
             dataSeries.add(dataSeriesItem);
         }
@@ -464,7 +464,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
 
     public void setNetToday(FingridRealtimeResponse fingridResponse, DecimalFormat df, DoubleLabel netToday) {
         final var now = getCurrentTimeWithHourPrecision();
-        final var value = fingridResponse.NetImportExport.stream().filter(item -> item.start_time.getDayOfMonth() == now.getDayOfMonth()).map(item -> item.value).reduce(0d, Double::sum);
+        final var value = fingridResponse.NetImportExport.stream().filter(item -> item.startTime.getDayOfMonth() == now.getDayOfMonth()).map(item -> item.value).reduce(0d, Double::sum);
         final var formattedValue = df.format(value) + " MWh/h";
         netToday.setTitleBottom(formattedValue);
     }

@@ -1,9 +1,9 @@
 package com.vesanieminen.froniusvisualizer.services.model;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 public class FingridLiteResponse {
     public double value;
-    public Date start_time;
+    public ZonedDateTime startTime;
     //public Date end_time;
 }

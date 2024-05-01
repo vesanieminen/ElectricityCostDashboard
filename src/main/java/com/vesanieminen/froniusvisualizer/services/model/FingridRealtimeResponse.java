@@ -8,13 +8,14 @@ public class FingridRealtimeResponse implements ResponseValidator {
     public List<Data> HydroPower;
     public List<Data> NuclearPower;
     public List<Data> WindPower;
+
     public List<Data> SolarPower;
     public List<Data> Consumption;
     public List<Data> NetImportExport;
 
     public static class Data {
         public double value;
-        public ZonedDateTime start_time;
+        public ZonedDateTime startTime;
     }
 
     @Override
