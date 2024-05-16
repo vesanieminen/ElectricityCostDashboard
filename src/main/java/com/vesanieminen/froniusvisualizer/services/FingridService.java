@@ -92,7 +92,6 @@ public class FingridService {
     // The final target for the wind estimate query is the following:
     // https://api.fingrid.fi/v1/variable/245/events/json?start_time=2022-10-09T00%3A00%3A00%2B0300&end_time=2022-10-12T00%3A00%3A00%2B0300
     // new API format:
-    // https://data.fingrid.fi/api/datasets/245/data?format=json&locale=en&sortBy=startTime&sortOrder=asc
     // https://data.fingrid.fi/api/datasets/245/data?startTime=2024-05-01T00:00:00&format=json&locale=en&sortBy=startTime&sortOrder=asc
     private static final String fingridHourlyBaseUrl = "https://data.fingrid.fi/api/datasets/";
     private static final String fingridHourlyUrlPostfix = "/data?format=json&locale=en&sortBy=startTime&sortOrder=asc&pageSize=1000&";
