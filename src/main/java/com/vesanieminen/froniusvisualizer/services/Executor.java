@@ -51,10 +51,11 @@ public class Executor {
             FingridService.updateRealtimeData();
             TimeUnit.MILLISECONDS.sleep(500);
             FingridService.updateWindEstimateData();
-            TimeUnit.MILLISECONDS.sleep(500);
-            FingridService.updateProductionEstimateData();
-            TimeUnit.MILLISECONDS.sleep(500);
-            FingridService.updateConsumptionEstimateData();
+            // TODO: fix these for the new Fingrid API:
+            //TimeUnit.MILLISECONDS.sleep(500);
+            //FingridService.updateProductionEstimateData();
+            //TimeUnit.MILLISECONDS.sleep(500);
+            //FingridService.updateConsumptionEstimateData();
         } catch (InterruptedException e) {
             log.error("Could not update Fingrid data");
         }
