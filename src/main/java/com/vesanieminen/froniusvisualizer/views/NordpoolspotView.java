@@ -229,11 +229,12 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
             createDataSeries(fingridResponse.Consumption, consumptionTitle, false, seriesList);
             createDataSeries(fingridResponse.NetImportExport, importExportTitle, false, seriesList);
             final var windEstimateDataSeries = createEstimateDataSeries(windEstimateResponses, getTranslation("Wind production estimate"), true, seriesList);
-            final var consumptionEstimateDataSeries = createEstimateDataSeries(consumptionEstimateResponses, getTranslation("Consumption estimate"), false, seriesList);
-            final var productionEstimateDataSeries = createEstimateDataSeries(productionEstimateResponses, getTranslation("Production estimate"), false, seriesList);
+            // TODO: add these back in:
+            //final var consumptionEstimateDataSeries = createEstimateDataSeries(consumptionEstimateResponses, getTranslation("Consumption estimate"), false, seriesList);
+            //final var productionEstimateDataSeries = createEstimateDataSeries(productionEstimateResponses, getTranslation("Production estimate"), false, seriesList);
             createRenewablesDataSeries(fingridResponse, seriesList);
 
-            if (productionEstimateDataSeries == null || windEstimateDataSeries == null || consumptionEstimateDataSeries == null) {
+            if (windEstimateDataSeries == null) {
                 add(new Span(getTranslation("Fingrid not responding for estimate data")));
             }
             final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, dateTimeFormatter, seriesList);
