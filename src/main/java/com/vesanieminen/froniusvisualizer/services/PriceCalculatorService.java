@@ -18,6 +18,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -347,6 +348,8 @@ public class PriceCalculatorService {
     }
 
     private static LinkedHashMap<Instant, Double> getDateTimeRange(LinkedHashMap<Instant, Double> fingridConsumptionData, Instant start, Instant end) {
+        if(fingridConsumptionData == null)
+            return null;
         return fingridConsumptionData.entrySet().stream().filter(item ->
                 (start.compareTo(item.getKey()) <= 0 && 0 <= end.compareTo(item.getKey()))
         ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
@@ -393,6 +396,37 @@ public class PriceCalculatorService {
     public static double calculateNightPrice(LinkedHashMap<Instant, Double> fingridConsumptionData, double price, Instant start, Instant end) {
         final LinkedHashMap<Instant, Double> filtered = getDateTimeRangeNightFilter(fingridConsumptionData, start, end, 22, 7);
         return calculateFixedElectricityPrice(filtered, price);
+    }
+
+    public static ArrayList<Double> calculateFixedElectricityPriceWithPastProductionReduced(LinkedHashMap<Instant, Double> fingridConsumptionData, LinkedHashMap<Instant, Double> fingridProductionData, double fixed, Instant start, Instant end) {
+        final LinkedHashMap<Instant, Double> filteredConsumption = getDateTimeRange(fingridConsumptionData, start, end);
+        final LinkedHashMap<Instant, Double> filteredProduction = getDateTimeRange(fingridProductionData, start, end);
+        
+        var energyCost = 0.0;
+        var savedProduction = 0.0;
+        var excessProduction = 0.0;
+        for(var item : filteredConsumption.keySet()){
+            var cost = fixed * filteredConsumption.get(item) / 100;
+            energyCost += cost;
+            if(filteredProduction != null){
+                var production = fixed * filteredProduction.get(item) / 100;
+                excessProduction += production;
+    
+                if(excessProduction > 0 && cost > 0){
+                    var saved = Math.min(excessProduction, cost);
+                    savedProduction += saved;
+                    excessProduction -= saved;
+                }
+            }
+        }
+
+        var retVal = new ArrayList<Double>();
+
+        retVal.add(energyCost);
+        retVal.add(savedProduction);
+        retVal.add(excessProduction);
+
+        return retVal;
     }
 
 

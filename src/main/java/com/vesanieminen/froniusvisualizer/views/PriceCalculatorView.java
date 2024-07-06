@@ -39,6 +39,8 @@ import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
 import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService;
+import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.FingridUsageData;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -64,6 +66,7 @@ import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateNightConsumption;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateNightPrice;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotElectricityPriceDetails;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateFixedElectricityPriceWithPastProductionReduced;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getFingridUsageData;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataEnd;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataStart;
@@ -523,17 +526,24 @@ public class PriceCalculatorView extends Main {
 
                 if (isCalculatingBaasPrice()) {
                     final Div baasResultDiv = addSection(resultLayout, getTranslation("calculator.baas"));
+                    FingridUsageData productionData = new FingridUsageData(null, null, null);
+                    if (isCalculatingProduction()) {
+                        productionData = getFingridUsageData(lastProductionData);      
+                    }
                     baasResultDiv.add(new DoubleLabel(getTranslation("calculator.baas"), numberFormat.format(baasPriceField.getValue()) + " " + getTranslation("c/kWh"), true));
-                    var transferTotalCost = calculateFixedElectricityPrice(consumptionData.data(), baasPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    var costList = calculateFixedElectricityPriceWithPastProductionReduced(consumptionData.data(), productionData.data(), baasPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    var transferTotalCost = costList.get(0);
                     baasResultDiv.add(new DoubleLabel(getTranslation("calculator.baas.consumption.total"), numberFormat.format(transferTotalCost) + " €", true));
 
-                    var productionSavings = 0.0;
+                    var productionSavings = costList.get(1);
+                    var unusedExcessProduction = costList.get(2);
+
                     if (isCalculatingProduction()) {
-                        final var productionData = getFingridUsageData(lastProductionData);
-                        productionSavings = calculateFixedElectricityPrice(productionData.data(), baasPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                         baasResultDiv.add(new DoubleLabel(getTranslation("calculator.baas.production.total"), numberFormat.format(productionSavings) + " €", true));
+                        baasResultDiv.add(new DoubleLabel(getTranslation("calculator.baas.production.excess"), numberFormat.format(unusedExcessProduction) + " €", true));
                 
                     }
+
                     final var monthsInvolved = calculateMonthsInvolved(fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     final var monthlyCost = monthsInvolved * baasMonthlyPriceField.getValue();
                     baasResultDiv.add(new DoubleLabel(getTranslation("calculator.baas.montly-cost"), numberFormat.format(monthlyCost) + " €", true));
