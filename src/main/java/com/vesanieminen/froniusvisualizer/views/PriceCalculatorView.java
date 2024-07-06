@@ -91,6 +91,7 @@ public class PriceCalculatorView extends Main {
     private final SuperDoubleField spotMarginField;
     private final SuperDoubleField generalTransferField;
     private final SuperDoubleField spotProductionMarginField;
+    private final SuperDoubleField baasPriceField;
     private final List<HasEnabled> fields;
     private final Button calculateButton;
     private final CheckboxGroup<Calculations> calculationsCheckboxGroup;
@@ -99,6 +100,7 @@ public class PriceCalculatorView extends Main {
     private final SuperDoubleField nightTransferNightPriceField;
     private final SuperDoubleField nightTransferMonthlyPriceField;
     private final SuperDoubleField transferMonthlyPriceField;
+    private final SuperDoubleField baasMonthlyPriceField;
     private MemoryBuffer lastConsumptionData;
     private MemoryBuffer lastProductionData;
 
@@ -322,6 +324,26 @@ public class PriceCalculatorView extends Main {
         lockedPriceField.setVisible(false);
         content.add(lockedPriceField);
 
+        // battery as a service field
+        baasPriceField = new SuperDoubleField(null, getTranslation("calculator.baas.price"));
+        baasPriceField.setMaximumFractionDigits(6);
+        baasPriceField.setLocale(getLocale());
+        baasPriceField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(4) + " " + getTranslation("calculator.with.teravoima"));
+        baasPriceField.setRequiredIndicatorVisible(true);
+        baasPriceField.setSuffixComponent(new Span(getTranslation("c/kWh")));
+        baasPriceField.addClassNames(LumoUtility.Flex.GROW);
+        baasMonthlyPriceField = new SuperDoubleField(null, getTranslation("calculator.baas.monthly-price"));
+        baasMonthlyPriceField.setMaximumFractionDigits(6);
+        baasMonthlyPriceField.setLocale(getLocale());
+        baasMonthlyPriceField.setHelperText(getTranslation("calculator.baas.monthly-price-helper"));
+        baasMonthlyPriceField.setRequiredIndicatorVisible(true);
+        baasMonthlyPriceField.setSuffixComponent(new Span("€"));
+        baasMonthlyPriceField.addClassNames(LumoUtility.Flex.GROW);
+        final var baasDiv = new Div(baasPriceField, baasMonthlyPriceField);
+        baasDiv.setVisible(false);
+        baasDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Gap.Column.MEDIUM, LumoUtility.FlexWrap.WRAP);
+        content.add(baasDiv);
+
         calculationsCheckboxGroup.addValueChangeListener(e -> {
             fixedPriceField.setVisible(e.getValue().contains(Calculations.FIXED));
             spotProductionMarginField.setVisible(e.getValue().contains(Calculations.SPOT_PRODUCTION));
@@ -330,9 +352,10 @@ public class PriceCalculatorView extends Main {
             productionUpload.setVisible(e.getValue().contains(Calculations.SPOT_PRODUCTION));
             taxClassSelect.setVisible(e.getValue().contains(Calculations.TAXES));
             lockedPriceField.setVisible(e.getValue().contains(Calculations.LOCKED_PRICE));
+            baasDiv.setVisible(e.getValue().contains(Calculations.BATTERY_AS_A_SERVICE));
             updateCalculateButtonState();
         });
-        fields = Arrays.asList(fromDateTimePicker, toDateTimePicker, fixedPriceField, spotMarginField, transferDiv, nightTransferDiv, spotProductionMarginField, taxClassSelect, lockedPriceField);
+        fields = Arrays.asList(fromDateTimePicker, toDateTimePicker, fixedPriceField, spotMarginField, transferDiv, nightTransferDiv, spotProductionMarginField, taxClassSelect, lockedPriceField, baasDiv);
 
         calculateButton = new Button(getTranslation("Calculate costs"), e -> {
             try {
@@ -371,6 +394,14 @@ public class PriceCalculatorView extends Main {
                 if (isCalculatingProduction()) {
                     if (spotProductionMarginField.getValue() == null) {
                         spotProductionMarginField.setValue(0d);
+                    }
+                }
+                if (isCalculatingBaasPrice()){
+                    if(baasMonthlyPriceField.getValue() == null){
+                        baasMonthlyPriceField.setValue(0d);
+                    }
+                    if(baasPriceField.getValue() == null){
+                        baasPriceField.setValue(0d);
                     }
                 }
                 final var consumptionData = getFingridUsageData(lastConsumptionData);
@@ -490,6 +521,29 @@ public class PriceCalculatorView extends Main {
                     summaryDTO.setTaxCost(taxCost);
                 }
 
+                if (isCalculatingBaasPrice()) {
+                    final Div baasResultDiv = addSection(resultLayout, getTranslation("calculator.baas"));
+                    baasResultDiv.add(new DoubleLabel(getTranslation("calculator.baas"), numberFormat.format(baasPriceField.getValue()) + " " + getTranslation("c/kWh"), true));
+                    var transferTotalCost = calculateFixedElectricityPrice(consumptionData.data(), baasPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    baasResultDiv.add(new DoubleLabel(getTranslation("calculator.baas.consumption.total"), numberFormat.format(transferTotalCost) + " €", true));
+
+                    var productionSavings = 0.0;
+                    if (isCalculatingProduction()) {
+                        final var productionData = getFingridUsageData(lastProductionData);
+                        productionSavings = calculateFixedElectricityPrice(productionData.data(), baasPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                        baasResultDiv.add(new DoubleLabel(getTranslation("calculator.baas.production.total"), numberFormat.format(productionSavings) + " €", true));
+                
+                    }
+                    final var monthsInvolved = calculateMonthsInvolved(fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    final var monthlyCost = monthsInvolved * baasMonthlyPriceField.getValue();
+                    baasResultDiv.add(new DoubleLabel(getTranslation("calculator.baas.montly-cost"), numberFormat.format(monthlyCost) + " €", true));
+
+                    final var totalBaasCost = monthlyCost + Math.max(transferTotalCost - productionSavings, 0);
+                    baasResultDiv.add(new DoubleLabel(getTranslation("calculator.baas.total-cost.including-monthly"), numberFormat.format(totalBaasCost) + " €", true));
+
+                    summaryDTO.setBaasCost(totalBaasCost);
+                }
+
                 // summary section
                 {
                     final Div summarySection = addSection(resultLayout, getTranslation("calculator.summary"));
@@ -556,6 +610,15 @@ public class PriceCalculatorView extends Main {
                         if (summaryDTO.getNighTransferCost() != null) {
                             addCostsAndCreateLabel(lockedPriceCost, summaryDTO.getNighTransferCost(), fixedCostText, "calculator.night-transfer.title", lockedPriceDiv, numberFormat);
                         }
+                    }
+
+                    // BaaS summary
+                    if (summaryDTO.getBaasCost() != null) {
+                        var baasCost = summaryDTO.getBaasCost();
+                        String baasCostText = getTranslation("calculator.baas");
+                        final var baasSummaryDiv = createWrapDiv();
+                        summarySection.add(baasSummaryDiv);
+                        baasSummaryDiv.add(new DoubleLabel(baasCostText, numberFormat.format(baasCost) + " €", true));
                     }
 
                 }
@@ -662,6 +725,10 @@ public class PriceCalculatorView extends Main {
 
     private boolean isCalculatingLockedPrice() {
         return calculationsCheckboxGroup.getValue().contains(Calculations.LOCKED_PRICE);
+    }
+
+    private boolean isCalculatingBaasPrice() {
+        return calculationsCheckboxGroup.getValue().contains(Calculations.BATTERY_AS_A_SERVICE);
     }
 
     private void addConsumptionSucceededListener(MemoryBuffer fileBuffer, Upload consumptionUpload) {
@@ -954,7 +1021,8 @@ public class PriceCalculatorView extends Main {
         GENERAL_TRANSFER("calculator.general-transfer"),
         NIGHT_TRANSFER("calculator.night-transfer.title"),
         TAXES("calculator.taxes"),
-        SPOT_PRODUCTION("Spot production price");
+        SPOT_PRODUCTION("Spot production price"),
+        BATTERY_AS_A_SERVICE("calculator.baas");
 
         private final String name;
 
@@ -997,6 +1065,7 @@ public class PriceCalculatorView extends Main {
         private Double nighTransferCost;
         private Double taxCost;
         private Double lockedPriceCost;
+        private Double baasCost;
     }
 
 }
