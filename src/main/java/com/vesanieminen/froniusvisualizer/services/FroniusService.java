@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 @Service
 public class FroniusService {
 
-    private final String IP_ADDRESS = "http://192.168.1.79";
+    private final String IP_ADDRESS = "http://192.168.8.100";
     private final String API_BASE = "/solar_api/";
     private final String API_BASE_URL = "/solar_api/v1/";
     private final String GET_API_VERSION = API_BASE + "GetAPIVersion.cgi";
