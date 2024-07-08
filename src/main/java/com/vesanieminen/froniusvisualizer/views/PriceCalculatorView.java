@@ -399,11 +399,11 @@ public class PriceCalculatorView extends Main {
                         spotProductionMarginField.setValue(0d);
                     }
                 }
-                if (isCalculatingBaasPrice()){
-                    if(baasMonthlyPriceField.getValue() == null){
+                if (isCalculatingBaasPrice()) {
+                    if (baasMonthlyPriceField.getValue() == null) {
                         baasMonthlyPriceField.setValue(0d);
                     }
-                    if(baasPriceField.getValue() == null){
+                    if (baasPriceField.getValue() == null) {
                         baasPriceField.setValue(0d);
                     }
                 }

@@ -348,7 +348,7 @@ public class PriceCalculatorService {
     }
 
     private static LinkedHashMap<Instant, Double> getDateTimeRange(LinkedHashMap<Instant, Double> fingridConsumptionData, Instant start, Instant end) {
-        if(fingridConsumptionData == null)
+        if (fingridConsumptionData == null)
             return null;
         return fingridConsumptionData.entrySet().stream().filter(item ->
                 (start.compareTo(item.getKey()) <= 0 && 0 <= end.compareTo(item.getKey()))
@@ -405,14 +405,14 @@ public class PriceCalculatorService {
         var energyCost = 0.0;
         var savedProduction = 0.0;
         var excessProduction = 0.0;
-        for(var item : filteredConsumption.keySet()){
+        for (var item : filteredConsumption.keySet()) {
             var cost = fixed * filteredConsumption.get(item) / 100;
             energyCost += cost;
-            if(filteredProduction != null){
+            if (filteredProduction != null) {
                 var production = fixed * filteredProduction.get(item) / 100;
                 excessProduction += production;
     
-                if(excessProduction > 0 && cost > 0){
+                if (excessProduction > 0 && cost > 0) {
                     var saved = Math.min(excessProduction, cost);
                     savedProduction += saved;
                     excessProduction -= saved;
