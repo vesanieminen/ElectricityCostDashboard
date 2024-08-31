@@ -34,8 +34,6 @@ import java.util.stream.IntStream;
 
 import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7DaysMap;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getSpotData;
-import static com.vesanieminen.froniusvisualizer.views.NordpoolspotView.vat10Value;
-import static com.vesanieminen.froniusvisualizer.views.NordpoolspotView.vat24Value;
 
 public class Utils {
 
@@ -51,6 +49,10 @@ public class Utils {
 
     public static final Instant vat10InstantStart = Instant.from(ZonedDateTime.of(2022, 12, 1, 0, 0, 0, 0, fiZoneID));
     public static final Instant vat10InstantEnd = Instant.from(ZonedDateTime.of(2023, 5, 1, 0, 0, 0, 0, fiZoneID));
+    public static final Instant vat25_5InstantStart = Instant.from(ZonedDateTime.of(2024, 9, 1, 0, 0, 0, 0, fiZoneID));
+    public static final Double vat25_5Value = 1.255d;
+    public static final Double vat24Value = 1.24d;
+    public static final Double vat10Value = 1.10d;
 
     public static boolean notNull(Object... objects) {
         return Arrays.stream(objects).allMatch(Objects::nonNull);
@@ -185,7 +187,13 @@ public class Utils {
     }
 
     public static double getVAT(Instant instant) {
-        return 0 <= instant.compareTo(vat10InstantStart) && instant.compareTo(vat10InstantEnd) < 0 ? vat10Value : vat24Value;
+        double vat = vat24Value;
+        if (0 <= instant.compareTo(vat10InstantStart) && instant.compareTo(vat10InstantEnd) < 0) {
+            vat = vat10Value;
+        } else if (0 <= instant.compareTo(vat25_5InstantStart)) {
+            vat = vat25_5Value;
+        }
+        return vat;
     }
 
     public static OptionalDouble average(List<Double> list) {
