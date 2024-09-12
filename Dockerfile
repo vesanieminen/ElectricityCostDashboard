@@ -16,7 +16,7 @@
 # At this point, we have the app (executable jar file):  /app/target/froniusvizualizer-1.0-SNAPSHOT.jar
 
 # The "Run" stage. Start with a clean image, and copy over just the app itself, omitting gradle, npm and any intermediate build files.
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:21-jre
 COPY target/froniusvizualizer-1.0-SNAPSHOT.jar /app/
 COPY observability-kit-agent-2.2.1.jar /app/
 COPY agent.properties /app/
