@@ -25,7 +25,6 @@ public class Executor {
         //ThreadFactory virtualThreadFactory = Thread.ofVirtual().factory();
         //executorService = Executors.newScheduledThreadPool(0, virtualThreadFactory);
         executorService = Executors.newScheduledThreadPool(8);
-
         scheduleTasks();
     }
 
