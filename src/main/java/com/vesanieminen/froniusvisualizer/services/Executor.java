@@ -14,7 +14,13 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.getSecondsToNextTime
 public class Executor {
 
     static {
-        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
+        // Create a ThreadFactory that produces virtual threads
+        var virtualThreadFactory = Thread.ofVirtual().factory();
+
+        // Create a ScheduledExecutorService using the virtual thread factory
+        var executorService = Executors.newScheduledThreadPool(8, virtualThreadFactory);
+
+        // Schedule your tasks
         executorService.schedule(Executor::updateAll, 0, TimeUnit.SECONDS);
         executorService.scheduleAtFixedRate(Executor::updatePrices, getSecondsToNextEvenHour(), TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS);
         executorService.scheduleAtFixedRate(Executor::updateFingridData, getSecondsToNextEvenHour() + 120, TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS);
