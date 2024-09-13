@@ -3,7 +3,6 @@ package com.vesanieminen.froniusvisualizer.services;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.getAndWriteToFile2YearData;
@@ -18,7 +17,7 @@ public class Executor {
         var virtualThreadFactory = Thread.ofVirtual().factory();
 
         // Create a ScheduledExecutorService using the virtual thread factory
-        var executorService = Executors.newScheduledThreadPool(8, virtualThreadFactory);
+        var executorService = Executors.newScheduledThreadPool(0, virtualThreadFactory);
 
         // Schedule your tasks
         executorService.schedule(Executor::updateAll, 0, TimeUnit.SECONDS);
