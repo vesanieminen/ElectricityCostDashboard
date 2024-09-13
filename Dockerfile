@@ -22,4 +22,4 @@ COPY observability-kit-agent-2.2.1.jar /app/
 COPY agent.properties /app/
 WORKDIR /app/
 EXPOSE 8080
-ENTRYPOINT java -javaagent:observability-kit-agent-2.2.1.jar -Dotel.javaagent.configuration-file=agent.properties -Dotel.exporter.otlp.headers=api-key=${NEW_RELIC_API_KEY} -jar froniusvizualizer-1.0-SNAPSHOT.jar 8080
+ENTRYPOINT java -javaagent:observability-kit-agent-2.2.1.jar -Dotel.javaagent.configuration-file=agent.properties -Dotel.exporter.otlp.headers=api-key=${NEW_RELIC_API_KEY} --add-opens java.base/java.lang=ALL-UNNAMED -jar froniusvizualizer-1.0-SNAPSHOT.jar 8080
