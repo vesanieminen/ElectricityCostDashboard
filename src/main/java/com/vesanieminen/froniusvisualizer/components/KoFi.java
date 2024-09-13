@@ -7,7 +7,7 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 
 @Tag("ko-fi")
-@JsModule("src/kofi.ts")
+@JsModule("./src/kofi.ts")
 public class KoFi extends Component {
 
     private static final PropertyDescriptor<String, String> TEXT = PropertyDescriptors.propertyWithDefault("text", "");

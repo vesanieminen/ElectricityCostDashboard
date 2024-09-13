@@ -9,7 +9,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 
 @Tag("help-view")
-@JsModule("src/help-view.ts")
+@JsModule("./src/help-view.ts")
 @Route(value = "videot", layout = MainLayout.class)
 @RouteAlias(value = "ohjeet", layout = MainLayout.class)
 @RouteAlias(value = "instructions", layout = MainLayout.class)

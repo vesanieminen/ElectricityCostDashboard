@@ -10,7 +10,7 @@ import com.vaadin.flow.router.RouteAlias;
 import com.vesanieminen.froniusvisualizer.AppVersions;
 
 @Tag("about-view")
-@JsModule("src/about-view.ts")
+@JsModule("./src/about-view.ts")
 @Route(value = "tietoja", layout = MainLayout.class)
 @RouteAlias(value = "about", layout = MainLayout.class)
 public class AboutView extends Component {

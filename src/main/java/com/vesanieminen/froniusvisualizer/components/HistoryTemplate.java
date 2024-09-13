@@ -15,7 +15,7 @@ import java.util.List;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getPrices;
 
 @Tag("history-template")
-@JsModule("src/history-template.ts")
+@JsModule("./src/history-template.ts")
 public class HistoryTemplate extends Component {
 
     private static final PropertyDescriptor<String, String> SERIES_TITLE = PropertyDescriptors.propertyWithDefault("seriesTitle", "");

@@ -21,7 +21,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @PWA(name = "Liukuri", shortName = "Liukuri", offlineResources = {})
 @NpmPackage(value = "line-awesome", version = "1.3.0")
 @NpmPackage(value = "@vaadin-component-factory/vcf-nav", version = "1.0.6")
-@JsModule("src/prefers-color-scheme.js")
+@JsModule("./src/prefers-color-scheme.js")
 @EnableScheduling
 @LoadDependenciesOnStartup
 public class Application implements AppShellConfigurator {

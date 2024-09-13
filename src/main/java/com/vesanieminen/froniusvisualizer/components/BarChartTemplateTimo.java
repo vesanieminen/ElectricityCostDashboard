@@ -15,7 +15,7 @@ import java.time.format.FormatStyle;
 import java.util.List;
 
 @Tag("bar-chart-template-timo")
-@JsModule("src/bar-chart-template-timo.ts")
+@JsModule("./src/bar-chart-template-timo.ts")
 public class BarChartTemplateTimo extends Component {
 
     private static final PropertyDescriptor<String, String> CHART_TITLE = PropertyDescriptors.propertyWithDefault("chartTitle", "");

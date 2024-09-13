@@ -18,7 +18,7 @@ import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getPricesToday;
 
 @Tag("bar-chart-template")
-@JsModule("src/bar-chart-template.ts")
+@JsModule("./src/bar-chart-template.ts")
 public class BarChartTemplate extends Component {
 
     private static final PropertyDescriptor<String, String> CHART_TITLE = PropertyDescriptors.propertyWithDefault("chartTitle", "");
