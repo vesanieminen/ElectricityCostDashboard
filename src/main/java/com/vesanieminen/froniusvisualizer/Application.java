@@ -6,7 +6,6 @@ import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.server.LoadDependenciesOnStartup;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
-import com.vesanieminen.froniusvisualizer.services.Executor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -28,7 +27,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class Application implements AppShellConfigurator {
 
     public static void main(String[] args) {
-        Executor.init();
         SpringApplication.run(Application.class, args);
     }
 

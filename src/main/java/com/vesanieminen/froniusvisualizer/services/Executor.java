@@ -1,8 +1,13 @@
 package com.vesanieminen.froniusvisualizer.services;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.getAndWriteToFile2YearData;
@@ -10,20 +15,54 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.getSecondsToNextEven
 import static com.vesanieminen.froniusvisualizer.util.Utils.getSecondsToNextTimeAt;
 
 @Slf4j
+@Component
 public class Executor {
 
-    static {
-        // Create a ThreadFactory that produces virtual threads
-        var virtualThreadFactory = Thread.ofVirtual().factory();
+    private ScheduledExecutorService executorService;
 
-        // Create a ScheduledExecutorService using the virtual thread factory
-        var executorService = Executors.newScheduledThreadPool(0, virtualThreadFactory);
+    @PostConstruct
+    public void init() {
+        ThreadFactory virtualThreadFactory = Thread.ofVirtual().factory();
+        executorService = Executors.newScheduledThreadPool(0, virtualThreadFactory);
+        scheduleTasks();
+    }
 
-        // Schedule your tasks
-        executorService.schedule(Executor::updateAll, 0, TimeUnit.SECONDS);
-        executorService.scheduleAtFixedRate(Executor::updatePrices, getSecondsToNextEvenHour(), TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS);
-        executorService.scheduleAtFixedRate(Executor::updateFingridData, getSecondsToNextEvenHour() + 120, TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS);
-        executorService.scheduleAtFixedRate(Executor::updateNordpoolData, getSecondsToNextTimeAt(13, 51), TimeUnit.DAYS.toSeconds(1), TimeUnit.SECONDS);
+    @PreDestroy
+    public void destroy() {
+        executorService.shutdown();
+    }
+
+    private void scheduleTasks() {
+        executorService.schedule(() -> safeExecute(Executor::updateAll), 0, TimeUnit.SECONDS);
+
+        executorService.scheduleAtFixedRate(
+                () -> safeExecute(Executor::updatePrices),
+                getSecondsToNextEvenHour(),
+                TimeUnit.HOURS.toSeconds(1),
+                TimeUnit.SECONDS
+        );
+
+        executorService.scheduleAtFixedRate(
+                () -> safeExecute(Executor::updateFingridData),
+                getSecondsToNextEvenHour() + 120,
+                TimeUnit.HOURS.toSeconds(1),
+                TimeUnit.SECONDS
+        );
+
+        executorService.scheduleAtFixedRate(
+                () -> safeExecute(Executor::updateNordpoolData),
+                getSecondsToNextTimeAt(13, 51),
+                TimeUnit.DAYS.toSeconds(1),
+                TimeUnit.SECONDS
+        );
+    }
+
+    private void safeExecute(Runnable task) {
+        try {
+            task.run();
+        } catch (Exception e) {
+            log.info("Exception whilst running a scheduled task: %s".formatted(e.toString()));
+        }
     }
 
     private static void updateAll() {
@@ -70,10 +109,6 @@ public class Executor {
     private static void updatePakastinData() {
         //getAndWriteToFile();
         getAndWriteToFile2YearData();
-    }
-
-    public static void init() {
-        // NOP
     }
 
 }
