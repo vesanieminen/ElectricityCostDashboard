@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.getAndWriteToFile2YearData;
@@ -22,8 +21,11 @@ public class Executor {
 
     @PostConstruct
     public void init() {
-        ThreadFactory virtualThreadFactory = Thread.ofVirtual().factory();
-        executorService = Executors.newScheduledThreadPool(0, virtualThreadFactory);
+        // TODO: enable this when JDK21 can be used:
+        //ThreadFactory virtualThreadFactory = Thread.ofVirtual().factory();
+        //executorService = Executors.newScheduledThreadPool(0, virtualThreadFactory);
+        executorService = Executors.newScheduledThreadPool(8);
+
         scheduleTasks();
     }
 
