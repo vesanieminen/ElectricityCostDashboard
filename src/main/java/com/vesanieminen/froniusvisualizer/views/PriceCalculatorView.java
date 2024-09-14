@@ -40,7 +40,6 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
 import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService;
 import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.FingridUsageData;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -63,10 +62,10 @@ import java.util.stream.Stream;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateDayConsumption;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateDayPrice;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateFixedElectricityPrice;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateFixedElectricityPriceWithPastProductionReduced;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateNightConsumption;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateNightPrice;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotElectricityPriceDetails;
-import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateFixedElectricityPriceWithPastProductionReduced;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getFingridUsageData;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataEnd;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataStart;
@@ -417,6 +416,7 @@ public class PriceCalculatorView extends Main {
 
                 final NumberFormat sixDecimals = getNumberFormat(getLocale(), 6);
                 final var twoDecimalsWithPlusPrefix = getNumberFormatMaxTwoDecimalsWithPlusPrefix(getLocale());
+                final NumberFormat threeDecimals = getNumberFormat(getLocale(), 3);
 
                 final Div overviewDiv = addSection(resultLayout, getTranslation("Spot price"));
 
@@ -458,7 +458,6 @@ public class PriceCalculatorView extends Main {
 
                 if (isCalculatingLockedPrice()) {
                     final Div lockedPriceDiv = addSection(resultLayout, getTranslation("locked.price"));
-                    final NumberFormat threeDecimals = getNumberFormat(getLocale(), 3);
                     lockedPriceDiv.add(new DoubleLabel(getTranslation("locked.price"), threeDecimals.format(lockedPriceField.getValue()) + " " + getTranslation("c/kWh"), true));
                     lockedPriceDiv.add(new DoubleLabel(getTranslation("Spot margin"), numberFormat.format(spotMarginField.getValue()) + " " + getTranslation("c/kWh"), true));
                     final var lockedPriceTotal = lockedPriceField.getValue() + spotMarginField.getValue() + costEffect;
@@ -644,7 +643,7 @@ public class PriceCalculatorView extends Main {
                     productionDiv.add(new DoubleLabel(getTranslation("Surplus production over period"), numberFormat.format(spotProductionCalculation.totalConsumption) + " kWh", true));
                     productionDiv.add(new DoubleLabel(getTranslation("Net spot cost (consumption - production)"), numberFormat.format(spotCalculation.totalCost - spotProductionCalculation.totalCost) + " €", true));
                     productionDiv.add(new DoubleLabel(getTranslation("Net usage (consumption - production)"), numberFormat.format(spotCalculation.totalConsumption - spotProductionCalculation.totalConsumption) + " kWh", true));
-                    productionDiv.add(new DoubleLabel(getTranslation("Average production price (incl. margin)"), numberFormat.format(spotProductionCalculation.totalCost / spotProductionCalculation.totalConsumption * 100) + " " + getTranslation("c/kWh"), true));
+                    productionDiv.add(new DoubleLabel(getTranslation("Average production price (incl. margin)"), threeDecimals.format(spotProductionCalculation.totalCost / spotProductionCalculation.totalConsumption * 100) + " " + getTranslation("c/kWh"), true));
                     productionDiv.add(new DoubleLabel(getTranslation("Production value (incl. margin)"), numberFormat.format(spotProductionCalculation.totalCost) + " €", true));
                     productionDiv.add(new DoubleLabel(getTranslation("Production value (without margin)"), numberFormat.format(spotProductionCalculation.totalCostWithoutMargin) + " €", true));
                     // Create spot production chart
