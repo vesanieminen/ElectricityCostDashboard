@@ -149,7 +149,6 @@ public class PriceCalculatorView extends Main {
         calculationsCheckboxGroup.setItemEnabledProvider(item -> !(Objects.equals(item.getName(), Calculations.SPOT.getName())));
         final var calculations = new HashSet<Calculations>();
         calculations.add(Calculations.SPOT);
-        calculations.add(Calculations.TAXES);
         calculationsCheckboxGroup.setValue(calculations);
 
         final var image = new Image("images/fingrid_dh_white.png", getTranslation("login.to.fingrid"));
