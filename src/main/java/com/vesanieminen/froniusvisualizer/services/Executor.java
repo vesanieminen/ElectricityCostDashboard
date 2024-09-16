@@ -44,7 +44,7 @@ public class Executor {
 
         executorService.scheduleAtFixedRate(
                 () -> safeExecute(Executor::updateFingridData),
-                getSecondsToNextEvenHour() + 120,
+                getSecondsToNextEvenHour() + 180,
                 TimeUnit.HOURS.toSeconds(1),
                 TimeUnit.SECONDS
         );
