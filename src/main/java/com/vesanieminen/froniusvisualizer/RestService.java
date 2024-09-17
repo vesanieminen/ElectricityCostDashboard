@@ -119,4 +119,11 @@ public class RestService {
             this.prices = prices;
         }
     }
+
+    @GetMapping(value = "/prices.json", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getPrices() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(NordpoolSpotService.getLatest7DaysList());
+    }
+
 }
