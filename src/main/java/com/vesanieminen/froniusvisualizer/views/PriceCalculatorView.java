@@ -313,6 +313,7 @@ public class PriceCalculatorView extends Main {
         taxClassSelect.setValue(TaxClass.CLASS_ONE);
         taxClassSelect.addClassNames(LumoUtility.Flex.GROW);
         taxClassSelect.setHelperText(getTranslation("calculator.tax.helper.text"));
+        taxClassSelect.setVisible(false);
         content.add(taxClassSelect);
 
         // Locked price
