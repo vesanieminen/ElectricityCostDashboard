@@ -61,6 +61,7 @@ import java.util.stream.Stream;
 
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateDayConsumption;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateDayPrice;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateElectricityTaxPrice;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateFixedElectricityPrice;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateFixedElectricityPriceWithPastProductionReduced;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateNightConsumption;
@@ -516,8 +517,9 @@ public class PriceCalculatorView extends Main {
                     final Div taxSection = addSection(resultLayout, getTranslation("calculator.taxes"));
                     final var taxPrice = taxClassSelect.getValue().getTaxPrice();
                     final NumberFormat fiveDecimals = getNumberFormat(getLocale(), 5);
-                    taxSection.add(new DoubleLabel(getTranslation("calculator.taxes"), fiveDecimals.format(taxPrice) + " " + getTranslation("c/kWh"), true));
-                    var taxCost = calculateFixedElectricityPrice(consumptionData.data(), taxPrice, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    // TODO: this currently reports only one tax value. Either remove it or report all the used tax values.
+                    //taxSection.add(new DoubleLabel(getTranslation("calculator.taxes"), fiveDecimals.format(taxPrice) + " " + getTranslation("c/kWh"), true));
+                    var taxCost = calculateElectricityTaxPrice(consumptionData.data(), taxPrice, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     taxSection.add(new DoubleLabel(getTranslation("calculator.tax.total"), numberFormat.format(taxCost) + " €", true));
 
                     summaryDTO.setTaxCost(taxCost);
@@ -1044,8 +1046,8 @@ public class PriceCalculatorView extends Main {
 
     @Getter
     enum TaxClass {
-        CLASS_ONE("tax.class.one", 2.79372),
-        CLASS_TWO("tax.class.two", 0.07812);
+        CLASS_ONE("tax.class.one", 2.253),
+        CLASS_TWO("tax.class.two", 0.063);
 
         private final String className;
         private final double taxPrice;

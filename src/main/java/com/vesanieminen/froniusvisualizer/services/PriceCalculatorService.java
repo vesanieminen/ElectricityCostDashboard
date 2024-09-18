@@ -364,6 +364,15 @@ public class PriceCalculatorService {
         return calculateFixedElectricityPrice(filtered, fixed);
     }
 
+    public static double calculateElectricityTaxPrice(LinkedHashMap<Instant, Double> fingridConsumptionData, double fixed) {
+        return fingridConsumptionData.keySet().stream().map(item -> fixed * getVAT(item) * fingridConsumptionData.get(item)).reduce(0d, Double::sum) / 100;
+    }
+
+    public static double calculateElectricityTaxPrice(LinkedHashMap<Instant, Double> fingridConsumptionData, double fixed, Instant start, Instant end) {
+        final LinkedHashMap<Instant, Double> filtered = getDateTimeRange(fingridConsumptionData, start, end);
+        return calculateElectricityTaxPrice(filtered, fixed);
+    }
+
     private static LinkedHashMap<Instant, Double> getDateTimeRangeWithFilter(LinkedHashMap<Instant, Double> fingridConsumptionData, Instant start, Instant end, int hourAfter, int hourBefore) {
         return getDateTimeRange(fingridConsumptionData, start, end).entrySet().stream().filter(isBetweenHours(hourAfter, hourBefore))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
