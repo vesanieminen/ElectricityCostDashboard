@@ -1023,6 +1023,7 @@ public class PriceCalculatorView extends Main {
         topRowDiv.add(wrapper);
     }
 
+    @Getter
     enum Calculations {
         SPOT("Spot price"),
         FIXED("Fixed price"),
@@ -1039,11 +1040,9 @@ public class PriceCalculatorView extends Main {
             this.name = name;
         }
 
-        public String getName() {
-            return name;
-        }
     }
 
+    @Getter
     enum TaxClass {
         CLASS_ONE("tax.class.one", 2.79372),
         CLASS_TWO("tax.class.two", 0.07812);
@@ -1056,13 +1055,6 @@ public class PriceCalculatorView extends Main {
             this.taxPrice = taxPrice;
         }
 
-        public String getClassName() {
-            return className;
-        }
-
-        public double getTaxPrice() {
-            return taxPrice;
-        }
     }
 
     @NoArgsConstructor
