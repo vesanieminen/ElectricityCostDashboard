@@ -281,7 +281,7 @@ public class PriceCalculatorView extends Main {
         generalTransferField.addValueChangeListener(item -> saveFieldValue(generalTransferField));
         generalTransferField.setMaximumFractionDigits(6);
         generalTransferField.setLocale(getLocale());
-        generalTransferField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(5.07) + " " + getTranslation("calculator.with.caruna"));
+        generalTransferField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(5.26) + " " + getTranslation("calculator.with.caruna"));
         generalTransferField.setRequiredIndicatorVisible(true);
         generalTransferField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         generalTransferField.addClassNames(LumoUtility.Flex.GROW);
