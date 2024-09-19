@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.exceptions.CsvValidationException;
+import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.charts.Chart;
@@ -109,6 +111,8 @@ public class PriceCalculatorView extends Main {
     private final SuperDoubleField nightTransferMonthlyPriceField;
     private final SuperDoubleField transferMonthlyPriceField;
     private final SuperDoubleField baasMonthlyPriceField;
+    private final Select<TaxClass> taxClassSelect;
+    private final SuperDoubleField lockedPriceField;
     private MemoryBuffer lastConsumptionData;
     private MemoryBuffer lastProductionData;
 
@@ -149,6 +153,7 @@ public class PriceCalculatorView extends Main {
         addAd();
 
         calculationsCheckboxGroup = new CheckboxGroup<>(getTranslation("Select calculations"));
+        calculationsCheckboxGroup.setId("calculationsCheckboxGroup");
         calculationsCheckboxGroup.addThemeVariants(CheckboxGroupVariant.LUMO_VERTICAL);
         calculationsCheckboxGroup.setItems(Calculations.values());
         calculationsCheckboxGroup.setItemLabelGenerator(item -> getTranslation(item.getName()));
@@ -237,6 +242,8 @@ public class PriceCalculatorView extends Main {
 
         // Fixed price field
         fixedPriceField = new SuperDoubleField(null, getTranslation("Fixed price"));
+        fixedPriceField.setId("fixedPriceField");
+        fixedPriceField.addValueChangeListener(item -> saveFieldValue(fixedPriceField));
         fixedPriceField.setLocale(getLocale());
         fixedPriceField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(5.41));
         fixedPriceField.setRequiredIndicatorVisible(true);
@@ -247,6 +254,8 @@ public class PriceCalculatorView extends Main {
 
         // Spot margin field
         spotMarginField = new SuperDoubleField(null, getTranslation("Spot margin"));
+        spotMarginField.setId("spotMarginField");
+        spotMarginField.addValueChangeListener(item -> saveFieldValue(spotMarginField));
         spotMarginField.setLocale(getLocale());
         spotMarginField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(0.30) + " " + getTranslation("calculator.with.helen"));
         spotMarginField.setRequiredIndicatorVisible(true);
@@ -256,6 +265,8 @@ public class PriceCalculatorView extends Main {
 
         // Spot production field
         spotProductionMarginField = new SuperDoubleField(null, getTranslation("Production margin"));
+        spotProductionMarginField.setId("spotProductionMarginField");
+        spotProductionMarginField.addValueChangeListener(item -> saveFieldValue(spotProductionMarginField));
         spotProductionMarginField.setLocale(getLocale());
         spotProductionMarginField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(0.3));
         spotProductionMarginField.setRequiredIndicatorVisible(true);
@@ -264,8 +275,10 @@ public class PriceCalculatorView extends Main {
         spotProductionMarginField.setVisible(false);
         fieldRow.add(spotProductionMarginField);
 
-        // transfer field
+        // general transfer field
         generalTransferField = new SuperDoubleField(null, getTranslation("calculator.general-transfer"));
+        generalTransferField.setId("generalTransferField");
+        generalTransferField.addValueChangeListener(item -> saveFieldValue(generalTransferField));
         generalTransferField.setMaximumFractionDigits(6);
         generalTransferField.setLocale(getLocale());
         generalTransferField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(5.07) + " " + getTranslation("calculator.with.caruna"));
@@ -273,6 +286,8 @@ public class PriceCalculatorView extends Main {
         generalTransferField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         generalTransferField.addClassNames(LumoUtility.Flex.GROW);
         transferMonthlyPriceField = new SuperDoubleField(null, getTranslation("calculator.general-transfer.monthly-price"));
+        transferMonthlyPriceField.setId("transferMonthlyPriceField");
+        transferMonthlyPriceField.addValueChangeListener(item -> saveFieldValue(transferMonthlyPriceField));
         transferMonthlyPriceField.setMaximumFractionDigits(6);
         transferMonthlyPriceField.setLocale(getLocale());
         transferMonthlyPriceField.setHelperText(getTranslation("calculator.general-transfer.monthly-price-helper"));
@@ -286,6 +301,8 @@ public class PriceCalculatorView extends Main {
 
         // night transfer
         nightTransferDayPriceField = new SuperDoubleField(null, getTranslation("calculator.night-transfer.day-price"));
+        nightTransferDayPriceField.setId("nightTransferDayPriceField");
+        nightTransferDayPriceField.addValueChangeListener(item -> saveFieldValue(nightTransferDayPriceField));
         nightTransferDayPriceField.setMaximumFractionDigits(6);
         nightTransferDayPriceField.setLocale(getLocale());
         nightTransferDayPriceField.setHelperText(getTranslation("calculator.night-transfer.day-helper"));
@@ -293,6 +310,8 @@ public class PriceCalculatorView extends Main {
         nightTransferDayPriceField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         nightTransferDayPriceField.addClassNames(LumoUtility.Flex.GROW);
         nightTransferNightPriceField = new SuperDoubleField(null, getTranslation("calculator.night-transfer.night-price"));
+        nightTransferNightPriceField.setId("nightTransferNightPriceField");
+        nightTransferNightPriceField.addValueChangeListener(item -> saveFieldValue(nightTransferNightPriceField));
         nightTransferNightPriceField.setMaximumFractionDigits(6);
         nightTransferNightPriceField.setLocale(getLocale());
         nightTransferNightPriceField.setHelperText(getTranslation("calculator.night-transfer.night-helper"));
@@ -300,6 +319,8 @@ public class PriceCalculatorView extends Main {
         nightTransferNightPriceField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         nightTransferNightPriceField.addClassNames(LumoUtility.Flex.GROW);
         nightTransferMonthlyPriceField = new SuperDoubleField(null, getTranslation("calculator.night-transfer.monthly-price"));
+        nightTransferMonthlyPriceField.setId("nightTransferMonthlyPriceField");
+        nightTransferMonthlyPriceField.addValueChangeListener(item -> saveFieldValue(nightTransferMonthlyPriceField));
         nightTransferMonthlyPriceField.setMaximumFractionDigits(6);
         nightTransferMonthlyPriceField.setLocale(getLocale());
         nightTransferMonthlyPriceField.setHelperText(getTranslation("calculator.night-transfer.monthly-price-helper"));
@@ -312,7 +333,8 @@ public class PriceCalculatorView extends Main {
         content.add(nightTransferDiv);
 
         // electricity taxes
-        final var taxClassSelect = new Select<TaxClass>();
+        taxClassSelect = new Select<>();
+        taxClassSelect.setId("taxClassSelect");
         taxClassSelect.setLabel(getTranslation("calculator.taxes"));
         taxClassSelect.setItemLabelGenerator(item -> getTranslation(item.getClassName()));
         taxClassSelect.setItems(TaxClass.values());
@@ -320,10 +342,13 @@ public class PriceCalculatorView extends Main {
         taxClassSelect.addClassNames(LumoUtility.Flex.GROW);
         taxClassSelect.setHelperText(getTranslation("calculator.tax.helper.text"));
         taxClassSelect.setVisible(false);
+        //taxClassSelect.addValueChangeListener(item -> saveFieldValue(taxClassSelect));
         content.add(taxClassSelect);
 
         // Locked price
-        final var lockedPriceField = new SuperDoubleField(null, getTranslation("locked.price"));
+        lockedPriceField = new SuperDoubleField(null, getTranslation("locked.price"));
+        lockedPriceField.setId("lockedPriceField");
+        lockedPriceField.addValueChangeListener(item -> saveFieldValue(lockedPriceField));
         lockedPriceField.setLocale(getLocale());
         lockedPriceField.setHelperText(getTranslation("locked.price.example"));
         lockedPriceField.setRequiredIndicatorVisible(true);
@@ -334,6 +359,8 @@ public class PriceCalculatorView extends Main {
 
         // battery as a service field
         baasPriceField = new SuperDoubleField(null, getTranslation("calculator.baas.price"));
+        baasPriceField.setId("baasPriceField");
+        baasPriceField.addValueChangeListener(item -> saveFieldValue(baasPriceField));
         baasPriceField.setMaximumFractionDigits(6);
         baasPriceField.setLocale(getLocale());
         baasPriceField.setHelperText(getTranslation("for.example") + " " + numberFormat.format(4) + " " + getTranslation("calculator.with.teravoima"));
@@ -341,6 +368,8 @@ public class PriceCalculatorView extends Main {
         baasPriceField.setSuffixComponent(new Span(getTranslation("c/kWh")));
         baasPriceField.addClassNames(LumoUtility.Flex.GROW);
         baasMonthlyPriceField = new SuperDoubleField(null, getTranslation("calculator.baas.monthly-price"));
+        baasMonthlyPriceField.setId("baasMonthlyPriceField");
+        baasMonthlyPriceField.addValueChangeListener(item -> saveFieldValue(baasMonthlyPriceField));
         baasMonthlyPriceField.setMaximumFractionDigits(6);
         baasMonthlyPriceField.setLocale(getLocale());
         baasMonthlyPriceField.setHelperText(getTranslation("calculator.baas.monthly-price-helper"));
@@ -364,7 +393,7 @@ public class PriceCalculatorView extends Main {
             lockedPriceField.setVisible(e.getValue().contains(Calculations.LOCKED_PRICE));
             baasDiv.setVisible(e.getValue().contains(Calculations.BATTERY_AS_A_SERVICE));
             updateCalculateButtonState();
-            saveFieldValues();
+            saveCheckboxGroupValues();
         });
         fields = Arrays.asList(fromDateTimePicker, toDateTimePicker, fixedPriceField, spotMarginField, transferDiv, nightTransferDiv, spotProductionMarginField, taxClassSelect, lockedPriceField, baasDiv);
 
@@ -1079,9 +1108,27 @@ public class PriceCalculatorView extends Main {
         private Double baasCost;
     }
 
+    ObjectMapper mapper = new ObjectMapper();
+
+
+    public void saveCheckboxGroupValues() {
+        try {
+            WebStorage.setItem(calculationsCheckboxGroup.getId().orElseThrow(), mapper.writeValueAsString(calculationsCheckboxGroup.getValue()));
+        } catch (JsonProcessingException e) {
+            log.info("Could not save values: %s".formatted(e.toString()));
+        }
+    }
+
+    public <C extends AbstractField<C, T>, T> void saveFieldValue(AbstractField<C, T> field) {
+        try {
+            WebStorage.setItem(field.getId().orElseThrow(), mapper.writeValueAsString(field.getValue()));
+        } catch (JsonProcessingException e) {
+            log.info("Could not save value: %s".formatted(e.toString()));
+        }
+    }
+
     public void readFieldValues() {
-        ObjectMapper mapper = new ObjectMapper();
-        WebStorage.getItem(calculationsCheckboxGroup.getLabel(), item -> {
+        WebStorage.getItem(calculationsCheckboxGroup.getId().orElseThrow(), item -> {
             try {
                 Set<Calculations> calculationsSet = mapper.readValue(item, new TypeReference<>() {
                 });
@@ -1090,15 +1137,31 @@ public class PriceCalculatorView extends Main {
                 log.info("Could not read values: %s".formatted(e.toString()));
             }
         });
+        WebStorage.getItem(fixedPriceField.getId().orElseThrow(), item -> readValue(item, fixedPriceField));
+        WebStorage.getItem(spotMarginField.getId().orElseThrow(), item -> readValue(item, spotMarginField));
+        WebStorage.getItem(spotProductionMarginField.getId().orElseThrow(), item -> readValue(item, spotProductionMarginField));
+        WebStorage.getItem(generalTransferField.getId().orElseThrow(), item -> readValue(item, generalTransferField));
+        WebStorage.getItem(transferMonthlyPriceField.getId().orElseThrow(), item -> readValue(item, transferMonthlyPriceField));
+        WebStorage.getItem(nightTransferDayPriceField.getId().orElseThrow(), item -> readValue(item, nightTransferDayPriceField));
+        WebStorage.getItem(nightTransferNightPriceField.getId().orElseThrow(), item -> readValue(item, nightTransferNightPriceField));
+        WebStorage.getItem(nightTransferMonthlyPriceField.getId().orElseThrow(), item -> readValue(item, nightTransferMonthlyPriceField));
+        // TODO: this didn't work for some reason
+        //WebStorage.getItem(taxClassSelect.getId().orElseThrow(), item -> readValue(item, taxClassSelect));
+        WebStorage.getItem(lockedPriceField.getId().orElseThrow(), item -> readValue(item, lockedPriceField));
+        WebStorage.getItem(baasPriceField.getId().orElseThrow(), item -> readValue(item, baasPriceField));
+        WebStorage.getItem(baasMonthlyPriceField.getId().orElseThrow(), item -> readValue(item, baasMonthlyPriceField));
     }
 
-    public void saveFieldValues() {
-        ObjectMapper mapper = new ObjectMapper();
+    public <C extends HasValue.ValueChangeEvent<T>, T> void readValue(String key, HasValue<C, T> hasValue) {
+        if (key == null) {
+            return;
+        }
         try {
-            final var checkboxGroupAsString = mapper.writeValueAsString(calculationsCheckboxGroup.getValue());
-            WebStorage.setItem(calculationsCheckboxGroup.getLabel(), checkboxGroupAsString);
-        } catch (JsonProcessingException e) {
-            log.info("Could not save values: %s".formatted(e.toString()));
+            T value = mapper.readValue(key, new TypeReference<>() {
+            });
+            hasValue.setValue(value);
+        } catch (IOException e) {
+            log.info("Could not read value: %s".formatted(e.toString()));
         }
     }
 
