@@ -1,7 +1,10 @@
 package com.vesanieminen.froniusvisualizer.services.model;
 
+import lombok.Setter;
+
 import java.time.Instant;
 
+@Setter
 public class NordpoolPrice {
     public long time;
     public double price;
@@ -15,20 +18,12 @@ public class NordpoolPrice {
         return time;
     }
 
-    public void setTime(long time) {
-        this.time = time;
-    }
-
     public Instant timeInstant() {
         return Instant.ofEpochMilli(time);
     }
 
     public double price() {
         return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
     }
 
 }

@@ -3,16 +3,25 @@ package com.vesanieminen.froniusvisualizer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotElectricityPriceDetails;
 
 @RestController()
 @RequestMapping("/api")
@@ -124,6 +133,37 @@ public class RestService {
     public String getPrices() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(NordpoolSpotService.getLatest7DaysList());
+    }
+
+    // Define the request DTO
+    @Setter
+    @Getter
+    public static class CalculationRequest {
+        private LinkedHashMap<Long, Double> consumptionData;
+        private double margin;
+        private boolean vat;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class CalculationResponse {
+        private double totalCost;
+        private double averagePrice;
+    }
+
+    // Implement the REST API endpoint
+    @PostMapping(value = "/calculateCost", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public CalculationResponse calculateCost(@RequestBody CalculationRequest request) {
+        LinkedHashMap<Instant, Double> consumptionData = new LinkedHashMap<>();
+        for (Map.Entry<Long, Double> entry : request.getConsumptionData().entrySet()) {
+            Instant instant = Instant.ofEpochMilli(entry.getKey());
+            consumptionData.put(instant, entry.getValue());
+        }
+
+        var result = calculateSpotElectricityPriceDetails(consumptionData, request.getMargin(), request.isVat());
+
+        return new CalculationResponse(result.totalCost, result.averagePrice);
     }
 
 }
