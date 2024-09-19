@@ -179,8 +179,8 @@ public class Utils {
         return format;
     }
 
-    public static double getVAT(Instant instant, double vat) {
-        if (vat == 1) {
+    public static double getVAT(Instant instant, boolean vat) {
+        if (!vat) {
             return 1;
         }
         return getVAT(instant);
