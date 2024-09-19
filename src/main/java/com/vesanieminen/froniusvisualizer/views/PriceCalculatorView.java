@@ -1,5 +1,8 @@
 package com.vesanieminen.froniusvisualizer.views;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
@@ -30,6 +33,7 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.page.WebStorage;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
@@ -56,6 +60,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -347,6 +352,8 @@ public class PriceCalculatorView extends Main {
         baasDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Gap.Column.MEDIUM, LumoUtility.FlexWrap.WRAP);
         content.add(baasDiv);
 
+        readFieldValues();
+
         calculationsCheckboxGroup.addValueChangeListener(e -> {
             fixedPriceField.setVisible(e.getValue().contains(Calculations.FIXED));
             spotProductionMarginField.setVisible(e.getValue().contains(Calculations.SPOT_PRODUCTION));
@@ -357,6 +364,7 @@ public class PriceCalculatorView extends Main {
             lockedPriceField.setVisible(e.getValue().contains(Calculations.LOCKED_PRICE));
             baasDiv.setVisible(e.getValue().contains(Calculations.BATTERY_AS_A_SERVICE));
             updateCalculateButtonState();
+            saveFieldValues();
         });
         fields = Arrays.asList(fromDateTimePicker, toDateTimePicker, fixedPriceField, spotMarginField, transferDiv, nightTransferDiv, spotProductionMarginField, taxClassSelect, lockedPriceField, baasDiv);
 
@@ -529,7 +537,7 @@ public class PriceCalculatorView extends Main {
                     final Div baasResultDiv = addSection(resultLayout, getTranslation("calculator.baas"));
                     FingridUsageData productionData = new FingridUsageData(null, null, null);
                     if (isCalculatingProduction()) {
-                        productionData = getFingridUsageData(lastProductionData);      
+                        productionData = getFingridUsageData(lastProductionData);
                     }
                     baasResultDiv.add(new DoubleLabel(getTranslation("calculator.baas"), numberFormat.format(baasPriceField.getValue()) + " " + getTranslation("c/kWh"), true));
                     var costList = calculateFixedElectricityPriceWithPastProductionReduced(consumptionData.data(), productionData.data(), baasPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
@@ -542,7 +550,7 @@ public class PriceCalculatorView extends Main {
                     if (isCalculatingProduction()) {
                         baasResultDiv.add(new DoubleLabel(getTranslation("calculator.baas.production.total"), numberFormat.format(productionSavings) + " €", true));
                         baasResultDiv.add(new DoubleLabel(getTranslation("calculator.baas.production.excess"), numberFormat.format(unusedExcessProduction) + " €", true));
-                
+
                     }
 
                     final var monthsInvolved = calculateMonthsInvolved(fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
@@ -1069,6 +1077,29 @@ public class PriceCalculatorView extends Main {
         private Double taxCost;
         private Double lockedPriceCost;
         private Double baasCost;
+    }
+
+    public void readFieldValues() {
+        ObjectMapper mapper = new ObjectMapper();
+        WebStorage.getItem(calculationsCheckboxGroup.getLabel(), item -> {
+            try {
+                Set<Calculations> calculationsSet = mapper.readValue(item, new TypeReference<>() {
+                });
+                calculationsCheckboxGroup.setValue(calculationsSet);
+            } catch (IOException e) {
+                log.info("Could not read values: %s".formatted(e.toString()));
+            }
+        });
+    }
+
+    public void saveFieldValues() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            final var checkboxGroupAsString = mapper.writeValueAsString(calculationsCheckboxGroup.getValue());
+            WebStorage.setItem(calculationsCheckboxGroup.getLabel(), checkboxGroupAsString);
+        } catch (JsonProcessingException e) {
+            log.info("Could not save values: %s".formatted(e.toString()));
+        }
     }
 
 }
