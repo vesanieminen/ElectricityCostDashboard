@@ -114,14 +114,11 @@ public class RestService {
         }
     }
 
+    @Getter
     public static  class PricesWithVAT {
         private List<PriceWithVAT> prices;
         public PricesWithVAT(List<PriceWithVAT> list) {
             this.prices = list;
-        }
-
-        public List<PriceWithVAT> getPrices() {
-            return prices;
         }
 
         public void setPrices(List<PriceWithVAT> prices) {
