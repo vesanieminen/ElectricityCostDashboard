@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -159,8 +161,9 @@ public class RestService {
         }
 
         var result = calculateSpotElectricityPriceDetails(consumptionData, request.getMargin(), request.isVat());
-
-        return new CalculationResponse(result.totalCost, result.averagePrice);
+        final var totalCost = new BigDecimal(result.totalCost).setScale(2, RoundingMode.HALF_UP).doubleValue();
+        final var weightedAverage = totalCost / result.totalConsumption * 100;
+        return new CalculationResponse(result.totalCost, weightedAverage);
     }
 
 }
