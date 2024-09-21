@@ -74,6 +74,8 @@ public class RestService {
         return instant.atZone(fiZoneID).toLocalDate().getDayOfYear() == todayDayOfYear;
     }
 
+    @Setter
+    @Getter
     public static class PriceWithVAT {
         private double price;
         private String startDate;
@@ -91,31 +93,9 @@ public class RestService {
                     utcFormatter.format(np.timeInstant().plusSeconds(3600)));
         }
 
-        public double getPrice() {
-            return price;
-        }
-
-        public void setPrice(double price) {
-            this.price = price;
-        }
-
-        public String getStartDate() {
-            return startDate;
-        }
-
-        public void setStartDate(String startDate) {
-            this.startDate = startDate;
-        }
-
-        public String getEndDate() {
-            return endDate;
-        }
-
-        public void setEndDate(String endDate) {
-            this.endDate = endDate;
-        }
     }
 
+    @Setter
     @Getter
     public static  class PricesWithVAT {
         private List<PriceWithVAT> prices;
@@ -123,9 +103,6 @@ public class RestService {
             this.prices = list;
         }
 
-        public void setPrices(List<PriceWithVAT> prices) {
-            this.prices = prices;
-        }
     }
 
     @GetMapping(value = "/prices.json", produces = MediaType.APPLICATION_JSON_VALUE)
