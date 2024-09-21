@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotElectricityPriceDetails;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataEnd;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataStart;
 
 @RestController()
 @RequestMapping("/api")
@@ -70,6 +72,7 @@ public class RestService {
                 .map(PriceWithVAT::new).collect(Collectors.toList());
         this.prices = new PricesWithVAT(list);
     }
+
     private boolean isTodayInFinland(Instant instant) {
         return instant.atZone(fiZoneID).toLocalDate().getDayOfYear() == todayDayOfYear;
     }
@@ -97,8 +100,9 @@ public class RestService {
 
     @Setter
     @Getter
-    public static  class PricesWithVAT {
+    public static class PricesWithVAT {
         private List<PriceWithVAT> prices;
+
         public PricesWithVAT(List<PriceWithVAT> list) {
             this.prices = list;
         }
@@ -141,6 +145,19 @@ public class RestService {
         final var totalCost = new BigDecimal(result.totalCost).setScale(2, RoundingMode.HALF_UP).doubleValue();
         final var weightedAverage = totalCost / result.totalConsumption * 100;
         return new CalculationResponse(result.totalCost, weightedAverage);
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class CalculationRange {
+        private Long start;
+        private Long end;
+    }
+
+    @PostMapping(value = "/calculationRange", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CalculationRange calculationRange() {
+        return new CalculationRange(spotDataStart.toEpochMilli(), spotDataEnd.toEpochMilli());
     }
 
 }
