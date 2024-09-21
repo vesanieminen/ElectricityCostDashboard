@@ -150,14 +150,14 @@ public class RestService {
     @Getter
     @Setter
     @AllArgsConstructor
-    public static class CalculationRange {
+    public static class ValidCalculationRange {
         private Long start;
         private Long end;
     }
 
-    @PostMapping(value = "/calculationRange", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CalculationRange calculationRange() {
-        return new CalculationRange(spotDataStart.toEpochMilli(), spotDataEnd.toEpochMilli());
+    @PostMapping(value = "/validCalculationRange", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ValidCalculationRange validCalculationRange() {
+        return new ValidCalculationRange(spotDataStart.toEpochMilli(), spotDataEnd.toEpochMilli());
     }
 
 }
