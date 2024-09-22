@@ -592,6 +592,19 @@ public class PriceCalculatorView extends Main {
                     summaryDTO.setBaasCost(totalBaasCost);
                 }
 
+                if (isCalculatingProduction()) {
+                    final var productionData = getFingridUsageData(lastProductionData);
+                    final var spotProductionCalculation = calculateSpotElectricityPriceDetails(productionData.data(), -spotProductionMarginField.getValue(), false, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    final Div productionDiv = addSection(resultLayout, getTranslation("Surplus production"));
+
+                    productionDiv.add(new DoubleLabel(getTranslation("Surplus production over period"), numberFormat.format(spotProductionCalculation.totalConsumption) + " kWh", true));
+                    productionDiv.add(new DoubleLabel(getTranslation("Net spot cost (consumption - production)"), numberFormat.format(spotCalculation.totalCost - spotProductionCalculation.totalCost) + " €", true));
+                    productionDiv.add(new DoubleLabel(getTranslation("Net usage (consumption - production)"), numberFormat.format(spotCalculation.totalConsumption - spotProductionCalculation.totalConsumption) + " kWh", true));
+                    productionDiv.add(new DoubleLabel(getTranslation("Average production price (incl. margin)"), threeDecimals.format(spotProductionCalculation.totalCost / spotProductionCalculation.totalConsumption * 100) + " " + getTranslation("c/kWh"), true));
+                    productionDiv.add(new DoubleLabel(getTranslation("Production value (incl. margin)"), numberFormat.format(spotProductionCalculation.totalCost) + " €", true));
+                    productionDiv.add(new DoubleLabel(getTranslation("Production value (without margin)"), numberFormat.format(spotProductionCalculation.totalCostWithoutMargin) + " €", true));
+                }
+
                 // summary section
                 {
                     final Div summarySection = addSection(resultLayout, getTranslation("calculator.summary"));
@@ -677,14 +690,6 @@ public class PriceCalculatorView extends Main {
                 if (isCalculatingProduction()) {
                     final var productionData = getFingridUsageData(lastProductionData);
                     final var spotProductionCalculation = calculateSpotElectricityPriceDetails(productionData.data(), -spotProductionMarginField.getValue(), false, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
-                    final Div productionDiv = addSection(resultLayout, getTranslation("Surplus production"));
-
-                    productionDiv.add(new DoubleLabel(getTranslation("Surplus production over period"), numberFormat.format(spotProductionCalculation.totalConsumption) + " kWh", true));
-                    productionDiv.add(new DoubleLabel(getTranslation("Net spot cost (consumption - production)"), numberFormat.format(spotCalculation.totalCost - spotProductionCalculation.totalCost) + " €", true));
-                    productionDiv.add(new DoubleLabel(getTranslation("Net usage (consumption - production)"), numberFormat.format(spotCalculation.totalConsumption - spotProductionCalculation.totalConsumption) + " kWh", true));
-                    productionDiv.add(new DoubleLabel(getTranslation("Average production price (incl. margin)"), threeDecimals.format(spotProductionCalculation.totalCost / spotProductionCalculation.totalConsumption * 100) + " " + getTranslation("c/kWh"), true));
-                    productionDiv.add(new DoubleLabel(getTranslation("Production value (incl. margin)"), numberFormat.format(spotProductionCalculation.totalCost) + " €", true));
-                    productionDiv.add(new DoubleLabel(getTranslation("Production value (without margin)"), numberFormat.format(spotProductionCalculation.totalCostWithoutMargin) + " €", true));
                     // Create spot production chart
                     chartLayout.add(createChart(spotProductionCalculation, false, getTranslation("Production / value per hour"), "Production", "Production value"));
                 }
