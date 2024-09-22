@@ -129,7 +129,7 @@ public class PriceListView extends Main {
         H2 day = null;
         UnorderedList list = null;
         Span daySpan;
-        var currentDayTime = data.get(0).timeInstant();
+        var currentDayTime = data.getFirst().timeInstant();
         boolean first = true;
         for (NordpoolPrice entry : data) {
             var currentDay = entry.timeInstant();
