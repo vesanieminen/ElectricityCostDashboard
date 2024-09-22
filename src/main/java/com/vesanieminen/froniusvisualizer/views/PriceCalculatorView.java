@@ -677,7 +677,7 @@ public class PriceCalculatorView extends Main {
                 if (isCalculatingProduction()) {
                     final var productionData = getFingridUsageData(lastProductionData);
                     final var spotProductionCalculation = calculateSpotElectricityPriceDetails(productionData.data(), -spotProductionMarginField.getValue(), false, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
-                    final Div productionDiv = addSection(resultLayout, getTranslation("Production"));
+                    final Div productionDiv = addSection(resultLayout, getTranslation("Surplus production"));
 
                     productionDiv.add(new DoubleLabel(getTranslation("Surplus production over period"), numberFormat.format(spotProductionCalculation.totalConsumption) + " kWh", true));
                     productionDiv.add(new DoubleLabel(getTranslation("Net spot cost (consumption - production)"), numberFormat.format(spotCalculation.totalCost - spotProductionCalculation.totalCost) + " €", true));
