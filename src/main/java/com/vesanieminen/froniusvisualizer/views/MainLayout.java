@@ -27,7 +27,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServletRequest;
-import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.MaterialIcon;
 import com.vesanieminen.froniusvisualizer.services.ObjectMapperService;
@@ -40,6 +39,7 @@ import java.util.Arrays;
 
 import static com.vesanieminen.froniusvisualizer.util.Utils.enLocale;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getZoomLevel;
 
 public class MainLayout extends AppLayout implements BeforeEnterObserver {
 
@@ -209,11 +209,9 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         title.setText(getCurrentPageTitle());
 
         // read settings
-        final var initialZoomLevel = VaadinSession.getCurrent().getAttribute(SettingsView.ZoomLevel.class);
+        final var initialZoomLevel = getZoomLevel();
         if (initialZoomLevel == null) {
-            final var zoomLevel = objectMapperService.readValue(SettingsView.ZOOM_LEVEL);
-            if (zoomLevel != null) {
-            }
+            objectMapperService.readValue(SettingsView.ZOOM_LEVEL);
         }
     }
 

@@ -85,7 +85,7 @@ public class ObjectMapperService {
             var value = objectMapper.readValue(key, new TypeReference<SettingsView.ZoomLevel>() {
             });
             zoomLevel.setValue(value);
-            VaadinSession.getCurrent().setAttribute(SettingsView.ZoomLevel.class, value);
+            VaadinSession.getCurrent().setAttribute(key, value);
         } catch (IOException e) {
             log.info("Could not read value: %s".formatted(e.toString()));
         }
