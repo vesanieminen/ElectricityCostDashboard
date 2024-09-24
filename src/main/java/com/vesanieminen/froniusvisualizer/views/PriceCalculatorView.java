@@ -385,13 +385,20 @@ public class PriceCalculatorView extends Main {
 
         calculationsCheckboxGroup.addValueChangeListener(e -> {
             fixedPriceField.setVisible(e.getValue().contains(Calculations.FIXED));
+            fixedPriceField.setEnabled(e.getValue().contains(Calculations.FIXED));
             spotProductionMarginField.setVisible(e.getValue().contains(Calculations.SPOT_PRODUCTION));
+            spotProductionMarginField.setEnabled(e.getValue().contains(Calculations.SPOT_PRODUCTION));
             transferDiv.setVisible(e.getValue().contains(Calculations.GENERAL_TRANSFER));
+            transferDiv.setEnabled(e.getValue().contains(Calculations.GENERAL_TRANSFER));
             nightTransferDiv.setVisible(e.getValue().contains(Calculations.NIGHT_TRANSFER));
+            nightTransferDiv.setEnabled(e.getValue().contains(Calculations.NIGHT_TRANSFER));
             productionUpload.setVisible(e.getValue().contains(Calculations.SPOT_PRODUCTION));
             taxClassSelect.setVisible(e.getValue().contains(Calculations.TAXES));
+            taxClassSelect.setEnabled(e.getValue().contains(Calculations.TAXES));
             lockedPriceField.setVisible(e.getValue().contains(Calculations.LOCKED_PRICE));
+            lockedPriceField.setEnabled(e.getValue().contains(Calculations.LOCKED_PRICE));
             baasDiv.setVisible(e.getValue().contains(Calculations.BATTERY_AS_A_SERVICE));
+            baasDiv.setEnabled(e.getValue().contains(Calculations.BATTERY_AS_A_SERVICE));
             updateCalculateButtonState();
             saveCheckboxGroupValues();
         });
