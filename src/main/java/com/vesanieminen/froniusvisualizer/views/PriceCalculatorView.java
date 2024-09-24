@@ -1141,6 +1141,9 @@ public class PriceCalculatorView extends Main {
 
     public void readFieldValues() {
         WebStorage.getItem(calculationsCheckboxGroup.getId().orElseThrow(), item -> {
+            if (item == null) {
+                return;
+            }
             try {
                 Set<Calculations> calculationsSet = mapper.readValue(item, new TypeReference<>() {
                 });
