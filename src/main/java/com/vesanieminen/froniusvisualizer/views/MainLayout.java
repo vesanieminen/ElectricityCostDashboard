@@ -33,13 +33,13 @@ import com.vesanieminen.froniusvisualizer.components.MaterialIcon;
 import com.vesanieminen.froniusvisualizer.services.ObjectMapperService;
 import com.vesanieminen.froniusvisualizer.util.css.FontFamily;
 import jakarta.servlet.http.Cookie;
+import lombok.Getter;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;
 
 import static com.vesanieminen.froniusvisualizer.util.Utils.enLocale;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
-import static com.vesanieminen.froniusvisualizer.util.Utils.setZoomLevel;
 
 public class MainLayout extends AppLayout implements BeforeEnterObserver {
 
@@ -52,6 +52,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     public static final String GITHUB_SVG = "<svg class=\"icon-s\" viewBox=\"0 0 98 96\" xmlns=\"http://www.w3.org/2000/svg\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z\" fill=\"var(--lumo-primary-text-color)\"/></svg>";
     public static final String UPCLOUD_SVG = "<svg class=\"icon-s color-upcloud \" width=\"164\" height=\"26\" viewBox=\"0 0 164 26\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M59.035 14.67V1.096h2.528v13.318c0 3.413 1.936 4.871 5.248 4.871 3.167 0 5.087-1.458 5.087-4.871V1.096h2.512V14.67c0 4.856-3.392 6.795-7.695 6.795-4.368 0-7.68-1.94-7.68-6.795zm26.111-8.35c-2.096 0-3.568.898-4.656 2.388h-.064v-2.05h-2.272v19.15h2.272v-6.362h.064c1.2 1.538 2.608 2.131 4.576 2.131 3.936 0 6.32-2.965 6.32-7.628 0-4.824-2.56-7.628-6.24-7.628zm-.256 13.334c-3.344 0-4.608-2.548-4.608-5.69 0-3.14 1.472-5.72 4.64-5.72 2.752 0 4.128 2.468 4.128 5.72 0 3.286-1.376 5.706-4.16 5.69zm8.912-8.542c0-5.897 3.535-10.465 9.519-10.465 4.688 0 7.52 2.693 8.064 6.395h-2.48c-.48-2.5-2.464-4.215-5.648-4.215-4.416 0-6.88 3.558-6.88 8.27 0 4.903 2.72 8.22 6.912 8.22 3.792 0 5.584-2.58 5.84-5.528h2.496c-.032 1.987-.992 4.23-2.416 5.64-1.408 1.379-3.456 2.1-6.016 2.1-5.696.016-9.391-4.327-9.391-10.417zm23.119-10.016h-2.272v20.048h2.272V1.096zm9.775 5.193c-4.336 0-7.024 3.413-7.024 7.628 0 4.199 2.688 7.628 7.024 7.628 4.352 0 6.992-3.414 6.992-7.628 0-4.215-2.64-7.628-6.992-7.628zm0 13.349c-3.088 0-4.688-2.516-4.688-5.721s1.6-5.753 4.688-5.753c3.088 0 4.656 2.548 4.656 5.753 0 3.189-1.568 5.72-4.656 5.72zm18.928 1.506v-1.987h-.064c-1.04 1.41-2.272 2.324-4.384 2.324-2.976 0-4.88-1.795-4.88-4.792V6.657h2.272v9.984c0 1.875 1.2 2.98 3.264 2.98 2.304 0 3.792-1.73 3.792-4.038V6.657h2.271V21.16l-2.271-.016zm16.015-20.048v7.612h-.048a5.332 5.332 0 00-4.544-2.387c-3.584 0-6.368 2.804-6.368 7.628.016 4.647 2.48 7.628 6.416 7.612 2.048 0 3.408-.77 4.496-2.18h.048v1.763h2.272V1.096h-2.272zm-4.448 18.558c-2.784 0-4.192-2.404-4.192-5.69 0-3.252 1.408-5.72 4.16-5.72 3.008 0 4.64 2.355 4.64 5.72 0 3.286-1.36 5.706-4.608 5.69z\" fill=\"#000\"></path><path d=\"M47.131 13.26a3.953 3.953 0 013.952 3.958 3.964 3.964 0 01-3.952 3.958H18.844V10.888H20.7v8.446h26.447a2.112 2.112 0 002.112-2.116c0-1.17-.944-2.115-2.112-2.115H22.54V13.26h24.591z\" fill=\"currentColor\"></path><path d=\"M28.892 1.112H18.844v4.231H20.7V2.955h8.192c1.168 0 2.112.946 2.112 2.116 0 1.17-.944 2.115-2.112 2.115H4.541a3.953 3.953 0 00-3.952 3.958 3.964 3.964 0 003.952 3.959h12.431V13.26H4.542a2.112 2.112 0 01-2.112-2.116c0-1.17.944-2.115 2.112-2.115h24.335a3.953 3.953 0 003.952-3.958c0-2.18-1.776-3.959-3.936-3.959z\" fill=\"currentColor\"></path></svg>";
 
+    @Getter
     private final Header header;
     private final H1 title;
     private boolean isLiukuriVideoAdShown;
@@ -99,8 +100,6 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         nav.addItem(new SideNavItem(getTranslation("view.notifications"), NotificationsView.class, MaterialIcon.WARNING.create()));
         nav.addItem(new SideNavItem(getTranslation("view.about"), AboutView.class, MaterialIcon.INFO.create()));
 
-        setZoomLevel(header);
-        //setZoomLevel(this);
         addToDrawer(new Div(app, nav), createLinkDiv());
     }
 

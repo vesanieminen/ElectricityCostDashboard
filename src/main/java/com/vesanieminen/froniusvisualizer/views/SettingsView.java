@@ -61,6 +61,10 @@ public class SettingsView extends Main {
         zoomLevelSelect.addValueChangeListener(item -> {
             mapperService.saveFieldValue(zoomLevelSelect);
             setZoomLevel(this);
+            getParent().ifPresent(layout -> {
+                final var mainLayout = (MainLayout) layout;
+                setZoomLevel(mainLayout.getHeader());
+            });
         });
     }
 
