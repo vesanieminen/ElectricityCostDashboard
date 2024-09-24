@@ -24,10 +24,13 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServletRequest;
+import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.MaterialIcon;
+import com.vesanieminen.froniusvisualizer.services.ObjectMapperService;
 import com.vesanieminen.froniusvisualizer.util.css.FontFamily;
 import jakarta.servlet.http.Cookie;
 
@@ -36,10 +39,12 @@ import java.util.Arrays;
 
 import static com.vesanieminen.froniusvisualizer.util.Utils.enLocale;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
+import static com.vesanieminen.froniusvisualizer.util.Utils.setZoomLevel;
 
 public class MainLayout extends AppLayout implements BeforeEnterObserver {
 
     public static final String URL_SUFFIX = " ⋅ Liukuri";
+    private final ObjectMapperService objectMapperService;
 
     public boolean darkMode = false;
 
@@ -52,7 +57,8 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     private boolean isLiukuriVideoAdShown;
     private Anchor upcloudLink;
 
-    public MainLayout() {
+    public MainLayout(ObjectMapperService objectMapperService) {
+        this.objectMapperService = objectMapperService;
         setPrimarySection(Section.DRAWER);
 
         // App header
@@ -93,6 +99,8 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         nav.addItem(new SideNavItem(getTranslation("view.notifications"), NotificationsView.class, MaterialIcon.WARNING.create()));
         nav.addItem(new SideNavItem(getTranslation("view.about"), AboutView.class, MaterialIcon.INFO.create()));
 
+        setZoomLevel(header);
+        //setZoomLevel(this);
         addToDrawer(new Div(app, nav), createLinkDiv());
     }
 
@@ -200,6 +208,14 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     protected void afterNavigation() {
         super.afterNavigation();
         title.setText(getCurrentPageTitle());
+
+        // read settings
+        final var initialZoomLevel = VaadinSession.getCurrent().getAttribute(SettingsView.ZoomLevel.class);
+        if (initialZoomLevel == null) {
+            final var zoomLevel = objectMapperService.readValue(SettingsView.ZOOM_LEVEL);
+            if (zoomLevel != null) {
+            }
+        }
     }
 
     private String getCurrentPageTitle() {
@@ -209,6 +225,9 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
+        final var settingsItem = new SideNavItem(null, SettingsView.class, MaterialIcon.SETTINGS.create());
+        settingsItem.addClassNames(LumoUtility.Width.MEDIUM);
+        final var settingsAnchor = new Anchor(RouteConfiguration.forSessionScope().getUrl(SettingsView.class), settingsItem);
         Button theme = new Button(MaterialIcon.DARK_MODE.create());
         theme.getElement().setAttribute("aria-label", getTranslation("Switch to dark mode"));
         theme.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
@@ -224,7 +243,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
             }
             this.darkMode = !this.darkMode;
         });
-        header.add(theme);
+        header.add(settingsAnchor, theme);
 
         header.add(createChangeLanguageButton(attachEvent));
 

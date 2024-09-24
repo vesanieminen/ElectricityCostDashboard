@@ -5,6 +5,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vesanieminen.froniusvisualizer.components.HistoryTemplate;
 
+import static com.vesanieminen.froniusvisualizer.util.Utils.setZoomLevel;
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
 @Route(value = "historiakaavio", layout = MainLayout.class)
@@ -12,6 +13,7 @@ import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 public class HistoryView extends Main {
 
     public HistoryView() {
+        setZoomLevel(this);
         add(new HistoryTemplate());
     }
 

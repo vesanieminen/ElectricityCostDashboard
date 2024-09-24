@@ -1,7 +1,10 @@
 package com.vesanieminen.froniusvisualizer.util;
 
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.server.VaadinSession;
 import com.vesanieminen.froniusvisualizer.services.model.FingridLiteResponse;
 import com.vesanieminen.froniusvisualizer.services.model.FingridRealtimeResponse;
+import com.vesanieminen.froniusvisualizer.views.SettingsView;
 import org.openjdk.jol.info.GraphLayout;
 
 import java.io.UnsupportedEncodingException;
@@ -315,6 +318,19 @@ public class Utils {
         // Calculate the difference in months.
         return (endYearMonth.getYear() - startYearMonth.getYear()) * 12 +
                 (endYearMonth.getMonthValue() - startYearMonth.getMonthValue()) + 1;
+    }
+
+    public static SettingsView.ZoomLevel getZoomLevel() {
+        final var attribute = (SettingsView.ZoomLevel) VaadinSession.getCurrent().getAttribute(SettingsView.ZOOM_LEVEL);
+        return attribute == null ? SettingsView.ZoomLevel.MEDIUM : attribute;
+    }
+
+    public static void setZoomLevel(Component... component) {
+        if (getZoomLevel() != null) {
+            for (Component c : component) {
+                c.getStyle().set("zoom", getZoomLevel().getSize());
+            }
+        }
     }
 
 }

@@ -74,6 +74,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.getVAT;
 import static com.vesanieminen.froniusvisualizer.util.Utils.isDaylightSavingsInFinland;
 import static com.vesanieminen.froniusvisualizer.util.Utils.nordpoolZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
+import static com.vesanieminen.froniusvisualizer.util.Utils.setZoomLevel;
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
 @PageTitle("Chart" + URL_SUFFIX)
@@ -99,6 +100,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
     private int screenWidth;
 
     public NordpoolspotView() {
+        setZoomLevel(this);
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.CENTER);
         fiElectricityPriceTitle = getTranslation("FI electricity price");
         hydroPowerProductionTitle = getTranslation("Hydro production");

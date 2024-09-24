@@ -36,6 +36,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentLocalDateTimeHourPrecisionFinnishZone;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getVAT;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getZoomLevel;
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
 @PageTitle("List" + URL_SUFFIX)
@@ -155,6 +156,9 @@ public class PriceListView extends Main {
             final ListItem item = new PriceListItem(timeSpan, priceSpan);
 
             setPriceTextColor(vatPrice, priceSpan);
+
+            timeSpan.getStyle().set("zoom", getZoomLevel().getSize());
+            priceSpan.getStyle().set("zoom", getZoomLevel().getSize());
 
             // Add the hover effect only for desktop browsers
             attachEvent.getUI().getPage().retrieveExtendedClientDetails(details -> {

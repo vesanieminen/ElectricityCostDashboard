@@ -40,6 +40,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCombinedSpotData;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
+import static com.vesanieminen.froniusvisualizer.util.Utils.setZoomLevel;
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
 @Route(value = "porssisahkoryhma", layout = MainLayout.class)
@@ -62,6 +63,7 @@ public class ChartTemplateViewForTimo extends Main {
     private LocalDateTime selectedDate;
 
     public ChartTemplateViewForTimo() {
+        setZoomLevel(this);
         dateOfLatestFullData = getDateOfLatestFullDayData();
         selectedDate = dateOfLatestFullData;
 

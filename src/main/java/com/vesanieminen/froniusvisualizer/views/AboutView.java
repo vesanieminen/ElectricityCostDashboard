@@ -9,6 +9,8 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vesanieminen.froniusvisualizer.AppVersions;
 
+import static com.vesanieminen.froniusvisualizer.util.Utils.setZoomLevel;
+
 @Tag("about-view")
 @JsModule("./src/about-view.ts")
 @Route(value = "tietoja", layout = MainLayout.class)
@@ -20,9 +22,9 @@ public class AboutView extends Component {
     private static final PropertyDescriptor<String, String> VERSION_INFO = PropertyDescriptors.propertyWithDefault("versioninfo", "n/a");
 
     public AboutView(AppVersions versions) {
+        setZoomLevel(this);
         set(LANGUAGE, getLocale().getLanguage());
         set(VERSION_INFO, versions.getBuildTime()+" / "+versions.getGitCommit());
-
     }
 
 }
