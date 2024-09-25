@@ -17,6 +17,7 @@ import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.page.WebStorage;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -210,10 +211,17 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         title.setText(getCurrentPageTitle());
 
         // read settings
-        adjustRootFontSize(getZoomLevel().getSize());
-        //WebStorage.getItem(SettingsView.ZOOM_LEVEL, item -> objectMapperService.readValue(SettingsView.ZOOM_LEVEL));
-        //objectMapperService.readValue(SettingsView.ZOOM);
-
+        final var zoom = getZoomLevel();
+        if (zoom.isEmpty()) {
+            WebStorage.getItem(SettingsView.ZOOM, item -> {
+                final var zoomLevel = objectMapperService.readValue(item);
+                if (zoomLevel != null) {
+                    adjustRootFontSize(zoomLevel.getSize());
+                }
+            });
+        } else {
+            adjustRootFontSize(zoom.get().getSize());
+        }
     }
 
     private String getCurrentPageTitle() {

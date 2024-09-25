@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -320,9 +321,8 @@ public class Utils {
                 (endYearMonth.getMonthValue() - startYearMonth.getMonthValue()) + 1;
     }
 
-    public static SettingsView.ZoomLevel getZoomLevel() {
-        final var attribute = (SettingsView.ZoomLevel) VaadinSession.getCurrent().getAttribute(SettingsView.ZOOM);
-        return attribute == null ? SettingsView.ZoomLevel.MEDIUM : attribute;
+    public static Optional<SettingsView.ZoomLevel> getZoomLevel() {
+        return Optional.ofNullable((SettingsView.ZoomLevel) VaadinSession.getCurrent().getAttribute(SettingsView.ZOOM));
     }
 
     public static void adjustRootFontSize(double scalePercentage) {
