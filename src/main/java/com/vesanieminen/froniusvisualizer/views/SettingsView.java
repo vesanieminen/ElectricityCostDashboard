@@ -17,7 +17,8 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import static com.vesanieminen.froniusvisualizer.util.Utils.setZoomLevel;
+import static com.vesanieminen.froniusvisualizer.util.Utils.adjustRootFontSize;
+
 
 @Route(value = "asetukset", layout = MainLayout.class)
 @RouteAlias(value = "settings", layout = MainLayout.class)
@@ -26,12 +27,10 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.setZoomLevel;
 public class SettingsView extends Main {
 
     private final ObjectMapperService mapperService;
-    public static final String ZOOM_LEVEL = "settings.zoom-level";
+    public static final String ZOOM = "settings.zoom";
     private final Select<ZoomLevel> zoomLevelSelect;
 
     public SettingsView(SettingsState settingsState, ObjectMapperService mapperService) {
-        setZoomLevel(this);
-
         this.mapperService = mapperService;
 
         addClassNames(
@@ -45,7 +44,7 @@ public class SettingsView extends Main {
         add(electricityCosts);
 
         zoomLevelSelect = new Select<>();
-        zoomLevelSelect.setId(ZOOM_LEVEL);
+        zoomLevelSelect.setId(ZOOM);
         zoomLevelSelect.setLabel(getTranslation("settings.zoom-level"));
         zoomLevelSelect.setItems(ZoomLevel.values());
         zoomLevelSelect.addClassNames(LumoUtility.MaxWidth.SCREEN_SMALL);
@@ -56,17 +55,14 @@ public class SettingsView extends Main {
         final var binder = new Binder<Settings>();
         binder.bind(zoomLevelSelect, Settings::getZoomLevel, Settings::setZoomLevel);
         binder.setBean(settingsState.settings);
-        //binder.addValueChangeListener(item -> setZoomLevel(this));
 
         readFieldValues();
 
         zoomLevelSelect.addValueChangeListener(item -> {
             mapperService.saveFieldValue(zoomLevelSelect);
-            setZoomLevel(this);
-            getParent().ifPresent(layout -> {
-                final var mainLayout = (MainLayout) layout;
-                setZoomLevel(mainLayout.getHeader());
-            });
+            if (item != null) {
+                adjustRootFontSize(item.getValue().getSize());
+            }
         });
     }
 
@@ -77,13 +73,13 @@ public class SettingsView extends Main {
     @Getter
     @AllArgsConstructor
     public static enum ZoomLevel {
-        XSMALL("0.5", "zoom-level-xsmall"),
-        SMALL("0.75", "zoom-level-small"),
-        MEDIUM("1.0", "zoom-level-medium"),
-        LARGE("1.25", "zoom-level-large"),
-        XLARGE("1.5", "zoom-level-xlarge"),
+        XSMALL(80, "zoom-level-xsmall"),
+        SMALL(90, "zoom-level-small"),
+        MEDIUM(100, "zoom-level-medium"),
+        LARGE(125, "zoom-level-large"),
+        XLARGE(150, "zoom-level-xlarge"),
         ;
-        final String size;
+        final double size;
         final String translation;
     }
 

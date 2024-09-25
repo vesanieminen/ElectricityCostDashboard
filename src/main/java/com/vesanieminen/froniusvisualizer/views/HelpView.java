@@ -8,7 +8,6 @@ import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 
-import static com.vesanieminen.froniusvisualizer.util.Utils.setZoomLevel;
 
 @Tag("help-view")
 @JsModule("./src/help-view.ts")
@@ -21,7 +20,6 @@ public class HelpView extends Component {
 
     public HelpView() {
         set(LANGUAGE, getLocale().getLanguage());
-        setZoomLevel(this);
     }
 
 }

@@ -83,7 +83,6 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.format;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormatMaxTwoDecimalsWithPlusPrefix;
-import static com.vesanieminen.froniusvisualizer.util.Utils.setZoomLevel;
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
 @PageTitle("Calculator" + URL_SUFFIX)
@@ -124,7 +123,6 @@ public class PriceCalculatorView extends Main {
 
     public PriceCalculatorView() {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Top.MEDIUM);
-        setZoomLevel(this);
 
         final Div wrapper = createWrapper();
 

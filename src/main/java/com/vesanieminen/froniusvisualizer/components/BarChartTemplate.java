@@ -16,7 +16,6 @@ import java.util.List;
 import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7DaysList;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getPricesToday;
-import static com.vesanieminen.froniusvisualizer.util.Utils.setZoomLevel;
 
 @Tag("bar-chart-template")
 @JsModule("./src/bar-chart-template.ts")
@@ -47,7 +46,6 @@ public class BarChartTemplate extends Component {
         set(CURRENT_HOUR, hour);
         var monthAverage = calculateSpotAveragePriceThisMonth();
         Utils.average(pricesToday).ifPresent(value -> set(AVERAGE, monthAverage));
-        setZoomLevel(this);
     }
 
     public void setNordpoolDataList(List<NordpoolPrice> list) {

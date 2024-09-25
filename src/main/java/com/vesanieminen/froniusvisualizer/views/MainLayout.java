@@ -37,6 +37,7 @@ import lombok.Getter;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 
+import static com.vesanieminen.froniusvisualizer.util.Utils.adjustRootFontSize;
 import static com.vesanieminen.froniusvisualizer.util.Utils.enLocale;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getZoomLevel;
@@ -209,10 +210,10 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         title.setText(getCurrentPageTitle());
 
         // read settings
-        final var initialZoomLevel = getZoomLevel();
-        if (initialZoomLevel == null) {
-            objectMapperService.readValue(SettingsView.ZOOM_LEVEL);
-        }
+        adjustRootFontSize(getZoomLevel().getSize());
+        //WebStorage.getItem(SettingsView.ZOOM_LEVEL, item -> objectMapperService.readValue(SettingsView.ZOOM_LEVEL));
+        //objectMapperService.readValue(SettingsView.ZOOM);
+
     }
 
     private String getCurrentPageTitle() {

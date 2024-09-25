@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.vesanieminen.froniusvisualizer.util.Utils.setZoomLevel;
 
 @Route(layout = MainLayout.class)
 public class NotificationsView extends VerticalLayout {
@@ -53,7 +52,6 @@ public class NotificationsView extends VerticalLayout {
     Button requestNotificationsBtn;
 
     public NotificationsView(NotificationService service) {
-        setZoomLevel(this);
         this.service = service;
         add(new H1(getTranslation("view.notifications.title")));
         add(new Paragraph(getTranslation("view.notifications.description")));
