@@ -7,6 +7,7 @@ import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.services.ObjectMapperService;
@@ -18,7 +19,8 @@ import org.springframework.stereotype.Component;
 
 import static com.vesanieminen.froniusvisualizer.util.Utils.setZoomLevel;
 
-@Route(value = "settings", layout = MainLayout.class)
+@Route(value = "asetukset", layout = MainLayout.class)
+@RouteAlias(value = "settings", layout = MainLayout.class)
 @PageTitle("Settings")
 @Slf4j
 public class SettingsView extends Main {
