@@ -22,6 +22,10 @@ body {
     outline-color: var(--lumo-primary-color-50pct);
 }
 
+vaadin-button:hover {
+    cursor: pointer;
+}
+
 html {
     --fullscreen-height: calc(100vh - 3.5rem);
     --fullscreen-height-list: calc(100vh - 4.5rem);
