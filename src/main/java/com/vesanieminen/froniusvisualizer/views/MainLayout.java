@@ -233,31 +233,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     protected void onAttach(AttachEvent attachEvent) {
         final var settingsButton = new Button(MaterialIcon.SETTINGS.create(), e -> settingsDialog.open());
         settingsButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        Button theme = new Button(MaterialIcon.DARK_MODE.create());
-        attachEvent.getUI().getPage().executeJs("return document.documentElement.getAttribute('theme');")
-                .then(String.class, darkMode -> {
-                            if ("dark".equals(darkMode)) {
-                                setThemeButtonMode(theme, MaterialIcon.LIGHT_MODE, "Switch to light mode");
-                            } else {
-                                setThemeButtonMode(theme, MaterialIcon.DARK_MODE, "Switch to dark mode");
-                            }
-                        }
-                );
-        theme.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        theme.addClickListener(e -> {
-            attachEvent.getUI().getPage().executeJs("return document.documentElement.getAttribute('theme');")
-                    .then(String.class, darkMode -> {
-                                if ("dark".equals(darkMode)) {
-                                    attachEvent.getUI().getPage().executeJs("document.documentElement.setAttribute('theme', '');");
-                                    setThemeButtonMode(theme, MaterialIcon.DARK_MODE, "Switch to dark mode");
-                                } else {
-                                    attachEvent.getUI().getPage().executeJs("document.documentElement.setAttribute('theme', 'dark');");
-                                    setThemeButtonMode(theme, MaterialIcon.LIGHT_MODE, "Switch to light mode");
-                                }
-                            }
-                    );
-        });
-        header.add(settingsButton, theme);
+        header.add(settingsButton);
 
         header.add(createChangeLanguageButton(attachEvent));
 
@@ -289,11 +265,6 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         String url = ((VaadinServletRequest) VaadinService.getCurrentRequest()).getServerName();
         final var notProduction = Arrays.asList("staging");
         upcloudLink.setVisible(!(notProduction.contains(url)));
-    }
-
-    private void setThemeButtonMode(Button theme, MaterialIcon darkMode, String Switch_to_dark_mode) {
-        theme.setIcon(darkMode.create());
-        theme.getElement().setAttribute("aria-label", getTranslation(Switch_to_dark_mode));
     }
 
     private Button createChangeLanguageButton(AttachEvent attachEvent) {

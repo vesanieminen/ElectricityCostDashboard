@@ -1,5 +1,6 @@
 package com.vesanieminen.froniusvisualizer.components;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -41,6 +42,34 @@ public class SettingsDialog extends Dialog {
         final var electricityCosts = new H3(getTranslation("General"));
         add(electricityCosts);
 
+        Button themeButton = new Button(MaterialIcon.DARK_MODE.create());
+        UI.getCurrent().getPage().executeJs("return document.documentElement.getAttribute('theme');")
+                .then(String.class, darkMode -> {
+                            if ("dark".equals(darkMode)) {
+                                setThemeButtonMode(themeButton, MaterialIcon.LIGHT_MODE, "Switch to light mode");
+                            } else {
+                                setThemeButtonMode(themeButton, MaterialIcon.DARK_MODE, "Switch to dark mode");
+                            }
+                        }
+                );
+        themeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        themeButton.addClickListener(e -> {
+            final var ui = UI.getCurrent();
+            ui.getPage().executeJs("return document.documentElement.getAttribute('theme');")
+                    .then(String.class, darkMode -> {
+                                if ("dark".equals(darkMode)) {
+                                    ui.getPage().executeJs("document.documentElement.setAttribute('theme', '');");
+                                    setThemeButtonMode(themeButton, MaterialIcon.DARK_MODE, "Switch to dark mode");
+                                } else {
+                                    ui.getPage().executeJs("document.documentElement.setAttribute('theme', 'dark');");
+                                    setThemeButtonMode(themeButton, MaterialIcon.LIGHT_MODE, "Switch to light mode");
+                                }
+                            }
+                    );
+        });
+        add(themeButton);
+
+
         zoomLevelSelect = new Select<>();
         zoomLevelSelect.setWidthFull();
         zoomLevelSelect.setId(ZOOM);
@@ -64,6 +93,12 @@ public class SettingsDialog extends Dialog {
                 adjustRootFontSize(item.getValue().getSize());
             }
         });
+    }
+
+    private void setThemeButtonMode(Button theme, MaterialIcon darkMode, String translation) {
+        theme.setIcon(darkMode.create());
+        theme.setText(getTranslation(translation));
+        theme.setAriaLabel(getTranslation(translation));
     }
 
     public void readFieldValues() {
