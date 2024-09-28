@@ -26,6 +26,10 @@ vaadin-button:hover {
     cursor: pointer;
 }
 
+vaadin-dialog-overlay::part(overlay) {
+    width: 420px;
+}
+
 html {
     --fullscreen-height: calc(100vh - 3.5rem);
     --fullscreen-height-list: calc(100vh - 4.5rem);

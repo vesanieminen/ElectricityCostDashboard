@@ -2,9 +2,9 @@ package com.vesanieminen.froniusvisualizer.util;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
+import com.vesanieminen.froniusvisualizer.components.SettingsDialog;
 import com.vesanieminen.froniusvisualizer.services.model.FingridLiteResponse;
 import com.vesanieminen.froniusvisualizer.services.model.FingridRealtimeResponse;
-import com.vesanieminen.froniusvisualizer.views.SettingsView;
 import org.openjdk.jol.info.GraphLayout;
 
 import java.io.UnsupportedEncodingException;
@@ -321,8 +321,8 @@ public class Utils {
                 (endYearMonth.getMonthValue() - startYearMonth.getMonthValue()) + 1;
     }
 
-    public static Optional<SettingsView.ZoomLevel> getZoomLevel() {
-        return Optional.ofNullable((SettingsView.ZoomLevel) VaadinSession.getCurrent().getAttribute(SettingsView.ZOOM));
+    public static Optional<SettingsDialog.ZoomLevel> getZoomLevel() {
+        return Optional.ofNullable((SettingsDialog.ZoomLevel) VaadinSession.getCurrent().getAttribute(SettingsDialog.ZOOM));
     }
 
     public static void adjustRootFontSize(double scalePercentage) {

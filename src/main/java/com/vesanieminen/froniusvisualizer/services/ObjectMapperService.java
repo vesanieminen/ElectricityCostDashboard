@@ -9,7 +9,7 @@ import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.page.WebStorage;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.server.VaadinSession;
-import com.vesanieminen.froniusvisualizer.views.SettingsView;
+import com.vesanieminen.froniusvisualizer.components.SettingsDialog;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -62,14 +62,14 @@ public class ObjectMapperService {
         }
     }
 
-    public SettingsView.ZoomLevel readValue(String key) {
+    public SettingsDialog.ZoomLevel readValue(String key) {
         if (key == null) {
             return null;
         }
         try {
-            var value = objectMapper.readValue(key, new TypeReference<SettingsView.ZoomLevel>() {
+            var value = objectMapper.readValue(key, new TypeReference<SettingsDialog.ZoomLevel>() {
             });
-            VaadinSession.getCurrent().setAttribute(SettingsView.ZoomLevel.class, value);
+            VaadinSession.getCurrent().setAttribute(SettingsDialog.ZoomLevel.class, value);
             return value;
         } catch (IOException e) {
             log.info("Could not read value: %s".formatted(e.toString()));
@@ -77,12 +77,12 @@ public class ObjectMapperService {
         return null;
     }
 
-    public void readAndSetValue(String key, Select<SettingsView.ZoomLevel> zoomLevel) {
+    public void readAndSetValue(String key, Select<SettingsDialog.ZoomLevel> zoomLevel) {
         if (key == null) {
             return;
         }
         try {
-            var value = objectMapper.readValue(key, new TypeReference<SettingsView.ZoomLevel>() {
+            var value = objectMapper.readValue(key, new TypeReference<SettingsDialog.ZoomLevel>() {
             });
             zoomLevel.setValue(value);
             VaadinSession.getCurrent().setAttribute(key, value);

@@ -25,11 +25,11 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.MaterialIcon;
+import com.vesanieminen.froniusvisualizer.components.SettingsDialog;
 import com.vesanieminen.froniusvisualizer.services.ObjectMapperService;
 import com.vesanieminen.froniusvisualizer.util.css.FontFamily;
 import jakarta.servlet.http.Cookie;
@@ -47,6 +47,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
 
     public static final String URL_SUFFIX = " ⋅ Liukuri";
     private final ObjectMapperService objectMapperService;
+    private final SettingsDialog settingsDialog;
 
     public boolean darkMode = false;
 
@@ -60,8 +61,9 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     private boolean isLiukuriVideoAdShown;
     private Anchor upcloudLink;
 
-    public MainLayout(ObjectMapperService objectMapperService) {
+    public MainLayout(ObjectMapperService objectMapperService, SettingsDialog settingsDialog) {
         this.objectMapperService = objectMapperService;
+        this.settingsDialog = settingsDialog;
         setPrimarySection(Section.DRAWER);
 
         // App header
@@ -213,7 +215,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         // read settings
         final var zoom = getZoomLevel();
         if (zoom.isEmpty()) {
-            WebStorage.getItem(SettingsView.ZOOM, item -> {
+            WebStorage.getItem(SettingsDialog.ZOOM, item -> {
                 final var zoomLevel = objectMapperService.readValue(item);
                 if (zoomLevel != null) {
                     adjustRootFontSize(zoomLevel.getSize());
@@ -231,9 +233,8 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        final var settingsItem = new SideNavItem(null, SettingsView.class, MaterialIcon.SETTINGS.create());
-        settingsItem.addClassNames(LumoUtility.Width.MEDIUM);
-        final var settingsAnchor = new Anchor(RouteConfiguration.forSessionScope().getUrl(SettingsView.class), settingsItem);
+        final var settingsButton = new Button(MaterialIcon.SETTINGS.create(), e -> settingsDialog.open());
+        settingsButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         Button theme = new Button(MaterialIcon.DARK_MODE.create());
         theme.getElement().setAttribute("aria-label", getTranslation("Switch to dark mode"));
         theme.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
@@ -249,7 +250,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
             }
             this.darkMode = !this.darkMode;
         });
-        header.add(settingsAnchor, theme);
+        header.add(settingsButton, theme);
 
         header.add(createChangeLanguageButton(attachEvent));
 

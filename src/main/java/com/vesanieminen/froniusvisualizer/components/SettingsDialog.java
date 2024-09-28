@@ -1,13 +1,14 @@
-package com.vesanieminen.froniusvisualizer.views;
+package com.vesanieminen.froniusvisualizer.components;
 
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.page.WebStorage;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
+import com.vaadin.flow.spring.annotation.RouteScope;
+import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.services.ObjectMapperService;
@@ -20,33 +21,32 @@ import org.springframework.stereotype.Component;
 import static com.vesanieminen.froniusvisualizer.util.Utils.adjustRootFontSize;
 
 
-@Route(value = "asetukset", layout = MainLayout.class)
-@RouteAlias(value = "settings", layout = MainLayout.class)
-@PageTitle("Settings")
 @Slf4j
-public class SettingsView extends Main {
+@SpringComponent
+@RouteScope
+public class SettingsDialog extends Dialog {
 
     private final ObjectMapperService mapperService;
     public static final String ZOOM = "settings.zoom";
     private final Select<ZoomLevel> zoomLevelSelect;
 
-    public SettingsView(SettingsState settingsState, ObjectMapperService mapperService) {
+    public SettingsDialog(SettingsState settingsState, ObjectMapperService mapperService) {
         this.mapperService = mapperService;
 
-        addClassNames(
-                LumoUtility.Display.FLEX,
-                LumoUtility.FlexDirection.COLUMN,
-                LumoUtility.Gap.MEDIUM,
-                LumoUtility.Padding.MEDIUM
-        );
+        setHeaderTitle(getTranslation("Settings"));
+        final var closeButton = new Button(MaterialIcon.CLOSE.create(), e -> close());
+        closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        getHeader().add(closeButton);
 
         final var electricityCosts = new H3(getTranslation("General"));
         add(electricityCosts);
 
         zoomLevelSelect = new Select<>();
+        zoomLevelSelect.setWidthFull();
         zoomLevelSelect.setId(ZOOM);
         zoomLevelSelect.setLabel(getTranslation("settings.zoom-level"));
         zoomLevelSelect.setItems(ZoomLevel.values());
+
         zoomLevelSelect.addClassNames(LumoUtility.MaxWidth.SCREEN_SMALL);
         zoomLevelSelect.setHelperText(getTranslation("settings.zoom-level.helper"));
         zoomLevelSelect.setItemLabelGenerator(item -> getTranslation(item.getTranslation()));
