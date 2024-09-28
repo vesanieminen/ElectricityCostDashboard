@@ -36,6 +36,8 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.getVAT;
 import static com.vesanieminen.froniusvisualizer.util.Utils.isAfter;
 import static com.vesanieminen.froniusvisualizer.util.Utils.isBefore;
 import static com.vesanieminen.froniusvisualizer.util.Utils.isBetweenHours;
+import static com.vesanieminen.froniusvisualizer.util.Utils.isBetweenNovAndMar;
+import static com.vesanieminen.froniusvisualizer.util.Utils.isMondayToSaturday;
 import static com.vesanieminen.froniusvisualizer.util.Utils.monthFilter;
 import static com.vesanieminen.froniusvisualizer.util.Utils.nordpoolZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
@@ -373,39 +375,76 @@ public class PriceCalculatorService {
         return calculateElectricityTaxPrice(filtered, fixed);
     }
 
-    private static LinkedHashMap<Instant, Double> getDateTimeRangeWithFilter(LinkedHashMap<Instant, Double> fingridConsumptionData, Instant start, Instant end, int hourAfter, int hourBefore) {
-        return getDateTimeRange(fingridConsumptionData, start, end).entrySet().stream().filter(isBetweenHours(hourAfter, hourBefore))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
-    }
-
-    public static double calculateDayPrice(LinkedHashMap<Instant, Double> fingridConsumptionData, double price, Instant start, Instant end) {
-        final LinkedHashMap<Instant, Double> filtered = getDateTimeRangeWithFilter(fingridConsumptionData, start, end, 7, 22);
-        return calculateFixedElectricityPrice(filtered, price);
-    }
-
     public static double calculateConsumption(LinkedHashMap<Instant, Double> fingridConsumptionData) {
         return fingridConsumptionData.values().stream().reduce(0d, Double::sum);
     }
 
+    // night transfer
+
     public static double calculateDayConsumption(LinkedHashMap<Instant, Double> fingridConsumptionData, Instant start, Instant end) {
-        final LinkedHashMap<Instant, Double> filtered = getDateTimeRangeWithFilter(fingridConsumptionData, start, end, 7, 22);
+        final LinkedHashMap<Instant, Double> filtered = getDateTimeRangeBetweenHoursFilter(fingridConsumptionData, start, end, 7, 22);
         return calculateConsumption(filtered);
     }
 
     public static double calculateNightConsumption(LinkedHashMap<Instant, Double> fingridConsumptionData, Instant start, Instant end) {
-        final LinkedHashMap<Instant, Double> filtered = getDateTimeRangeNightFilter(fingridConsumptionData, start, end, 22, 7);
+        final LinkedHashMap<Instant, Double> filtered = getDateTimeRangeOutsideHoursFilter(fingridConsumptionData, start, end, 22, 7);
         return calculateConsumption(filtered);
     }
 
-    private static LinkedHashMap<Instant, Double> getDateTimeRangeNightFilter(LinkedHashMap<Instant, Double> fingridConsumptionData, Instant start, Instant end, int hourAfter, int hourBefore) {
+    private static LinkedHashMap<Instant, Double> getDateTimeRangeBetweenHoursFilter(LinkedHashMap<Instant, Double> fingridConsumptionData, Instant start, Instant end, int hourAfter, int hourBefore) {
+        return getDateTimeRange(fingridConsumptionData, start, end).entrySet().stream().filter(isBetweenHours(hourAfter, hourBefore))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
+    }
+
+    private static LinkedHashMap<Instant, Double> getDateTimeRangeOutsideHoursFilter(LinkedHashMap<Instant, Double> fingridConsumptionData, Instant start, Instant end, int hourAfter, int hourBefore) {
         return getDateTimeRange(fingridConsumptionData, start, end).entrySet().stream().filter(isBefore(hourBefore).or(isAfter(hourAfter)))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
     }
 
-    public static double calculateNightPrice(LinkedHashMap<Instant, Double> fingridConsumptionData, double price, Instant start, Instant end) {
-        final LinkedHashMap<Instant, Double> filtered = getDateTimeRangeNightFilter(fingridConsumptionData, start, end, 22, 7);
+    public static double calculateDayPrice(LinkedHashMap<Instant, Double> fingridConsumptionData, double price, Instant start, Instant end) {
+        final LinkedHashMap<Instant, Double> filtered = getDateTimeRangeBetweenHoursFilter(fingridConsumptionData, start, end, 7, 22);
         return calculateFixedElectricityPrice(filtered, price);
     }
+
+    public static double calculateNightPrice(LinkedHashMap<Instant, Double> fingridConsumptionData, double price, Instant start, Instant end) {
+        final LinkedHashMap<Instant, Double> filtered = getDateTimeRangeOutsideHoursFilter(fingridConsumptionData, start, end, 22, 7);
+        return calculateFixedElectricityPrice(filtered, price);
+    }
+
+    // seasonal transfer
+
+    private static LinkedHashMap<Instant, Double> getDateTimeRangeSeasonalWinterFilter(LinkedHashMap<Instant, Double> fingridConsumptionData, Instant start, Instant end) {
+        return getDateTimeRange(fingridConsumptionData, start, end).entrySet().stream().filter(isBetweenNovAndMar().and(isMondayToSaturday().and(isBetweenHours(7, 22))))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
+    }
+
+    private static LinkedHashMap<Instant, Double> getDateTimeRangeSeasonalOtherFilter(LinkedHashMap<Instant, Double> fingridConsumptionData, Instant start, Instant end) {
+        return getDateTimeRange(fingridConsumptionData, start, end).entrySet().stream().filter(isBetweenNovAndMar().and(isMondayToSaturday().and(isBetweenHours(7, 22))).negate())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
+    }
+
+    public static double calculateSeasonalWinterPrice(LinkedHashMap<Instant, Double> fingridConsumptionData, double price, Instant start, Instant end) {
+        final LinkedHashMap<Instant, Double> filtered = getDateTimeRangeSeasonalWinterFilter(fingridConsumptionData, start, end);
+        return calculateFixedElectricityPrice(filtered, price);
+    }
+
+    public static double calculateSeasonalOtherPrice(LinkedHashMap<Instant, Double> fingridConsumptionData, double price, Instant start, Instant end) {
+        final LinkedHashMap<Instant, Double> filtered = getDateTimeRangeSeasonalOtherFilter(fingridConsumptionData, start, end);
+        return calculateFixedElectricityPrice(filtered, price);
+    }
+
+    public static double calculateSeasonalWinterConsumption(LinkedHashMap<Instant, Double> fingridConsumptionData, Instant start, Instant end) {
+        final LinkedHashMap<Instant, Double> filtered = getDateTimeRangeSeasonalWinterFilter(fingridConsumptionData, start, end);
+        return calculateConsumption(filtered);
+    }
+
+    public static double calculateSeasonalOtherConsumption(LinkedHashMap<Instant, Double> fingridConsumptionData, Instant start, Instant end) {
+        final LinkedHashMap<Instant, Double> filtered = getDateTimeRangeSeasonalOtherFilter(fingridConsumptionData, start, end);
+        return calculateConsumption(filtered);
+    }
+
+
+    // BAAS
 
     public static ArrayList<Double> calculateFixedElectricityPriceWithPastProductionReduced(LinkedHashMap<Instant, Double> fingridConsumptionData, LinkedHashMap<Instant, Double> fingridProductionData, double fixed, Instant start, Instant end) {
         final LinkedHashMap<Instant, Double> filteredConsumption = getDateTimeRange(fingridConsumptionData, start, end);
@@ -440,7 +479,7 @@ public class PriceCalculatorService {
 
 
     public static int getLatestDayOfMonth() {
-        return getPrices().get(getPrices().size() - 1).timeInstant().atZone(fiZoneID).getDayOfMonth();
+        return getPrices().getLast().timeInstant().atZone(fiZoneID).getDayOfMonth();
     }
 
     /**

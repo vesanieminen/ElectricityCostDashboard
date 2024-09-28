@@ -13,10 +13,12 @@ import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -204,6 +206,8 @@ public class Utils {
         return list.stream().mapToDouble(d -> d).average();
     }
 
+    // night transfer utils
+
     public static Predicate<Map.Entry<Instant, Double>> isBetweenHours(int startHour, int endHour) {
         return item -> startHour <= item.getKey().atZone(fiZoneID).getHour() && item.getKey().atZone(fiZoneID).getHour() < endHour;
     }
@@ -214,6 +218,26 @@ public class Utils {
 
     public static Predicate<Map.Entry<Instant, Double>> isBefore(int hour) {
         return item -> item.getKey().atZone(fiZoneID).getHour() < hour;
+    }
+
+    // seasonal transfer utils
+
+    // Predicate to check if the date is between 1st November and 31st March
+    public static Predicate<Map.Entry<Instant, Double>> isBetweenNovAndMar() {
+        return item -> {
+            ZonedDateTime dateTime = item.getKey().atZone(fiZoneID);
+            int monthValue = dateTime.getMonthValue();
+            // Months from November (11) to March (3) across the year boundary
+            return (monthValue >= Month.NOVEMBER.getValue() || monthValue <= Month.MARCH.getValue());
+        };
+    }
+
+    // Predicate to check if the day is Monday to Saturday
+    public static Predicate<Map.Entry<Instant, Double>> isMondayToSaturday() {
+        return item -> {
+            DayOfWeek dayOfWeek = item.getKey().atZone(fiZoneID).getDayOfWeek();
+            return dayOfWeek.getValue() >= DayOfWeek.MONDAY.getValue() && dayOfWeek.getValue() <= DayOfWeek.SATURDAY.getValue();
+        };
     }
 
     public static Predicate<Map.Entry<Instant, Double>> isAfter(int month, int year) {

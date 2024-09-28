@@ -73,6 +73,10 @@ import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateFixedElectricityPriceWithPastProductionReduced;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateNightConsumption;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateNightPrice;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSeasonalOtherConsumption;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSeasonalOtherPrice;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSeasonalWinterConsumption;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSeasonalWinterPrice;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotElectricityPriceDetails;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getFingridUsageData;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataEnd;
@@ -113,6 +117,9 @@ public class PriceCalculatorView extends Main {
     private final SuperDoubleField baasMonthlyPriceField;
     private final Select<TaxClass> taxClassSelect;
     private final SuperDoubleField lockedPriceField;
+    private final SuperDoubleField seasonalTransferWinterPriceField;
+    private final SuperDoubleField seasonalTransferOtherPriceField;
+    private final SuperDoubleField seasonalTransferMonthlyPriceField;
     private MemoryBuffer lastConsumptionData;
     private MemoryBuffer lastProductionData;
 
@@ -332,6 +339,39 @@ public class PriceCalculatorView extends Main {
         nightTransferDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Gap.Column.MEDIUM, LumoUtility.FlexWrap.WRAP);
         content.add(nightTransferDiv);
 
+        // seasonal transfer
+        seasonalTransferWinterPriceField = new SuperDoubleField(null, getTranslation("calculator.seasonal-transfer.winter-price"));
+        seasonalTransferWinterPriceField.setId("seasonalTransferWinterPriceField");
+        seasonalTransferWinterPriceField.addValueChangeListener(item -> saveFieldValue(seasonalTransferWinterPriceField));
+        seasonalTransferWinterPriceField.setMaximumFractionDigits(6);
+        seasonalTransferWinterPriceField.setLocale(getLocale());
+        seasonalTransferWinterPriceField.setHelperText(getTranslation("calculator.seasonal-transfer.winter-helper"));
+        seasonalTransferWinterPriceField.setRequiredIndicatorVisible(true);
+        seasonalTransferWinterPriceField.setSuffixComponent(new Span(getTranslation("c/kWh")));
+        seasonalTransferWinterPriceField.addClassNames(LumoUtility.Flex.GROW);
+        seasonalTransferOtherPriceField = new SuperDoubleField(null, getTranslation("calculator.seasonal-transfer.other-price"));
+        seasonalTransferOtherPriceField.setId("seasonalTransferNightPriceField");
+        seasonalTransferOtherPriceField.addValueChangeListener(item -> saveFieldValue(seasonalTransferOtherPriceField));
+        seasonalTransferOtherPriceField.setMaximumFractionDigits(6);
+        seasonalTransferOtherPriceField.setLocale(getLocale());
+        seasonalTransferOtherPriceField.setHelperText(getTranslation("calculator.seasonal-transfer.other-helper"));
+        seasonalTransferOtherPriceField.setRequiredIndicatorVisible(true);
+        seasonalTransferOtherPriceField.setSuffixComponent(new Span(getTranslation("c/kWh")));
+        seasonalTransferOtherPriceField.addClassNames(LumoUtility.Flex.GROW);
+        seasonalTransferMonthlyPriceField = new SuperDoubleField(null, getTranslation("calculator.seasonal-transfer.monthly-price"));
+        seasonalTransferMonthlyPriceField.setId("seasonalTransferMonthlyPriceField");
+        seasonalTransferMonthlyPriceField.addValueChangeListener(item -> saveFieldValue(seasonalTransferMonthlyPriceField));
+        seasonalTransferMonthlyPriceField.setMaximumFractionDigits(6);
+        seasonalTransferMonthlyPriceField.setLocale(getLocale());
+        seasonalTransferMonthlyPriceField.setHelperText(getTranslation("calculator.seasonal-transfer.monthly-price-helper"));
+        seasonalTransferMonthlyPriceField.setRequiredIndicatorVisible(true);
+        seasonalTransferMonthlyPriceField.setSuffixComponent(new Span("€"));
+        seasonalTransferMonthlyPriceField.addClassNames(LumoUtility.Flex.GROW);
+        final var seasonalTransferDiv = new Div(seasonalTransferWinterPriceField, seasonalTransferOtherPriceField, seasonalTransferMonthlyPriceField);
+        seasonalTransferDiv.setVisible(false);
+        seasonalTransferDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Gap.Column.MEDIUM, LumoUtility.FlexWrap.WRAP);
+        content.add(seasonalTransferDiv);
+
         // electricity taxes
         taxClassSelect = new Select<>();
         taxClassSelect.setId("taxClassSelect");
@@ -392,6 +432,8 @@ public class PriceCalculatorView extends Main {
             transferDiv.setEnabled(e.getValue().contains(Calculations.GENERAL_TRANSFER));
             nightTransferDiv.setVisible(e.getValue().contains(Calculations.NIGHT_TRANSFER));
             nightTransferDiv.setEnabled(e.getValue().contains(Calculations.NIGHT_TRANSFER));
+            seasonalTransferDiv.setVisible(e.getValue().contains(Calculations.SEASONAL_TRANSFER));
+            seasonalTransferDiv.setEnabled(e.getValue().contains(Calculations.SEASONAL_TRANSFER));
             productionUpload.setVisible(e.getValue().contains(Calculations.SPOT_PRODUCTION));
             taxClassSelect.setVisible(e.getValue().contains(Calculations.TAXES));
             taxClassSelect.setEnabled(e.getValue().contains(Calculations.TAXES));
@@ -431,6 +473,17 @@ public class PriceCalculatorView extends Main {
                     }
                     if (nightTransferMonthlyPriceField.getValue() == null) {
                         nightTransferMonthlyPriceField.setValue(0d);
+                    }
+                }
+                if (isCalculatingSeasonalTransfer()) {
+                    if (seasonalTransferWinterPriceField.getValue() == null) {
+                        seasonalTransferWinterPriceField.setValue(0d);
+                    }
+                    if (seasonalTransferOtherPriceField.getValue() == null) {
+                        seasonalTransferOtherPriceField.setValue(0d);
+                    }
+                    if (seasonalTransferMonthlyPriceField.getValue() == null) {
+                        seasonalTransferMonthlyPriceField.setValue(0d);
                     }
                 }
                 if (isCalculatingLockedPrice()) {
@@ -557,6 +610,34 @@ public class PriceCalculatorView extends Main {
                     summaryDTO.setNighTransferCost(totalNightTransferCost);
                 }
 
+                if (isCalculatingSeasonalTransfer()) {
+                    final Div seasonalTransferSection = addSection(resultLayout, getTranslation("calculator.seasonal-transfer.title"));
+                    seasonalTransferSection.add(new DoubleLabel(getTranslation("calculator.seasonal-transfer.winter-price"), numberFormat.format(seasonalTransferWinterPriceField.getValue()) + " " + getTranslation("c/kWh"), true));
+                    seasonalTransferSection.add(new DoubleLabel(getTranslation("calculator.seasonal-transfer.other-price"), numberFormat.format(seasonalTransferOtherPriceField.getValue()) + " " + getTranslation("c/kWh"), true));
+                    seasonalTransferSection.add(new DoubleLabel(getTranslation("calculator.seasonal-transfer.monthly-price"), numberFormat.format(seasonalTransferMonthlyPriceField.getValue()) + " €", true));
+                    final var winterCost = calculateSeasonalWinterPrice(consumptionData.data(), seasonalTransferWinterPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    final var otherCost = calculateSeasonalOtherPrice(consumptionData.data(), seasonalTransferOtherPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    final var winterAndOtherCost = winterCost + otherCost;
+                    final var winterConsumption = calculateSeasonalWinterConsumption(consumptionData.data(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    final var otherConsumption = calculateSeasonalOtherConsumption(consumptionData.data(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    final var totalConsumption = winterConsumption + otherConsumption;
+                    final var winterPercentage = winterConsumption / totalConsumption * 100;
+                    final var otherPercentage = otherConsumption / totalConsumption * 100;
+                    seasonalTransferSection.add(new DoubleLabel(getTranslation("calculator.seasonal-transfer.winter-cost"), numberFormat.format(winterCost) + " €", true));
+                    seasonalTransferSection.add(new DoubleLabel(getTranslation("calculator.seasonal-transfer.other-cost"), numberFormat.format(otherCost) + " €", true));
+                    seasonalTransferSection.add(new DoubleLabel(getTranslation("calculator.seasonal-transfer.total-cost"), numberFormat.format(winterAndOtherCost) + " €", true));
+                    seasonalTransferSection.add(new DoubleLabel(getTranslation("calculator.seasonal-transfer.winter-consumption"), numberFormat.format(winterConsumption) + " kWh", true));
+                    seasonalTransferSection.add(new DoubleLabel(getTranslation("calculator.seasonal-transfer.other-consumption"), numberFormat.format(otherConsumption) + " kWh", true));
+                    seasonalTransferSection.add(new DoubleLabel(getTranslation("calculator.seasonal-transfer.percentage"), "%s %% / %s %%".formatted(numberFormat.format(winterPercentage), numberFormat.format(otherPercentage)), true));
+                    final var monthsInvolved = calculateMonthsInvolved(fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    final var monthlyCost = monthsInvolved * seasonalTransferMonthlyPriceField.getValue();
+                    seasonalTransferSection.add(new DoubleLabel(getTranslation("calculator.seasonal-transfer.montly-cost"), numberFormat.format(monthlyCost) + " €", true));
+                    final var totalSeasonalTransferCost = monthlyCost + winterAndOtherCost;
+                    seasonalTransferSection.add(new DoubleLabel(getTranslation("calculator.seasonal-transfer.total-cost.including-monthly"), numberFormat.format(totalSeasonalTransferCost) + " €", true));
+
+                    summaryDTO.setSeasonalTransferCost(totalSeasonalTransferCost);
+                }
+
                 if (isCalculatingTax()) {
                     final Div taxSection = addSection(resultLayout, getTranslation("calculator.taxes"));
                     final var taxPrice = taxClassSelect.getValue().getTaxPrice();
@@ -638,6 +719,9 @@ public class PriceCalculatorView extends Main {
                         if (summaryDTO.getNighTransferCost() != null) {
                             addCostsAndCreateLabel(spotTotal, summaryDTO.getNighTransferCost(), spotText, "calculator.night-transfer.title", spotDiv, numberFormat);
                         }
+                        if (summaryDTO.getSeasonalTransferCost() != null) {
+                            addCostsAndCreateLabel(spotTotal, summaryDTO.getSeasonalTransferCost(), spotText, "calculator.seasonal-transfer.title", spotDiv, numberFormat);
+                        }
                     }
 
                     // Fixed summary
@@ -658,6 +742,9 @@ public class PriceCalculatorView extends Main {
                         if (summaryDTO.getNighTransferCost() != null) {
                             addCostsAndCreateLabel(fixedCost, summaryDTO.getNighTransferCost(), fixedCostText, "calculator.night-transfer.title", fixedDiv, numberFormat);
                         }
+                        if (summaryDTO.getSeasonalTransferCost() != null) {
+                            addCostsAndCreateLabel(fixedCost, summaryDTO.getSeasonalTransferCost(), fixedCostText, "calculator.seasonal-transfer.title", fixedDiv, numberFormat);
+                        }
                     }
 
                     // Locked price summary
@@ -677,6 +764,9 @@ public class PriceCalculatorView extends Main {
                         }
                         if (summaryDTO.getNighTransferCost() != null) {
                             addCostsAndCreateLabel(lockedPriceCost, summaryDTO.getNighTransferCost(), fixedCostText, "calculator.night-transfer.title", lockedPriceDiv, numberFormat);
+                        }
+                        if (summaryDTO.getSeasonalTransferCost() != null) {
+                            addCostsAndCreateLabel(lockedPriceCost, summaryDTO.getSeasonalTransferCost(), fixedCostText, "calculator.seasonal-transfer.title", lockedPriceDiv, numberFormat);
                         }
                     }
 
@@ -773,6 +863,10 @@ public class PriceCalculatorView extends Main {
 
     private boolean isCalculatingNightTransfer() {
         return calculationsCheckboxGroup.getValue().contains(Calculations.NIGHT_TRANSFER);
+    }
+
+    private boolean isCalculatingSeasonalTransfer() {
+        return calculationsCheckboxGroup.getValue().contains(Calculations.SEASONAL_TRANSFER);
     }
 
     private boolean isCalculatingProduction() {
@@ -1081,6 +1175,7 @@ public class PriceCalculatorView extends Main {
         LOCKED_PRICE("locked.price"),
         GENERAL_TRANSFER("calculator.general-transfer"),
         NIGHT_TRANSFER("calculator.night-transfer.title"),
+        SEASONAL_TRANSFER("calculator.seasonal-transfer.title"),
         TAXES("calculator.taxes"),
         SPOT_PRODUCTION("Spot production price"),
         BATTERY_AS_A_SERVICE("calculator.baas");
@@ -1115,6 +1210,7 @@ public class PriceCalculatorView extends Main {
         private Double fixedCost;
         private Double generalTransferCost;
         private Double nighTransferCost;
+        private Double seasonalTransferCost;
         private Double taxCost;
         private Double lockedPriceCost;
         private Double baasCost;
@@ -1159,6 +1255,9 @@ public class PriceCalculatorView extends Main {
         WebStorage.getItem(nightTransferDayPriceField.getId().orElseThrow(), item -> readValue(item, nightTransferDayPriceField));
         WebStorage.getItem(nightTransferNightPriceField.getId().orElseThrow(), item -> readValue(item, nightTransferNightPriceField));
         WebStorage.getItem(nightTransferMonthlyPriceField.getId().orElseThrow(), item -> readValue(item, nightTransferMonthlyPriceField));
+        WebStorage.getItem(seasonalTransferWinterPriceField.getId().orElseThrow(), item -> readValue(item, seasonalTransferWinterPriceField));
+        WebStorage.getItem(seasonalTransferOtherPriceField.getId().orElseThrow(), item -> readValue(item, seasonalTransferOtherPriceField));
+        WebStorage.getItem(seasonalTransferMonthlyPriceField.getId().orElseThrow(), item -> readValue(item, seasonalTransferMonthlyPriceField));
         // TODO: this didn't work for some reason
         //WebStorage.getItem(taxClassSelect.getId().orElseThrow(), item -> readValue(item, taxClassSelect));
         WebStorage.getItem(lockedPriceField.getId().orElseThrow(), item -> readValue(item, lockedPriceField));
