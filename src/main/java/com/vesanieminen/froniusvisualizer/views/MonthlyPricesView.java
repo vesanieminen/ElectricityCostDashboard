@@ -34,9 +34,23 @@ public class MonthlyPricesView extends Main {
         Set<Integer> years = monthlyPrices.stream().flatMap(md -> md.averagesByYear().keySet().stream()).collect(Collectors.toSet());
         for (Integer year : years) {
             grid.addColumn(md -> {
-                final var orDefault = md.averagesByYear().getOrDefault(year, null);
-                return orDefault == null ? "" : "%.2f %s".formatted(orDefault, getTranslation("c/kWh"));
-            }).setHeader("" + year).setSortable(true).setAutoWidth(true);
+                final var averagePrice = md.averagesByYear().getOrDefault(year, null);
+                return averagePrice == null ? "" : "%.2f %s".formatted(averagePrice, getTranslation("c/kWh"));
+            }).setHeader("" + year).setSortable(true).setAutoWidth(true).setPartNameGenerator(item -> {
+                // Access the average price within the classNameGenerator
+                Double averagePrice = item.averagesByYear().getOrDefault(year, null);
+                if (averagePrice == null) {
+                    return ""; // No data for this cell
+                }
+                // Apply different background colors based on the average price
+                if (averagePrice <= 5) {
+                    return "cheap"; // Green background
+                } else if (averagePrice < 10) {
+                    return "normal"; // Default background
+                } else {
+                    return "expensive"; // Red background
+                }
+            });
         }
         add(grid);
     }

@@ -60,3 +60,15 @@ html {
     }
 }
 
+vaadin-grid::part(expensive) {
+    color: var(--lumo-error-text-color);
+}
+
+vaadin-grid::part(normal) {
+    color: var(--lumo-primary-text-color);
+}
+
+vaadin-grid::part(cheap) {
+    color: var(--lumo-success-text-color);
+}
+
