@@ -39,8 +39,8 @@ public class SettingsDialog extends Dialog {
         closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         getHeader().add(closeButton);
 
-        final var electricityCosts = new H3(getTranslation("General"));
-        add(electricityCosts);
+        final var generalH3 = new H3(getTranslation("General"));
+        add(generalH3);
 
         Button themeButton = new Button(MaterialIcon.DARK_MODE.create());
         UI.getCurrent().getPage().executeJs("return document.documentElement.getAttribute('theme');")
@@ -68,7 +68,6 @@ public class SettingsDialog extends Dialog {
                     );
         });
         add(themeButton);
-
 
         zoomLevelSelect = new Select<>();
         zoomLevelSelect.setWidthFull();
