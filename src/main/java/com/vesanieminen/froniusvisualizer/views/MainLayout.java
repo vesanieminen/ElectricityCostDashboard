@@ -96,7 +96,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         nav.addItem(new SideNavItem(getTranslation("Market electricity group"), ChartTemplateViewForTimo.class, MaterialIcon.BAR_CHART.create()));
         nav.addItem(new SideNavItem(getTranslation("view.history"), HistoryView.class, MaterialIcon.HISTORY.create()));
         nav.addItem(new SideNavItem(getTranslation("List"), PriceListView.class, MaterialIcon.LIST.create()));
-        //nav.addItem(new SideNavItem(getTranslation("Monthly Prices"), MonthlyPricesView.class, MaterialIcon.CALENDAR_VIEW_MONTH.create()));
+        nav.addItem(new SideNavItem(getTranslation("Monthly Prices"), MonthlyPricesView.class, MaterialIcon.CALENDAR_VIEW_MONTH.create()));
         nav.addItem(new SideNavItem(getTranslation("Calculator"), PriceCalculatorView.class, MaterialIcon.CALCULATE.create()));
         nav.addItem(new SideNavItem(getTranslation("view.videos"), HelpView.class, MaterialIcon.QUESTION_MARK.create()));
         nav.addItem(new SideNavItem(getTranslation("view.notifications"), NotificationsView.class, MaterialIcon.WARNING.create()));

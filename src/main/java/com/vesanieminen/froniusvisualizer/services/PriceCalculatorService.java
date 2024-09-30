@@ -7,6 +7,7 @@ import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +50,8 @@ public class PriceCalculatorService {
 
     private static LinkedHashMap<Instant, Double> spotPriceMap;
     private static List<NordpoolPrice> nordpoolPriceList;
+    @Getter
+    public static List<MonthData> monthlyPrices;
     public static Instant spotDataStart;
     public static Instant spotDataEnd;
 
@@ -74,6 +78,7 @@ public class PriceCalculatorService {
         log.info("updated spot data");
         //log.info("size of pakastin map: " + sizeOf(spotPriceMap));
         updateNordPoolPriceList();
+        updateMonthlyPrices();
         return spotPriceMap;
     }
 
@@ -213,6 +218,51 @@ public class PriceCalculatorService {
 
     private static Predicate<Map.Entry<Instant, Double>> yearFilter(int year) {
         return item -> item.getKey().atZone(fiZoneID).getYear() == year;
+    }
+
+    public record MonthData(int year, int month, double averagePrice) {
+    }
+
+    public static List<MonthData> calculateMonthlyPrices() {
+        final var startYear = spotDataStart.atZone(fiZoneID).getYear();
+        final var startMonth = spotDataStart.atZone(fiZoneID).getMonth().getValue();
+        final var endYear = spotDataEnd.atZone(fiZoneID).getYear();
+        final var endMonth = spotDataEnd.atZone(fiZoneID).getMonth().getValue();
+        final var monthData = new ArrayList<MonthData>();
+        for (int year = startYear; year <= endYear; ++year) {
+            for (int month = startMonth; year == endYear ? month <= endMonth : month <= 12; ++month) {
+                final var average = calculateSpotAveragePriceOnMonth(year, month);
+                monthData.add(new MonthData(year, month, average));
+            }
+        }
+        return monthData;
+    }
+
+    public static void updateMonthlyPrices() {
+        if (spotPriceMap != null) {
+            monthlyPrices = calculateMonthlyPrices();
+        }
+    }
+
+    public record MonthlyData(int month, Map<Integer, Double> averagesByYear) {
+    }
+
+    public static List<MonthlyData> getMonthlyPrices() {
+        // Map from month to Map of year to average
+        Map<Integer, Map<Integer, Double>> monthYearAvgMap = new HashMap<>();
+        for (MonthData md : monthlyPrices) {
+            int year = md.year();
+            int month = md.month();
+            double average = md.averagePrice();
+            monthYearAvgMap.computeIfAbsent(month, k -> new HashMap<>()).put(year, average);
+        }
+        List<MonthlyData> monthlyDataList = new ArrayList<>();
+        for (Map.Entry<Integer, Map<Integer, Double>> entry : monthYearAvgMap.entrySet()) {
+            int month = entry.getKey();
+            Map<Integer, Double> averagesByYear = entry.getValue();
+            monthlyDataList.add(new MonthlyData(month, averagesByYear));
+        }
+        return monthlyDataList;
     }
 
     public static double calculateSpotAveragePriceOnMonth(int year, int month) {
@@ -449,7 +499,7 @@ public class PriceCalculatorService {
     public static ArrayList<Double> calculateFixedElectricityPriceWithPastProductionReduced(LinkedHashMap<Instant, Double> fingridConsumptionData, LinkedHashMap<Instant, Double> fingridProductionData, double fixed, Instant start, Instant end) {
         final LinkedHashMap<Instant, Double> filteredConsumption = getDateTimeRange(fingridConsumptionData, start, end);
         final LinkedHashMap<Instant, Double> filteredProduction = getDateTimeRange(fingridProductionData, start, end);
-        
+
         var energyCost = 0.0;
         var savedProduction = 0.0;
         var excessProduction = 0.0;
@@ -459,7 +509,7 @@ public class PriceCalculatorService {
             if (filteredProduction != null) {
                 var production = fixed * filteredProduction.get(item) / 100;
                 excessProduction += production;
-    
+
                 if (excessProduction > 0 && cost > 0) {
                     var saved = Math.min(excessProduction, cost);
                     savedProduction += saved;
