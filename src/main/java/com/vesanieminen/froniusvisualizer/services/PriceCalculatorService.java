@@ -7,6 +7,7 @@ import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
+import com.vesanieminen.froniusvisualizer.util.Utils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -608,5 +609,26 @@ public class PriceCalculatorService {
         }
         return spotDataEnd.atZone(nordpoolZoneID).getDayOfMonth() == ZonedDateTime.now(nordpoolZoneID).getDayOfMonth();
     }
+
+    public static double[] getHourlyAveragePrices(Instant start, Instant end, boolean vat) {
+        final var averagePrices = spotPriceMap.entrySet().stream()
+                .filter(item -> start.compareTo(item.getKey()) <= 0 && 0 < end.compareTo(item.getKey()))
+                .map(item -> {
+                    final var prices = new double[24];
+                    final var hour = item.getKey().atZone(fiZoneID).getHour();
+                    final var price = item.getValue() * getVAT(item.getKey(), vat);
+                    prices[hour] = price;
+                    return prices;
+                })
+                .reduce(new double[24], Utils::sum);
+        final var size = spotPriceMap.entrySet().stream().filter(item ->
+                start.compareTo(item.getKey()) <= 0 && 0 < end.compareTo(item.getKey())).count();
+
+        final var test = spotPriceMap.entrySet().stream().filter(item ->
+                start.compareTo(item.getKey()) <= 0 && 0 < end.compareTo(item.getKey())).toList();
+        divide(averagePrices, size / 24.0);
+        return averagePrices;
+    }
+
 
 }
