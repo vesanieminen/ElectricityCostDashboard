@@ -580,6 +580,7 @@ public class PriceCalculatorService {
 
     }
 
+    @Getter
     public static class HourValue {
         public int hour;
         public double value;

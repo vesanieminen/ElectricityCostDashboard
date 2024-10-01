@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.page.WebStorage;
 import com.vaadin.flow.component.select.Select;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 
@@ -86,9 +88,24 @@ public class ObjectMapperService {
             });
             zoomLevel.setValue(value);
             VaadinSession.getCurrent().setAttribute(key, value);
+
         } catch (IOException e) {
             log.info("Could not read value: %s".formatted(e.toString()));
         }
     }
+
+    public void readLocalDateTime(String key, DatePicker datePicker) {
+        if (key == null) {
+            return;
+        }
+        try {
+            var value = objectMapper.readValue(key, new TypeReference<LocalDate>() {
+            });
+            datePicker.setValue(value);
+        } catch (IOException e) {
+            log.info("Could not read value: %s".formatted(e.toString()));
+        }
+    }
+
 
 }
