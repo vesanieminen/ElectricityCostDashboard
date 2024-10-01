@@ -84,6 +84,7 @@ public class HourlyPricesView extends Main {
         preservedState.selection.setEndDate(spotDataEnd.atZone(fiZoneID).toLocalDate());
 
         grid = new Grid<>(PriceCalculatorService.HourValue.class, false);
+        grid.setAllRowsVisible(true);
         grid.addColumn(item -> "%d:00 - %d:00".formatted(item.getHour(), item.getHour() + 1))
                 .setHeader(getTranslation("Hour"))
                 .setSortable(true)
