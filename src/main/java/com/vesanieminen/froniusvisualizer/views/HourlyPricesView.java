@@ -1,5 +1,16 @@
 package com.vesanieminen.froniusvisualizer.views;
 
+import com.vaadin.flow.component.charts.Chart;
+import com.vaadin.flow.component.charts.model.ChartType;
+import com.vaadin.flow.component.charts.model.Crosshair;
+import com.vaadin.flow.component.charts.model.Labels;
+import com.vaadin.flow.component.charts.model.ListSeries;
+import com.vaadin.flow.component.charts.model.Marker;
+import com.vaadin.flow.component.charts.model.PlotOptionsLine;
+import com.vaadin.flow.component.charts.model.SeriesTooltip;
+import com.vaadin.flow.component.charts.model.Tooltip;
+import com.vaadin.flow.component.charts.model.XAxis;
+import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Main;
@@ -21,6 +32,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getHourlyAveragePrices;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataEnd;
@@ -38,13 +50,14 @@ public class HourlyPricesView extends Main {
     private final DatePicker toDatePicker;
     private final ObjectMapperService mapperService;
     private final Grid<PriceCalculatorService.HourValue> grid;
+    private final Chart chart;
 
     public HourlyPricesView(PreservedState preservedState, ObjectMapperService mapperService) {
         this.mapperService = mapperService;
 
         addClassNames(LumoUtility.Overflow.AUTO, LumoUtility.Padding.Horizontal.SMALL, LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
         // Added fix for iOS Safari header height that changes when scrolling
-        setHeight("var(--fullscreen-height)");
+        //setHeight("var(--fullscreen-height)");
 
         fromDatePicker = new DatePicker(getTranslation("Start period"));
         fromDatePicker.setId(FROM_DATE);
@@ -90,6 +103,8 @@ public class HourlyPricesView extends Main {
                     }
                 });
 
+        chart = createChart();
+
         final var binder = new Binder<Selection>();
         binder.bind(fromDatePicker, Selection::getStartDate, Selection::setStartDate);
         binder.bind(toDatePicker, Selection::getEndDate, Selection::setEndDate);
@@ -106,7 +121,36 @@ public class HourlyPricesView extends Main {
         toDatePicker.addValueChangeListener(item -> mapperService.saveFieldValue(toDatePicker));
 
         final var cssGrid = new CssGrid(fromDatePicker, toDatePicker);
-        add(cssGrid, grid);
+        add(cssGrid, chart, grid);
+    }
+
+    private Chart createChart() {
+        var chart = new Chart(ChartType.COLUMN);
+        chart.getConfiguration().setTitle("");
+        chart.getConfiguration().getLegend().setEnabled(true);
+        chart.getConfiguration().getChart().setStyledMode(true);
+        final var tooltip = new Tooltip();
+        tooltip.setValueDecimals(2);
+        tooltip.setShared(true);
+        chart.getConfiguration().setTooltip(tooltip);
+        XAxis xAxis = new XAxis();
+        xAxis.setCrosshair(new Crosshair());
+        final var xLabel = new Labels();
+        xAxis.setLabels(xLabel);
+        final var categories = IntStream.range(0, 24).mapToObj(i -> i + ":00").toList();
+        xAxis.setCategories(categories.toArray(String[]::new));
+        chart.getConfiguration().addxAxis(xAxis);
+
+        // YAxis
+        final var spotYAxis = new YAxis();
+        spotYAxis.setVisible(true);
+        var spotLabels = new Labels();
+        spotLabels.setFormatter("return this.value +'c/kWh'");
+        spotYAxis.setLabels(spotLabels);
+        spotYAxis.setTitle("");
+        //spotYAxis.setOpposite(true);
+        chart.getConfiguration().addyAxis(spotYAxis);
+        return chart;
     }
 
     private void createResult() {
@@ -116,13 +160,29 @@ public class HourlyPricesView extends Main {
             hourlyDataList.add(new PriceCalculatorService.HourValue(hour, hourlyAveragePrices[hour]));
         }
         grid.setItems(hourlyDataList);
+
+        // Unweighted spot average series
+        final var series = new ListSeries("");
+        for (int i = 0; i < 24; ++i) {
+            series.addData(hourlyAveragePrices[i]);
+        }
+        final var plotOptionsLine = new PlotOptionsLine();
+        plotOptionsLine.setMarker(new Marker(false));
+        final var seriesTooltip = new SeriesTooltip();
+        seriesTooltip.setValueDecimals(2);
+        seriesTooltip.setValueSuffix(getTranslation("c/kWh"));
+        plotOptionsLine.setTooltip(seriesTooltip);
+        series.setPlotOptions(plotOptionsLine);
+        //unweightedSpotAverageSeries.setyAxis(spotYAxis);
+
+        chart.getConfiguration().setSeries(series);
+        chart.drawChart();
     }
 
     public void readFieldValues() {
         WebStorage.getItem(fromDatePicker.getId().orElseThrow(), item -> mapperService.readLocalDateTime(item, fromDatePicker));
         WebStorage.getItem(toDatePicker.getId().orElseThrow(), item -> mapperService.readLocalDateTime(item, toDatePicker));
     }
-
 
     @Setter
     @Getter

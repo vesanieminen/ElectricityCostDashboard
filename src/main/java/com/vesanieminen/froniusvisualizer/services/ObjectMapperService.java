@@ -88,7 +88,6 @@ public class ObjectMapperService {
             });
             zoomLevel.setValue(value);
             VaadinSession.getCurrent().setAttribute(key, value);
-
         } catch (IOException e) {
             log.info("Could not read value: %s".formatted(e.toString()));
         }
