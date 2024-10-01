@@ -2,7 +2,6 @@ package com.vesanieminen.froniusvisualizer.views;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -28,7 +27,7 @@ public class MonthlyPricesView extends Main {
     protected void onAttach(AttachEvent attachEvent) {
         final var monthlyPrices = PriceCalculatorService.getMonthlyPrices();
         final var grid = new Grid<>(PriceCalculatorService.MonthlyData.class, false);
-        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
+        //grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
         grid.setItems(monthlyPrices);
         grid.addColumn(PriceCalculatorService.MonthlyData::month).setHeader(getTranslation("Month")).setSortable(true).setAutoWidth(true);
         Set<Integer> years = monthlyPrices.stream().flatMap(md -> md.averagesByYear().keySet().stream()).collect(Collectors.toSet());
