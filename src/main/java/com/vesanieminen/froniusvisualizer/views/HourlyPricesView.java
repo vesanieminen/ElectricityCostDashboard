@@ -163,7 +163,7 @@ public class HourlyPricesView extends Main {
         grid.setItems(hourlyDataList);
 
         // Unweighted spot average series
-        final var series = new ListSeries("");
+        final var series = new ListSeries(getTranslation("Average spot price in chosen period"));
         for (int i = 0; i < 24; ++i) {
             series.addData(hourlyAveragePrices[i]);
         }
