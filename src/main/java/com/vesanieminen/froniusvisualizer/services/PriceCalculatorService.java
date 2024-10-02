@@ -7,7 +7,6 @@ import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
-import com.vesanieminen.froniusvisualizer.util.Utils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.DoubleSummaryStatistics;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -611,25 +611,35 @@ public class PriceCalculatorService {
         return spotDataEnd.atZone(nordpoolZoneID).getDayOfMonth() == ZonedDateTime.now(nordpoolZoneID).getDayOfMonth();
     }
 
-    public static double[] getHourlyAveragePrices(Instant start, Instant end, boolean vat) {
-        final var averagePrices = spotPriceMap.entrySet().stream()
-                .filter(item -> start.compareTo(item.getKey()) <= 0 && 0 < end.compareTo(item.getKey()))
-                .map(item -> {
-                    final var prices = new double[24];
-                    final var hour = item.getKey().atZone(fiZoneID).getHour();
-                    final var price = item.getValue() * getVAT(item.getKey(), vat);
-                    prices[hour] = price;
-                    return prices;
-                })
-                .reduce(new double[24], Utils::sum);
-        final var size = spotPriceMap.entrySet().stream().filter(item ->
-                start.compareTo(item.getKey()) <= 0 && 0 < end.compareTo(item.getKey())).count();
+    public static averageMinMax getHourlyAveragePrices(Instant start, Instant end, boolean vat) {
+        Map<Integer, DoubleSummaryStatistics> statsByHour = spotPriceMap.entrySet().stream()
+                .filter(item -> !item.getKey().isBefore(start) && item.getKey().isBefore(end))
+                .collect(Collectors.groupingBy(
+                        item -> item.getKey().atZone(fiZoneID).getHour(),
+                        Collectors.summarizingDouble(item -> item.getValue() * getVAT(item.getKey(), vat))
+                ));
 
-        final var test = spotPriceMap.entrySet().stream().filter(item ->
-                start.compareTo(item.getKey()) <= 0 && 0 < end.compareTo(item.getKey())).toList();
-        divide(averagePrices, size / 24.0);
-        return averagePrices;
+        final var averagePrices = new Number[24];
+        final var minPrices = new Number[24];
+        final var maxPrices = new Number[24];
+
+        for (int hour = 0; hour < 24; hour++) {
+            DoubleSummaryStatistics stats = statsByHour.get(hour);
+            if (stats != null && stats.getCount() > 0) {
+                averagePrices[hour] = stats.getAverage();
+                minPrices[hour] = stats.getMin();
+                maxPrices[hour] = stats.getMax();
+            } else {
+                averagePrices[hour] = 0.0;
+                minPrices[hour] = 0.0;
+                maxPrices[hour] = 0.0;
+            }
+        }
+
+        return new averageMinMax(averagePrices, minPrices, maxPrices);
     }
 
+    public record averageMinMax(Number[] average, Number[] min, Number[] max) {
+    }
 
 }

@@ -164,14 +164,14 @@ public class HourlyPricesView extends Main {
         final var hourlyAveragePrices = getHourlyAveragePrices(fromDatePicker.getValue().atStartOfDay(fiZoneID).toInstant(), toDatePicker.getValue().atStartOfDay(fiZoneID).toInstant(), true);
         List<PriceCalculatorService.HourValue> hourlyDataList = new ArrayList<>();
         for (int hour = 0; hour < 24; hour++) {
-            hourlyDataList.add(new PriceCalculatorService.HourValue(hour, hourlyAveragePrices[hour]));
+            hourlyDataList.add(new PriceCalculatorService.HourValue(hour, hourlyAveragePrices.average()[hour].doubleValue()));
         }
         grid.setItems(hourlyDataList);
 
         // Unweighted spot average series
         final var series = new ListSeries(getTranslation("Average spot price in chosen period"));
         for (int i = 0; i < 24; ++i) {
-            series.addData(hourlyAveragePrices[i]);
+            series.addData(hourlyAveragePrices.average()[i]);
         }
         final var plotOptionsLine = new PlotOptionsLine();
         plotOptionsLine.setStep(StepType.LEFT);
