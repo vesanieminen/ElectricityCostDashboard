@@ -2,12 +2,12 @@ package com.vesanieminen.froniusvisualizer.views;
 
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
-import com.vaadin.flow.component.charts.model.Crosshair;
 import com.vaadin.flow.component.charts.model.Labels;
 import com.vaadin.flow.component.charts.model.ListSeries;
 import com.vaadin.flow.component.charts.model.Marker;
 import com.vaadin.flow.component.charts.model.PlotOptionsLine;
 import com.vaadin.flow.component.charts.model.SeriesTooltip;
+import com.vaadin.flow.component.charts.model.StepType;
 import com.vaadin.flow.component.charts.model.Tooltip;
 import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
@@ -27,6 +27,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -83,27 +84,7 @@ public class HourlyPricesView extends Main {
         toDatePicker.setMax(spotDataEnd.atZone(fiZoneID).toLocalDate());
         preservedState.selection.setEndDate(spotDataEnd.atZone(fiZoneID).toLocalDate());
 
-        grid = new Grid<>(PriceCalculatorService.HourValue.class, false);
-        grid.setAllRowsVisible(true);
-        grid.addColumn(item -> "%d:00 - %d:00".formatted(item.getHour(), item.getHour() + 1))
-                .setHeader(getTranslation("Hour"))
-                .setSortable(true)
-                .setAutoWidth(true);
-        grid.addColumn(item -> String.format("%.2f %s", item.getValue(), getTranslation("c/kWh")))
-                .setHeader(getTranslation("Average Price"))
-                .setSortable(true)
-                .setAutoWidth(true)
-                .setPartNameGenerator(item -> {
-                    double averagePrice = item.getValue();
-                    if (averagePrice <= 5) {
-                        return "cheap"; // Green background
-                    } else if (averagePrice < 10) {
-                        return "normal"; // Default background
-                    } else {
-                        return "expensive"; // Red background
-                    }
-                });
-
+        grid = createGrid();
         chart = createChart();
 
         final var binder = new Binder<Selection>();
@@ -125,8 +106,33 @@ public class HourlyPricesView extends Main {
         add(cssGrid, chart, grid);
     }
 
+    private @NotNull Grid<PriceCalculatorService.HourValue> createGrid() {
+        final Grid<PriceCalculatorService.HourValue> grid;
+        grid = new Grid<>(PriceCalculatorService.HourValue.class, false);
+        grid.setAllRowsVisible(true);
+        grid.addColumn(item -> "%d:00 - %d:00".formatted(item.getHour(), item.getHour() + 1))
+                .setHeader(getTranslation("Hour"))
+                .setSortable(true)
+                .setAutoWidth(true);
+        grid.addColumn(item -> String.format("%.2f %s", item.getValue(), getTranslation("c/kWh")))
+                .setHeader(getTranslation("Average Price"))
+                .setSortable(true)
+                .setAutoWidth(true)
+                .setPartNameGenerator(item -> {
+                    double averagePrice = item.getValue();
+                    if (averagePrice <= 5) {
+                        return "cheap"; // Green background
+                    } else if (averagePrice < 10) {
+                        return "normal"; // Default background
+                    } else {
+                        return "expensive"; // Red background
+                    }
+                });
+        return grid;
+    }
+
     private Chart createChart() {
-        var chart = new Chart(ChartType.COLUMN);
+        var chart = new Chart(ChartType.LINE);
         chart.getConfiguration().setTitle("");
         chart.getConfiguration().getLegend().setEnabled(true);
         chart.getConfiguration().getChart().setStyledMode(true);
@@ -135,7 +141,7 @@ public class HourlyPricesView extends Main {
         tooltip.setShared(true);
         chart.getConfiguration().setTooltip(tooltip);
         XAxis xAxis = new XAxis();
-        xAxis.setCrosshair(new Crosshair());
+        //xAxis.setCrosshair(new Crosshair());
         final var xLabel = new Labels();
         xAxis.setLabels(xLabel);
         final var categories = IntStream.range(0, 24).mapToObj(i -> i + ":00").toList();
@@ -168,6 +174,7 @@ public class HourlyPricesView extends Main {
             series.addData(hourlyAveragePrices[i]);
         }
         final var plotOptionsLine = new PlotOptionsLine();
+        plotOptionsLine.setStep(StepType.LEFT);
         plotOptionsLine.setMarker(new Marker(false));
         final var seriesTooltip = new SeriesTooltip();
         seriesTooltip.setValueDecimals(2);
