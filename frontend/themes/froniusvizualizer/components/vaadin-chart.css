@@ -91,3 +91,18 @@
     -ms-user-select: none;
     user-select: none;
 }
+
+
+:host .highcharts-arearange-series.price-range {
+    fill: rgba(173, 216, 230, 0.5); /* Light blue with 50% opacity */
+    stroke: rgba(255, 255, 255, 0); /* Light blue with 50% opacity */
+}
+
+:host .highcharts-line-series.average-price {
+    fill: rgba(255, 255, 255, 0.5); /* Light blue with 50% opacity */
+    stroke: rgba(255, 255, 255, 0.5); /* Light blue with 50% opacity */
+}
+
+:host .highcharts-arearange-series.price-range .highcharts-point {
+    display: none;
+}
