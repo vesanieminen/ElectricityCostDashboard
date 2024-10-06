@@ -250,19 +250,6 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
             chartOptions.setLang(lang);
         }
 
-        //if (!isLiukuriVideoAdShown) {
-        //    isLiukuriVideoAdShown = true;
-        //    final var dialog = new Dialog();
-        //    final var routerLink = new RouterLink(getTranslation("help.ad"), HelpView.class);
-        //    dialog.add(routerLink);
-        //    dialog.setHeaderTitle("User details");
-
-        //    Button closeButton = new Button(MaterialIcon.CLOSE.create(), (e) -> dialog.close());
-        //    closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        //    dialog.getHeader().add(closeButton);
-        //    dialog.open();
-        //}
-
         String url = ((VaadinServletRequest) VaadinService.getCurrentRequest()).getServerName();
         final var notProduction = Arrays.asList("staging");
         upcloudLink.setVisible(!(notProduction.contains(url)));
