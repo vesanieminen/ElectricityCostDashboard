@@ -34,7 +34,7 @@ public class NordpoolSpotService {
 
     private static NordpoolResponse nordpoolResponse;
     public static final String nordPoolSpotFile = "nordpool-spot-data.json";
-    private static final String url = "https://www.nordpoolspot.com/api/marketdata/page/35?currency=,,EUR,EUR";
+    private static final String url = "https://www.nordpoolgroup.com/api/marketdata/page/35?currency=,,EUR,EUR";
     private static List<NordpoolPrice> nordpoolPrices;
     private static LinkedHashMap<Instant, Double> nordpoolPriceMap;
     public static int updated = 0;
