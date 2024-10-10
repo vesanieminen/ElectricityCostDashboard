@@ -132,7 +132,7 @@ public class PriceCalculatorView extends Main {
     public PriceCalculatorView() {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Top.MEDIUM);
 
-        Notification.show(getTranslation("ENTSO-E.warning"), 10000, Notification.Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_WARNING);
+        Notification.show(getTranslation("ENTSO-E.warning"), 10000, Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_WARNING);
 
         final Div wrapper = createWrapper();
 
