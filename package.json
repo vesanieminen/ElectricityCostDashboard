@@ -29,6 +29,7 @@
     "@babel/preset-react": "7.24.7",
     "@rollup/plugin-replace": "5.0.7",
     "@rollup/pluginutils": "5.1.0",
+    "@types/node": "^22.7.5",
     "@types/react": "18.3.4",
     "@types/react-dom": "18.3.0",
     "@vitejs/plugin-react": "4.3.1",
@@ -50,25 +51,26 @@
     "@vaadin/bundles": "$@vaadin/bundles",
     "@vaadin/polymer-legacy-adapter": "$@vaadin/polymer-legacy-adapter",
     "@vaadin/vaadin-development-mode-detector": "$@vaadin/vaadin-development-mode-detector",
-    "@vaadin/vaadin-lumo-styles": "$@vaadin/vaadin-lumo-styles",
-    "@vaadin/vaadin-material-styles": "$@vaadin/vaadin-material-styles",
     "@vaadin/router": "$@vaadin/router",
     "@vaadin/vaadin-usage-statistics": "$@vaadin/vaadin-usage-statistics",
-    "@vaadin/common-frontend": "$@vaadin/common-frontend",
-    "construct-style-sheets-polyfill": "$construct-style-sheets-polyfill",
-    "lit": "$lit",
-    "@polymer/polymer": "$@polymer/polymer",
-    "@vaadin-component-factory/vcf-nav": "$@vaadin-component-factory/vcf-nav",
-    "proj4": "$proj4",
-    "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
-    "date-fns": "$date-fns",
-    "line-awesome": "$line-awesome",
     "@vaadin/react-components": "$@vaadin/react-components",
     "@vaadin/react-components-pro": "$@vaadin/react-components-pro",
+    "@vaadin/common-frontend": "$@vaadin/common-frontend",
     "react-dom": "$react-dom",
+    "construct-style-sheets-polyfill": "$construct-style-sheets-polyfill",
     "react-router-dom": "$react-router-dom",
-    "react": "$react"
+    "lit": "$lit",
+    "@polymer/polymer": "$@polymer/polymer",
+    "react": "$react",
+    "@vaadin-component-factory/vcf-nav": "$@vaadin-component-factory/vcf-nav",
+    "date-fns": "$date-fns",
+    "proj4": "$proj4",
+    "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
+    "@vaadin/vaadin-lumo-styles": "$@vaadin/vaadin-lumo-styles",
+    "@vaadin/vaadin-material-styles": "$@vaadin/vaadin-material-styles",
+    "line-awesome": "$line-awesome"
   },
+  "type": "module",
   "vaadin": {
     "dependencies": {
       "@polymer/polymer": "3.5.1",
@@ -113,7 +115,6 @@
       "workbox-core": "7.1.0",
       "workbox-precaching": "7.1.0"
     },
-    "hash": "76956d9f78e60312a44ae8ecf7676badea5dde73c4d9b0053d51b2eaee3cdc80"
-  },
-  "type": "module"
+    "hash": "db5d1c1b728f16fd599c35b37c42eb649bd5a45bf713e4d912149ddebec1151d"
+  }
 }
