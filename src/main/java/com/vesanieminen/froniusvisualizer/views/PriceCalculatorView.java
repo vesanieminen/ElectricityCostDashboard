@@ -79,6 +79,7 @@ import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSeasonalWinterConsumption;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSeasonalWinterPrice;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotElectricityPriceDetails;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotElectricityPriceDetailsPerMonth;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getFingridUsageData;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataEnd;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataStart;
@@ -509,6 +510,7 @@ public class PriceCalculatorView extends Main {
                 }
                 final var consumptionData = getFingridUsageData(lastConsumptionData);
                 final var spotCalculation = calculateSpotElectricityPriceDetails(consumptionData.data(), spotMarginField.getValue(), true, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                final var yearMonthSpotCalculationHashMap = calculateSpotElectricityPriceDetailsPerMonth(consumptionData.data(), spotMarginField.getValue(), true, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                 resultLayout.removeAll();
                 chartLayout.removeAll();
 
@@ -1021,7 +1023,7 @@ public class PriceCalculatorView extends Main {
 
         // Weighted spot average series
         final var spotAverageSeries = new ListSeries(getTranslation("Spot average (without margin)"));
-        for (int i = 0; i < spotCalculation.spotAverage.length; ++i) {
+        for (int i = 0; i < spotCalculation.spotAveragePerHour.length; ++i) {
             final var consumptionHour = spotCalculation.consumptionHours[i];
             final var costHoursWithoutMargin = spotCalculation.costHoursWithoutMargin[i];
             spotAverageSeries.addData(costHoursWithoutMargin / consumptionHour * 100);
@@ -1039,8 +1041,8 @@ public class PriceCalculatorView extends Main {
 
         // Unweighted spot average series
         final var unweightedSpotAverageSeries = new ListSeries(getTranslation("Unweighted spot average by the hour"));
-        for (int i = 0; i < spotCalculation.spotAverage.length; ++i) {
-            unweightedSpotAverageSeries.addData(spotCalculation.spotAverage[i]);
+        for (int i = 0; i < spotCalculation.spotAveragePerHour.length; ++i) {
+            unweightedSpotAverageSeries.addData(spotCalculation.spotAveragePerHour[i]);
         }
         final var unWeightedSpotAveragePlotOptionsColumn = new PlotOptionsLine();
         unWeightedSpotAveragePlotOptionsColumn.setMarker(new Marker(false));
