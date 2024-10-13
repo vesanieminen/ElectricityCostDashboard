@@ -27,6 +27,8 @@ import com.vaadin.flow.component.checkbox.CheckboxGroupVariant;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.details.Details;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.AnchorTarget;
 import com.vaadin.flow.component.html.Div;
@@ -45,12 +47,14 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
+import com.vesanieminen.froniusvisualizer.components.MaterialIcon;
 import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService;
 import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.FingridUsageData;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.vaadin.miki.superfields.numbers.SuperDoubleField;
 
 import java.io.IOException;
@@ -59,9 +63,12 @@ import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.IntStream;
@@ -521,6 +528,28 @@ public class PriceCalculatorView extends Main {
                 final var twoDecimalsWithPlusPrefix = getNumberFormatMaxTwoDecimalsWithPlusPrefix(getLocale());
                 final NumberFormat threeDecimals = getNumberFormat(getLocale(), 3);
 
+                final var monthlyResultsH2 = new H2(getTranslation("calculator.results.per.month"));
+                resultLayout.add(monthlyResultsH2);
+
+                {
+                    List<Map.Entry<YearMonth, PriceCalculatorService.SpotCalculation>> dataList = new ArrayList<>(yearMonthSpotCalculationHashMap.entrySet());
+                    Grid<Map.Entry<YearMonth, PriceCalculatorService.SpotCalculation>> grid = new Grid<>();
+                    grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
+                    grid.setItems(dataList);
+                    grid.addColumn(entry -> entry.getKey().getYear()).setHeader(getTranslation("Year")).setSortable(true).setAutoWidth(true);
+                    grid.addColumn(entry -> entry.getKey().getMonthValue()).setHeader(getTranslation("Month")).setSortable(true).setAutoWidth(true);
+                    grid.addColumn(entry -> String.format("%.2f", entry.getValue().averagePrice))
+                            .setHeader("My Spot Price (c/kWh)").setSortable(true).setAutoWidth(true);
+                    grid.addColumn(entry -> String.format("%.2f", (entry.getValue().totalCostWithoutMargin * 100 - entry.getValue().averagePriceWithoutMargin * entry.getValue().totalConsumption) / entry.getValue().totalConsumption))
+                            .setHeader("Cost Factor").setSortable(true).setAutoWidth(true);
+                    grid.addColumn(entry -> String.format("%.2f", entry.getValue().totalConsumption))
+                            .setHeader("Consumption (kWh)").setSortable(true).setAutoWidth(true);
+                    resultLayout.add(grid);
+                }
+
+                final var wholePeriodH2 = new H2(getTranslation("calculator.results.whole.period"));
+                resultLayout.add(wholePeriodH2);
+
                 final Div overviewDiv = addSection(resultLayout, getTranslation("Spot price"));
 
                 // Spot labels
@@ -546,7 +575,8 @@ public class PriceCalculatorView extends Main {
                 overviewDiv.add(new DoubleLabel(getTranslation("calculator.spot.difference.percentage"), formattedOwnSpotVsAverage + " %", true));
                 final var costEffect = (spotCalculation.totalCostWithoutMargin * 100 - spotCalculation.averagePriceWithoutMargin * spotCalculation.totalConsumption) / spotCalculation.totalConsumption;
                 final var costEffectFormatted = twoDecimalsWithPlusPrefix.format(costEffect);
-                overviewDiv.add(new DoubleLabel(getTranslation("calculator.spot.difference.cents"), costEffectFormatted + " " + getTranslation("c/kWh"), true));
+                final var spotDifferenceSpan = createCostEffectSpan(costEffectFormatted);
+                overviewDiv.add(spotDifferenceSpan);
 
                 final var summaryDTO = new SummaryDTO();
 
@@ -706,6 +736,8 @@ public class PriceCalculatorView extends Main {
                     summarySection.add(summaryDiv);
                     summaryDiv.add(new DoubleLabel(getTranslation("Calculation period (start times)"), start + " - " + end, true));
                     summaryDiv.add(new DoubleLabel(getTranslation("Total consumption over period"), numberFormat.format(spotCalculation.totalConsumption) + " kWh", true));
+                    summaryDiv.add(new DoubleLabel(getTranslation("Average spot price (without margin)"), sixDecimals.format(weightedAverage - spotMarginField.getValue()) + " " + getTranslation("c/kWh"), true));
+                    summaryDiv.add(createCostEffectSpan(costEffectFormatted));
 
                     { // spot summary
                         var spotTotal = spotCalculation.totalCost;
@@ -811,6 +843,20 @@ public class PriceCalculatorView extends Main {
         content.add(calculateButton);
         add(resultLayout);
         add(chartLayout);
+    }
+
+    private @NotNull DoubleLabel createCostEffectSpan(String costEffectFormatted) {
+        final var spotDifferenceSpan = new DoubleLabel(getTranslation("calculator.spot.difference.cents"), costEffectFormatted + " " + getTranslation("c/kWh"), true);
+        final var spanTop = spotDifferenceSpan.getSpanTop();
+        spanTop.addClassNames(
+                LumoUtility.Display.FLEX,
+                LumoUtility.JustifyContent.CENTER,
+                LumoUtility.Gap.SMALL
+        );
+        spanTop.add(MaterialIcon.ERROR.create(LumoUtility.TextColor.SECONDARY));
+        spotDifferenceSpan.getSpanTop().setTitle(getTranslation("calculator.long.period.note"));
+        spotDifferenceSpan.getSpanBottom().setTitle(getTranslation("calculator.long.period.note"));
+        return spotDifferenceSpan;
     }
 
     private void addCostsAndCreateLabel(Double cost, Double addedCost, String text, String translate, Div div, NumberFormat numberFormat) {
