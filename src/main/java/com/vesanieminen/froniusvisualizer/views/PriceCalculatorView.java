@@ -64,6 +64,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -531,41 +532,80 @@ public class PriceCalculatorView extends Main {
                 final var monthlyResultsH2 = new H2(getTranslation("calculator.results.per.month"));
                 resultLayout.add(monthlyResultsH2);
 
+                // monthly results
                 {
                     List<Map.Entry<YearMonth, PriceCalculatorService.SpotCalculation>> dataList = new ArrayList<>(yearMonthSpotCalculationHashMap.entrySet());
+                    dataList.sort(Map.Entry.comparingByKey());
                     Grid<Map.Entry<YearMonth, PriceCalculatorService.SpotCalculation>> grid = new Grid<>();
+                    grid.setAllRowsVisible(true);
                     grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
                     grid.setItems(dataList);
-                    grid.addColumn(entry -> entry.getKey().getYear()).setHeader(getTranslation("Year")).setSortable(true).setAutoWidth(true);
-                    grid.addColumn(entry -> entry.getKey().getMonthValue()).setHeader(getTranslation("Month")).setSortable(true).setAutoWidth(true);
-                    grid.addColumn(entry -> String.format("%.2f", entry.getValue().averagePrice))
-                            .setHeader("My Spot Price (c/kWh)").setSortable(true).setAutoWidth(true);
-                    grid.addColumn(entry -> String.format("%.2f", (entry.getValue().totalCostWithoutMargin * 100 - entry.getValue().averagePriceWithoutMargin * entry.getValue().totalConsumption) / entry.getValue().totalConsumption))
-                            .setHeader("Cost Factor").setSortable(true).setAutoWidth(true);
-                    grid.addColumn(entry -> String.format("%.2f", entry.getValue().totalConsumption))
-                            .setHeader("Consumption (kWh)").setSortable(true).setAutoWidth(true);
+                    grid.addColumn(entry -> "%s / %s".formatted(entry.getKey().getMonth().getDisplayName(TextStyle.FULL_STANDALONE, getLocale()), entry.getKey().getYear() - 2000))
+                            .setHeader("%s / %s".formatted(getTranslation("Month"), getTranslation("Year")))
+                            .setSortable(true)
+                            .setAutoWidth(true)
+                            .setComparator(Map.Entry.comparingByKey());
+                    grid.addColumn(entry -> numberFormat.format(calculateOwnSpotAverageWithMargin(entry.getValue()) - spotMarginField.getValue()))
+                            .setHeader(getTranslation("My avg."))
+                            .setSortable(true)
+                            .setAutoWidth(true)
+                            .setPartNameGenerator(entry -> {
+                                final var averagePrice = calculateOwnSpotAverageWithMargin(entry.getValue()) - spotMarginField.getValue();
+                                if (averagePrice <= 5) {
+                                    return "cheap"; // Green background
+                                } else if (averagePrice < 10) {
+                                    return "normal"; // Default background
+                                } else {
+                                    return "expensive"; // Red background
+                                }
+                            });
+                    grid.addColumn(entry -> numberFormat.format(calculateCostEffect(entry.getValue())))
+                            .setHeader(getTranslation("calculator.spot.difference.cents"))
+                            .setSortable(true)
+                            .setAutoWidth(true)
+                            .setPartNameGenerator(entry -> {
+                                final var costEffect = calculateCostEffect(entry.getValue());
+                                if (costEffect <= 0) {
+                                    return "cheap"; // Green background
+                                } else if (costEffect < 2) {
+                                    return "normal"; // Default background
+                                } else {
+                                    return "expensive"; // Red background
+                                }
+                            });
+                    grid.addColumn(entry -> numberFormat.format(entry.getValue().averagePriceWithoutMargin))
+                            .setHeader(getTranslation("Spot avg."))
+                            .setSortable(true)
+                            .setAutoWidth(true)
+                            .setPartNameGenerator(entry -> {
+                                final var averagePrice = entry.getValue().averagePriceWithoutMargin;
+                                if (averagePrice <= 5) {
+                                    return "cheap"; // Green background
+                                } else if (averagePrice < 10) {
+                                    return "normal"; // Default background
+                                } else {
+                                    return "expensive"; // Red background
+                                }
+                            });
+                    ;
+                    grid.addColumn(entry -> numberFormat.format(entry.getValue().totalConsumption))
+                            .setHeader(getTranslation("Consumption")).setSortable(true).setAutoWidth(true);
                     resultLayout.add(grid);
                 }
 
                 final var wholePeriodH2 = new H2(getTranslation("calculator.results.whole.period"));
+                wholePeriodH2.addClassNames(
+                        LumoUtility.Margin.Top.MEDIUM
+                );
                 resultLayout.add(wholePeriodH2);
 
                 final Div overviewDiv = addSection(resultLayout, getTranslation("Spot price"));
 
                 // Spot labels
-                //final var totalCost = new BigDecimal(spotCalculation.totalCost).doubleValue();
-                //final var totalCostWithoutMargin = new BigDecimal(spotCalculation.totalCostWithoutMargin).doubleValue();
-                // electricity companies calculate the euros with max 2 decimals:
-                final var totalCost = new BigDecimal(spotCalculation.totalCost).setScale(2, RoundingMode.HALF_UP).doubleValue();
-                // the following method provides rounding errors between the total cost with margin and without.
-                //final var totalCostWithoutMargin = new BigDecimal(spotCalculation.totalCostWithoutMargin).setScale(2, RoundingMode.HALF_UP).doubleValue();
-                // Accurate:
-                final var weightedAverage = totalCost / spotCalculation.totalConsumption * 100;
-                //final var weightedAverageWithoutMargin = totalCostWithoutMargin / spotCalculation.totalConsumption * 100;
-                // Helen calculates spot average like this:
-                //final var weightedAverage = totalCost / ((int) spotCalculation.totalAmount) * 100;
+                final var weightedAverage = calculateOwnSpotAverageWithMargin(spotCalculation);
+                final var spotAverageWithoutMargin = weightedAverage - spotMarginField.getValue();
                 overviewDiv.add(new DoubleLabel(getTranslation("Average spot price (incl. margin)"), sixDecimals.format(weightedAverage) + " " + getTranslation("c/kWh"), true));
-                overviewDiv.add(new DoubleLabel(getTranslation("Average spot price (without margin)"), sixDecimals.format(weightedAverage - spotMarginField.getValue()) + " " + getTranslation("c/kWh"), true));
+                overviewDiv.add(new DoubleLabel(getTranslation("Average spot price (without margin)"), sixDecimals.format(spotAverageWithoutMargin) + " " + getTranslation("c/kWh"), true));
                 overviewDiv.add(new DoubleLabel(getTranslation("Total spot cost (incl. margin)"), numberFormat.format(spotCalculation.totalCost) + " €", true));
                 overviewDiv.add(new DoubleLabel(getTranslation("Total spot cost (without margin)"), numberFormat.format(spotCalculation.totalCostWithoutMargin) + " €", true));
                 overviewDiv.add(new DoubleLabel(getTranslation("Unweighted spot average"), numberFormat.format(spotCalculation.averagePriceWithoutMargin) + " " + getTranslation("c/kWh"), true));
@@ -573,7 +613,7 @@ public class PriceCalculatorView extends Main {
                 final var loweredCost = (priceWithoutMargin - spotCalculation.averagePriceWithoutMargin) / Math.abs(spotCalculation.averagePriceWithoutMargin) * 100;
                 final var formattedOwnSpotVsAverage = twoDecimalsWithPlusPrefix.format(loweredCost);
                 overviewDiv.add(new DoubleLabel(getTranslation("calculator.spot.difference.percentage"), formattedOwnSpotVsAverage + " %", true));
-                final var costEffect = (spotCalculation.totalCostWithoutMargin * 100 - spotCalculation.averagePriceWithoutMargin * spotCalculation.totalConsumption) / spotCalculation.totalConsumption;
+                final var costEffect = calculateCostEffect(spotCalculation);
                 final var costEffectFormatted = twoDecimalsWithPlusPrefix.format(costEffect);
                 final var spotDifferenceSpan = createCostEffectSpan(costEffectFormatted);
                 overviewDiv.add(spotDifferenceSpan);
@@ -843,6 +883,25 @@ public class PriceCalculatorView extends Main {
         content.add(calculateButton);
         add(resultLayout);
         add(chartLayout);
+    }
+
+    private static double calculateCostEffect(PriceCalculatorService.SpotCalculation spotCalculation) {
+        return (spotCalculation.totalCostWithoutMargin * 100 - spotCalculation.averagePriceWithoutMargin * spotCalculation.totalConsumption) / spotCalculation.totalConsumption;
+    }
+
+    private static double calculateOwnSpotAverageWithMargin(PriceCalculatorService.SpotCalculation spotCalculation) {
+        //final var totalCost = new BigDecimal(spotCalculation.totalCost).doubleValue();
+        //final var totalCostWithoutMargin = new BigDecimal(spotCalculation.totalCostWithoutMargin).doubleValue();
+        // electricity companies calculate the euros with max 2 decimals:
+        final var totalCost = new BigDecimal(spotCalculation.totalCost).setScale(2, RoundingMode.HALF_UP).doubleValue();
+        // the following method provides rounding errors between the total cost with margin and without.
+        //final var totalCostWithoutMargin = new BigDecimal(spotCalculation.totalCostWithoutMargin).setScale(2, RoundingMode.HALF_UP).doubleValue();
+        // Accurate:
+        final var weightedAverage = totalCost / spotCalculation.totalConsumption * 100;
+        //final var weightedAverageWithoutMargin = totalCostWithoutMargin / spotCalculation.totalConsumption * 100;
+        // Helen calculates spot average like this:
+        //final var weightedAverage = totalCost / ((int) spotCalculation.totalAmount) * 100;
+        return weightedAverage;
     }
 
     private @NotNull DoubleLabel createCostEffectSpan(String costEffectFormatted) {
