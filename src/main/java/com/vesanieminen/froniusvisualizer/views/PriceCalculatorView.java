@@ -538,6 +538,7 @@ public class PriceCalculatorView extends Main {
                     dataList.sort(Map.Entry.comparingByKey());
                     Grid<Map.Entry<YearMonth, PriceCalculatorService.SpotCalculation>> grid = new Grid<>();
                     grid.setAllRowsVisible(true);
+                    grid.setColumnReorderingAllowed(true);
                     grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
                     grid.setItems(dataList);
                     grid.addColumn(entry -> "%s / %s".formatted(entry.getKey().getMonth().getDisplayName(TextStyle.FULL_STANDALONE, getLocale()), entry.getKey().getYear() - 2000))
@@ -587,9 +588,19 @@ public class PriceCalculatorView extends Main {
                                     return "expensive"; // Red background
                                 }
                             });
-                    ;
                     grid.addColumn(entry -> numberFormat.format(entry.getValue().totalConsumption))
-                            .setHeader(getTranslation("Consumption")).setSortable(true).setAutoWidth(true);
+                            .setHeader(getTranslation("Consumption"))
+                            .setSortable(true)
+                            .setAutoWidth(true);
+                    grid.addColumn(entry -> "%s €".formatted(numberFormat.format(entry.getValue().totalCost)))
+                            .setHeader(getTranslation("Total spot cost (incl. margin)"))
+                            .setSortable(true)
+                            .setAutoWidth(true);
+                    grid.addColumn(entry -> "%s €".formatted(numberFormat.format(entry.getValue().totalCostWithoutMargin)))
+                            .setHeader(getTranslation("Total spot cost (without margin)"))
+                            .setSortable(true)
+                            .setAutoWidth(true);
+
                     resultLayout.add(grid);
                 }
 
