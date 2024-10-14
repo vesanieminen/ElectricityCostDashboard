@@ -28,7 +28,7 @@ public class SpotHintaService {
         var newSpotHintaResponse = runAndMapToResponse(query);
         var time = ZonedDateTime.of(Utils.getCurrentTimeWithHourPrecision(), fiZoneID).plusHours(36);
         if (newSpotHintaResponse.size() > 1) {
-            var previous = newSpotHintaResponse.get(0).TimeStamp;
+            var previous = newSpotHintaResponse.getFirst().TimeStamp;
             for (int i = 1; i < newSpotHintaResponse.size(); ++i) {
                 var current = newSpotHintaResponse.get(i).TimeStamp;
                 // only use estimates of up to 36h from current Finnish time (= Fingrid wind estimate)

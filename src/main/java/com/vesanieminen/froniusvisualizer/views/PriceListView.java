@@ -146,7 +146,7 @@ public class PriceListView extends Main {
             final var localDateTime = entry.timeInstant().atZone(fiZoneID).toLocalDateTime();
             day.setText(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale).format(localDateTime));
             final var timeSpan = new Span(DateTimeFormatter.ofPattern("HH:mm").withLocale(locale).format(localDateTime));
-            final var vatPrice = entry.price() * getVAT(entry.timeInstant());
+            final var vatPrice = entry.price() * getVAT(entry.timeInstant()) / 10;
 
             final NumberFormat numberFormat = getNumberFormat(getLocale(), 2);
             numberFormat.setMinimumFractionDigits(2);

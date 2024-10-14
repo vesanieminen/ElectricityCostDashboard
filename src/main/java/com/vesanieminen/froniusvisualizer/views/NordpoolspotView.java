@@ -43,14 +43,14 @@ import com.vesanieminen.froniusvisualizer.services.model.FingridLiteResponse;
 import com.vesanieminen.froniusvisualizer.services.model.FingridRealtimeResponse;
 import com.vesanieminen.froniusvisualizer.services.model.FmiObservationResponse;
 import com.vesanieminen.froniusvisualizer.services.model.FmiObservationResponse.FmiObservation;
-import com.vesanieminen.froniusvisualizer.services.model.NordpoolResponse;
+import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import com.vesanieminen.froniusvisualizer.services.model.SpotHintaResponse;
+import lombok.Getter;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -64,7 +64,6 @@ import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisYearWithoutVAT;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceToday;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceTodayWithoutVAT;
-import static com.vesanieminen.froniusvisualizer.util.Utils.convertNordpoolLocalDateTimeToFinnish;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.format;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentInstantHourPrecisionFinnishZone;
@@ -72,8 +71,6 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHo
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getVAT;
 import static com.vesanieminen.froniusvisualizer.util.Utils.isDaylightSavingsInFinland;
-import static com.vesanieminen.froniusvisualizer.util.Utils.nordpoolZoneID;
-import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
 @PageTitle("Chart" + URL_SUFFIX)
@@ -168,7 +165,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
 
     private Chart renderView() {
         isInitialRender = false;
-        NordpoolResponse nordpoolResponse;
+        List<NordpoolPrice> nordpoolPrices;
         FingridRealtimeResponse fingridResponse;
         List<FingridLiteResponse> windEstimateResponses;
         List<FingridLiteResponse> productionEstimateResponses;
@@ -176,7 +173,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         List<SpotHintaResponse> temperatureForecastList;
         FmiObservationResponse temperatureObservations;
         try {
-            nordpoolResponse = NordpoolSpotService.getLatest7Days();
+            nordpoolPrices = NordpoolSpotService.getLatest7DaysList();
             fingridResponse = FingridService.getLatest7Days();
             windEstimateResponses = FingridService.getWindEstimate();
             productionEstimateResponses = FingridService.getProductionEstimate();
@@ -235,12 +232,12 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
             if (windEstimateDataSeries == null) {
                 add(new Span(getTranslation("Fingrid not responding for estimate data")));
             }
-            final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, dateTimeFormatter, seriesList);
+            final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolPrices, chart, dateTimeFormatter, seriesList);
             configureChartTooltips(chart, spotPriceDataSeries);
             //setNetToday(fingridResponse, df, netToday);
         } else {
             add(new Span(getTranslation("Fingrid API is down currently ;~(")));
-            final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolResponse, chart, dateTimeFormatter, new ArrayList<>());
+            final var spotPriceDataSeries = createSpotPriceDataSeries(nordpoolPrices, chart, dateTimeFormatter, new ArrayList<>());
             configureChartTooltips(chart, spotPriceDataSeries);
         }
 
@@ -267,8 +264,8 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
 
         add(chart);
 
-        if (nordpoolResponse.isValid()) {
-            final var spotDataUpdatedTime = convertNordpoolLocalDateTimeToFinnish(nordpoolResponse.data.DateUpdated);
+        if (!nordpoolPrices.isEmpty()) {
+            final var spotDataUpdatedTime = NordpoolSpotService.getUpdatedAt();
             final var spotDataUpdated = format(spotDataUpdatedTime, getLocale());
             final var spotDataUpdatedSpan = new Span(getTranslation("price.data.updated") + ": " + spotDataUpdated + ", ");
             spotDataUpdatedSpan.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
@@ -468,19 +465,17 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         netToday.setTitleBottom(formattedValue);
     }
 
+    @Getter
     public enum VAT {
         VAT("With VAT"),
         VAT0("Without VAT");
 
-        private String vatName;
+        private final String vatName;
 
         VAT(String vatName) {
             this.vatName = vatName;
         }
 
-        public String getVatName() {
-            return vatName;
-        }
     }
 
     private void createMenuLayout() {
@@ -503,7 +498,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         }));
     }
 
-    private DataSeries createSpotPriceDataSeries(NordpoolResponse nordpoolResponse, Chart chart, DateTimeFormatter dateTimeFormatter, ArrayList<Series> series) {
+    private DataSeries createSpotPriceDataSeries(List<NordpoolPrice> nordpoolPrices, Chart chart, DateTimeFormatter dateTimeFormatter, ArrayList<Series> series) {
         final NumberFormat decimalFormat = getNumberFormat(getLocale(), 2);
         decimalFormat.setMinimumFractionDigits(2);
         var now = getCurrentTimeWithHourPrecision();
@@ -512,55 +507,43 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         var total = 0d;
         var amount = 0;
         final var dataSeries = new DataSeries(fiElectricityPriceTitle);
-        if (nordpoolResponse == null) {
+        if (nordpoolPrices == null) {
             return dataSeries;
         }
-        final var rows = nordpoolResponse.data.Rows;
-        int columnIndex = 6;
-        while (columnIndex >= 0) {
-            for (NordpoolResponse.Row row : rows.subList(0, rows.size() - 6)) {
-                final var dataSeriesItem = new DataSeriesItem();
-                final var time = row.StartTime.toString().split("T")[1];
-                NordpoolResponse.Column column = row.Columns.get(columnIndex);
-                final var dateTimeString = column.Name + " " + time;
-                final var instant = LocalDateTime.parse(dateTimeString, dateTimeFormatter).atZone(nordpoolZoneID).toInstant();
-                dataSeriesItem.setX(instant);
-                final var localDateTime = LocalDateTime.ofInstant(instant, fiZoneID);
-                try {
-                    var y = 0.0d;
-                    if (hasVat) {
-                        y = numberFormat.parse(column.Value.replaceAll(" ", "")).doubleValue() * getVAT(instant) / 10;
-                    } else {
-                        y = numberFormat.parse(column.Value.replaceAll(" ", "")).doubleValue() / 10;
-                    }
-                    total += y;
-                    ++amount;
-                    dataSeriesItem.setY(y);
-                    if (Objects.equals(localDateTime, now)) {
-                        priceNow.setTitleBottom(decimalFormat.format(y));
-                    }
-                    if (Objects.equals(localDateTime, now.plusHours(1))) {
-                        nextPrice.setTitleBottom(decimalFormat.format(y));
-                    }
-                    if (localDateTime.getDayOfMonth() == now.getDayOfMonth()) {
-                        if (y > highest) {
-                            highest = y;
-                        }
-                        if (y < lowest) {
-                            lowest = y;
-                        }
-                    }
-                } catch (ParseException e) {
-                    // skip when the time is "-": changing from or to summer time.
-                    continue;
-                }
-                dataSeries.add(dataSeriesItem);
+
+        for (NordpoolPrice nordpoolPrice : nordpoolPrices) {
+            final var dataSeriesItem = new DataSeriesItem();
+            dataSeriesItem.setX(nordpoolPrice.timeInstant());
+            final var localDateTime = LocalDateTime.ofInstant(nordpoolPrice.timeInstant(), fiZoneID);
+            var y = 0.0d;
+            if (hasVat) {
+                y = nordpoolPrice.price() * getVAT(nordpoolPrice.timeInstant());
+            } else {
+                y = nordpoolPrice.price();
             }
-            --columnIndex;
+            total += y;
+            ++amount;
+            dataSeriesItem.setY(y);
+            if (Objects.equals(localDateTime, now)) {
+                priceNow.setTitleBottom(decimalFormat.format(y));
+            }
+            if (Objects.equals(localDateTime, now.plusHours(1))) {
+                nextPrice.setTitleBottom(decimalFormat.format(y));
+            }
+            if (localDateTime.getDayOfMonth() == now.getDayOfMonth()) {
+                if (y > highest) {
+                    highest = y;
+                }
+                if (y < lowest) {
+                    lowest = y;
+                }
+            }
+            dataSeries.add(dataSeriesItem);
         }
+
         lowestAndHighest.setTitleBottom(decimalFormat.format(lowest) + " / " + decimalFormat.format(highest));
         averagePrice7Days.setTitleBottom(decimalFormat.format(total / amount));
-        series.add(0, dataSeries);
+        series.addFirst(dataSeries);
         chart.getConfiguration().setSeries(series);
         return dataSeries;
     }
