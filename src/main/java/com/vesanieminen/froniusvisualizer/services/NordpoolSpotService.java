@@ -98,8 +98,10 @@ public class NordpoolSpotService {
                 try {
                     double price = Double.parseDouble(priceStr.replace(",", ".").replace(" ", "")) / 10;
                     NordpoolPrice nordpoolPrice = new NordpoolPrice(price, deliveryStart.toEpochMilli());
-                    nordpoolPrices.add(nordpoolPrice);
-                    nordpoolPriceMap.put(deliveryStart, price);
+                    if (!nordpoolPriceMap.containsKey(deliveryStart)) {
+                        nordpoolPrices.add(nordpoolPrice);
+                        nordpoolPriceMap.put(deliveryStart, price);
+                    }
                 } catch (NumberFormatException e) {
                     log.warn("Invalid price format: {}", priceStr);
                 }
