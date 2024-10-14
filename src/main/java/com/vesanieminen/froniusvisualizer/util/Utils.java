@@ -133,10 +133,20 @@ public class Utils {
         return ZonedDateTime.now(fiZoneID).withMinute(0).withSecond(0).plusHours(1);
     }
 
+    public static ZonedDateTime getNextMinute() {
+        return ZonedDateTime.now(fiZoneID).withSecond(0).plusMinutes(1);
+    }
+
     public static long getSecondsToNextEvenHour() {
         ZonedDateTime now = ZonedDateTime.now(Utils.fiZoneID);
         ZonedDateTime nextHour = Utils.getNextHour();
         return Duration.between(now, nextHour).getSeconds();
+    }
+
+    public static long getSecondsToNextEvenMinute() {
+        ZonedDateTime now = ZonedDateTime.now(Utils.fiZoneID);
+        ZonedDateTime nextMinute = Utils.getNextMinute();
+        return Duration.between(now, nextMinute).getSeconds();
     }
 
     public static ZonedDateTime getNextTimeAt(int hour, int minute) {

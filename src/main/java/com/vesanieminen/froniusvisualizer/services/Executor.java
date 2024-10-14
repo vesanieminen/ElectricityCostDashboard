@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.updateData;
 import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.getAndWriteToFile2YearData;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getSecondsToNextEvenHour;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getSecondsToNextEvenMinute;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getSecondsToNextTimeAt;
 
 @Slf4j
@@ -46,9 +47,9 @@ public class Executor {
 
         // hourly schedules
         executorService.scheduleAtFixedRate(
-                () -> safeExecute(() -> updateNordpoolData(LocalDate.now().plusDays(1))),
-                getSecondsToNextEvenHour(),
-                TimeUnit.HOURS.toSeconds(1),
+                () -> safeExecute(() -> updateNordpoolData(LocalDate.now().plusDays(1), false)),
+                getSecondsToNextEvenMinute(),
+                TimeUnit.MINUTES.toSeconds(1),
                 TimeUnit.SECONDS
         );
         executorService.scheduleAtFixedRate(
@@ -74,7 +75,7 @@ public class Executor {
 
         // Nordpool daily fetch at 13:51 Finnish time
         executorService.scheduleAtFixedRate(
-                () -> safeExecute(() -> updateNordpoolData(LocalDate.now().plusDays(1))),
+                () -> safeExecute(() -> updateNordpoolData(LocalDate.now().plusDays(1), true)),
                 getSecondsToNextTimeAt(13, 51),
                 TimeUnit.DAYS.toSeconds(1),
                 TimeUnit.SECONDS
@@ -89,10 +90,10 @@ public class Executor {
         }
     }
 
-    public static void updateNordpoolData(LocalDate localDate) {
+    public static void updateNordpoolData(LocalDate localDate, boolean forceUpdate) {
         log.info("Started update Nordpool");
         final var startTime = System.currentTimeMillis();
-        updateData(localDate, true);
+        updateData(localDate, forceUpdate);
         log.info("Ended update Nordpool in {} seconds", (System.currentTimeMillis() - startTime) / 1000.0);
     }
 
