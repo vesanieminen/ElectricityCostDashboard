@@ -16,13 +16,16 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
+import static com.vesanieminen.froniusvisualizer.util.Utils.isAfter_13_45;
+import static com.vesanieminen.froniusvisualizer.util.Utils.nordpoolZoneID;
 
 @Slf4j
 public class NordpoolSpotService {
@@ -52,6 +55,12 @@ public class NordpoolSpotService {
             log.info("Skipped Nordpool update because it has already been updated successfully today.");
             return;
         }
+
+        if (!isAfter_13_45(ZonedDateTime.now(fiZoneID)) /*&& hasBeenUpdatedSuccessfullyYesterday()*/ && !forceUpdate) {
+            log.info("skipped Nordpool update due to not having new data available yet");
+            return;
+        }
+
 
         URI uri = buildUri(date);
         HttpRequest request = HttpRequest.newBuilder()
@@ -135,8 +144,17 @@ public class NordpoolSpotService {
             return false;
         }
         Instant dateUpdated = Instant.parse(nordpoolResponse.updatedAt);
-        LocalDate date = dateUpdated.atZone(ZoneId.systemDefault()).toLocalDate();
-        return date.equals(LocalDate.now());
+        final var zonedDateTime = dateUpdated.atZone(nordpoolZoneID).truncatedTo(ChronoUnit.DAYS);
+        final var other = ZonedDateTime.now(nordpoolZoneID).truncatedTo(ChronoUnit.DAYS);
+        return zonedDateTime.isAfter(other);
+    }
+
+    public static boolean hasBeenUpdatedSuccessfullyYesterday() {
+        if (nordpoolResponse == null) {
+            return false;
+        }
+        // TODO: implement this
+        return false;
     }
 
     public static LocalDateTime getUpdatedAt() {

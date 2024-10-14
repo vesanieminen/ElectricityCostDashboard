@@ -28,8 +28,8 @@ public class Executor {
 
     @PostConstruct
     public void init() {
-        ThreadFactory platformThreadFactory = Thread.ofPlatform().factory();
-        executorService = Executors.newScheduledThreadPool(0, platformThreadFactory);
+        ThreadFactory virtualThreadFactory = Thread.ofVirtual().factory();
+        executorService = Executors.newScheduledThreadPool(0, virtualThreadFactory);
         scheduleTasks();
     }
 
@@ -141,8 +141,9 @@ public class Executor {
         log.info("Started updateNordpoolForLast7Days");
         final var startTime = System.currentTimeMillis();
 
-        ThreadFactory platformThreadFactory = Thread.ofPlatform().factory();
-        try (var scheduler = Executors.newScheduledThreadPool(0, platformThreadFactory)) {
+        // Create a ScheduledExecutorService with virtual threads
+        ThreadFactory virtualThreadFactory = Thread.ofVirtual().factory();
+        try (var scheduler = Executors.newScheduledThreadPool(0, virtualThreadFactory)) {
 
             LocalDate today = LocalDate.now();
             List<LocalDate> dates = new ArrayList<>();
