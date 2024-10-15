@@ -37,7 +37,6 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.page.WebStorage;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.upload.Upload;
@@ -141,7 +140,7 @@ public class PriceCalculatorView extends Main {
     public PriceCalculatorView() {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Top.MEDIUM);
 
-        Notification.show(getTranslation("ENTSO-E.warning"), 10000, Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_WARNING);
+        //Notification.show(getTranslation("ENTSO-E.warning"), 10000, Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_WARNING);
 
         final Div wrapper = createWrapper();
 
