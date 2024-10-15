@@ -146,7 +146,7 @@ public class NordpoolSpotService {
         Instant dateUpdated = Instant.parse(nordpoolResponse.updatedAt);
         final var zonedDateTime = dateUpdated.atZone(nordpoolZoneID).truncatedTo(ChronoUnit.DAYS);
         final var other = ZonedDateTime.now(nordpoolZoneID).truncatedTo(ChronoUnit.DAYS);
-        return zonedDateTime.isAfter(other);
+        return zonedDateTime.getDayOfMonth() == other.getDayOfMonth();
     }
 
     public static boolean hasBeenUpdatedSuccessfullyYesterday() {
