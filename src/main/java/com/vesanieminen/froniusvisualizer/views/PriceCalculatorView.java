@@ -59,6 +59,7 @@ import org.vaadin.miki.superfields.numbers.SuperDoubleField;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDateTime;
@@ -529,7 +530,7 @@ public class PriceCalculatorView extends Main {
                 final var twoDecimalsWithPlusPrefix = getNumberFormatMaxTwoDecimalsWithPlusPrefix(getLocale());
                 final NumberFormat threeDecimals = getNumberFormat(getLocale(), 3);
 
-                createMonthlyResults(resultLayout, yearMonthSpotCalculationHashMap, numberFormat);
+                createMonthlyResults(resultLayout, yearMonthSpotCalculationHashMap, numberFormat, spotCalculation);
 
                 final var wholePeriodH2 = new H2(getTranslation("calculator.results.whole.period"));
                 wholePeriodH2.addClassNames(
@@ -547,10 +548,8 @@ public class PriceCalculatorView extends Main {
                 overviewDiv.add(new DoubleLabel(getTranslation("Total spot cost (incl. margin)"), numberFormat.format(spotCalculation.totalCost) + " €", true));
                 overviewDiv.add(new DoubleLabel(getTranslation("Total spot cost (without margin)"), numberFormat.format(spotCalculation.totalCostWithoutMargin) + " €", true));
                 overviewDiv.add(new DoubleLabel(getTranslation("Unweighted spot average"), numberFormat.format(spotCalculation.averagePriceWithoutMargin) + " " + getTranslation("c/kWh"), true));
-                final var priceWithoutMargin = spotCalculation.totalCostWithoutMargin / spotCalculation.totalConsumption * 100;
-                final var loweredCost = (priceWithoutMargin - spotCalculation.averagePriceWithoutMargin) / Math.abs(spotCalculation.averagePriceWithoutMargin) * 100;
-                final var formattedOwnSpotVsAverage = twoDecimalsWithPlusPrefix.format(loweredCost);
-                overviewDiv.add(new DoubleLabel(getTranslation("calculator.spot.difference.percentage"), formattedOwnSpotVsAverage + " %", true));
+                final var costFactorPercentage = calculateCostFactorPercentage(spotCalculation, twoDecimalsWithPlusPrefix);
+                overviewDiv.add(new DoubleLabel(getTranslation("calculator.spot.difference.percentage"), costFactorPercentage, true));
                 final var costEffect = calculateCostEffect(spotCalculation);
                 final var costEffectFormatted = twoDecimalsWithPlusPrefix.format(costEffect);
                 final var spotDifferenceSpan = createCostEffectSpan(costEffectFormatted);
@@ -823,7 +822,14 @@ public class PriceCalculatorView extends Main {
         add(chartLayout);
     }
 
-    private void createMonthlyResults(Div resultLayout, HashMap<YearMonth, PriceCalculatorService.SpotCalculation> yearMonthSpotCalculationHashMap, NumberFormat numberFormat) {
+    private static @NotNull String calculateCostFactorPercentage(PriceCalculatorService.SpotCalculation spotCalculation, DecimalFormat twoDecimalsWithPlusPrefix) {
+        final var priceWithoutMargin = spotCalculation.totalCostWithoutMargin / spotCalculation.totalConsumption * 100;
+        final var loweredCost = (priceWithoutMargin - spotCalculation.averagePriceWithoutMargin) / Math.abs(spotCalculation.averagePriceWithoutMargin) * 100;
+        final var formattedOwnSpotVsAverage = "%s %%".formatted(twoDecimalsWithPlusPrefix.format(loweredCost));
+        return formattedOwnSpotVsAverage;
+    }
+
+    private void createMonthlyResults(Div resultLayout, HashMap<YearMonth, PriceCalculatorService.SpotCalculation> yearMonthSpotCalculationHashMap, NumberFormat numberFormat, PriceCalculatorService.SpotCalculation spotCalculation) {
         final var monthlyResultsH2 = new H2(getTranslation("calculator.results.per.month"));
         resultLayout.add(monthlyResultsH2);
 
@@ -836,24 +842,18 @@ public class PriceCalculatorView extends Main {
             grid.setColumnReorderingAllowed(true);
             grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
             grid.setItems(dataList);
-            grid.addColumn(entry -> "%s / %s".formatted(entry.getKey().getMonth().getDisplayName(TextStyle.FULL_STANDALONE, getLocale()), entry.getKey().getYear() - 2000))
+            final var monthColumn = grid.addColumn(entry -> "%s / %s".formatted(entry.getKey().getMonth().getDisplayName(TextStyle.FULL_STANDALONE, getLocale()), entry.getKey().getYear() - 2000))
                     .setHeader("%s / %s".formatted(getTranslation("Month"), getTranslation("Year")))
                     .setSortable(true)
                     .setAutoWidth(true)
                     .setComparator(Map.Entry.comparingByKey());
-            grid.addColumn(entry -> numberFormat.format(calculateOwnSpotAverageWithMargin(entry.getValue()) - spotMarginField.getValue()))
+            final var myAverageColumn = grid.addColumn(entry -> numberFormat.format(calculateOwnSpotAverageWithMargin(entry.getValue()) - spotMarginField.getValue()))
                     .setHeader(getTranslation("My avg."))
                     .setSortable(true)
                     .setAutoWidth(true)
                     .setPartNameGenerator(entry -> {
                         final var averagePrice = calculateOwnSpotAverageWithMargin(entry.getValue()) - spotMarginField.getValue();
-                        if (averagePrice <= 5) {
-                            return "cheap"; // Green background
-                        } else if (averagePrice < 10) {
-                            return "normal"; // Default background
-                        } else {
-                            return "expensive"; // Red background
-                        }
+                        return getPricePartName(averagePrice, 5, 10);
                     });
             grid.addColumn(entry -> numberFormat.format(calculateCostEffect(entry.getValue())))
                     .setHeader(getTranslation("calculator.spot.difference.cents"))
@@ -861,42 +861,60 @@ public class PriceCalculatorView extends Main {
                     .setAutoWidth(true)
                     .setPartNameGenerator(entry -> {
                         final var costEffect = calculateCostEffect(entry.getValue());
-                        if (costEffect <= 0) {
-                            return "cheap"; // Green background
-                        } else if (costEffect < 2) {
-                            return "normal"; // Default background
-                        } else {
-                            return "expensive"; // Red background
-                        }
+                        return getPricePartName(costEffect, 0, 2);
                     });
-            grid.addColumn(entry -> numberFormat.format(entry.getValue().averagePriceWithoutMargin))
+            grid.addColumn(entry -> calculateCostFactorPercentage(entry.getValue(), getNumberFormatMaxTwoDecimalsWithPlusPrefix(getLocale())))
+                    .setHeader(getTranslation("calculator.spot.difference.percentage"))
+                    .setSortable(true)
+                    .setAutoWidth(true)
+                    .setPartNameGenerator(entry -> {
+                        final var costEffect = calculateCostEffect(entry.getValue());
+                        return getPricePartName(costEffect, 0, 2);
+                    });
+            final var spotAvgColumn = grid.addColumn(entry -> numberFormat.format(entry.getValue().averagePriceWithoutMargin))
                     .setHeader(getTranslation("Spot avg."))
                     .setSortable(true)
                     .setAutoWidth(true)
                     .setPartNameGenerator(entry -> {
                         final var averagePrice = entry.getValue().averagePriceWithoutMargin;
-                        if (averagePrice <= 5) {
-                            return "cheap"; // Green background
-                        } else if (averagePrice < 10) {
-                            return "normal"; // Default background
-                        } else {
-                            return "expensive"; // Red background
-                        }
+                        return getPricePartName(averagePrice, 5, 10);
                     });
-            grid.addColumn(entry -> numberFormat.format(entry.getValue().totalConsumption))
+            final var consumptionColumn = grid.addColumn(entry -> numberFormat.format(entry.getValue().totalConsumption))
                     .setHeader(getTranslation("Consumption"))
                     .setSortable(true)
                     .setAutoWidth(true);
-            grid.addColumn(entry -> "%s €".formatted(numberFormat.format(entry.getValue().totalCost)))
+            final var totalSpotCostInclMarginColumn = grid.addColumn(entry -> "%s €".formatted(numberFormat.format(entry.getValue().totalCost)))
                     .setHeader(getTranslation("Total spot cost (incl. margin)"))
                     .setSortable(true)
                     .setAutoWidth(true);
-            grid.addColumn(entry -> "%s €".formatted(numberFormat.format(entry.getValue().totalCostWithoutMargin)))
+            final var totalSpotCostWithoutMarginColumn = grid.addColumn(entry -> "%s €".formatted(numberFormat.format(entry.getValue().totalCostWithoutMargin)))
                     .setHeader(getTranslation("Total spot cost (without margin)"))
                     .setSortable(true)
                     .setAutoWidth(true);
 
+            final var footerRow = grid.appendFooterRow();
+            footerRow.getCell(monthColumn).setText(getTranslation("Total"));
+            final var cell = footerRow.getCell(myAverageColumn);
+            final var totalOwnSpotAverage = calculateOwnSpotAverageWithMargin(spotCalculation) - spotMarginField.getValue();
+            cell.setText(numberFormat.format(totalOwnSpotAverage));
+            cell.setPartName(getPricePartName(totalOwnSpotAverage, 5, 10));
+            footerRow.getCell(spotAvgColumn).setText(numberFormat.format(spotCalculation.averagePriceWithoutMargin));
+            footerRow.getCell(spotAvgColumn).setPartName(getPricePartName(spotCalculation.averagePriceWithoutMargin, 5, 10));
+            footerRow.getCell(consumptionColumn).setText(numberFormat.format(spotCalculation.totalConsumption));
+            footerRow.getCell(totalSpotCostInclMarginColumn).setText("%s €".formatted(numberFormat.format(spotCalculation.totalCost)));
+            footerRow.getCell(totalSpotCostWithoutMarginColumn).setText("%s €".formatted(numberFormat.format(spotCalculation.totalCostWithoutMargin)));
+
             resultLayout.add(grid);
+        }
+    }
+
+    private static @NotNull String getPricePartName(double averagePrice, int cheapLimit, int normalLimit) {
+        if (averagePrice <= cheapLimit) {
+            return "cheap";
+        } else if (averagePrice < normalLimit) {
+            return "normal";
+        } else {
+            return "expensive";
         }
     }
 
