@@ -846,7 +846,8 @@ public class PriceCalculatorView extends Main {
                     .setHeader("%s / %s".formatted(getTranslation("Month"), getTranslation("Year")))
                     .setSortable(true)
                     .setAutoWidth(true)
-                    .setComparator(Map.Entry.comparingByKey());
+                    .setComparator(Map.Entry.comparingByKey())
+                    .setFrozen(true);
             final var myAverageColumn = grid.addColumn(entry -> numberFormat.format(calculateOwnSpotAverageWithMargin(entry.getValue()) - spotMarginField.getValue()))
                     .setHeader(getTranslation("My avg."))
                     .setSortable(true)
