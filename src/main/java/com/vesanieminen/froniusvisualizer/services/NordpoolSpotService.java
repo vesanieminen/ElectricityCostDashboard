@@ -52,12 +52,12 @@ public class NordpoolSpotService {
      */
     public static void updateData(LocalDate date, boolean forceUpdate) {
         if (hasBeenUpdatedSuccessfullyToday() && !forceUpdate) {
-            log.info("Skipped Nordpool update because it has already been updated successfully today.");
+            //log.info("Skipped Nordpool update because it has already been updated successfully today.");
             return;
         }
 
         if (!isAfter_13_45(ZonedDateTime.now(fiZoneID)) /*&& hasBeenUpdatedSuccessfullyYesterday()*/ && !forceUpdate) {
-            log.info("skipped Nordpool update due to not having new data available yet");
+            //log.info("skipped Nordpool update due to not having new data available yet");
             return;
         }
 

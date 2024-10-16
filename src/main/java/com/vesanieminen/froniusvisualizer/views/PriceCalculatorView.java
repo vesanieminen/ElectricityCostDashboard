@@ -66,6 +66,7 @@ import java.time.YearMonth;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -528,80 +529,7 @@ public class PriceCalculatorView extends Main {
                 final var twoDecimalsWithPlusPrefix = getNumberFormatMaxTwoDecimalsWithPlusPrefix(getLocale());
                 final NumberFormat threeDecimals = getNumberFormat(getLocale(), 3);
 
-                final var monthlyResultsH2 = new H2(getTranslation("calculator.results.per.month"));
-                resultLayout.add(monthlyResultsH2);
-
-                // monthly results
-                {
-                    List<Map.Entry<YearMonth, PriceCalculatorService.SpotCalculation>> dataList = new ArrayList<>(yearMonthSpotCalculationHashMap.entrySet());
-                    dataList.sort(Map.Entry.comparingByKey());
-                    Grid<Map.Entry<YearMonth, PriceCalculatorService.SpotCalculation>> grid = new Grid<>();
-                    grid.setAllRowsVisible(true);
-                    grid.setColumnReorderingAllowed(true);
-                    grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
-                    grid.setItems(dataList);
-                    grid.addColumn(entry -> "%s / %s".formatted(entry.getKey().getMonth().getDisplayName(TextStyle.FULL_STANDALONE, getLocale()), entry.getKey().getYear() - 2000))
-                            .setHeader("%s / %s".formatted(getTranslation("Month"), getTranslation("Year")))
-                            .setSortable(true)
-                            .setAutoWidth(true)
-                            .setComparator(Map.Entry.comparingByKey());
-                    grid.addColumn(entry -> numberFormat.format(calculateOwnSpotAverageWithMargin(entry.getValue()) - spotMarginField.getValue()))
-                            .setHeader(getTranslation("My avg."))
-                            .setSortable(true)
-                            .setAutoWidth(true)
-                            .setPartNameGenerator(entry -> {
-                                final var averagePrice = calculateOwnSpotAverageWithMargin(entry.getValue()) - spotMarginField.getValue();
-                                if (averagePrice <= 5) {
-                                    return "cheap"; // Green background
-                                } else if (averagePrice < 10) {
-                                    return "normal"; // Default background
-                                } else {
-                                    return "expensive"; // Red background
-                                }
-                            });
-                    grid.addColumn(entry -> numberFormat.format(calculateCostEffect(entry.getValue())))
-                            .setHeader(getTranslation("calculator.spot.difference.cents"))
-                            .setSortable(true)
-                            .setAutoWidth(true)
-                            .setPartNameGenerator(entry -> {
-                                final var costEffect = calculateCostEffect(entry.getValue());
-                                if (costEffect <= 0) {
-                                    return "cheap"; // Green background
-                                } else if (costEffect < 2) {
-                                    return "normal"; // Default background
-                                } else {
-                                    return "expensive"; // Red background
-                                }
-                            });
-                    grid.addColumn(entry -> numberFormat.format(entry.getValue().averagePriceWithoutMargin))
-                            .setHeader(getTranslation("Spot avg."))
-                            .setSortable(true)
-                            .setAutoWidth(true)
-                            .setPartNameGenerator(entry -> {
-                                final var averagePrice = entry.getValue().averagePriceWithoutMargin;
-                                if (averagePrice <= 5) {
-                                    return "cheap"; // Green background
-                                } else if (averagePrice < 10) {
-                                    return "normal"; // Default background
-                                } else {
-                                    return "expensive"; // Red background
-                                }
-                            });
-                    grid.addColumn(entry -> numberFormat.format(entry.getValue().totalConsumption))
-                            .setHeader(getTranslation("Consumption"))
-                            .setSortable(true)
-                            .setAutoWidth(true);
-                    grid.addColumn(entry -> "%s €".formatted(numberFormat.format(entry.getValue().totalCost)))
-                            .setHeader(getTranslation("Total spot cost (incl. margin)"))
-                            .setSortable(true)
-                            .setAutoWidth(true);
-                    grid.addColumn(entry -> "%s €".formatted(numberFormat.format(entry.getValue().totalCostWithoutMargin)))
-                            .setHeader(getTranslation("Total spot cost (without margin)"))
-                            .setSortable(true)
-                            .setAutoWidth(true);
-
-                    resultLayout.add(grid);
-                }
+                createMonthlyResults(resultLayout, yearMonthSpotCalculationHashMap, numberFormat);
 
                 final var wholePeriodH2 = new H2(getTranslation("calculator.results.whole.period"));
                 wholePeriodH2.addClassNames(
@@ -893,6 +821,83 @@ public class PriceCalculatorView extends Main {
         content.add(calculateButton);
         add(resultLayout);
         add(chartLayout);
+    }
+
+    private void createMonthlyResults(Div resultLayout, HashMap<YearMonth, PriceCalculatorService.SpotCalculation> yearMonthSpotCalculationHashMap, NumberFormat numberFormat) {
+        final var monthlyResultsH2 = new H2(getTranslation("calculator.results.per.month"));
+        resultLayout.add(monthlyResultsH2);
+
+        // monthly results
+        {
+            List<Map.Entry<YearMonth, PriceCalculatorService.SpotCalculation>> dataList = new ArrayList<>(yearMonthSpotCalculationHashMap.entrySet());
+            dataList.sort(Map.Entry.comparingByKey());
+            Grid<Map.Entry<YearMonth, PriceCalculatorService.SpotCalculation>> grid = new Grid<>();
+            grid.setAllRowsVisible(true);
+            grid.setColumnReorderingAllowed(true);
+            grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
+            grid.setItems(dataList);
+            grid.addColumn(entry -> "%s / %s".formatted(entry.getKey().getMonth().getDisplayName(TextStyle.FULL_STANDALONE, getLocale()), entry.getKey().getYear() - 2000))
+                    .setHeader("%s / %s".formatted(getTranslation("Month"), getTranslation("Year")))
+                    .setSortable(true)
+                    .setAutoWidth(true)
+                    .setComparator(Map.Entry.comparingByKey());
+            grid.addColumn(entry -> numberFormat.format(calculateOwnSpotAverageWithMargin(entry.getValue()) - spotMarginField.getValue()))
+                    .setHeader(getTranslation("My avg."))
+                    .setSortable(true)
+                    .setAutoWidth(true)
+                    .setPartNameGenerator(entry -> {
+                        final var averagePrice = calculateOwnSpotAverageWithMargin(entry.getValue()) - spotMarginField.getValue();
+                        if (averagePrice <= 5) {
+                            return "cheap"; // Green background
+                        } else if (averagePrice < 10) {
+                            return "normal"; // Default background
+                        } else {
+                            return "expensive"; // Red background
+                        }
+                    });
+            grid.addColumn(entry -> numberFormat.format(calculateCostEffect(entry.getValue())))
+                    .setHeader(getTranslation("calculator.spot.difference.cents"))
+                    .setSortable(true)
+                    .setAutoWidth(true)
+                    .setPartNameGenerator(entry -> {
+                        final var costEffect = calculateCostEffect(entry.getValue());
+                        if (costEffect <= 0) {
+                            return "cheap"; // Green background
+                        } else if (costEffect < 2) {
+                            return "normal"; // Default background
+                        } else {
+                            return "expensive"; // Red background
+                        }
+                    });
+            grid.addColumn(entry -> numberFormat.format(entry.getValue().averagePriceWithoutMargin))
+                    .setHeader(getTranslation("Spot avg."))
+                    .setSortable(true)
+                    .setAutoWidth(true)
+                    .setPartNameGenerator(entry -> {
+                        final var averagePrice = entry.getValue().averagePriceWithoutMargin;
+                        if (averagePrice <= 5) {
+                            return "cheap"; // Green background
+                        } else if (averagePrice < 10) {
+                            return "normal"; // Default background
+                        } else {
+                            return "expensive"; // Red background
+                        }
+                    });
+            grid.addColumn(entry -> numberFormat.format(entry.getValue().totalConsumption))
+                    .setHeader(getTranslation("Consumption"))
+                    .setSortable(true)
+                    .setAutoWidth(true);
+            grid.addColumn(entry -> "%s €".formatted(numberFormat.format(entry.getValue().totalCost)))
+                    .setHeader(getTranslation("Total spot cost (incl. margin)"))
+                    .setSortable(true)
+                    .setAutoWidth(true);
+            grid.addColumn(entry -> "%s €".formatted(numberFormat.format(entry.getValue().totalCostWithoutMargin)))
+                    .setHeader(getTranslation("Total spot cost (without margin)"))
+                    .setSortable(true)
+                    .setAutoWidth(true);
+
+            resultLayout.add(grid);
+        }
     }
 
     private static double calculateCostEffect(PriceCalculatorService.SpotCalculation spotCalculation) {
