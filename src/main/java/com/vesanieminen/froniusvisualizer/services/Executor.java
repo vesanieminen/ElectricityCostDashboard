@@ -18,7 +18,6 @@ import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.up
 import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.getAndWriteToFile2YearData;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getSecondsToNextEvenHour;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getSecondsToNextEvenMinute;
-import static com.vesanieminen.froniusvisualizer.util.Utils.getSecondsToNextTimeAt;
 
 @Slf4j
 @Component
@@ -45,13 +44,15 @@ public class Executor {
         executorService.schedule(() -> safeExecute(Executor::updateSpotHintaService), 0, TimeUnit.SECONDS);
         executorService.schedule(() -> safeExecute(Executor::updateFingridData), 0, TimeUnit.SECONDS);
 
-        // hourly schedules
+        // per minute schedules
         executorService.scheduleAtFixedRate(
                 () -> safeExecute(() -> updateNordpoolData(LocalDate.now().plusDays(1), false)),
                 getSecondsToNextEvenMinute(),
                 TimeUnit.MINUTES.toSeconds(1),
                 TimeUnit.SECONDS
         );
+
+        // hourly schedules
         executorService.scheduleAtFixedRate(
                 () -> safeExecute(Executor::updatePakastinData),
                 getSecondsToNextEvenHour(),
@@ -74,12 +75,12 @@ public class Executor {
         );
 
         // Nordpool daily fetch at 13:51 Finnish time
-        executorService.scheduleAtFixedRate(
-                () -> safeExecute(() -> updateNordpoolData(LocalDate.now().plusDays(1), true)),
-                getSecondsToNextTimeAt(13, 51),
-                TimeUnit.DAYS.toSeconds(1),
-                TimeUnit.SECONDS
-        );
+        //executorService.scheduleAtFixedRate(
+        //        () -> safeExecute(() -> updateNordpoolData(LocalDate.now().plusDays(1), true)),
+        //        getSecondsToNextTimeAt(13, 51),
+        //        TimeUnit.DAYS.toSeconds(1),
+        //        TimeUnit.SECONDS
+        //);
     }
 
     private void safeExecute(Runnable task) {
@@ -91,10 +92,10 @@ public class Executor {
     }
 
     public static void updateNordpoolData(LocalDate localDate, boolean forceUpdate) {
-        log.info("Started update Nordpool");
+        //log.info("Started update Nordpool");
         final var startTime = System.currentTimeMillis();
         updateData(localDate, forceUpdate);
-        log.info("Ended update Nordpool in {} seconds", (System.currentTimeMillis() - startTime) / 1000.0);
+        //log.info("Ended update Nordpool in {} seconds", (System.currentTimeMillis() - startTime) / 1000.0);
     }
 
     public static void updateSpotHintaService() {
