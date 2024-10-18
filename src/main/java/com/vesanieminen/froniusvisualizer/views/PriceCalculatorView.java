@@ -569,7 +569,7 @@ public class PriceCalculatorView extends Main {
                 if (isCalculatingLockedPrice()) {
                     final Div lockedPriceDiv = addSection(resultLayout, getTranslation("locked.price"));
                     lockedPriceDiv.add(new DoubleLabel(getTranslation("locked.price"), threeDecimals.format(lockedPriceField.getValue()) + " " + getTranslation("c/kWh"), true));
-                    lockedPriceDiv.add(new DoubleLabel(getTranslation("Spot margin"), numberFormat.format(spotMarginField.getValue()) + " " + getTranslation("c/kWh"), true));
+                    lockedPriceDiv.add(new DoubleLabel(getTranslation("Spot margin"), threeDecimals.format(spotMarginField.getValue()) + " " + getTranslation("c/kWh"), true));
                     final var lockedPriceTotal = lockedPriceField.getValue() + spotMarginField.getValue() + costEffect;
                     lockedPriceDiv.add(new DoubleLabel(getTranslation("locked.price.total"), numberFormat.format(lockedPriceTotal) + " " + getTranslation("c/kWh"), true));
                     final var lockedPriceCost = lockedPriceTotal * spotCalculation.totalConsumption / 100;
