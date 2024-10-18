@@ -30,7 +30,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7DaysList;
+import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getPriceList;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentLocalDateTimeHourPrecisionFinnishZone;
@@ -114,7 +114,7 @@ public class PriceListView extends Main {
     }
 
     void renderListView(AttachEvent attachEvent) {
-        var data = getLatest7DaysList();
+        var data = getPriceList();
         if (data.isEmpty()) {
             return;
         }

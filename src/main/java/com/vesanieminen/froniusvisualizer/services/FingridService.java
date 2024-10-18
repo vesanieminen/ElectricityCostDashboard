@@ -129,7 +129,8 @@ public class FingridService {
         final var now = getCurrentTimeWithHourPrecision();
         fingridDataUpdated = now;
         // Nordpool gives data for the next day at 14:00. Before that we need to retrieve 6 days back and after 5 to match the amount of Fingrid and Nordpool history
-        var daysBack = now.getHour() < 14 ? 6 : 5;
+        //var daysBack = now.getHour() < 14 ? 6 : 5;
+        var daysBack = 6;
         requestParams.put("start", createFingridDateTimeString(now.minusDays(daysBack)));
         requestParams.put("end", createFingridDateTimeString(now.plusDays(1)));
         return requestParams.keySet().stream().map(key -> key + "=" + requestParams.get(key)).collect(joining("&", fingridRealtimeBaseUrl, ""));

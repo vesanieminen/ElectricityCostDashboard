@@ -22,8 +22,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentInstantDayPrecisionFinnishZone;
 import static com.vesanieminen.froniusvisualizer.util.Utils.isAfter_13_45;
 import static com.vesanieminen.froniusvisualizer.util.Utils.nordpoolZoneID;
 
@@ -118,16 +120,17 @@ public class NordpoolSpotService {
         }
     }
 
-    public List<NordpoolPrice> getPriceList() {
+    public static List<NordpoolPrice> getPriceList() {
         return nordpoolPrices;
     }
 
-    public LinkedHashMap<Instant, Double> getPriceMap() {
+    public static LinkedHashMap<Instant, Double> getPriceMap() {
         return nordpoolPriceMap;
     }
 
     public static List<NordpoolPrice> getLatest7DaysList() {
-        return nordpoolPrices;
+        final var oneWeekBack = getCurrentInstantDayPrecisionFinnishZone().minus(7, ChronoUnit.DAYS);
+        return nordpoolPrices.stream().filter(item -> oneWeekBack.isBefore(item.timeInstant())).collect(Collectors.toList());
     }
 
     public static LinkedHashMap<Instant, Double> getLatest7DaysMap() {

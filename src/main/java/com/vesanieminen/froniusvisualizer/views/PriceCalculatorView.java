@@ -882,7 +882,7 @@ public class PriceCalculatorView extends Main {
             final var consumptionColumn = grid.addColumn(entry -> numberFormat.format(entry.getValue().totalConsumption))
                     .setHeader(createDivWithTooltip("Consumption", "Consumption", "kWh"))
                     .setSortable(true)
-                    .setAutoWidth(true);
+                    .setAutoWidth(false);
             //final var totalSpotCostInclMarginColumn = grid.addColumn(entry -> "%s €".formatted(numberFormat.format(entry.getValue().totalCost)))
             //        .setHeader(createDivWithTooltip("Spot cost", "Total spot cost (incl. margin)", "€"))
             //        .setSortable(true)
@@ -910,7 +910,12 @@ public class PriceCalculatorView extends Main {
     }
 
     private @NotNull Div createDivWithTooltip(String title, String tooltip, String suffix) {
-        final var div = new Div(new Span(getTranslation(title))/*, MaterialIcon.INFO.create(LumoUtility.TextColor.SECONDARY, LumoUtility.IconSize.SMALL)*/);
+        final var span = new Span(getTranslation(title));
+        span.addClassNames(
+                LumoUtility.TextOverflow.ELLIPSIS,
+                LumoUtility.Overflow.HIDDEN
+        );
+        final var div = new Div(span/*, MaterialIcon.INFO.create(LumoUtility.TextColor.SECONDARY, LumoUtility.IconSize.SMALL)*/);
         com.vaadin.flow.component.shared.Tooltip.forComponent(div).setText("%s %s".formatted(getTranslation(tooltip), suffix));
         div.addClassNames(
                 LumoUtility.Display.FLEX,

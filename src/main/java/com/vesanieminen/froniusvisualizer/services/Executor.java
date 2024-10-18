@@ -150,7 +150,7 @@ public class Executor {
             List<LocalDate> dates = new ArrayList<>();
 
             // Collect dates from 5 days ago up to tomorrow (total 7 days)
-            for (int i = -5; i <= 1; i++) {
+            for (int i = -6; i <= 1; i++) {
                 dates.add(today.plusDays(i));
             }
 

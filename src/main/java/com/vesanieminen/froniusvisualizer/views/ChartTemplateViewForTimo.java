@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getDateOfLatestFullDayData;
-import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7DaysList;
 import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7DaysMap;
+import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getPriceList;
 import static com.vesanieminen.froniusvisualizer.util.Utils.calculateAverageOfDay;
 import static com.vesanieminen.froniusvisualizer.util.Utils.calculateCheapest3HoursOfDay;
 import static com.vesanieminen.froniusvisualizer.util.Utils.calculateMaximumOfDay;
@@ -145,7 +145,7 @@ public class ChartTemplateViewForTimo extends Main {
     private void selectDate(LocalDateTime selectedDay) {
         final var beginning = selectedDay.atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS).toInstant().toEpochMilli();
         final var end = selectedDay.atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS).plusDays(1).toInstant().toEpochMilli();
-        var data = getLatest7DaysList().stream().filter(item -> beginning <= item.time && item.time <= end).collect(Collectors.toList());
+        var data = getPriceList().stream().filter(item -> beginning <= item.time && item.time <= end).collect(Collectors.toList());
         barChartTemplateTimo.setNordpoolDataList(data);
 
         updateLabels(selectedDay);
