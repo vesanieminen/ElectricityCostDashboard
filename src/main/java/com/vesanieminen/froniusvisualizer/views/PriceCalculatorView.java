@@ -848,49 +848,43 @@ public class PriceCalculatorView extends Main {
                     .setComparator(Map.Entry.comparingByKey())
                     .setFrozen(true);
             final var myAverageColumn = grid.addColumn(entry -> numberFormat.format(calculateOwnSpotAverageWithMargin(entry.getValue()) - spotMarginField.getValue()))
-                    .setHeader(createDivWithTooltip("My avg.", "Average spot price (without margin)", getTranslation("c/kWh")))
+                    .setHeader(createDivWithTooltip("My average", "Average spot price (without margin)", getTranslation("c/kWh")))
                     .setSortable(true)
-                    .setAutoWidth(true)
                     .setPartNameGenerator(entry -> {
                         final var averagePrice = calculateOwnSpotAverageWithMargin(entry.getValue()) - spotMarginField.getValue();
                         return getPricePartName(averagePrice, 5, 10);
                     });
             grid.addColumn(entry -> numberFormat.format(calculateCostEffect(entry.getValue())))
-                    .setHeader(createDivWithTooltip("Cf", "calculator.spot.difference.cents", getTranslation("c/kWh")))
+                    .setHeader(createDivWithTooltip("calculator.spot.difference.cents", "calculator.spot.difference.cents", getTranslation("c/kWh")))
                     .setSortable(true)
-                    .setAutoWidth(true)
                     .setPartNameGenerator(entry -> {
                         final var costEffect = calculateCostEffect(entry.getValue());
                         return getPricePartName(costEffect, 0, 2);
                     });
             final var spotAvgColumn = grid.addColumn(entry -> numberFormat.format(entry.getValue().averagePriceWithoutMargin))
-                    .setHeader(createDivWithTooltip("Spot avg.", "Unweighted spot average", getTranslation("c/kWh")))
+                    .setHeader(createDivWithTooltip("Unweighted spot average", "Unweighted spot average", getTranslation("c/kWh")))
                     .setSortable(true)
-                    .setAutoWidth(true)
                     .setPartNameGenerator(entry -> {
                         final var averagePrice = entry.getValue().averagePriceWithoutMargin;
                         return getPricePartName(averagePrice, 5, 10);
                     });
             grid.addColumn(entry -> calculateCostFactorPercentage(entry.getValue(), getNumberFormatMaxTwoDecimalsWithPlusPrefix(getLocale()), false))
-                    .setHeader(createDivWithTooltip("Cf %", "calculator.spot.difference.percentage", ""))
+                    .setHeader(createDivWithTooltip("calculator.spot.difference.percentage", "calculator.spot.difference.percentage", ""))
                     .setSortable(true)
-                    .setAutoWidth(true)
                     .setPartNameGenerator(entry -> {
                         final var costEffect = calculateCostEffect(entry.getValue());
                         return getPricePartName(costEffect, 0, 2);
                     });
             final var consumptionColumn = grid.addColumn(entry -> numberFormat.format(entry.getValue().totalConsumption))
                     .setHeader(createDivWithTooltip("Consumption", "Consumption", "kWh"))
-                    .setSortable(true)
-                    .setAutoWidth(false);
+                    .setSortable(true);
             //final var totalSpotCostInclMarginColumn = grid.addColumn(entry -> "%s €".formatted(numberFormat.format(entry.getValue().totalCost)))
             //        .setHeader(createDivWithTooltip("Spot cost", "Total spot cost (incl. margin)", "€"))
             //        .setSortable(true)
             //        .setAutoWidth(true);
             final var totalSpotCostWithoutMarginColumn = grid.addColumn(entry -> numberFormat.format(entry.getValue().totalCostWithoutMargin))
                     .setHeader(createDivWithTooltip("Price", "Total spot cost (without margin)", "€"))
-                    .setSortable(true)
-                    .setAutoWidth(true);
+                    .setSortable(true);
 
             // footer
             final var footerRow = grid.appendFooterRow();
