@@ -22,4 +22,5 @@ COPY observability-kit-agent-3.0-SNAPSHOT.jar /app/
 COPY agent.properties /app/
 WORKDIR /app/
 EXPOSE 8080
-ENTRYPOINT java -Djava.locale.providers="COMPAT, CLDR" -javaagent:observability-kit-agent-3.0-SNAPSHOT.jar -Dotel.javaagent.configuration-file=agent.properties -Dotel.exporter.otlp.headers=api-key=${NEW_RELIC_API_KEY} --add-opens java.base/java.lang=ALL-UNNAMED -jar froniusvizualizer-1.0-SNAPSHOT.jar 8080
+#ENTRYPOINT java -Djava.locale.providers="COMPAT, CLDR" -javaagent:observability-kit-agent-3.0-SNAPSHOT.jar -Dotel.javaagent.configuration-file=agent.properties -Dotel.exporter.otlp.headers=api-key=${NEW_RELIC_API_KEY} --add-opens java.base/java.lang=ALL-UNNAMED -jar froniusvizualizer-1.0-SNAPSHOT.jar 8080
+ENTRYPOINT java -Djava.locale.providers="COMPAT, CLDR" -Dotel.javaagent.configuration-file=agent.properties -Dotel.exporter.otlp.headers=api-key=${NEW_RELIC_API_KEY} --add-opens java.base/java.lang=ALL-UNNAMED -jar froniusvizualizer-1.0-SNAPSHOT.jar 8080
