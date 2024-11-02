@@ -1,0 +1,8 @@
+.banner-ad {
+    transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+.banner-ad:hover {
+    background-color: var(--lumo-contrast-10pct);
+    cursor: pointer;
+}

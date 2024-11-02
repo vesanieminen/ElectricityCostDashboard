@@ -42,9 +42,12 @@ public class BannerAd extends Div {
         final var youTubeImage = new Image("images/YouTube_full-color_icon_(2017).svg.png", "YouTube");
         youTubeImage.setMaxHeight(30, Unit.PIXELS);
         final var horizontalLayout = new HorizontalLayout(textLayout, youTubeImage);
+        horizontalLayout.addClassName("banner-ad");
         horizontalLayout.addClassNames(
                 LumoUtility.AlignItems.CENTER,
-                LumoUtility.Gap.MEDIUM
+                LumoUtility.Gap.MEDIUM,
+                LumoUtility.BorderRadius.LARGE,
+                LumoUtility.Padding.Horizontal.LARGE
         );
         horizontalLayout.setPadding(false);
         horizontalLayout.setSpacing(false);

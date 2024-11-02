@@ -10,6 +10,8 @@
 @import "transition.css";
 @import "typography.css";
 
+@import "banner-ad.css";
+
 body {
     margin: 0;
 }
