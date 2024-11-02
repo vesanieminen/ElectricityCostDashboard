@@ -3,6 +3,6 @@
 }
 
 .banner-ad:hover {
-    background-color: var(--lumo-contrast-10pct);
+    background-color: var(--lumo-contrast-5pct);
     cursor: pointer;
 }
