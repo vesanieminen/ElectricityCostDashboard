@@ -57,7 +57,6 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     @Getter
     private final Header header;
     private final H1 title;
-    private boolean isLiukuriVideoAdShown;
     private Anchor upcloudLink;
 
     public MainLayout(ObjectMapperService objectMapperService, SettingsDialog settingsDialog) {
