@@ -28,7 +28,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.flow.theme.lumo.LumoUtility;
-import com.vesanieminen.froniusvisualizer.components.BannerAd;
 import com.vesanieminen.froniusvisualizer.components.MaterialIcon;
 import com.vesanieminen.froniusvisualizer.components.SettingsDialog;
 import com.vesanieminen.froniusvisualizer.services.ObjectMapperService;
@@ -71,7 +70,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         title = new H1();
         title.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.End.AUTO, LumoUtility.Margin.Vertical.NONE);
 
-        header = new Header(toggle,/* title*/ new BannerAd());
+        header = new Header(toggle, title /*new BannerAd()*/);
         header.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.Display.FLEX, LumoUtility.Gap.SMALL,
                 LumoUtility.Padding.SMALL);
         header.setWidthFull();
