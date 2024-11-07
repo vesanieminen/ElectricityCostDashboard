@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
 
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getHourlyAveragePricesByDay;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataEnd;
@@ -43,7 +42,7 @@ public class DailyHourlyPricesView extends Main {
     private final DatePicker fromDatePicker;
     private final DatePicker toDatePicker;
     private final ObjectMapperService mapperService;
-    private final Grid<PriceCalculatorService.HourValuePerDay> grid;
+    private final Grid<Map<Integer, Double>> grid;
 
     public DailyHourlyPricesView(HourlyPricesView.PreservedState preservedState, ObjectMapperService mapperService) {
         this.mapperService = mapperService;
@@ -97,38 +96,37 @@ public class DailyHourlyPricesView extends Main {
         add(cssGrid, grid);
     }
 
-    private @NotNull Grid<PriceCalculatorService.HourValuePerDay> createGrid() {
-        Grid<PriceCalculatorService.HourValuePerDay> grid = new Grid<>(PriceCalculatorService.HourValuePerDay.class, false);
+    private @NotNull Grid<Map<Integer, Double>> createGrid() {
+        Grid<Map<Integer, Double>> grid = new Grid<>();
         grid.setAllRowsVisible(true);
 
-        // Add a column for the day of the week
-        grid.addColumn(item -> item.getDayOfWeek().getDisplayName(TextStyle.SHORT, getLocale()))
-                .setHeader(getTranslation("Weekday"))
+        // Add a column for the hour on the Y-axis
+        grid.addColumn(item -> item.get(0).intValue())  // Retrieve the hour stored with key 0
+                .setHeader(getTranslation("Hour"))
                 .setSortable(true)
                 .setAutoWidth(true)
                 .setFrozen(true);
 
-        // Add columns for each hour dynamically
-        IntStream.range(0, 24).forEach(hour ->
-                grid.addColumn(item -> String.format("%.2f", item.getHourlyPrice(hour)))
-                        .setHeader(hour + ":00")
-                        .setSortable(true)
-                        .setAutoWidth(true)
-                        .setPartNameGenerator(item -> {
-                            double averagePrice = item.getHourlyPrice(hour);
-                            if (averagePrice <= 5) {
-                                return "cheap"; // Green background
-                            } else if (averagePrice < 10) {
-                                return "normal"; // Default background
-                            } else {
-                                return "expensive"; // Red background
-                            }
-                        }));
-
+        // Add columns for each day (Monday to Sunday) on the X-axis
+        for (DayOfWeek day : DayOfWeek.values()) {
+            grid.addColumn(item -> {
+                        Double price = item.get(day.getValue());  // Use DayOfWeek ordinal value as the key
+                        return price != null ? String.format("%.2f", price) : "";
+                    })
+                    .setHeader(day.getDisplayName(TextStyle.SHORT, getLocale()))
+                    .setSortable(true)
+                    .setAutoWidth(true)
+                    .setPartNameGenerator(item -> {
+                        Double price = item.get(day.getValue());
+                        if (price == null) return "normal";
+                        if (price <= 5) return "cheap";
+                        if (price < 10) return "normal";
+                        return "expensive";
+                    });
+        }
 
         return grid;
     }
-
     private void createResult() {
         Map<DayOfWeek, PriceCalculatorService.averageMinMax> weeklyPrices = getHourlyAveragePricesByDay(
                 fromDatePicker.getValue().atStartOfDay(fiZoneID).toInstant(),
@@ -136,18 +134,21 @@ public class DailyHourlyPricesView extends Main {
                 true
         );
 
-        List<PriceCalculatorService.HourValuePerDay> hourlyDataList = new ArrayList<>();
-        for (DayOfWeek day : DayOfWeek.values()) {
-            PriceCalculatorService.averageMinMax dayPrices = weeklyPrices.get(day);
-            Map<Integer, Double> hourlyPrices = new HashMap<>();
-            for (int hour = 0; hour < 24; hour++) {
-                hourlyPrices.put(hour, dayPrices.average()[hour].doubleValue());
+        List<Map<Integer, Double>> hourlyDataList = new ArrayList<>();
+        for (int hour = 0; hour < 24; hour++) {
+            Map<Integer, Double> hourData = new HashMap<>();
+            hourData.put(0, (double) hour);  // Store the hour as key 0 to be displayed in the first column
+
+            for (DayOfWeek day : DayOfWeek.values()) {
+                PriceCalculatorService.averageMinMax dayPrices = weeklyPrices.get(day);
+                if (dayPrices != null) {
+                    hourData.put(day.getValue(), dayPrices.average()[hour] != null ? dayPrices.average()[hour].doubleValue() : null);
+                }
             }
-            hourlyDataList.add(new PriceCalculatorService.HourValuePerDay(day, hourlyPrices));
+            hourlyDataList.add(hourData);
         }
         grid.setItems(hourlyDataList);
     }
-
     public void readFieldValues() {
         WebStorage.getItem(fromDatePicker.getId().orElseThrow(), item -> mapperService.readLocalDateTime(item, fromDatePicker));
         WebStorage.getItem(toDatePicker.getId().orElseThrow(), item -> mapperService.readLocalDateTime(item, toDatePicker));
@@ -168,3 +169,4 @@ public class DailyHourlyPricesView extends Main {
         HourlyPricesView.Selection selection = new HourlyPricesView.Selection();
     }
 }
+

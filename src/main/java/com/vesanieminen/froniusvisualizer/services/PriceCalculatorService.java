@@ -706,9 +706,9 @@ public class PriceCalculatorService {
                     minPrices[hour] = stats.getMin();
                     maxPrices[hour] = stats.getMax();
                 } else {
-                    averagePrices[hour] = 0.0;
-                    minPrices[hour] = 0.0;
-                    maxPrices[hour] = 0.0;
+                    averagePrices[hour] = null;
+                    minPrices[hour] = null;
+                    maxPrices[hour] = null;
                 }
             }
 
