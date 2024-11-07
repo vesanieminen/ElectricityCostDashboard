@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.ParseException;
+import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -680,4 +681,55 @@ public class PriceCalculatorService {
     public record averageMinMax(Number[] average, Number[] min, Number[] max) {
     }
 
+
+    public static Map<DayOfWeek, averageMinMax> getHourlyAveragePricesByDay(Instant start, Instant end, boolean vat) {
+        Map<DayOfWeek, Map<Integer, DoubleSummaryStatistics>> statsByDayAndHour = spotPriceMap.entrySet().stream()
+                .filter(item -> !item.getKey().isBefore(start) && item.getKey().isBefore(end))
+                .collect(Collectors.groupingBy(
+                        item -> item.getKey().atZone(fiZoneID).getDayOfWeek(),
+                        Collectors.groupingBy(
+                                item -> item.getKey().atZone(fiZoneID).getHour(),
+                                Collectors.summarizingDouble(item -> item.getValue() * getVAT(item.getKey(), vat))
+                        )
+                ));
+
+        Map<DayOfWeek, averageMinMax> result = new HashMap<>();
+        for (DayOfWeek day : DayOfWeek.values()) {
+            final var averagePrices = new Number[24];
+            final var minPrices = new Number[24];
+            final var maxPrices = new Number[24];
+
+            for (int hour = 0; hour < 24; hour++) {
+                DoubleSummaryStatistics stats = statsByDayAndHour.getOrDefault(day, new HashMap<>()).get(hour);
+                if (stats != null && stats.getCount() > 0) {
+                    averagePrices[hour] = stats.getAverage();
+                    minPrices[hour] = stats.getMin();
+                    maxPrices[hour] = stats.getMax();
+                } else {
+                    averagePrices[hour] = 0.0;
+                    minPrices[hour] = 0.0;
+                    maxPrices[hour] = 0.0;
+                }
+            }
+
+            result.put(day, new averageMinMax(averagePrices, minPrices, maxPrices));
+        }
+        return result;
+    }
+
+
+    @Getter
+    public static class HourValuePerDay {
+        private final DayOfWeek dayOfWeek;
+        private final Map<Integer, Double> hourlyPrices;
+
+        public HourValuePerDay(DayOfWeek dayOfWeek, Map<Integer, Double> hourlyPrices) {
+            this.dayOfWeek = dayOfWeek;
+            this.hourlyPrices = hourlyPrices;
+        }
+
+        public Double getHourlyPrice(int hour) {
+            return hourlyPrices.getOrDefault(hour, 0.0);
+        }
+    }
 }
