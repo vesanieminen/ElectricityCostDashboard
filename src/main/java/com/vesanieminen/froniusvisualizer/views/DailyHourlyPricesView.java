@@ -46,6 +46,7 @@ public class DailyHourlyPricesView extends Main {
 
     public DailyHourlyPricesView(HourlyPricesView.PreservedState preservedState, ObjectMapperService mapperService) {
         this.mapperService = mapperService;
+        setSizeFull();
 
         addClassNames(LumoUtility.Overflow.AUTO, LumoUtility.Padding.Horizontal.SMALL, LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
         // Added fix for iOS Safari header height that changes when scrolling
@@ -98,10 +99,12 @@ public class DailyHourlyPricesView extends Main {
 
     private @NotNull Grid<Map<Integer, Double>> createGrid() {
         Grid<Map<Integer, Double>> grid = new Grid<>();
-        grid.setAllRowsVisible(true);
+        //grid.setAllRowsVisible(true);
+        //grid.getElement().setProperty("frozenRows", 1);
+        grid.setHeightFull();
 
         // Add a column for the hour on the Y-axis
-        grid.addColumn(item -> item.get(0).intValue())  // Retrieve the hour stored with key 0
+        grid.addColumn(item -> "%d:00 - %d:00".formatted(item.get(0).intValue(), item.get(0).intValue() + 1))  // Retrieve the hour stored with key 0
                 .setHeader(getTranslation("Hour"))
                 .setSortable(true)
                 .setAutoWidth(true)
