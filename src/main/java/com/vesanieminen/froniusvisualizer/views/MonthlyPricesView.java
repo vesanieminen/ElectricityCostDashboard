@@ -70,7 +70,7 @@ public class MonthlyPricesView extends Main {
                         // Construct YearMonth from current year and month
                         YearMonth yearMonth = YearMonth.of(currentYear, month);
                         Double averagePrice = averagePriceMap.get(yearMonth);
-                        return averagePrice == null ? "" : String.format("%.2f %s", averagePrice, getTranslation("c/kWh"));
+                        return averagePrice == null ? "" : String.format("%.2f", averagePrice);
                     })
                     .setHeader(String.valueOf(currentYear))
                     .setSortable(true)

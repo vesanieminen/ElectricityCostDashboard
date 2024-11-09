@@ -115,7 +115,7 @@ public class HourlyPricesView extends Main {
                 .setHeader(getTranslation("Hour"))
                 .setSortable(true)
                 .setAutoWidth(true);
-        grid.addColumn(item -> String.format("%.2f %s", item.getValue(), getTranslation("c/kWh")))
+        grid.addColumn(item -> String.format("%.2f", item.getValue()))
                 .setHeader(getTranslation("Average Price"))
                 .setSortable(true)
                 .setAutoWidth(true)
