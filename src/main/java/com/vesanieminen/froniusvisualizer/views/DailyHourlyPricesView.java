@@ -98,24 +98,22 @@ public class DailyHourlyPricesView extends Main {
 
     private @NotNull Grid<Map<Integer, Double>> createGrid() {
         Grid<Map<Integer, Double>> grid = new Grid<>();
-        //grid.setAllRowsVisible(true);
 
-        // Add a column for the hour on the Y-axis
-        grid.addColumn(item -> "%d:00".formatted(item.get(0).intValue()))  // Retrieve the hour stored with key 0
+        // Add a column for the hour
+        grid.addColumn(item -> "%d:00".formatted(item.get(0).intValue()))
                 .setHeader(getTranslation("Hour"))
                 .setSortable(true)
                 .setAutoWidth(true)
                 .setFrozen(true);
 
-        // Add columns for each day (Monday to Sunday) on the X-axis
+        // Add columns for each day (Monday to Sunday)
         for (DayOfWeek day : DayOfWeek.values()) {
             grid.addColumn(item -> {
-                        Double price = item.get(day.getValue());  // Use DayOfWeek ordinal value as the key
+                        Double price = item.get(day.getValue());
                         return price != null ? String.format("%.2f", price) : "";
                     })
                     .setHeader(day.getDisplayName(TextStyle.SHORT, getLocale()))
                     .setSortable(true)
-                    //.setAutoWidth(true)
                     .setPartNameGenerator(item -> {
                         Double price = item.get(day.getValue());
                         if (price == null) return "normal";
@@ -125,8 +123,25 @@ public class DailyHourlyPricesView extends Main {
                     });
         }
 
+        // Add a column for the average price across all days
+        grid.addColumn(item -> {
+                    Double avgPrice = item.get(-1);
+                    return avgPrice != null ? String.format("%.2f", avgPrice) : "";
+                })
+                .setHeader(getTranslation("avg."))
+                .setSortable(true)
+                .setAutoWidth(true)
+                .setPartNameGenerator(item -> {
+                    Double avgPrice = item.get(-1);
+                    if (avgPrice == null) return "normal";
+                    if (avgPrice <= 5) return "cheap";
+                    if (avgPrice < 10) return "normal";
+                    return "expensive";
+                });
+
         return grid;
     }
+
     private void createResult() {
         Map<DayOfWeek, PriceCalculatorService.averageMinMax> weeklyPrices = getHourlyAveragePricesByDay(
                 fromDatePicker.getValue().atStartOfDay(fiZoneID).toInstant(),
@@ -137,18 +152,39 @@ public class DailyHourlyPricesView extends Main {
         List<Map<Integer, Double>> hourlyDataList = new ArrayList<>();
         for (int hour = 0; hour < 24; hour++) {
             Map<Integer, Double> hourData = new HashMap<>();
-            hourData.put(0, (double) hour);  // Store the hour as key 0 to be displayed in the first column
+            hourData.put(0, (double) hour);  // Store the hour as key 0
+
+            double sumPrices = 0;
+            int countPrices = 0;
 
             for (DayOfWeek day : DayOfWeek.values()) {
                 PriceCalculatorService.averageMinMax dayPrices = weeklyPrices.get(day);
                 if (dayPrices != null) {
-                    hourData.put(day.getValue(), dayPrices.average()[hour] != null ? dayPrices.average()[hour].doubleValue() : null);
+                    Double price = dayPrices.average()[hour] != null ? dayPrices.average()[hour].doubleValue() : null;
+                    if (price != null) {
+                        hourData.put(day.getValue(), price);
+                        sumPrices += price;
+                        countPrices++;
+                    } else {
+                        hourData.put(day.getValue(), null);
+                    }
+                } else {
+                    hourData.put(day.getValue(), null);
                 }
             }
+
+            if (countPrices > 0) {
+                double avgPrice = sumPrices / countPrices;
+                hourData.put(-1, avgPrice); // Store the average price using key -1
+            } else {
+                hourData.put(-1, null);
+            }
+
             hourlyDataList.add(hourData);
         }
         grid.setItems(hourlyDataList);
     }
+
     public void readFieldValues() {
         WebStorage.getItem(fromDatePicker.getId().orElseThrow(), item -> mapperService.readLocalDateTime(item, fromDatePicker));
         WebStorage.getItem(toDatePicker.getId().orElseThrow(), item -> mapperService.readLocalDateTime(item, toDatePicker));
