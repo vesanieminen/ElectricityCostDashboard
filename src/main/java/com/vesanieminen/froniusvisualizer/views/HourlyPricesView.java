@@ -55,6 +55,7 @@ public class HourlyPricesView extends Main {
 
     public HourlyPricesView(PreservedState preservedState, ObjectMapperService mapperService) {
         this.mapperService = mapperService;
+        setHeightFull();
 
         addClassNames(LumoUtility.Overflow.AUTO, LumoUtility.Padding.Horizontal.SMALL, LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
         // Added fix for iOS Safari header height that changes when scrolling
