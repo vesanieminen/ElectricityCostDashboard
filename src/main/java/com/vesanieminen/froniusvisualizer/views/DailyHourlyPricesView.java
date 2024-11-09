@@ -140,6 +140,38 @@ public class DailyHourlyPricesView extends Main {
                     return "expensive";
                 });
 
+        // Add a column for the average price for weekdays (Monday-Friday)
+        grid.addColumn(item -> {
+                    Double weekdayAvgPrice = item.get("Weekday Average");
+                    return weekdayAvgPrice != null ? String.format("%.2f", weekdayAvgPrice) : "";
+                })
+                .setHeader(getTranslation("Weekday Average"))
+                .setSortable(true)
+                .setAutoWidth(true)
+                .setPartNameGenerator(item -> {
+                    Double weekdayAvgPrice = item.get("Weekday Average");
+                    if (weekdayAvgPrice == null) return "normal";
+                    if (weekdayAvgPrice <= 5) return "cheap";
+                    if (weekdayAvgPrice < 10) return "normal";
+                    return "expensive";
+                });
+
+        // Add a column for the average price for weekends (Saturday-Sunday)
+        grid.addColumn(item -> {
+                    Double weekendAvgPrice = item.get("Weekend Average");
+                    return weekendAvgPrice != null ? String.format("%.2f", weekendAvgPrice) : "";
+                })
+                .setHeader(getTranslation("Weekend Average"))
+                .setSortable(true)
+                .setAutoWidth(true)
+                .setPartNameGenerator(item -> {
+                    Double weekendAvgPrice = item.get("Weekend Average");
+                    if (weekendAvgPrice == null) return "normal";
+                    if (weekendAvgPrice <= 5) return "cheap";
+                    if (weekendAvgPrice < 10) return "normal";
+                    return "expensive";
+                });
+
         return grid;
     }
 
@@ -158,6 +190,12 @@ public class DailyHourlyPricesView extends Main {
             double sumPrices = 0;
             int countPrices = 0;
 
+            double sumWeekdayPrices = 0;
+            int countWeekdayPrices = 0;
+
+            double sumWeekendPrices = 0;
+            int countWeekendPrices = 0;
+
             for (DayOfWeek day : DayOfWeek.values()) {
                 PriceCalculatorService.averageMinMax dayPrices = weeklyPrices.get(day);
                 String dayName = day.getDisplayName(TextStyle.FULL, getLocale());
@@ -167,6 +205,16 @@ public class DailyHourlyPricesView extends Main {
                         hourData.put(dayName, price);
                         sumPrices += price;
                         countPrices++;
+
+                        if (day.getValue() >= DayOfWeek.MONDAY.getValue() && day.getValue() <= DayOfWeek.FRIDAY.getValue()) {
+                            // Weekday
+                            sumWeekdayPrices += price;
+                            countWeekdayPrices++;
+                        } else {
+                            // Weekend
+                            sumWeekendPrices += price;
+                            countWeekendPrices++;
+                        }
                     } else {
                         hourData.put(dayName, null);
                     }
@@ -175,11 +223,28 @@ public class DailyHourlyPricesView extends Main {
                 }
             }
 
+            // Calculate and store the average across all days
             if (countPrices > 0) {
                 double avgPrice = sumPrices / countPrices;
                 hourData.put("Average", avgPrice); // Store the average price using key "Average"
             } else {
                 hourData.put("Average", null);
+            }
+
+            // Calculate and store the weekday average
+            if (countWeekdayPrices > 0) {
+                double weekdayAvgPrice = sumWeekdayPrices / countWeekdayPrices;
+                hourData.put("Weekday Average", weekdayAvgPrice);
+            } else {
+                hourData.put("Weekday Average", null);
+            }
+
+            // Calculate and store the weekend average
+            if (countWeekendPrices > 0) {
+                double weekendAvgPrice = sumWeekendPrices / countWeekendPrices;
+                hourData.put("Weekend Average", weekendAvgPrice);
+            } else {
+                hourData.put("Weekend Average", null);
             }
 
             hourlyDataList.add(hourData);
