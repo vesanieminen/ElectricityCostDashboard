@@ -42,7 +42,7 @@ public class DailyHourlyPricesView extends Main {
     private final DatePicker fromDatePicker;
     private final DatePicker toDatePicker;
     private final ObjectMapperService mapperService;
-    private final Grid<Map<Integer, Double>> grid;
+    private final Grid<Map<String, Double>> grid;
 
     public DailyHourlyPricesView(HourlyPricesView.PreservedState preservedState, ObjectMapperService mapperService) {
         this.mapperService = mapperService;
@@ -96,11 +96,11 @@ public class DailyHourlyPricesView extends Main {
         add(cssGrid, grid);
     }
 
-    private @NotNull Grid<Map<Integer, Double>> createGrid() {
-        Grid<Map<Integer, Double>> grid = new Grid<>();
+    private @NotNull Grid<Map<String, Double>> createGrid() {
+        Grid<Map<String, Double>> grid = new Grid<>();
 
         // Add a column for the hour
-        grid.addColumn(item -> "%d:00".formatted(item.get(0).intValue()))
+        grid.addColumn(item -> "%d:00".formatted(item.get("Hour").intValue()))
                 .setHeader(getTranslation("Hour"))
                 .setSortable(true)
                 .setAutoWidth(true)
@@ -108,14 +108,15 @@ public class DailyHourlyPricesView extends Main {
 
         // Add columns for each day (Monday to Sunday)
         for (DayOfWeek day : DayOfWeek.values()) {
+            String dayName = day.getDisplayName(TextStyle.FULL, getLocale());
             grid.addColumn(item -> {
-                        Double price = item.get(day.getValue());
+                        Double price = item.get(dayName);
                         return price != null ? String.format("%.2f", price) : "";
                     })
                     .setHeader(day.getDisplayName(TextStyle.SHORT, getLocale()))
                     .setSortable(true)
                     .setPartNameGenerator(item -> {
-                        Double price = item.get(day.getValue());
+                        Double price = item.get(dayName);
                         if (price == null) return "normal";
                         if (price <= 5) return "cheap";
                         if (price < 10) return "normal";
@@ -125,14 +126,14 @@ public class DailyHourlyPricesView extends Main {
 
         // Add a column for the average price across all days
         grid.addColumn(item -> {
-                    Double avgPrice = item.get(-1);
+                    Double avgPrice = item.get("Average");
                     return avgPrice != null ? String.format("%.2f", avgPrice) : "";
                 })
                 .setHeader(getTranslation("avg."))
                 .setSortable(true)
                 .setAutoWidth(true)
                 .setPartNameGenerator(item -> {
-                    Double avgPrice = item.get(-1);
+                    Double avgPrice = item.get("Average");
                     if (avgPrice == null) return "normal";
                     if (avgPrice <= 5) return "cheap";
                     if (avgPrice < 10) return "normal";
@@ -149,35 +150,36 @@ public class DailyHourlyPricesView extends Main {
                 true
         );
 
-        List<Map<Integer, Double>> hourlyDataList = new ArrayList<>();
+        List<Map<String, Double>> hourlyDataList = new ArrayList<>();
         for (int hour = 0; hour < 24; hour++) {
-            Map<Integer, Double> hourData = new HashMap<>();
-            hourData.put(0, (double) hour);  // Store the hour as key 0
+            Map<String, Double> hourData = new HashMap<>();
+            hourData.put("Hour", (double) hour);  // Store the hour as key "Hour"
 
             double sumPrices = 0;
             int countPrices = 0;
 
             for (DayOfWeek day : DayOfWeek.values()) {
                 PriceCalculatorService.averageMinMax dayPrices = weeklyPrices.get(day);
+                String dayName = day.getDisplayName(TextStyle.FULL, getLocale());
                 if (dayPrices != null) {
                     Double price = dayPrices.average()[hour] != null ? dayPrices.average()[hour].doubleValue() : null;
                     if (price != null) {
-                        hourData.put(day.getValue(), price);
+                        hourData.put(dayName, price);
                         sumPrices += price;
                         countPrices++;
                     } else {
-                        hourData.put(day.getValue(), null);
+                        hourData.put(dayName, null);
                     }
                 } else {
-                    hourData.put(day.getValue(), null);
+                    hourData.put(dayName, null);
                 }
             }
 
             if (countPrices > 0) {
                 double avgPrice = sumPrices / countPrices;
-                hourData.put(-1, avgPrice); // Store the average price using key -1
+                hourData.put("Average", avgPrice); // Store the average price using key "Average"
             } else {
-                hourData.put(-1, null);
+                hourData.put("Average", null);
             }
 
             hourlyDataList.add(hourData);
@@ -205,4 +207,3 @@ public class DailyHourlyPricesView extends Main {
         HourlyPricesView.Selection selection = new HourlyPricesView.Selection();
     }
 }
-
