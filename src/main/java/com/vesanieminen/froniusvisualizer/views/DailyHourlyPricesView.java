@@ -100,7 +100,10 @@ public class DailyHourlyPricesView extends Main {
         Grid<Map<String, Double>> grid = new Grid<>();
 
         // Add a column for the hour
-        grid.addColumn(item -> "%d:00".formatted(item.get("Hour").intValue()))
+        grid.addColumn(item -> {
+                    Double hourValue = item.get("Hour");
+                    return hourValue != null ? "%d:00".formatted(hourValue.intValue()) : getTranslation("avg.");
+                })
                 .setHeader(getTranslation("Hour"))
                 .setSortable(true)
                 .setAutoWidth(true)
@@ -172,6 +175,14 @@ public class DailyHourlyPricesView extends Main {
                     return "expensive";
                 });
 
+        // Set a class name generator to style the summary row
+        grid.setClassNameGenerator(item -> {
+            if (item.containsKey("SummaryRow")) {
+                return "summary-row"; // This class can be used in your CSS to style the row
+            }
+            return null;
+        });
+
         return grid;
     }
 
@@ -183,6 +194,11 @@ public class DailyHourlyPricesView extends Main {
         );
 
         List<Map<String, Double>> hourlyDataList = new ArrayList<>();
+
+        // Initialize maps to accumulate sums per day
+        Map<String, Double> sumPerDay = new HashMap<>();
+        Map<String, Integer> countPerDay = new HashMap<>();
+
         for (int hour = 0; hour < 24; hour++) {
             Map<String, Double> hourData = new HashMap<>();
             hourData.put("Hour", (double) hour);  // Store the hour as key "Hour"
@@ -206,6 +222,10 @@ public class DailyHourlyPricesView extends Main {
                         sumPrices += price;
                         countPrices++;
 
+                        // Accumulate sums per day
+                        sumPerDay.merge(dayName, price, Double::sum);
+                        countPerDay.merge(dayName, 1, Integer::sum);
+
                         if (day.getValue() >= DayOfWeek.MONDAY.getValue() && day.getValue() <= DayOfWeek.FRIDAY.getValue()) {
                             // Weekday
                             sumWeekdayPrices += price;
@@ -226,7 +246,10 @@ public class DailyHourlyPricesView extends Main {
             // Calculate and store the average across all days
             if (countPrices > 0) {
                 double avgPrice = sumPrices / countPrices;
-                hourData.put("Average", avgPrice); // Store the average price using key "Average"
+                hourData.put("Average", avgPrice);
+                // Accumulate for "Average" column
+                sumPerDay.merge("Average", avgPrice, Double::sum);
+                countPerDay.merge("Average", 1, Integer::sum);
             } else {
                 hourData.put("Average", null);
             }
@@ -235,6 +258,9 @@ public class DailyHourlyPricesView extends Main {
             if (countWeekdayPrices > 0) {
                 double weekdayAvgPrice = sumWeekdayPrices / countWeekdayPrices;
                 hourData.put("Weekday Average", weekdayAvgPrice);
+                // Accumulate for "Weekday Average" column
+                sumPerDay.merge("Weekday Average", weekdayAvgPrice, Double::sum);
+                countPerDay.merge("Weekday Average", 1, Integer::sum);
             } else {
                 hourData.put("Weekday Average", null);
             }
@@ -243,12 +269,37 @@ public class DailyHourlyPricesView extends Main {
             if (countWeekendPrices > 0) {
                 double weekendAvgPrice = sumWeekendPrices / countWeekendPrices;
                 hourData.put("Weekend Average", weekendAvgPrice);
+                // Accumulate for "Weekend Average" column
+                sumPerDay.merge("Weekend Average", weekendAvgPrice, Double::sum);
+                countPerDay.merge("Weekend Average", 1, Integer::sum);
             } else {
                 hourData.put("Weekend Average", null);
             }
 
             hourlyDataList.add(hourData);
         }
+
+        // After processing all hours, compute the averages per day
+        Map<String, Double> summaryData = new HashMap<>();
+        summaryData.put("Hour", null); // For the Hour column, display "Average" or leave it empty
+
+        for (String key : sumPerDay.keySet()) {
+            Double totalSum = sumPerDay.get(key);
+            Integer totalCount = countPerDay.get(key);
+            if (totalCount > 0) {
+                double average = totalSum / totalCount;
+                summaryData.put(key, average);
+            } else {
+                summaryData.put(key, null);
+            }
+        }
+
+        // Optional: Add a marker to identify the summary row
+        summaryData.put("SummaryRow", 1.0);
+
+        // Add the summary row to the data list
+        hourlyDataList.add(summaryData);
+
         grid.setItems(hourlyDataList);
     }
 
