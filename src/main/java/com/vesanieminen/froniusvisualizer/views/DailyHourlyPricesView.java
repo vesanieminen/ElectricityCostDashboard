@@ -145,7 +145,7 @@ public class DailyHourlyPricesView extends Main {
                     Double weekdayAvgPrice = item.get("Weekday Average");
                     return weekdayAvgPrice != null ? String.format("%.2f", weekdayAvgPrice) : "";
                 })
-                .setHeader(getTranslation("Weekday Average"))
+                .setHeader(getTranslation("Mon - Fri"))
                 .setSortable(true)
                 .setAutoWidth(true)
                 .setPartNameGenerator(item -> {
@@ -161,7 +161,7 @@ public class DailyHourlyPricesView extends Main {
                     Double weekendAvgPrice = item.get("Weekend Average");
                     return weekendAvgPrice != null ? String.format("%.2f", weekendAvgPrice) : "";
                 })
-                .setHeader(getTranslation("Weekend Average"))
+                .setHeader(getTranslation("Sat - Sun"))
                 .setSortable(true)
                 .setAutoWidth(true)
                 .setPartNameGenerator(item -> {
