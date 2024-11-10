@@ -882,6 +882,19 @@ public class PriceCalculatorView extends Main {
                     });
             columnHeaders.add("%s %s".formatted(getTranslation("Average spot price (without margin)"), getTranslation("c/kWh")));
 
+            // Column 2b: My average with margin
+            //final var myAverageWithMarginColumn = grid
+            //        .addColumn(entry -> numberFormat
+            //                .format(calculateOwnSpotAverageWithMargin(entry.getValue())))
+            //        .setHeader(createDivWithTooltip("My average + margin", "Average spot price (incl. margin)",
+            //                getTranslation("c/kWh")))
+            //        .setSortable(true)
+            //        .setPartNameGenerator(entry -> {
+            //            final var averagePrice = calculateOwnSpotAverageWithMargin(entry.getValue());
+            //            return getPricePartName(averagePrice, 5, 10);
+            //        });
+            columnHeaders.add("%s %s".formatted(getTranslation("Average spot price (incl. margin)"), getTranslation("c/kWh")));
+
             // Column 3: Cost Effect
             grid.addColumn(entry -> numberFormat.format(calculateCostEffect(entry.getValue())))
                     .setHeader(createDivWithTooltip("calculator.spot.difference.cents",
@@ -997,6 +1010,10 @@ public class PriceCalculatorView extends Main {
                         double myAverage = calculateOwnSpotAverageWithMargin(entry.getValue()) - spotMarginField.getValue();
                         rowData.add(numberFormat.format(myAverage));
 
+                        // Column 2b: My average with margin
+                        double myAverageWithMargin = calculateOwnSpotAverageWithMargin(entry.getValue());
+                        rowData.add(numberFormat.format(myAverageWithMargin));
+
                         // Column 3: Cost Effect
                         double costEffect = calculateCostEffect(entry.getValue());
                         rowData.add(numberFormat.format(costEffect));
@@ -1033,6 +1050,9 @@ public class PriceCalculatorView extends Main {
 
                     // Column 2: Total Own Spot Average
                     footerRowData.add(numberFormat.format(totalOwnSpotAverage));
+
+                    // Column 2b: Total Own Spot Average with margin
+                    footerRowData.add(numberFormat.format(calculateOwnSpotAverageWithMargin(spotCalculation)));
 
                     // Column 3: Empty (no footer data)
                     footerRowData.add("");
