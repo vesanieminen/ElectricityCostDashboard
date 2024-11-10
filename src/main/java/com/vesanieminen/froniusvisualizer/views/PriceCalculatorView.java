@@ -71,6 +71,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -947,16 +948,26 @@ public class PriceCalculatorView extends Main {
             resultLayout.add(grid);
 
             // Create the "Export to CSV" button
-            Button exportButton = new Button(getTranslation("Export to CSV"), MaterialIcon.DOWNLOAD.create());
-            exportButton.addClassNames(LumoUtility.Margin.Top.MEDIUM);
-            //exportButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+            Button exportButton = new Button(getTranslation("Export to CSV"));
 
-            // Create a StreamResource for the CSV file
-            StreamResource csvResource = new StreamResource("monthly_results.csv", () -> {
+            // Format the dates for the file name
+            final var fileNameDateFormatter = getLocale().equals(fiLocale) ? DateTimeFormatter.ofPattern("dd.MM.yyyy") : DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            String dateFromString = fromDateTimePicker.getValue().format(fileNameDateFormatter);
+            String dateToString = toDateTimePicker.getValue().format(fileNameDateFormatter);
+
+            // Construct the file name
+            String fileName = String.format("%s - %s %s.csv", dateFromString, dateToString, getTranslation("monthly summary"));
+
+            // Sanitize the file name to remove any illegal characters
+            fileName = fileName.replaceAll("[\\\\/:*?\"<>|]", "_");
+
+            // Create a StreamResource for the CSV file with the dynamic file name
+            StreamResource csvResource = new StreamResource(fileName, () -> {
                 try {
                     ByteArrayOutputStream bos = new ByteArrayOutputStream();
                     OutputStreamWriter writer = new OutputStreamWriter(bos, StandardCharsets.UTF_8);
-                    CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(columnHeaders.toArray(new String[0])));
+                    CSVPrinter csvPrinter = new CSVPrinter(writer,
+                            CSVFormat.DEFAULT.withHeader(columnHeaders.toArray(new String[0])));
 
                     // Write data rows
                     for (Map.Entry<YearMonth, PriceCalculatorService.SpotCalculation> entry : dataList) {
@@ -983,7 +994,7 @@ public class PriceCalculatorView extends Main {
 
                         // Column 5: Cost Factor Percentage
                         String costFactorPercentage = calculateCostFactorPercentage(entry.getValue(),
-                                getNumberFormatMaxTwoDecimalsWithPlusPrefix(getLocale()), true);
+                                getNumberFormatMaxTwoDecimalsWithPlusPrefix(getLocale()), false);
                         rowData.add(costFactorPercentage);
 
                         // Column 6: Consumption
@@ -1015,6 +1026,7 @@ public class PriceCalculatorView extends Main {
             resultLayout.add(downloadLink);
         }
     }
+
     private @NotNull Div createDivWithTooltip(String title, String tooltip, String suffix) {
         final var span = new Span(getTranslation(title));
         span.addClassNames(
