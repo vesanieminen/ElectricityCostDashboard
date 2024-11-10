@@ -38,6 +38,7 @@ html {
     --fullscreen-height-column: calc(100vh - 7.5rem);
     --fullscreen-height-timo-column: calc(100vh - 17rem);
     --fullscreen-height-history: calc(100vh - 4.5rem);
+    --fullscreen-height-hourly-prices: calc(100vh - 4.5rem);
     --fullscreen-height-daily-hourly-prices: calc(100vh - 4.5rem);
 }
 
@@ -49,6 +50,7 @@ html {
         --fullscreen-height-column: calc(100vh - 10.5rem);
         --fullscreen-height-timo-column: calc(100vh - 24.5rem);
         --fullscreen-height-history: calc(100vh - 11rem);
+        --fullscreen-height-hourly-prices: calc(100vh - 8.5rem);
         --fullscreen-height-daily-hourly-prices: calc(100vh - 8.5rem);
     }
 
@@ -60,6 +62,7 @@ html {
             --fullscreen-height-column: calc(100vh - 3.5rem);
             --fullscreen-height-timo-column: calc(100vh - 17.2rem);
             --fullscreen-height-history: calc(100vh - 4rem);
+            --fullscreen-height-hourly-prices: calc(100vh - 4.5rem);
             --fullscreen-height-daily-hourly-prices: calc(100vh - 4.5rem);
         }
     }

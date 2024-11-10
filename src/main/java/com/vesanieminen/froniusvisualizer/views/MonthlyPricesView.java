@@ -1,6 +1,5 @@
 package com.vesanieminen.froniusvisualizer.views;
 
-import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.router.PageTitle;
@@ -29,11 +28,12 @@ public class MonthlyPricesView extends Main {
     public MonthlyPricesView() {
         addClassNames(LumoUtility.Overflow.AUTO, LumoUtility.Padding.Horizontal.SMALL, LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
         // Added fix for iOS Safari header height that changes when scrolling
-        setHeight("var(--fullscreen-height)");
+        setHeight("var(--fullscreen-height-hourly-prices)");
+
+        add(createGrid());
     }
 
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
+    private Grid<Month> createGrid() {
         // Fetch the averagePriceMap from PriceCalculatorService
         Map<YearMonth, Double> averagePriceMap = PriceCalculatorService.getAveragePriceMap();
 
@@ -91,9 +91,7 @@ public class MonthlyPricesView extends Main {
                         }
                     });
         }
-
-        // Add the Grid to the UI
-        add(grid);
+        return grid;
     }
 
 }
