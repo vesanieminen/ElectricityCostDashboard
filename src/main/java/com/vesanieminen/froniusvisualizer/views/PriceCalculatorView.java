@@ -950,6 +950,7 @@ public class PriceCalculatorView extends Main {
 
             // Create the "Export to CSV" button
             Button exportButton = new Button(getTranslation("Export to CSV"));
+            exportButton.addClassNames(LumoUtility.Margin.Top.MEDIUM);
 
             // Format the dates for the file name
             final var fileNameDateFormatter = getLocale().equals(fiLocale) ? DateTimeFormatter.ofPattern("dd.MM.yyyy") : DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -968,9 +969,11 @@ public class PriceCalculatorView extends Main {
                 try {
                     ByteArrayOutputStream bos = new ByteArrayOutputStream();
                     OutputStreamWriter writer = new OutputStreamWriter(bos, StandardCharsets.UTF_8);
-                    CSVPrinter csvPrinter = new CSVPrinter(writer,
-                            CSVFormat.DEFAULT.withHeader(columnHeaders.toArray(new String[0])));
+                    CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
+                            .setHeader(columnHeaders.toArray(new String[0]))
+                            .build();
 
+                    CSVPrinter csvPrinter = new CSVPrinter(writer, csvFormat);
                     // Write data rows
                     for (Map.Entry<YearMonth, PriceCalculatorService.SpotCalculation> entry : dataList) {
                         List<String> rowData = new ArrayList<>();
@@ -1039,7 +1042,7 @@ public class PriceCalculatorView extends Main {
                     writer.flush();
                     return new ByteArrayInputStream(bos.toByteArray());
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error("CSV file export failed", e);
                     return null;
                 }
             });
