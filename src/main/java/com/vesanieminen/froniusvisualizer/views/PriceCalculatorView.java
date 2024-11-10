@@ -937,34 +937,41 @@ public class PriceCalculatorView extends Main {
             columnHeaders.add("%s kWh".formatted(getTranslation("Consumption")));
 
             // Column 7: Price
-            final var totalSpotCostWithoutMarginColumn = grid
-                    .addColumn(entry -> numberFormat.format(entry.getValue().totalCostWithoutMargin))
-                    .setHeader(createDivWithTooltip("Price", "Total spot cost (without margin)", "€"))
-                    .setSortable(true);
+            //final var totalSpotCostWithoutMarginColumn = grid
+            //        .addColumn(entry -> numberFormat.format(entry.getValue().totalCostWithoutMargin))
+            //        .setHeader(createDivWithTooltip("Price", "Total spot cost (without margin)", "€"))
+            //        .setSortable(true);
             columnHeaders.add("%s €".formatted(getTranslation("Total spot cost (without margin)")));
 
             // Column 8: Price with margin
-            //final var totalSpotCostColumn = grid
-            //        .addColumn(entry -> numberFormat.format(entry.getValue().totalCost))
-            //        .setHeader(createDivWithTooltip("Price", "Total spot cost (incl. margin)", "€"))
-            //        .setSortable(true);
+            final var totalSpotCostColumn = grid
+                    .addColumn(entry -> numberFormat.format(entry.getValue().totalCost))
+                    .setHeader(createDivWithTooltip("Price", "Total spot cost (incl. margin)", "€"))
+                    .setSortable(true);
             columnHeaders.add("%s €".formatted(getTranslation("Total spot cost (incl. margin)")));
 
             // Footer row (optional)
             final var footerRow = grid.appendFooterRow();
             final var interval = getTranslation("Interval");
             footerRow.getCell(monthColumn).setText(interval);
+
             final var cell = footerRow.getCell(myAverageColumn);
             final var totalOwnSpotAverage = calculateOwnSpotAverageWithMargin(spotCalculation)
                     - spotMarginField.getValue();
             cell.setText(numberFormat.format(totalOwnSpotAverage));
             cell.setPartName(getPricePartName(totalOwnSpotAverage, 5, 10));
+
+            final var totalOwnSpotAverageWithMargin = calculateOwnSpotAverageWithMargin(spotCalculation);
+            //footerRow.getCell(myAverageWithMarginColumn).setText(numberFormat.format(totalOwnSpotAverageWithMargin));
+            //footerRow.getCell(myAverageWithMarginColumn).setPartName(getPricePartName(totalOwnSpotAverageWithMargin, 5, 10));
+
             footerRow.getCell(spotAvgColumn).setText(numberFormat.format(spotCalculation.averagePriceWithoutMargin));
             footerRow.getCell(spotAvgColumn)
                     .setPartName(getPricePartName(spotCalculation.averagePriceWithoutMargin, 5, 10));
             footerRow.getCell(consumptionColumn).setText(numberFormat.format(spotCalculation.totalConsumption));
-            footerRow.getCell(totalSpotCostWithoutMarginColumn)
-                    .setText(numberFormat.format(spotCalculation.totalCostWithoutMargin));
+
+            //footerRow.getCell(totalSpotCostWithoutMarginColumn).setText(numberFormat.format(spotCalculation.totalCostWithoutMargin));
+            footerRow.getCell(totalSpotCostColumn).setText(numberFormat.format(spotCalculation.totalCost));
 
             resultLayout.add(grid);
 
@@ -1052,7 +1059,7 @@ public class PriceCalculatorView extends Main {
                     footerRowData.add(numberFormat.format(totalOwnSpotAverage));
 
                     // Column 2b: Total Own Spot Average with margin
-                    footerRowData.add(numberFormat.format(calculateOwnSpotAverageWithMargin(spotCalculation)));
+                    footerRowData.add(numberFormat.format(totalOwnSpotAverageWithMargin));
 
                     // Column 3: Empty (no footer data)
                     footerRowData.add("");
