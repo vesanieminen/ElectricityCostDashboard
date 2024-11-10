@@ -880,7 +880,7 @@ public class PriceCalculatorView extends Main {
                                 - spotMarginField.getValue();
                         return getPricePartName(averagePrice, 5, 10);
                     });
-            columnHeaders.add(getTranslation("My average"));
+            columnHeaders.add("%s %s".formatted(getTranslation("Average spot price (without margin)"), getTranslation("c/kWh")));
 
             // Column 3: Cost Effect
             grid.addColumn(entry -> numberFormat.format(calculateCostEffect(entry.getValue())))
@@ -891,7 +891,7 @@ public class PriceCalculatorView extends Main {
                         final var costEffect = calculateCostEffect(entry.getValue());
                         return getPricePartName(costEffect, 0, 2);
                     });
-            columnHeaders.add(getTranslation("calculator.spot.difference.cents"));
+            columnHeaders.add("%s %s".formatted(getTranslation("calculator.spot.difference.cents"), getTranslation("c/kWh")));
 
             // Column 4: Unweighted Spot Average
             final var spotAvgColumn = grid
@@ -903,7 +903,7 @@ public class PriceCalculatorView extends Main {
                         final var averagePrice = entry.getValue().averagePriceWithoutMargin;
                         return getPricePartName(averagePrice, 5, 10);
                     });
-            columnHeaders.add(getTranslation("Unweighted spot average"));
+            columnHeaders.add("%s %s".formatted(getTranslation("Unweighted spot average"), getTranslation("c/kWh")));
 
             // Column 5: Cost Factor Percentage
             grid.addColumn(entry -> calculateCostFactorPercentage(entry.getValue(),
@@ -921,18 +921,19 @@ public class PriceCalculatorView extends Main {
             final var consumptionColumn = grid.addColumn(entry -> numberFormat.format(entry.getValue().totalConsumption))
                     .setHeader(createDivWithTooltip("Consumption", "Consumption", "kWh"))
                     .setSortable(true);
-            columnHeaders.add(getTranslation("Consumption"));
+            columnHeaders.add("%s kWh".formatted(getTranslation("Consumption")));
 
             // Column 7: Price
             final var totalSpotCostWithoutMarginColumn = grid
                     .addColumn(entry -> numberFormat.format(entry.getValue().totalCostWithoutMargin))
                     .setHeader(createDivWithTooltip("Price", "Total spot cost (without margin)", "€"))
                     .setSortable(true);
-            columnHeaders.add(getTranslation("Price"));
+            columnHeaders.add("%s €".formatted(getTranslation("Total spot cost (without margin)")));
 
             // Footer row (optional)
             final var footerRow = grid.appendFooterRow();
-            footerRow.getCell(monthColumn).setText(getTranslation("Interval"));
+            final var interval = getTranslation("Interval");
+            footerRow.getCell(monthColumn).setText(interval);
             final var cell = footerRow.getCell(myAverageColumn);
             final var totalOwnSpotAverage = calculateOwnSpotAverageWithMargin(spotCalculation)
                     - spotMarginField.getValue();
@@ -962,6 +963,7 @@ public class PriceCalculatorView extends Main {
             fileName = fileName.replaceAll("[\\\\/:*?\"<>|]", "_");
 
             // Create a StreamResource for the CSV file with the dynamic file name
+            final var locale = getLocale();
             StreamResource csvResource = new StreamResource(fileName, () -> {
                 try {
                     ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -975,13 +977,12 @@ public class PriceCalculatorView extends Main {
 
                         // Column 1: Month / Year
                         String monthYear = "%s / %s".formatted(
-                                entry.getKey().getMonth().getDisplayName(TextStyle.FULL_STANDALONE, getLocale()),
+                                entry.getKey().getMonth().getDisplayName(TextStyle.FULL_STANDALONE, locale),
                                 entry.getKey().getYear() - 2000);
                         rowData.add(monthYear);
 
                         // Column 2: My average
-                        double myAverage = calculateOwnSpotAverageWithMargin(entry.getValue())
-                                - spotMarginField.getValue();
+                        double myAverage = calculateOwnSpotAverageWithMargin(entry.getValue()) - spotMarginField.getValue();
                         rowData.add(numberFormat.format(myAverage));
 
                         // Column 3: Cost Effect
@@ -1007,6 +1008,32 @@ public class PriceCalculatorView extends Main {
 
                         csvPrinter.printRecord(rowData);
                     }
+
+                    // Write footer row
+                    List<String> footerRowData = new ArrayList<>();
+
+                    // Column 1: Interval
+                    footerRowData.add(interval);
+
+                    // Column 2: Total Own Spot Average
+                    footerRowData.add(numberFormat.format(totalOwnSpotAverage));
+
+                    // Column 3: Empty (no footer data)
+                    footerRowData.add("");
+
+                    // Column 4: Total Spot Average Without Margin
+                    footerRowData.add(numberFormat.format(spotCalculation.averagePriceWithoutMargin));
+
+                    // Column 5: Empty (no footer data)
+                    footerRowData.add("");
+
+                    // Column 6: Total Consumption
+                    footerRowData.add(numberFormat.format(spotCalculation.totalConsumption));
+
+                    // Column 7: Total Cost Without Margin
+                    footerRowData.add(numberFormat.format(spotCalculation.totalCostWithoutMargin));
+
+                    csvPrinter.printRecord(footerRowData);
 
                     csvPrinter.flush();
                     writer.flush();
