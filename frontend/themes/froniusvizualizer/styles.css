@@ -80,3 +80,6 @@ vaadin-grid::part(cheap) {
     color: var(--lumo-success-text-color);
 }
 
+vaadin-grid::part(footer-cell) {
+    font-size: var(--lumo-font-size-m);
+}

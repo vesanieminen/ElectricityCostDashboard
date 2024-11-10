@@ -44,6 +44,7 @@ import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
 import com.vesanieminen.froniusvisualizer.components.MaterialIcon;
@@ -53,12 +54,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.jetbrains.annotations.NotNull;
 import org.vaadin.miki.superfields.numbers.SuperDoubleField;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -828,81 +835,186 @@ public class PriceCalculatorView extends Main {
         return withSuffix ? "%s %%".formatted(twoDecimalsWithPlusPrefix.format(loweredCost)) : "%s".formatted(twoDecimalsWithPlusPrefix.format(loweredCost));
     }
 
-    private void createMonthlyResults(Div resultLayout, HashMap<YearMonth, PriceCalculatorService.SpotCalculation> yearMonthSpotCalculationHashMap, NumberFormat numberFormat, PriceCalculatorService.SpotCalculation spotCalculation) {
+    private void createMonthlyResults(Div resultLayout,
+                                      HashMap<YearMonth, PriceCalculatorService.SpotCalculation> yearMonthSpotCalculationHashMap,
+                                      NumberFormat numberFormat, PriceCalculatorService.SpotCalculation spotCalculation) {
         final var monthlyResultsH2 = new H2(getTranslation("calculator.results.per.month"));
         resultLayout.add(monthlyResultsH2);
 
         // monthly results
         {
-            List<Map.Entry<YearMonth, PriceCalculatorService.SpotCalculation>> dataList = new ArrayList<>(yearMonthSpotCalculationHashMap.entrySet());
+            List<Map.Entry<YearMonth, PriceCalculatorService.SpotCalculation>> dataList = new ArrayList<>(
+                    yearMonthSpotCalculationHashMap.entrySet());
             dataList.sort(Map.Entry.comparingByKey());
             Grid<Map.Entry<YearMonth, PriceCalculatorService.SpotCalculation>> grid = new Grid<>();
             grid.setAllRowsVisible(true);
             grid.setColumnReorderingAllowed(true);
             grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
             grid.setItems(dataList);
-            final var monthColumn = grid.addColumn(entry -> "%s / %s".formatted(entry.getKey().getMonth().getDisplayName(TextStyle.FULL_STANDALONE, getLocale()), entry.getKey().getYear() - 2000))
+
+            // Define a list to keep track of column headers
+            List<String> columnHeaders = new ArrayList<>();
+
+            // Column 1: Month / Year
+            final var monthColumn = grid
+                    .addColumn(entry -> "%s / %s".formatted(
+                            entry.getKey().getMonth().getDisplayName(TextStyle.FULL_STANDALONE, getLocale()),
+                            entry.getKey().getYear() - 2000))
                     .setHeader("%s / %s".formatted(getTranslation("Month"), getTranslation("Year")))
                     .setSortable(true)
                     .setAutoWidth(true)
                     .setComparator(Map.Entry.comparingByKey())
                     .setFrozen(true);
-            final var myAverageColumn = grid.addColumn(entry -> numberFormat.format(calculateOwnSpotAverageWithMargin(entry.getValue()) - spotMarginField.getValue()))
-                    .setHeader(createDivWithTooltip("My average", "Average spot price (without margin)", getTranslation("c/kWh")))
+            columnHeaders.add(monthColumn.getHeaderText());
+
+            // Column 2: My average
+            final var myAverageColumn = grid
+                    .addColumn(entry -> numberFormat
+                            .format(calculateOwnSpotAverageWithMargin(entry.getValue()) - spotMarginField.getValue()))
+                    .setHeader(createDivWithTooltip("My average", "Average spot price (without margin)",
+                            getTranslation("c/kWh")))
                     .setSortable(true)
                     .setPartNameGenerator(entry -> {
-                        final var averagePrice = calculateOwnSpotAverageWithMargin(entry.getValue()) - spotMarginField.getValue();
+                        final var averagePrice = calculateOwnSpotAverageWithMargin(entry.getValue())
+                                - spotMarginField.getValue();
                         return getPricePartName(averagePrice, 5, 10);
                     });
+            columnHeaders.add(getTranslation("My average"));
+
+            // Column 3: Cost Effect
             grid.addColumn(entry -> numberFormat.format(calculateCostEffect(entry.getValue())))
-                    .setHeader(createDivWithTooltip("calculator.spot.difference.cents", "calculator.spot.difference.cents", getTranslation("c/kWh")))
+                    .setHeader(createDivWithTooltip("calculator.spot.difference.cents",
+                            "calculator.spot.difference.cents", getTranslation("c/kWh")))
                     .setSortable(true)
                     .setPartNameGenerator(entry -> {
                         final var costEffect = calculateCostEffect(entry.getValue());
                         return getPricePartName(costEffect, 0, 2);
                     });
-            final var spotAvgColumn = grid.addColumn(entry -> numberFormat.format(entry.getValue().averagePriceWithoutMargin))
-                    .setHeader(createDivWithTooltip("Unweighted spot average", "Unweighted spot average", getTranslation("c/kWh")))
+            columnHeaders.add(getTranslation("calculator.spot.difference.cents"));
+
+            // Column 4: Unweighted Spot Average
+            final var spotAvgColumn = grid
+                    .addColumn(entry -> numberFormat.format(entry.getValue().averagePriceWithoutMargin))
+                    .setHeader(createDivWithTooltip("Unweighted spot average", "Unweighted spot average",
+                            getTranslation("c/kWh")))
                     .setSortable(true)
                     .setPartNameGenerator(entry -> {
                         final var averagePrice = entry.getValue().averagePriceWithoutMargin;
                         return getPricePartName(averagePrice, 5, 10);
                     });
-            grid.addColumn(entry -> calculateCostFactorPercentage(entry.getValue(), getNumberFormatMaxTwoDecimalsWithPlusPrefix(getLocale()), true))
-                    .setHeader(createDivWithTooltip("calculator.spot.difference.percentage", "calculator.spot.difference.percentage", ""))
+            columnHeaders.add(getTranslation("Unweighted spot average"));
+
+            // Column 5: Cost Factor Percentage
+            grid.addColumn(entry -> calculateCostFactorPercentage(entry.getValue(),
+                            getNumberFormatMaxTwoDecimalsWithPlusPrefix(getLocale()), true))
+                    .setHeader(createDivWithTooltip("calculator.spot.difference.percentage",
+                            "calculator.spot.difference.percentage", ""))
                     .setSortable(true)
                     .setPartNameGenerator(entry -> {
                         final var costEffect = calculateCostEffect(entry.getValue());
                         return getPricePartName(costEffect, 0, 2);
                     });
+            columnHeaders.add(getTranslation("calculator.spot.difference.percentage"));
+
+            // Column 6: Consumption
             final var consumptionColumn = grid.addColumn(entry -> numberFormat.format(entry.getValue().totalConsumption))
                     .setHeader(createDivWithTooltip("Consumption", "Consumption", "kWh"))
                     .setSortable(true);
-            //final var totalSpotCostInclMarginColumn = grid.addColumn(entry -> "%s €".formatted(numberFormat.format(entry.getValue().totalCost)))
-            //        .setHeader(createDivWithTooltip("Spot cost", "Total spot cost (incl. margin)", "€"))
-            //        .setSortable(true)
-            //        .setAutoWidth(true);
-            final var totalSpotCostWithoutMarginColumn = grid.addColumn(entry -> numberFormat.format(entry.getValue().totalCostWithoutMargin))
+            columnHeaders.add(getTranslation("Consumption"));
+
+            // Column 7: Price
+            final var totalSpotCostWithoutMarginColumn = grid
+                    .addColumn(entry -> numberFormat.format(entry.getValue().totalCostWithoutMargin))
                     .setHeader(createDivWithTooltip("Price", "Total spot cost (without margin)", "€"))
                     .setSortable(true);
+            columnHeaders.add(getTranslation("Price"));
 
-            // footer
+            // Footer row (optional)
             final var footerRow = grid.appendFooterRow();
-            footerRow.getCell(monthColumn).setText(getTranslation("Total"));
+            footerRow.getCell(monthColumn).setText(getTranslation("Interval"));
             final var cell = footerRow.getCell(myAverageColumn);
-            final var totalOwnSpotAverage = calculateOwnSpotAverageWithMargin(spotCalculation) - spotMarginField.getValue();
+            final var totalOwnSpotAverage = calculateOwnSpotAverageWithMargin(spotCalculation)
+                    - spotMarginField.getValue();
             cell.setText(numberFormat.format(totalOwnSpotAverage));
             cell.setPartName(getPricePartName(totalOwnSpotAverage, 5, 10));
             footerRow.getCell(spotAvgColumn).setText(numberFormat.format(spotCalculation.averagePriceWithoutMargin));
-            footerRow.getCell(spotAvgColumn).setPartName(getPricePartName(spotCalculation.averagePriceWithoutMargin, 5, 10));
+            footerRow.getCell(spotAvgColumn)
+                    .setPartName(getPricePartName(spotCalculation.averagePriceWithoutMargin, 5, 10));
             footerRow.getCell(consumptionColumn).setText(numberFormat.format(spotCalculation.totalConsumption));
-            //footerRow.getCell(totalSpotCostInclMarginColumn).setText(numberFormat.format(spotCalculation.totalCost));
-            footerRow.getCell(totalSpotCostWithoutMarginColumn).setText(numberFormat.format(spotCalculation.totalCostWithoutMargin));
+            footerRow.getCell(totalSpotCostWithoutMarginColumn)
+                    .setText(numberFormat.format(spotCalculation.totalCostWithoutMargin));
 
             resultLayout.add(grid);
+
+            // Create the "Export to CSV" button
+            Button exportButton = new Button(getTranslation("Export to CSV"), MaterialIcon.DOWNLOAD.create());
+            exportButton.addClassNames(LumoUtility.Margin.Top.MEDIUM);
+            //exportButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+
+            // Create a StreamResource for the CSV file
+            StreamResource csvResource = new StreamResource("monthly_results.csv", () -> {
+                try {
+                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    OutputStreamWriter writer = new OutputStreamWriter(bos, StandardCharsets.UTF_8);
+                    CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(columnHeaders.toArray(new String[0])));
+
+                    // Write data rows
+                    for (Map.Entry<YearMonth, PriceCalculatorService.SpotCalculation> entry : dataList) {
+                        List<String> rowData = new ArrayList<>();
+
+                        // Column 1: Month / Year
+                        String monthYear = "%s / %s".formatted(
+                                entry.getKey().getMonth().getDisplayName(TextStyle.FULL_STANDALONE, getLocale()),
+                                entry.getKey().getYear() - 2000);
+                        rowData.add(monthYear);
+
+                        // Column 2: My average
+                        double myAverage = calculateOwnSpotAverageWithMargin(entry.getValue())
+                                - spotMarginField.getValue();
+                        rowData.add(numberFormat.format(myAverage));
+
+                        // Column 3: Cost Effect
+                        double costEffect = calculateCostEffect(entry.getValue());
+                        rowData.add(numberFormat.format(costEffect));
+
+                        // Column 4: Unweighted Spot Average
+                        double spotAverage = entry.getValue().averagePriceWithoutMargin;
+                        rowData.add(numberFormat.format(spotAverage));
+
+                        // Column 5: Cost Factor Percentage
+                        String costFactorPercentage = calculateCostFactorPercentage(entry.getValue(),
+                                getNumberFormatMaxTwoDecimalsWithPlusPrefix(getLocale()), true);
+                        rowData.add(costFactorPercentage);
+
+                        // Column 6: Consumption
+                        double consumption = entry.getValue().totalConsumption;
+                        rowData.add(numberFormat.format(consumption));
+
+                        // Column 7: Price
+                        double totalCostWithoutMargin = entry.getValue().totalCostWithoutMargin;
+                        rowData.add(numberFormat.format(totalCostWithoutMargin));
+
+                        csvPrinter.printRecord(rowData);
+                    }
+
+                    csvPrinter.flush();
+                    writer.flush();
+                    return new ByteArrayInputStream(bos.toByteArray());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            });
+
+            // Create an Anchor with the StreamResource and add the button to it
+            Anchor downloadLink = new Anchor(csvResource, "");
+            downloadLink.add(exportButton);
+            downloadLink.getElement().setAttribute("download", true);
+
+            // Add the download link to the layout
+            resultLayout.add(downloadLink);
         }
     }
-
     private @NotNull Div createDivWithTooltip(String title, String tooltip, String suffix) {
         final var span = new Span(getTranslation(title));
         span.addClassNames(
