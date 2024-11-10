@@ -868,7 +868,7 @@ public class PriceCalculatorView extends Main {
                         final var averagePrice = entry.getValue().averagePriceWithoutMargin;
                         return getPricePartName(averagePrice, 5, 10);
                     });
-            grid.addColumn(entry -> calculateCostFactorPercentage(entry.getValue(), getNumberFormatMaxTwoDecimalsWithPlusPrefix(getLocale()), false))
+            grid.addColumn(entry -> calculateCostFactorPercentage(entry.getValue(), getNumberFormatMaxTwoDecimalsWithPlusPrefix(getLocale()), true))
                     .setHeader(createDivWithTooltip("calculator.spot.difference.percentage", "calculator.spot.difference.percentage", ""))
                     .setSortable(true)
                     .setPartNameGenerator(entry -> {
