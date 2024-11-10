@@ -930,6 +930,13 @@ public class PriceCalculatorView extends Main {
                     .setSortable(true);
             columnHeaders.add("%s €".formatted(getTranslation("Total spot cost (without margin)")));
 
+            // Column 8: Price with margin
+            //final var totalSpotCostColumn = grid
+            //        .addColumn(entry -> numberFormat.format(entry.getValue().totalCost))
+            //        .setHeader(createDivWithTooltip("Price", "Total spot cost (incl. margin)", "€"))
+            //        .setSortable(true);
+            columnHeaders.add("%s €".formatted(getTranslation("Total spot cost (incl. margin)")));
+
             // Footer row (optional)
             final var footerRow = grid.appendFooterRow();
             final var interval = getTranslation("Interval");
@@ -950,7 +957,9 @@ public class PriceCalculatorView extends Main {
 
             // Create the "Export to CSV" button
             Button exportButton = new Button(getTranslation("Export to CSV"));
-            exportButton.addClassNames(LumoUtility.Margin.Top.MEDIUM);
+            exportButton.addClassNames(
+                    LumoUtility.Margin.Top.MEDIUM
+            );
 
             // Format the dates for the file name
             final var fileNameDateFormatter = getLocale().equals(fiLocale) ? DateTimeFormatter.ofPattern("dd.MM.yyyy") : DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -1009,6 +1018,10 @@ public class PriceCalculatorView extends Main {
                         double totalCostWithoutMargin = entry.getValue().totalCostWithoutMargin;
                         rowData.add(numberFormat.format(totalCostWithoutMargin));
 
+                        // Column 8: Price with margin
+                        double totalCost = entry.getValue().totalCost;
+                        rowData.add(numberFormat.format(totalCost));
+
                         csvPrinter.printRecord(rowData);
                     }
 
@@ -1035,6 +1048,9 @@ public class PriceCalculatorView extends Main {
 
                     // Column 7: Total Cost Without Margin
                     footerRowData.add(numberFormat.format(spotCalculation.totalCostWithoutMargin));
+
+                    // Column 8: Total Cost With Margin
+                    footerRowData.add(numberFormat.format(spotCalculation.totalCost));
 
                     csvPrinter.printRecord(footerRowData);
 
