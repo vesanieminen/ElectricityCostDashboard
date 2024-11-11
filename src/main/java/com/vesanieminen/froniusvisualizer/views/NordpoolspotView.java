@@ -6,6 +6,7 @@ import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.AxisType;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.Configuration;
+import com.vaadin.flow.component.charts.model.DashStyle;
 import com.vaadin.flow.component.charts.model.DataSeries;
 import com.vaadin.flow.component.charts.model.DataSeriesItem;
 import com.vaadin.flow.component.charts.model.DateTimeLabelFormats;
@@ -38,6 +39,8 @@ import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
 import com.vesanieminen.froniusvisualizer.services.FingridService;
 import com.vesanieminen.froniusvisualizer.services.FmiService;
 import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
+import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService;
+import com.vesanieminen.froniusvisualizer.services.SahkovatkainService;
 import com.vesanieminen.froniusvisualizer.services.SpotHintaService;
 import com.vesanieminen.froniusvisualizer.services.model.FingridLiteResponse;
 import com.vesanieminen.froniusvisualizer.services.model.FingridRealtimeResponse;
@@ -51,6 +54,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -246,6 +250,8 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         temperatureDataSeries.setVisible(false);
         configureTemperatureDataSeries(temperatureDataSeries);
 
+        addPredictionPrices(chart);
+
         final var rangeSelector = new RangeSelector();
         rangeSelector.setButtons(
                 new RangeSelectorButton(RangeSelectorTimespan.DAY, 2, getTranslation("1d")),
@@ -282,6 +288,34 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         add(fingridFooter);
 
         return chart;
+    }
+
+    private void addPredictionPrices(Chart chart) {
+        // Price prediction
+        final var pricePredictionSeries = new DataSeries();
+        pricePredictionSeries.setyAxis(1);
+        pricePredictionSeries.setName(getTranslation("Price prediction"));
+        final var hourPrices = SahkovatkainService.fetchPrediction().stream().filter(item -> Instant.ofEpochMilli(item.timestamp()).isAfter(PriceCalculatorService.spotDataEnd)).toList();
+        for (final var hourPrice : hourPrices) {
+            final var item = new DataSeriesItem();
+            item.setX(hourPrice.timestamp());
+            item.setY(hourPrice.price());
+            pricePredictionSeries.add(item);
+        }
+        final var plotOptionsLineSpot = new PlotOptionsLine();
+        plotOptionsLineSpot.setClassName("price-prediction");
+        plotOptionsLineSpot.setAnimation(false);
+        plotOptionsLineSpot.setStickyTracking(true);
+        plotOptionsLineSpot.setMarker(new Marker(false));
+        plotOptionsLineSpot.setDashStyle(DashStyle.DOT);
+        final var seriesTooltipSpot = new SeriesTooltip();
+        seriesTooltipSpot.setValueDecimals(2);
+        seriesTooltipSpot.setValueSuffix(" " + getTranslation("c/kWh"));
+        final var dateTimeLabelFormats = new DateTimeLabelFormats();
+        seriesTooltipSpot.setDateTimeLabelFormats(dateTimeLabelFormats);
+        plotOptionsLineSpot.setTooltip(seriesTooltipSpot);
+        pricePredictionSeries.setPlotOptions(plotOptionsLineSpot);
+        chart.getConfiguration().addSeries(pricePredictionSeries);
     }
 
     private static void configureTemperatureDataSeries(DataSeries temperatureDataSeries) {

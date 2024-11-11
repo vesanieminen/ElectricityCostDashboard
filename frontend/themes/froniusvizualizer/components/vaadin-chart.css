@@ -29,6 +29,12 @@
     stroke-dasharray: 0, 0;
 }
 
+:host .price-prediction {
+    fill: none;
+    stroke: rgb(242, 182, 50);
+    stroke-dasharray: 3, 3;
+}
+
 :host([theme~="column"]) .highcharts-axis-labels {
     font-size: 14px;
 }
