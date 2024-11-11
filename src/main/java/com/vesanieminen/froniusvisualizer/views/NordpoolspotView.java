@@ -338,8 +338,16 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         final var fingridSourceSpan = new Span(getTranslation("fingrid.source"));
         final var fingridMainLink = new Anchor("http://fingrid.fi", "Fingrid");
         final var licenseSpan = new Span(getTranslation("fingrid.license"));
-        final var fingridFooter = new Span(fingridSourceSpan, fingridMainLink, new Span(" / "), fingridLink, new Span(" / "), licenseSpan, fingridCCLicenseLink);
+        final var fingridFooter = new Span(fingridSourceSpan, fingridMainLink, new Span(" / "), fingridLink, new Span(" / "), licenseSpan, fingridCCLicenseLink, new Span(" / "));
         fingridFooter.addClassNames(LumoUtility.Display.FLEX, LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL, LumoUtility.Margin.Bottom.XSMALL, LumoUtility.Gap.XSMALL);
+
+        final var sähkövatkainAnchor = new Anchor("https://sahkovatkain.web.app", "Sähkövatkain");
+        final var pricePredictionSpan = new Span("%s: ".formatted(getTranslation("Price prediction")));
+        final var sähkövatkainSpan = new Span(pricePredictionSpan, sähkövatkainAnchor);
+        sähkövatkainSpan.addClassNames(LumoUtility.Display.FLEX, LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL, LumoUtility.Margin.Bottom.XSMALL, LumoUtility.Gap.XSMALL);
+        fingridFooter.add(sähkövatkainSpan);
+
+
         return fingridFooter;
     }
 
