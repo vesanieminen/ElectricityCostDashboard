@@ -98,6 +98,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
     private boolean isTouchDevice = false;
     private boolean isInitialRender = true;
     private int screenWidth;
+    private DataSeries pricePredictionSeries;
 
     public NordpoolspotView() {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.CENTER);
@@ -153,6 +154,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
                 price.setTitle(getTranslation("Price") + " (" + getTranslation("c/kWh") + ")");
                 price.getLabels().setFormatter(null);
                 conf.getyAxis(2).setVisible(false);
+                pricePredictionSeries.setVisible(false);
             }
             if (screenWidth < 600) {
                 conf.getRangeSelector().setInputEnabled(false);
@@ -250,7 +252,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         temperatureDataSeries.setVisible(false);
         configureTemperatureDataSeries(temperatureDataSeries);
 
-        addPredictionPrices(chart);
+        pricePredictionSeries = addPredictionPrices(chart);
 
         final var rangeSelector = new RangeSelector();
         rangeSelector.setButtons(
@@ -287,10 +289,16 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         final Span fingridFooter = createFingridLicenseSpan();
         add(fingridFooter);
 
+        final var sähkövatkainAnchor = new Anchor("https://sahkovatkain.web.app", "Sähkövatkain");
+        final var pricePredictionSpan = new Span("%s: ".formatted(getTranslation("Price prediction")));
+        final var sähkövatkainSpan = new Span(pricePredictionSpan, sähkövatkainAnchor);
+        sähkövatkainSpan.addClassNames(LumoUtility.Display.FLEX, LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL, LumoUtility.Margin.Bottom.XSMALL, LumoUtility.Gap.XSMALL);
+        add(sähkövatkainSpan);
+
         return chart;
     }
 
-    private void addPredictionPrices(Chart chart) {
+    private DataSeries addPredictionPrices(Chart chart) {
         // Price prediction
         final var pricePredictionSeries = new DataSeries();
         pricePredictionSeries.setyAxis(1);
@@ -316,6 +324,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         plotOptionsLineSpot.setTooltip(seriesTooltipSpot);
         pricePredictionSeries.setPlotOptions(plotOptionsLineSpot);
         chart.getConfiguration().addSeries(pricePredictionSeries);
+        return pricePredictionSeries;
     }
 
     private static void configureTemperatureDataSeries(DataSeries temperatureDataSeries) {
@@ -338,16 +347,8 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         final var fingridSourceSpan = new Span(getTranslation("fingrid.source"));
         final var fingridMainLink = new Anchor("http://fingrid.fi", "Fingrid");
         final var licenseSpan = new Span(getTranslation("fingrid.license"));
-        final var fingridFooter = new Span(fingridSourceSpan, fingridMainLink, new Span(" / "), fingridLink, new Span(" / "), licenseSpan, fingridCCLicenseLink, new Span(" / "));
+        final var fingridFooter = new Span(fingridSourceSpan, fingridMainLink, new Span(" / "), fingridLink, new Span(" / "), licenseSpan, fingridCCLicenseLink);
         fingridFooter.addClassNames(LumoUtility.Display.FLEX, LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL, LumoUtility.Margin.Bottom.XSMALL, LumoUtility.Gap.XSMALL);
-
-        final var sähkövatkainAnchor = new Anchor("https://sahkovatkain.web.app", "Sähkövatkain");
-        final var pricePredictionSpan = new Span("%s: ".formatted(getTranslation("Price prediction")));
-        final var sähkövatkainSpan = new Span(pricePredictionSpan, sähkövatkainAnchor);
-        sähkövatkainSpan.addClassNames(LumoUtility.Display.FLEX, LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL, LumoUtility.Margin.Bottom.XSMALL, LumoUtility.Gap.XSMALL);
-        fingridFooter.add(sähkövatkainSpan);
-
-
         return fingridFooter;
     }
 
