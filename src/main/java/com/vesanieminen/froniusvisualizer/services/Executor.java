@@ -43,7 +43,7 @@ public class Executor {
         executorService.schedule(() -> safeExecute(Executor::updatePakastinData), 0, TimeUnit.SECONDS);
         executorService.schedule(() -> safeExecute(Executor::updateSpotHintaService), 0, TimeUnit.SECONDS);
         executorService.schedule(() -> safeExecute(Executor::updateFingridData), 0, TimeUnit.SECONDS);
-        executorService.schedule(() -> safeExecute(Executor::updateSähkövatkainData), 0, TimeUnit.SECONDS);
+        executorService.schedule(() -> safeExecute(Executor::updateSahkovatkainData), 0, TimeUnit.SECONDS);
 
         // per minute schedules
         executorService.scheduleAtFixedRate(
@@ -67,9 +67,9 @@ public class Executor {
                 TimeUnit.SECONDS
         );
         executorService.scheduleAtFixedRate(
-                () -> safeExecute(Executor::updateSähkövatkainData),
+                () -> safeExecute(Executor::updateSahkovatkainData),
                 getSecondsToNextEvenHour(),
-                TimeUnit.HOURS.toSeconds(1),
+                TimeUnit.HOURS.toSeconds(1) / 2,
                 TimeUnit.SECONDS
         );
 
@@ -140,7 +140,7 @@ public class Executor {
         log.info("Ended updatePakastinData in {} seconds", (System.currentTimeMillis() - startTime) / 1000.0);
     }
 
-    private static void updateSähkövatkainData() {
+    private static void updateSahkovatkainData() {
         log.info("Started updateSähkövatkainData");
         final var startTime = System.currentTimeMillis();
 
@@ -148,7 +148,6 @@ public class Executor {
 
         log.info("Ended updateSähkövatkainData in {} seconds", (System.currentTimeMillis() - startTime) / 1000.0);
     }
-
 
     /**
      * Updates data for the last 7 days, including today and tomorrow.

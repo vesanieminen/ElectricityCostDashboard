@@ -31,8 +31,17 @@
 
 :host .price-prediction {
     fill: none;
-    stroke: rgb(242, 182, 50);
-    stroke-dasharray: 3, 3;
+    /*stroke: rgb(242, 182, 50);*/
+    stroke-dasharray: 0, 4;
+}
+
+:host .price-prediction-tooltip {
+    border: 1px dotted black; /* Adds a dotted border */
+    padding: 5px; /* Adds padding inside the border */
+    border-radius: 4px; /* Optional: adds a slight rounding to the corners */
+    background-color: white; /* Ensures the tooltip background is white */
+    color: black; /* Sets text color to black for readability */
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Optional: adds a shadow for better contrast */
 }
 
 :host([theme~="column"]) .highcharts-axis-labels {

@@ -6,7 +6,6 @@ import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.AxisType;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.Configuration;
-import com.vaadin.flow.component.charts.model.DashStyle;
 import com.vaadin.flow.component.charts.model.DataSeries;
 import com.vaadin.flow.component.charts.model.DataSeriesItem;
 import com.vaadin.flow.component.charts.model.DateTimeLabelFormats;
@@ -166,7 +165,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
 
     private void setMobileDeviceChartHeight(Chart chart) {
         setHeight("auto");
-        chart.setHeight("500px");
+        chart.setHeight("580px");
     }
 
     private Chart renderView() {
@@ -207,11 +206,11 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         time.setTimezoneOffset((isDaylightSavingsInFinland() ? -3 : -2) * 60);
         chart.getConfiguration().setTime(time);
         chart.setTimeline(true);
-        chart.getConfiguration().getNavigator().setEnabled(false);
+        //chart.getConfiguration().getNavigator().setEnabled(false);
         chart.getConfiguration().getScrollbar().setEnabled(false);
         chart.getConfiguration().getLegend().setEnabled(true);
         chart.getConfiguration().getChart().setStyledMode(true);
-        chart.setHeight("calc(100vh - 14rem)");
+        chart.setHeight("calc(100vh - 10rem)");
 
         // create x and y-axis
         createXAxis(chart);
@@ -289,11 +288,11 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         final Span fingridFooter = createFingridLicenseSpan();
         add(fingridFooter);
 
-        final var sähkövatkainAnchor = new Anchor("https://sahkovatkain.web.app", "Sähkövatkain");
+        final var sahkovatkainAnchor = new Anchor("https://sahkovatkain.web.app", "Sähkövatkain");
         final var pricePredictionSpan = new Span("%s: ".formatted(getTranslation("Price prediction")));
-        final var sähkövatkainSpan = new Span(pricePredictionSpan, sähkövatkainAnchor);
-        sähkövatkainSpan.addClassNames(LumoUtility.Display.FLEX, LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL, LumoUtility.Margin.Bottom.XSMALL, LumoUtility.Gap.XSMALL);
-        add(sähkövatkainSpan);
+        final var sahkovatkainSpan = new Span(pricePredictionSpan, sahkovatkainAnchor);
+        sahkovatkainSpan.addClassNames(LumoUtility.Display.FLEX, LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL, LumoUtility.Gap.XSMALL);
+        add(sahkovatkainSpan);
 
         return chart;
     }
@@ -306,6 +305,16 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         if (SahkovatkainService.getHourPrices() == null) {
             return pricePredictionSeries;
         }
+        // add the first value as the last known nordpool price
+        final var lastItem = new DataSeriesItem();
+        final var last = PriceCalculatorService.getPrices().getLast();
+        lastItem.setX(last.time());
+        lastItem.setY(last.price());
+        pricePredictionSeries.add(lastItem);
+        // Hide tooltip for the first item
+        final var itemTooltip = new Tooltip();
+        itemTooltip.setEnabled(false);
+
         final var hourPrices = SahkovatkainService.getHourPrices().stream().filter(item -> Instant.ofEpochMilli(item.timestamp()).isAfter(PriceCalculatorService.spotDataEnd)).toList();
         for (final var hourPrice : hourPrices) {
             final var item = new DataSeriesItem();
@@ -318,11 +327,18 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         plotOptionsLineSpot.setAnimation(false);
         plotOptionsLineSpot.setStickyTracking(true);
         plotOptionsLineSpot.setMarker(new Marker(false));
-        plotOptionsLineSpot.setDashStyle(DashStyle.DOT);
         final var seriesTooltipSpot = new SeriesTooltip();
         seriesTooltipSpot.setValueDecimals(2);
         seriesTooltipSpot.setValueSuffix(" " + getTranslation("c/kWh"));
         final var dateTimeLabelFormats = new DateTimeLabelFormats();
+        // Custom point formatter to hide tooltip for the first item
+        seriesTooltipSpot.setPointFormatter(
+                "function() {" +
+                        "if (this.series.data && this.series.data[0] === this) { return ''; } " +  // Check if the current point is the first item
+                        "const formattedY = (Math.round(this.y * 100) / 100).toFixed(2);" +  // Manually format to 2 decimal places
+                        "return '<span style=\"color:' + this.color + '\">●</span> ' + this.series.name + ': <b>' + formattedY + '</b>' + this.series.tooltipOptions.valueSuffix;" +
+                        "}"
+        );
         seriesTooltipSpot.setDateTimeLabelFormats(dateTimeLabelFormats);
         plotOptionsLineSpot.setTooltip(seriesTooltipSpot);
         pricePredictionSeries.setPlotOptions(plotOptionsLineSpot);
@@ -351,7 +367,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         final var fingridMainLink = new Anchor("http://fingrid.fi", "Fingrid");
         final var licenseSpan = new Span(getTranslation("fingrid.license"));
         final var fingridFooter = new Span(fingridSourceSpan, fingridMainLink, new Span(" / "), fingridLink, new Span(" / "), licenseSpan, fingridCCLicenseLink);
-        fingridFooter.addClassNames(LumoUtility.Display.FLEX, LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL, LumoUtility.Margin.Bottom.XSMALL, LumoUtility.Gap.XSMALL);
+        fingridFooter.addClassNames(LumoUtility.Display.FLEX, LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL, LumoUtility.Gap.XSMALL);
         return fingridFooter;
     }
 
