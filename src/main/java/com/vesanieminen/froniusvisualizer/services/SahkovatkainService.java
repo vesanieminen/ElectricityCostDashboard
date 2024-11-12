@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,6 +63,10 @@ public class SahkovatkainService {
      * @param timestamp Getters milliseconds since epoch
      */
     public record HourPrice(long timestamp, double price) {
+    }
+
+    public static List<HourPrice> getNewHourPrices() {
+        return getHourPrices().stream().filter(item -> Instant.ofEpochMilli(item.timestamp()).isAfter(PriceCalculatorService.spotDataEnd)).toList();
     }
 
 }

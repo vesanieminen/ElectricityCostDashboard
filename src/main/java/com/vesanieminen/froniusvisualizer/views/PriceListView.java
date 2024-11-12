@@ -2,6 +2,7 @@ package com.vesanieminen.froniusvisualizer.views;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.ListItem;
 import com.vaadin.flow.component.html.Main;
@@ -14,6 +15,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.Ping;
 import com.vesanieminen.froniusvisualizer.components.list.PriceListItem;
 import com.vesanieminen.froniusvisualizer.components.list.UnorderedPriceList;
+import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import com.vesanieminen.froniusvisualizer.util.css.Background;
 import com.vesanieminen.froniusvisualizer.util.css.BorderColor;
@@ -32,10 +34,12 @@ import java.util.Objects;
 
 import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getPriceList;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
+import static com.vesanieminen.froniusvisualizer.services.SahkovatkainService.getNewHourPrices;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentLocalDateTimeHourPrecisionFinnishZone;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getVAT;
+import static com.vesanieminen.froniusvisualizer.util.css.Opacity._50;
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
 @PageTitle("List" + URL_SUFFIX)
@@ -118,6 +122,8 @@ public class PriceListView extends Main {
         if (data.isEmpty()) {
             return;
         }
+        final var newPrices = getNewHourPrices().stream().map(item -> new NordpoolPrice(item.price(), item.timestamp())).toList();
+        data.addAll(newPrices);
         addRows(data, attachEvent);
     }
 
@@ -153,6 +159,13 @@ public class PriceListView extends Main {
             final var priceSpan = new Span(numberFormat.format(vatPrice) + "¢");
 
             final ListItem item = new PriceListItem(timeSpan, priceSpan);
+            if (entry.timeInstant().isAfter(PriceCalculatorService.spotDataEnd)) {
+                item.addClassNames(_50);
+                priceSpan.setWidth(70, Unit.PIXELS);
+                priceSpan.addClassNames(LumoUtility.TextAlignment.RIGHT);
+                final var ennuste = new Span(getTranslation("Prediction"));
+                item.addComponentAtIndex(1, ennuste);
+            }
 
             setPriceTextColor(vatPrice, priceSpan);
 
@@ -192,7 +205,11 @@ public class PriceListView extends Main {
             } else {
                 item.addClassNames(LumoUtility.BorderColor.CONTRAST_10);
             }
+
             list.add(item);
+            //if (PriceCalculatorService.spotDataEnd.toEpochMilli() == entry.timeInstant().toEpochMilli()) {
+            //
+            //}
 
             // Due to the sticky position of some elements we need to scroll to the position of -2h
             if (Objects.equals(localDateTime, nowLocalDateTime.minusHours(2))) {
