@@ -303,7 +303,10 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         final var pricePredictionSeries = new DataSeries();
         pricePredictionSeries.setyAxis(1);
         pricePredictionSeries.setName(getTranslation("Price prediction"));
-        final var hourPrices = SahkovatkainService.fetchPrediction().stream().filter(item -> Instant.ofEpochMilli(item.timestamp()).isAfter(PriceCalculatorService.spotDataEnd)).toList();
+        if (SahkovatkainService.getHourPrices() == null) {
+            return pricePredictionSeries;
+        }
+        final var hourPrices = SahkovatkainService.getHourPrices().stream().filter(item -> Instant.ofEpochMilli(item.timestamp()).isAfter(PriceCalculatorService.spotDataEnd)).toList();
         for (final var hourPrice : hourPrices) {
             final var item = new DataSeriesItem();
             item.setX(hourPrice.timestamp());

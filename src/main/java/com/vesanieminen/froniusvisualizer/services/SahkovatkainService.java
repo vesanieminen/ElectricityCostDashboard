@@ -2,6 +2,7 @@ package com.vesanieminen.froniusvisualizer.services;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -16,6 +17,15 @@ import java.util.List;
 public class SahkovatkainService {
 
     private static final String API_URL = "https://raw.githubusercontent.com/vividfog/nordpool-predict-fi/main/deploy/prediction.json";
+    @Getter
+    private static List<HourPrice> hourPrices;
+
+    public static void updateData() {
+        final var newPrices = fetchPrediction();
+        if (!newPrices.isEmpty()) {
+            hourPrices = newPrices;
+        }
+    }
 
     public static List<HourPrice> fetchPrediction() {
         final var httpClient = HttpClient.newHttpClient();
