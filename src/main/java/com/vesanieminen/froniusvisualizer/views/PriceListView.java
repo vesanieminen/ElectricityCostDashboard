@@ -34,12 +34,11 @@ import java.util.Objects;
 
 import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getPriceList;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
-import static com.vesanieminen.froniusvisualizer.services.SahkovatkainService.getNewHourPrices;
+import static com.vesanieminen.froniusvisualizer.services.SahkovatkainService.getNewHourPricesAsNordpoolPrice;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentLocalDateTimeHourPrecisionFinnishZone;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getVAT;
-import static com.vesanieminen.froniusvisualizer.util.css.Opacity._50;
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
 @PageTitle("List" + URL_SUFFIX)
@@ -122,9 +121,10 @@ public class PriceListView extends Main {
         if (data.isEmpty()) {
             return;
         }
-        final var newPrices = getNewHourPrices().stream().map(item -> new NordpoolPrice(item.price(), item.timestamp())).toList();
-        data.addAll(newPrices);
-        addRows(data, attachEvent);
+        final var newPrices = getNewHourPricesAsNordpoolPrice();
+        final var nordpoolPrices = new ArrayList<>(data);
+        nordpoolPrices.addAll(newPrices);
+        addRows(nordpoolPrices, attachEvent);
     }
 
     private void addRows(List<NordpoolPrice> data, AttachEvent attachEvent) {
@@ -160,7 +160,7 @@ public class PriceListView extends Main {
 
             final ListItem item = new PriceListItem(timeSpan, priceSpan);
             if (entry.timeInstant().isAfter(PriceCalculatorService.spotDataEnd)) {
-                item.addClassNames(_50);
+                //item.addClassNames(_50);
                 priceSpan.setWidth(70, Unit.PIXELS);
                 priceSpan.addClassNames(LumoUtility.TextAlignment.RIGHT);
                 final var ennuste = new Span(getTranslation("Prediction"));

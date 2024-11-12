@@ -50,6 +50,9 @@ export class BarChartTemplate extends LitElement {
     currentHour: number = 0;
 
     @property()
+    predictionTimestamp: string = '' + Number.MAX_VALUE;
+
+    @property()
     values?: Array<Nordpool>;
 
     private getChartOptions(): Options {
@@ -156,7 +159,11 @@ export class BarChartTemplate extends LitElement {
             series: [{
                 name: this.seriesTitle,
                 type: "column",
-                data: this.values!.map(item => [item.time, item.time > 1725138000000 ? item.price * 1.255 : item.price * 1.24])
+                data: this.values!.map(item => ({
+                    x: item.time,
+                    y: item.time > 1725138000000 ? item.price * 1.255 : item.price * 1.24,
+                    className: item.time > Number(this.predictionTimestamp) ? "prediction" : ""
+                }))
             }],
         };
     }

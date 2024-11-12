@@ -2,6 +2,7 @@ package com.vesanieminen.froniusvisualizer.services;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -67,6 +68,10 @@ public class SahkovatkainService {
 
     public static List<HourPrice> getNewHourPrices() {
         return getHourPrices().stream().filter(item -> Instant.ofEpochMilli(item.timestamp()).isAfter(PriceCalculatorService.spotDataEnd)).toList();
+    }
+
+    public static List<NordpoolPrice> getNewHourPricesAsNordpoolPrice() {
+        return getNewHourPrices().stream().map(item -> new NordpoolPrice(item.price(), item.timestamp())).toList();
     }
 
 }

@@ -35,15 +35,6 @@
     stroke-dasharray: 0, 4;
 }
 
-:host .price-prediction-tooltip {
-    border: 1px dotted black; /* Adds a dotted border */
-    padding: 5px; /* Adds padding inside the border */
-    border-radius: 4px; /* Optional: adds a slight rounding to the corners */
-    background-color: white; /* Ensures the tooltip background is white */
-    color: black; /* Sets text color to black for readability */
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Optional: adds a shadow for better contrast */
-}
-
 :host([theme~="column"]) .highcharts-axis-labels {
     font-size: 14px;
 }
@@ -62,6 +53,10 @@
     stroke: rgb(242, 182, 50);
     stroke-width: 2px;
     stroke-dasharray: 0, 0;
+}
+
+:host([theme~="column"]) rect.prediction {
+    fill-opacity: 0.5;
 }
 
 :where([styled-mode]) .highcharts-range-selector-buttons .highcharts-label text {
@@ -106,7 +101,6 @@
     -ms-user-select: none;
     user-select: none;
 }
-
 
 :host .highcharts-arearange-series.price-range {
     fill: rgba(173, 216, 230, 0.5); /* Light blue with 50% opacity */

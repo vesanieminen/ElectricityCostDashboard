@@ -6,16 +6,19 @@ import com.vaadin.flow.component.PropertyDescriptor;
 import com.vaadin.flow.component.PropertyDescriptors;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import com.vesanieminen.froniusvisualizer.util.Utils;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7DaysList;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getPricesToday;
+import static com.vesanieminen.froniusvisualizer.services.SahkovatkainService.getNewHourPricesAsNordpoolPrice;
 
 @Tag("bar-chart-template")
 @JsModule("./src/bar-chart-template.ts")
@@ -29,6 +32,7 @@ public class BarChartTemplate extends Component {
     private static final PropertyDescriptor<Double, Double> AVERAGE = PropertyDescriptors.propertyWithDefault("average", -10d);
     private static final PropertyDescriptor<Integer, Integer> CURRENT_HOUR = PropertyDescriptors.propertyWithDefault("currentHour", 0);
     private static final PropertyDescriptor<String, String> LANGUAGE = PropertyDescriptors.propertyWithDefault("language", "en");
+    private static final PropertyDescriptor<String, String> PREDICTION_TIMESTAMP = PropertyDescriptors.propertyWithDefault("predictionTimestamp", "" + Integer.MAX_VALUE);
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
@@ -41,7 +45,10 @@ public class BarChartTemplate extends Component {
         set(AVERAGE_TEXT, getTranslation("column-chart.month.average"));
         final var pricesToday = getPricesToday();
         var data = getLatest7DaysList();
-        setNordpoolDataList(data);
+        final var nordpoolPrices = new ArrayList<>(data);
+        nordpoolPrices.addAll(getNewHourPricesAsNordpoolPrice());
+        setNordpoolDataList(nordpoolPrices);
+        set(PREDICTION_TIMESTAMP, PriceCalculatorService.spotDataEnd.toEpochMilli() + "");
         final var hour = (int) Utils.getCurrentInstantHourPrecision().getEpochSecond();
         set(CURRENT_HOUR, hour);
         var monthAverage = calculateSpotAveragePriceThisMonth();
