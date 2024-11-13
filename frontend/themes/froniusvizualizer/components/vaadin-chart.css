@@ -29,6 +29,13 @@
     stroke-dasharray: 0, 0;
 }
 
+:host .highcharts-plot-line.prediction {
+    fill: none;
+    stroke: rgb(242, 182, 50);
+    stroke-width: 2px;
+    stroke-dasharray: 0, 0;
+}
+
 :host .price-prediction {
     fill: none;
     /*stroke: rgb(242, 182, 50);*/
@@ -56,27 +63,31 @@
 }
 
 :host([theme~="column"]) rect.prediction {
-    fill-opacity: 0.5;
 }
 
 :where([styled-mode]) .highcharts-range-selector-buttons .highcharts-label text {
     fill: var(--lumo-primary-text-color);
 }
 
-:host .highcharts-point.zone-0 {
+:host .highcharts-point.price.zone-0 {
     fill: var(--lumo-success-text-color);
 }
 
-:host .highcharts-point.zone-1 {
+:host .highcharts-point.price.zone-1 {
     fill: var(--lumo-success-text-color);
 }
 
-:host .highcharts-point.zone-2 {
+:host .highcharts-point.price.zone-2 {
     fill: var(--lumo-primary-text-color);
 }
 
-:host .highcharts-point.zone-3 {
+:host .highcharts-point.price.zone-3 {
     fill: var(--lumo-error-text-color);
+}
+
+:host .highcharts-point.prediction {
+    /*fill: rgb(255, 255, 255);*/
+    fill: rgb(242, 182, 50);
 }
 
 :host([theme~="column-timo"]) .highcharts-point.zone-0 {

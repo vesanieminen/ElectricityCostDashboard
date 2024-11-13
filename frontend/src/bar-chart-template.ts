@@ -38,6 +38,9 @@ export class BarChartTemplate extends LitElement {
     seriesTitle?: string = '';
 
     @property()
+    seriesTitle2?: string = '';
+
+    @property()
     postfix: string = 'c/kWh';
 
     @property()
@@ -56,6 +59,9 @@ export class BarChartTemplate extends LitElement {
     values?: Array<Nordpool>;
 
     private getChartOptions(): Options {
+        const dynamicSeriesName = this.values!.some(item => item.time > Number(this.predictionTimestamp))
+            ? this.seriesTitle2
+            : this.seriesTitle;
         return {
             rangeSelector: {
                 enabled: true,
@@ -112,7 +118,19 @@ export class BarChartTemplate extends LitElement {
                     [{
                         value: this.currentHour * 1000,
                         className: "time"
-                    }],
+                    }/*,{
+                        value: Number(this.predictionTimestamp) + 3600000,
+                        dashStyle: 'Dash', // Optional: Set dash style for the line
+                        className: "prediction",
+                        label: {
+                            text: 'Prediction', // Label text
+                            align: 'left',    // Align the text over the line
+                            verticalAlign: 'top', // Align the text vertically
+                            y: 10,              // Optional: Adjust the label position,
+                            rotation: 0
+                        },
+                    }*/
+                    ],
             },
             yAxis: [{
                 title: {
@@ -162,7 +180,7 @@ export class BarChartTemplate extends LitElement {
                 data: this.values!.map(item => ({
                     x: item.time,
                     y: item.time > 1725138000000 ? item.price * 1.255 : item.price * 1.24,
-                    className: item.time > Number(this.predictionTimestamp) ? "prediction" : ""
+                    className: item.time > Number(this.predictionTimestamp) ? "prediction" : "price"
                 }))
             }],
         };

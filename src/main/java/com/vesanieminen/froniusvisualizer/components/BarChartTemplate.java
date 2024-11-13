@@ -26,6 +26,7 @@ public class BarChartTemplate extends Component {
 
     private static final PropertyDescriptor<String, String> CHART_TITLE = PropertyDescriptors.propertyWithDefault("chartTitle", "");
     private static final PropertyDescriptor<String, String> SERIES_TITLE = PropertyDescriptors.propertyWithDefault("seriesTitle", "");
+    private static final PropertyDescriptor<String, String> SERIES_TITLE2 = PropertyDescriptors.propertyWithDefault("seriesTitle2", "");
     private static final PropertyDescriptor<String, String> UNIT = PropertyDescriptors.propertyWithDefault("unit", "");
     private static final PropertyDescriptor<String, String> POST_FIX = PropertyDescriptors.propertyWithDefault("postfix", "");
     private static final PropertyDescriptor<String, String> AVERAGE_TEXT = PropertyDescriptors.propertyWithDefault("averageText", "");
@@ -40,6 +41,7 @@ public class BarChartTemplate extends Component {
         String format = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(getLocale()).format(Utils.getCurrentLocalDateTimeHourPrecisionFinnishZone());
         set(CHART_TITLE, format);
         set(SERIES_TITLE, getTranslation("column-chart.series.title"));
+        set(SERIES_TITLE2, getTranslation("Prediction"));
         set(UNIT, getTranslation("column-chart.series.unit"));
         set(POST_FIX, getTranslation("c/kWh"));
         set(AVERAGE_TEXT, getTranslation("column-chart.month.average"));
