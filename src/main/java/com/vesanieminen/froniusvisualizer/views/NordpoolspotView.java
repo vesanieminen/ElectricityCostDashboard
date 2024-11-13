@@ -206,6 +206,21 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         time.setTimezoneOffset((isDaylightSavingsInFinland() ? -3 : -2) * 60);
         chart.getConfiguration().setTime(time);
         chart.setTimeline(true);
+        chart.getConfiguration().getNavigator().setAdaptToUpdatedData(true);
+        chart.addAttachListener(event -> {
+            chart.getElement().executeJs(
+                    "const chart = this; " +
+                            "chart.addEventListener('chartRendered', function() {" +
+                            "  if (chart.configuration && chart.configuration.navigator) {" +
+                            "    chart.configuration.navigator.liveRedraw = true;" +
+                            "    console.log('Navigator liveRedraw set:', chart.configuration.navigator); " +
+                            "  } else {" +
+                            "    console.warn('Navigator not found or not initialized yet'); " +
+                            "  }" +
+                            "});"
+            );
+        });
+
         //chart.getConfiguration().getNavigator().setEnabled(false);
         chart.getConfiguration().getScrollbar().setEnabled(false);
         chart.getConfiguration().getLegend().setEnabled(true);
@@ -294,6 +309,8 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         sahkovatkainSpan.addClassNames(LumoUtility.Display.FLEX, LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL, LumoUtility.Gap.XSMALL);
         add(sahkovatkainSpan);
 
+
+        chart.drawChart();
         return chart;
     }
 

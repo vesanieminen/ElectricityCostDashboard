@@ -58,11 +58,28 @@ export class BarChartTemplate extends LitElement {
     @property()
     values?: Array<Nordpool>;
 
+    @property()
+    values2?: Array<Nordpool>;
+
     private getChartOptions(): Options {
-        const dynamicSeriesName = this.values!.some(item => item.time > Number(this.predictionTimestamp))
-            ? this.seriesTitle2
-            : this.seriesTitle;
+        const extraDay = 24 * 60 * 60 * 1000; // One day in milliseconds
+        const maxDisplayRange = 0.5 * extraDay; // Limit to 2 days
+        const minTime = this.values ? this.values[this.values?.length - 1].time : 0;
+        const maxTime = minTime + maxDisplayRange; // Set maxTime to 2 days after the start of the data
         return {
+            navigator: {
+                adaptToUpdatedData: true,
+                enabled: true,
+                series: [
+                    {
+                        data: this.values2!.map(item => ({
+                            x: item.time,
+                            y: item.price,
+                        })),
+                        type: "line", // Optional: Different type for second series
+                    }
+                ],
+            },
             rangeSelector: {
                 enabled: true,
                 verticalAlign: 'top',
@@ -72,37 +89,45 @@ export class BarChartTemplate extends LitElement {
                 buttons: [{
                     type: 'millisecond',
                     // @ts-ignore
-                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000,
+                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + 86400000 * 0.5,
                     text: get("column-chart.now"),
                     //offsetMin: -86400000,
                     //offsetMax: -86400000,
                 }, {
-                    type: 'day',
-                    count: 1,
+                    type: 'millisecond',
+                    // @ts-ignore
+                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + 86400000 * 1.45,
                     text: get("column-chart.1d"),
 
                 }, {
-                    type: 'day',
-                    count: 2,
+                    type: 'millisecond',
+                    // @ts-ignore
+                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + 86400000 * 2.45,
                     text: get("column-chart.2d"),
                 }, {
-                    type: 'day',
-                    count: 3,
+                    type: 'millisecond',
+                    // @ts-ignore
+                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + 86400000 * 3.45,
                     text: get("column-chart.3d"),
                 }, {
-                    type: 'day',
-                    count: 5,
+                    type: 'millisecond',
+                    // @ts-ignore
+                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + 86400000 * 5.45,
                     text: get("column-chart.5d"),
-                }, {
-                    type: 'all',
-                    text: get("column-chart.7d"),
-                }]
+                }
+                    // , {
+                    //     type: 'millisecond',
+                    //     // @ts-ignore
+                    //     count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + 86400000 * 7.45,
+                    //     text: get("column-chart.7d"),
+                    // }
+                ]
             },
             chart: {
                 type: "column"
             },
             legend: {
-                enabled: false
+                enabled: true
             },
             tooltip: {
                 shared: true,
@@ -114,6 +139,8 @@ export class BarChartTemplate extends LitElement {
             xAxis: {
                 type: "datetime",
                 crosshair: true,
+                min: minTime, // Set the minimum time for the chart
+                max: maxTime, // Limit the maximum time for the chart to 2 days
                 plotLines:
                     [{
                         value: this.currentHour * 1000,
@@ -151,12 +178,18 @@ export class BarChartTemplate extends LitElement {
             }],
             plotOptions: {
                 column: {
-                    borderRadius: 5
+                    borderRadius: 5,
+                    grouping: false,
                 },
                 series: {
+                    states: {
+                        inactive: {
+                            opacity: 1
+                        }
+                    },
                     tooltip: {
                         valueSuffix: " " + this.postfix,
-                        valueDecimals: 2
+                        valueDecimals: 2,
                     },
                     zones: [{
                         value: -10,
@@ -174,15 +207,27 @@ export class BarChartTemplate extends LitElement {
                     animation: false
                 },
             },
-            series: [{
-                name: this.seriesTitle,
-                type: "column",
-                data: this.values!.map(item => ({
-                    x: item.time,
-                    y: item.time > 1725138000000 ? item.price * 1.255 : item.price * 1.24,
-                    className: item.time > Number(this.predictionTimestamp) ? "prediction" : "price"
-                }))
-            }],
+            series: [
+                {
+                    name: this.seriesTitle,
+                    type: "column",
+                    //data: this.values!.concat(this.values2!).map(item => ({
+                    data: this.values!.map(item => ({
+                        x: item.time,
+                        y: item.time > 1725138000000 ? item.price * 1.255 : item.price * 1.24,
+                        className: item.time > Number(this.predictionTimestamp) ? "prediction" : "price"
+                    }))
+                },
+                {
+                    name: this.seriesTitle2,
+                    type: "column",
+                    data: this.values2!.map(item => ({
+                        x: item.time,
+                        y: item.price,
+                        className: "prediction"
+                    }))
+                }
+            ],
         };
     }
 
@@ -225,6 +270,7 @@ export class BarChartTemplate extends LitElement {
 
 interface ChartTemplateServerInterface {
     previous(): void;
+
     next(): void;
 }
 

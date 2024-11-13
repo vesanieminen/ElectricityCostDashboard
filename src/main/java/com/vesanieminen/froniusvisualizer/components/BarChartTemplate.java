@@ -12,7 +12,6 @@ import com.vesanieminen.froniusvisualizer.util.Utils;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7DaysList;
@@ -45,11 +44,16 @@ public class BarChartTemplate extends Component {
         set(UNIT, getTranslation("column-chart.series.unit"));
         set(POST_FIX, getTranslation("c/kWh"));
         set(AVERAGE_TEXT, getTranslation("column-chart.month.average"));
+
+        //var data = getLatest7DaysList();
+        //final var nordpoolPrices = new ArrayList<>(data);
+        //nordpoolPrices.addAll(getNewHourPricesAsNordpoolPrice());
+        //setNordpoolDataList(nordpoolPrices);
+
+
         final var pricesToday = getPricesToday();
-        var data = getLatest7DaysList();
-        final var nordpoolPrices = new ArrayList<>(data);
-        nordpoolPrices.addAll(getNewHourPricesAsNordpoolPrice());
-        setNordpoolDataList(nordpoolPrices);
+        setNordpoolDataList(getLatest7DaysList());
+        setNordpoolDataList2(getNewHourPricesAsNordpoolPrice());
         set(PREDICTION_TIMESTAMP, PriceCalculatorService.spotDataEnd.toEpochMilli() + "");
         final var hour = (int) Utils.getCurrentInstantHourPrecision().getEpochSecond();
         set(CURRENT_HOUR, hour);
@@ -59,6 +63,10 @@ public class BarChartTemplate extends Component {
 
     public void setNordpoolDataList(List<NordpoolPrice> list) {
         getElement().setPropertyList("values", list);
+    }
+
+    public void setNordpoolDataList2(List<NordpoolPrice> list) {
+        getElement().setPropertyList("values2", list);
     }
 
 }
