@@ -53,7 +53,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -67,6 +66,7 @@ import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisYearWithoutVAT;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceToday;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceTodayWithoutVAT;
+import static com.vesanieminen.froniusvisualizer.services.SahkovatkainService.getNewHourPrices;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.format;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentInstantHourPrecisionFinnishZone;
@@ -315,7 +315,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         final var itemTooltip = new Tooltip();
         itemTooltip.setEnabled(false);
 
-        final var hourPrices = SahkovatkainService.getHourPrices().stream().filter(item -> Instant.ofEpochMilli(item.timestamp()).isAfter(PriceCalculatorService.spotDataEnd)).toList();
+        final var hourPrices = getNewHourPrices();
         for (final var hourPrice : hourPrices) {
             final var item = new DataSeriesItem();
             item.setX(hourPrice.timestamp());

@@ -156,15 +156,19 @@ public class PriceListView extends Main {
 
             final NumberFormat numberFormat = getNumberFormat(getLocale(), 2);
             numberFormat.setMinimumFractionDigits(2);
-            final var priceSpan = new Span(numberFormat.format(vatPrice) + "¢");
+            final var priceSpan = new Span();
 
             final ListItem item = new PriceListItem(timeSpan, priceSpan);
+            // Price prediction items
             if (entry.timeInstant().isAfter(PriceCalculatorService.spotDataEnd)) {
                 //item.addClassNames(_50);
                 priceSpan.setWidth(70, Unit.PIXELS);
                 priceSpan.addClassNames(LumoUtility.TextAlignment.RIGHT);
                 final var ennuste = new Span(getTranslation("Prediction"));
                 item.addComponentAtIndex(1, ennuste);
+                priceSpan.setText(numberFormat.format(entry.price()) + "¢");
+            } else {
+                priceSpan.setText(numberFormat.format(vatPrice) + "¢");
             }
 
             setPriceTextColor(vatPrice, priceSpan);

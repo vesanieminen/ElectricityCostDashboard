@@ -87,7 +87,26 @@
 
 :host .highcharts-point.prediction {
     /*fill: rgb(255, 255, 255);*/
-    fill: rgb(242, 182, 50);
+    /*stroke-dasharray: 1, 1; /* Dotted border */
+    fill: none; /* Remove fill */
+    /*stroke: rgb(242, 182, 50);*/
+    stroke: var(--lumo-primary-text-color);
+}
+
+:host .highcharts-point.prediction.zone-0 {
+    stroke: var(--lumo-success-text-color);
+}
+
+:host .highcharts-point.prediction.zone-1 {
+    stroke: var(--lumo-success-text-color);
+}
+
+:host .highcharts-point.prediction.zone-2 {
+    stroke: var(--lumo-primary-text-color);
+}
+
+:host .highcharts-point.prediction.zone-3 {
+    stroke: var(--lumo-error-text-color);
 }
 
 :host([theme~="column-timo"]) .highcharts-point.zone-0 {

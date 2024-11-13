@@ -20,7 +20,7 @@ public class SahkovatkainService {
 
     private static final String API_URL = "https://raw.githubusercontent.com/vividfog/nordpool-predict-fi/main/deploy/prediction.json";
     @Getter
-    private static List<HourPrice> hourPrices;
+    private static List<HourPrice> hourPrices = new ArrayList<>();
 
     public static void updateData() {
         final var newPrices = fetchPrediction();
@@ -67,7 +67,7 @@ public class SahkovatkainService {
     }
 
     public static List<HourPrice> getNewHourPrices() {
-        return getHourPrices().stream().filter(item -> Instant.ofEpochMilli(item.timestamp()).isAfter(PriceCalculatorService.spotDataEnd)).toList();
+        return getHourPrices().stream().filter(item -> Instant.ofEpochMilli(item.timestamp()).isAfter(NordpoolSpotService.getPriceList().getLast().timeInstant())).toList();
     }
 
     public static List<NordpoolPrice> getNewHourPricesAsNordpoolPrice() {
