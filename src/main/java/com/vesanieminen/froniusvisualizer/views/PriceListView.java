@@ -15,7 +15,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.Ping;
 import com.vesanieminen.froniusvisualizer.components.list.PriceListItem;
 import com.vesanieminen.froniusvisualizer.components.list.UnorderedPriceList;
-import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService;
+import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import com.vesanieminen.froniusvisualizer.util.css.Background;
 import com.vesanieminen.froniusvisualizer.util.css.BorderColor;
@@ -160,7 +160,7 @@ public class PriceListView extends Main {
 
             final ListItem item = new PriceListItem(timeSpan, priceSpan);
             // Price prediction items
-            if (entry.timeInstant().isAfter(PriceCalculatorService.spotDataEnd)) {
+            if (entry.timeInstant().isAfter(NordpoolSpotService.getPriceList().getLast().timeInstant())) {
                 //item.addClassNames(_50);
                 priceSpan.setWidth(70, Unit.PIXELS);
                 priceSpan.addClassNames(LumoUtility.TextAlignment.RIGHT);

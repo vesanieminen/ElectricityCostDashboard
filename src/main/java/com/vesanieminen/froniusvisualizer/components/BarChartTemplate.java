@@ -7,7 +7,7 @@ import com.vaadin.flow.component.PropertyDescriptors;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.charts.model.Label;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService;
+import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import com.vesanieminen.froniusvisualizer.util.Utils;
 
@@ -51,12 +51,11 @@ public class BarChartTemplate extends Component {
         //nordpoolPrices.addAll(getNewHourPricesAsNordpoolPrice());
         //setNordpoolDataList(nordpoolPrices);
 
-
         new Label();
         final var pricesToday = getPricesToday();
         setNordpoolDataList(getLatest7DaysList());
         setNordpoolDataList2(getNewHourPricesAsNordpoolPrice());
-        set(PREDICTION_TIMESTAMP, PriceCalculatorService.spotDataEnd.toEpochMilli() + "");
+        set(PREDICTION_TIMESTAMP, NordpoolSpotService.getPriceList().getLast().timeInstant().toEpochMilli() + "");
         final var hour = (int) Utils.getCurrentInstantHourPrecision().getEpochSecond();
         set(CURRENT_HOUR, hour);
         var monthAverage = calculateSpotAveragePriceThisMonth();
