@@ -144,8 +144,8 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
 
     private void setTouchDeviceConfiguration(Chart chart, Configuration conf) {
         if (isTouchDevice) {
-            conf.getRangeSelector().setSelected(1);
             if (screenWidth < 1000) {
+                conf.getRangeSelector().setSelected(1);
                 YAxis production = conf.getyAxis(0);
                 production.setTitle(getTranslation("Production") + " (GWh/h)");
                 production.getLabels().setFormatter("return this.value/1000");
@@ -156,6 +156,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
                 pricePredictionSeries.setVisible(false);
             }
             if (screenWidth < 600) {
+                conf.getRangeSelector().setSelected(1);
                 conf.getRangeSelector().setInputEnabled(false);
             }
             setMobileDeviceChartHeight(chart);
@@ -206,20 +207,21 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         time.setTimezoneOffset((isDaylightSavingsInFinland() ? -3 : -2) * 60);
         chart.getConfiguration().setTime(time);
         chart.setTimeline(true);
-        chart.getConfiguration().getNavigator().setAdaptToUpdatedData(true);
-        chart.addAttachListener(event -> {
-            chart.getElement().executeJs(
-                    "const chart = this; " +
-                            "chart.addEventListener('chartRendered', function() {" +
-                            "  if (chart.configuration && chart.configuration.navigator) {" +
-                            "    chart.configuration.navigator.liveRedraw = true;" +
-                            "    console.log('Navigator liveRedraw set:', chart.configuration.navigator); " +
-                            "  } else {" +
-                            "    console.warn('Navigator not found or not initialized yet'); " +
-                            "  }" +
-                            "});"
-            );
-        });
+        // Attempts to make the Navigator changes be instant. Not successful so far :(
+        //chart.getConfiguration().getNavigator().setAdaptToUpdatedData(true);
+        //chart.addAttachListener(event -> {
+        //    chart.getElement().executeJs(
+        //            "const chart = this; " +
+        //                    "chart.addEventListener('chartRendered', function() {" +
+        //                    "  if (chart.configuration && chart.configuration.navigator) {" +
+        //                    "    chart.configuration.navigator.liveRedraw = true;" +
+        //                    "    console.log('Navigator liveRedraw set:', chart.configuration.navigator); " +
+        //                    "  } else {" +
+        //                    "    console.warn('Navigator not found or not initialized yet'); " +
+        //                    "  }" +
+        //                    "});"
+        //    );
+        //});
 
         //chart.getConfiguration().getNavigator().setEnabled(false);
         chart.getConfiguration().getScrollbar().setEnabled(false);
