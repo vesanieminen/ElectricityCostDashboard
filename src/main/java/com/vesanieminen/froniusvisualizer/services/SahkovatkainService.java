@@ -12,8 +12,11 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 
 @Slf4j
 public class SahkovatkainService {
@@ -73,5 +76,10 @@ public class SahkovatkainService {
     public static List<NordpoolPrice> getNewHourPricesAsNordpoolPrice() {
         return getNewHourPrices().stream().map(item -> new NordpoolPrice(item.price(), item.timestamp())).toList();
     }
+
+    public static LocalDateTime getDateOfLatestFullDayData() {
+        return Instant.ofEpochMilli(hourPrices.getLast().timestamp).atZone(fiZoneID).toLocalDateTime().minusDays(1);
+    }
+
 
 }
