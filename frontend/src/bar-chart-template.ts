@@ -63,7 +63,7 @@ export class BarChartTemplate extends LitElement {
 
     private getChartOptions(): Options {
         const extraDay = 24 * 60 * 60 * 1000; // One day in milliseconds
-        const maxDisplayRange = 0.5 * extraDay; // Limit to 2 days
+        const maxDisplayRange = extraDay * (12 / 24);
         const minTime = this.values ? this.values[this.values?.length - 1].time : 0;
         const maxTime = minTime + maxDisplayRange; // Set maxTime to 2 days after the start of the data
         return {
@@ -89,30 +89,30 @@ export class BarChartTemplate extends LitElement {
                 buttons: [{
                     type: 'millisecond',
                     // @ts-ignore
-                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + extraDay * 0.5,
+                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + maxDisplayRange,
                     text: get("column-chart.now"),
                     //offsetMin: -86400000,
                     //offsetMax: -86400000,
                 }, {
                     type: 'millisecond',
                     // @ts-ignore
-                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + extraDay * 1.5,
+                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + extraDay * 1.5 - extraDay * ((24 - new Date().getHours()) / 24),
                     text: get("column-chart.1d"),
 
                 }, {
                     type: 'millisecond',
                     // @ts-ignore
-                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + extraDay * 2.5,
+                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + extraDay * 2.5 - extraDay * ((24 - new Date().getHours()) / 24),
                     text: get("column-chart.2d"),
                 }, {
                     type: 'millisecond',
                     // @ts-ignore
-                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + extraDay * 3.5,
+                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + extraDay * 3.5 - extraDay * ((24 - new Date().getHours()) / 24),
                     text: get("column-chart.3d"),
                 }, {
                     type: 'millisecond',
                     // @ts-ignore
-                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + extraDay * 5.5,
+                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + extraDay * 5.5 - extraDay * ((24 - new Date().getHours()) / 24),
                     text: get("column-chart.5d"),
                 }
                     // , {
@@ -124,7 +124,7 @@ export class BarChartTemplate extends LitElement {
                 ]
             },
             chart: {
-                type: "column"
+                type: "column",
             },
             legend: {
                 enabled: true
@@ -183,8 +183,12 @@ export class BarChartTemplate extends LitElement {
                 },
                 series: {
                     states: {
+                        hover: {
+                            enabled: true, // Allow hover effects (e.g., label highlighting)
+                        },
                         inactive: {
-                            opacity: 1
+                            enabled: true, // Ensure inactive state is applied, but customize it
+                            opacity: 1, // Prevent dimming by keeping opacity consistent
                         }
                     },
                     tooltip: {
