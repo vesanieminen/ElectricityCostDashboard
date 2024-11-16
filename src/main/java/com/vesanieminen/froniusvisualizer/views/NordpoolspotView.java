@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -327,7 +328,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         final var lastItem = new DataSeriesItem();
         final var last = NordpoolSpotService.getPriceList().getLast();
         lastItem.setX(last.time());
-        lastItem.setY(last.price());
+        lastItem.setY(last.price() * getVAT(Instant.ofEpochMilli(last.time() * 1000)));
         pricePredictionSeries.add(lastItem);
         // Hide tooltip for the first item
         final var itemTooltip = new Tooltip();
