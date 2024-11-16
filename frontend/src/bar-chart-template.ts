@@ -89,36 +89,36 @@ export class BarChartTemplate extends LitElement {
                 buttons: [{
                     type: 'millisecond',
                     // @ts-ignore
-                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + 86400000 * 0.5,
+                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + extraDay * 0.5,
                     text: get("column-chart.now"),
                     //offsetMin: -86400000,
                     //offsetMax: -86400000,
                 }, {
                     type: 'millisecond',
                     // @ts-ignore
-                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + 86400000 * 1.45,
+                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + extraDay * 1.5,
                     text: get("column-chart.1d"),
 
                 }, {
                     type: 'millisecond',
                     // @ts-ignore
-                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + 86400000 * 2.45,
+                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + extraDay * 2.5,
                     text: get("column-chart.2d"),
                 }, {
                     type: 'millisecond',
                     // @ts-ignore
-                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + 86400000 * 3.45,
+                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + extraDay * 3.5,
                     text: get("column-chart.3d"),
                 }, {
                     type: 'millisecond',
                     // @ts-ignore
-                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + 86400000 * 5.45,
+                    count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + extraDay * 5.5,
                     text: get("column-chart.5d"),
                 }
                     // , {
                     //     type: 'millisecond',
                     //     // @ts-ignore
-                    //     count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + 86400000 * 7.45,
+                    //     count: this.values?.at(this.values?.length - 1).time - this.currentHour * 1000 + extraDay * 7.5,
                     //     text: get("column-chart.7d"),
                     // }
                 ]

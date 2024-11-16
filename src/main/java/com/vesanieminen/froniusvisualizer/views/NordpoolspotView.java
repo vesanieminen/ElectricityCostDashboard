@@ -38,7 +38,6 @@ import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
 import com.vesanieminen.froniusvisualizer.services.FingridService;
 import com.vesanieminen.froniusvisualizer.services.FmiService;
 import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
-import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService;
 import com.vesanieminen.froniusvisualizer.services.SahkovatkainService;
 import com.vesanieminen.froniusvisualizer.services.SpotHintaService;
 import com.vesanieminen.froniusvisualizer.services.model.FingridLiteResponse;
@@ -326,7 +325,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         }
         // add the first value as the last known nordpool price
         final var lastItem = new DataSeriesItem();
-        final var last = PriceCalculatorService.getPrices().getLast();
+        final var last = NordpoolSpotService.getPriceList().getLast();
         lastItem.setX(last.time());
         lastItem.setY(last.price());
         pricePredictionSeries.add(lastItem);
