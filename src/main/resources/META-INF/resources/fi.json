@@ -7,6 +7,10 @@
       "title": "Sovelluksesta",
       "descriptionHTML": "<p>Tämä sovellus kehitettiin alunperin helpottamaan vuoden 2022 korkean sähkön hinnan kanssa elämistä. Ominaisuuksina mm. <a href='/'>kaavionäkymä</a>, jolla voi arvioida esim. tuulivoimaennusteen vaikutusta sähkön hintaan. Lisäksi sovelluksesta löytyy <a href='/laskuri'>laskuri</a>, jonka avulla käyttäjä voi verrata todellista sähkökulutustaan kiinteähintaisen ja pörssisähkösopimuksen välillä.</p><p>Sovelluksen on tehnyt <a href='mailto:vesa.nieminen@gmail.com'>Vesa Nieminen</a> ja se on kehitetty <a href='https://vaadin.com'>Vaadinilla</a>.</p>"
     },
+    "watchapp": {
+      "title": "Apple Watch -sovellus",
+      "descriptionHTML": "<p><a href='https://apps.apple.com/fi/app/liukuri-fi/id6480370075'>Apple Watch sovellus</a> sai alkunsta tarpeesta tarkistaa sähkönhinta kellosta käyttäen Liukurin tuottamaa dataa. Sovellus on saatamilla vain Suomessa. Sen kehityksestä ja ylläpidosta huolehtii <a href='mailto:samiekblad@gmail.com'>Sami Ekblad</a>.</p>"
+    },
     "design": {
       "title": "Designista",
       "description": "Sovelluksen käyttöliittymä- ja käytettävyysparannuksia on lisäksi tehnyt Joacim Päivärinne."
