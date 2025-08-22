@@ -237,6 +237,12 @@ public class PriceCalculatorView extends Main {
         addProductionSucceededListener(productionFileBuffer, productionUpload);
         addErrorHandling(productionUpload);
 
+        //final var vatComboBox = new ComboBox<NordpoolspotView.VAT>(getTranslation("calculator.vat.included"));
+        //vatComboBox.setItems(NordpoolspotView.VAT.values());
+        //vatComboBox.setItemLabelGenerator(item -> getTranslation(item.getVatName()));
+        //vatComboBox.setValue(NordpoolspotView.VAT.VAT);
+        //content.add(vatComboBox);
+
         fromDateTimePicker = new DateTimePicker(getTranslation("Start period"));
         fromDateTimePicker.setWeekNumbersVisible(true);
         fromDateTimePicker.setDatePickerI18n(new DatePicker.DatePickerI18n().setFirstDayOfWeek(1));

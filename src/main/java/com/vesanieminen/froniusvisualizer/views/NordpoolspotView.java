@@ -153,7 +153,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
                 price.setTitle(getTranslation("Price") + " (" + getTranslation("c/kWh") + ")");
                 price.getLabels().setFormatter(null);
                 conf.getyAxis(2).setVisible(false);
-                //pricePredictionSeries.setVisible(false);
+                pricePredictionSeries.setVisible(false);
             }
             if (screenWidth < 600) {
                 conf.getRangeSelector().setSelected(1);

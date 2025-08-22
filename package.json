@@ -60,14 +60,14 @@
     "lit": "$lit",
     "@polymer/polymer": "$@polymer/polymer",
     "react": "$react",
-    "@vaadin-component-factory/vcf-nav": "$@vaadin-component-factory/vcf-nav",
+    "react-router": "$react-router",
     "date-fns": "$date-fns",
     "proj4": "$proj4",
     "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
     "@vaadin/vaadin-lumo-styles": "$@vaadin/vaadin-lumo-styles",
     "@vaadin/vaadin-material-styles": "$@vaadin/vaadin-material-styles",
-    "line-awesome": "$line-awesome",
-    "react-router": "$react-router"
+    "@vaadin-component-factory/vcf-nav": "$@vaadin-component-factory/vcf-nav",
+    "line-awesome": "$line-awesome"
   },
   "type": "module",
   "vaadin": {
