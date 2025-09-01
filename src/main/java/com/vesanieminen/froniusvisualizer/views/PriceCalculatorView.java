@@ -24,6 +24,7 @@ import com.vaadin.flow.component.charts.model.XAxis;
 import com.vaadin.flow.component.charts.model.YAxis;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.checkbox.CheckboxGroupVariant;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.details.Details;
@@ -139,6 +140,7 @@ public class PriceCalculatorView extends Main {
     private final SuperDoubleField seasonalTransferWinterPriceField;
     private final SuperDoubleField seasonalTransferOtherPriceField;
     private final SuperDoubleField seasonalTransferMonthlyPriceField;
+    private final ComboBox<NordpoolspotView.VAT> vatComboBox;
     private MemoryBuffer lastConsumptionData;
     private MemoryBuffer lastProductionData;
 
@@ -237,12 +239,6 @@ public class PriceCalculatorView extends Main {
         addProductionSucceededListener(productionFileBuffer, productionUpload);
         addErrorHandling(productionUpload);
 
-        //final var vatComboBox = new ComboBox<NordpoolspotView.VAT>(getTranslation("calculator.vat.included"));
-        //vatComboBox.setItems(NordpoolspotView.VAT.values());
-        //vatComboBox.setItemLabelGenerator(item -> getTranslation(item.getVatName()));
-        //vatComboBox.setValue(NordpoolspotView.VAT.VAT);
-        //content.add(vatComboBox);
-
         fromDateTimePicker = new DateTimePicker(getTranslation("Start period"));
         fromDateTimePicker.setWeekNumbersVisible(true);
         fromDateTimePicker.setDatePickerI18n(new DatePicker.DatePickerI18n().setFirstDayOfWeek(1));
@@ -255,6 +251,13 @@ public class PriceCalculatorView extends Main {
         toDateTimePicker.setLocale(getLocale());
         content.add(fromDateTimePicker);
         content.add(toDateTimePicker);
+
+        vatComboBox = new ComboBox<>(getTranslation("calculator.vat.included"));
+        vatComboBox.setItems(NordpoolspotView.VAT.values());
+        vatComboBox.setItemLabelGenerator(item -> getTranslation(NordpoolspotView.VAT.VAT.equals(item) ? "calculator.vat.with" : "calculator.vat.without"));
+        vatComboBox.setValue(NordpoolspotView.VAT.VAT);
+        vatComboBox.setHelperText(getTranslation("calculator.vat.placeholder"));
+        content.add(vatComboBox);
 
         if (fiLocale.equals(getLocale())) {
             var finnishI18n = new DatePicker.DatePickerI18n();
@@ -532,8 +535,8 @@ public class PriceCalculatorView extends Main {
                     }
                 }
                 final var consumptionData = getFingridUsageData(lastConsumptionData);
-                final var spotCalculation = calculateSpotElectricityPriceDetails(consumptionData.data(), spotMarginField.getValue(), true, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
-                final var yearMonthSpotCalculationHashMap = calculateSpotElectricityPriceDetailsPerMonth(consumptionData.data(), spotMarginField.getValue(), true, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                final var spotCalculation = calculateSpotElectricityPriceDetails(consumptionData.data(), spotMarginField.getValue(), isVATEnabled(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                final var yearMonthSpotCalculationHashMap = calculateSpotElectricityPriceDetailsPerMonth(consumptionData.data(), spotMarginField.getValue(), isVATEnabled(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                 resultLayout.removeAll();
                 chartLayout.removeAll();
 
@@ -568,6 +571,7 @@ public class PriceCalculatorView extends Main {
                 final var costEffectFormatted = twoDecimalsWithPlusPrefix.format(costEffect);
                 final var spotDifferenceSpan = createCostEffectSpan(costEffectFormatted);
                 overviewDiv.add(spotDifferenceSpan);
+                overviewDiv.add(new DoubleLabel(getTranslation("calculator.vat.included"), NordpoolspotView.VAT.VAT.equals(vatComboBox.getValue()) ? getTranslation("calculator.vat.with") : getTranslation("calculator.vat.without"), true));
 
                 final var summaryDTO = new SummaryDTO();
 
@@ -834,6 +838,10 @@ public class PriceCalculatorView extends Main {
         content.add(calculateButton);
         add(resultLayout);
         add(chartLayout);
+    }
+
+    private boolean isVATEnabled() {
+        return NordpoolspotView.VAT.VAT.equals(vatComboBox.getValue());
     }
 
     private static @NotNull String calculateCostFactorPercentage(PriceCalculatorService.SpotCalculation spotCalculation, DecimalFormat twoDecimalsWithPlusPrefix, boolean withSuffix) {
