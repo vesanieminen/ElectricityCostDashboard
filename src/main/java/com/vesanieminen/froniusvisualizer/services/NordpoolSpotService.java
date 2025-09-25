@@ -36,7 +36,8 @@ public class NordpoolSpotService {
     private static final String CURRENCY = "EUR";
     private static final String MARKET = "DayAhead";
     private static final String INDEX_NAMES = "FI";
-    private static final String RESOLUTION_IN_MINUTES = "60";
+    private static final String RESOLUTION_IN_MINUTES_15 = "15";
+    private static final String RESOLUTION_IN_MINUTES_60 = "60";
 
     @Getter
     private static NordpoolResponse nordpoolResponse;
@@ -97,7 +98,7 @@ public class NordpoolSpotService {
                 "&market=" + URLEncoder.encode(MARKET, StandardCharsets.UTF_8) +
                 "&indexNames=" + URLEncoder.encode(INDEX_NAMES, StandardCharsets.UTF_8) +
                 "&date=" + URLEncoder.encode(date.toString(), StandardCharsets.UTF_8) +
-                "&resolutionInMinutes=" + URLEncoder.encode(RESOLUTION_IN_MINUTES, StandardCharsets.UTF_8);
+                "&resolutionInMinutes=" + URLEncoder.encode(RESOLUTION_IN_MINUTES_15, StandardCharsets.UTF_8);
 
         return URI.create(uriStr);
     }
