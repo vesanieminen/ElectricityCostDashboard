@@ -32,10 +32,11 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.nordpoolZoneID;
 @Slf4j
 public class NordpoolSpotService {
 
-    private static final String API_URL = "https://dataportal-api.nordpoolgroup.com/api/DayAheadPrices";
+    private static final String API_URL = "https://dataportal-api.nordpoolgroup.com/api/DayAheadPriceIndices";
     private static final String CURRENCY = "EUR";
     private static final String MARKET = "DayAhead";
-    private static final String DELIVERY_AREA = "FI";
+    private static final String INDEX_NAMES = "FI";
+    private static final String RESOLUTION_IN_MINUTES = "60";
 
     @Getter
     private static NordpoolResponse nordpoolResponse;
@@ -94,16 +95,17 @@ public class NordpoolSpotService {
         String uriStr = API_URL + "?" +
                 "currency=" + URLEncoder.encode(CURRENCY, StandardCharsets.UTF_8) +
                 "&market=" + URLEncoder.encode(MARKET, StandardCharsets.UTF_8) +
-                "&deliveryArea=" + URLEncoder.encode(DELIVERY_AREA, StandardCharsets.UTF_8) +
-                "&date=" + URLEncoder.encode(date.toString(), StandardCharsets.UTF_8);
+                "&indexNames=" + URLEncoder.encode(INDEX_NAMES, StandardCharsets.UTF_8) +
+                "&date=" + URLEncoder.encode(date.toString(), StandardCharsets.UTF_8) +
+                "&resolutionInMinutes=" + URLEncoder.encode(RESOLUTION_IN_MINUTES, StandardCharsets.UTF_8);
 
         return URI.create(uriStr);
     }
 
     private static void processResponse(NordpoolResponse response) {
-        for (MultiAreaEntry entry : response.multiAreaEntries) {
+        for (MultiIndexEntry entry : response.multiIndexEntries) {
             Instant deliveryStart = Instant.parse(entry.deliveryStart);
-            String priceStr = entry.entryPerArea.get(DELIVERY_AREA);
+            String priceStr = entry.entryPerArea.get(INDEX_NAMES);
 
             if (priceStr != null) {
                 try {
@@ -164,12 +166,12 @@ public class NordpoolSpotService {
         return Instant.parse(nordpoolResponse.updatedAt).atZone(fiZoneID).toLocalDateTime();
     }
 
-    public record NordpoolResponse(int status, String currency, List<MultiAreaEntry> multiAreaEntries,
-                                   String updatedAt) {
+    public record NordpoolResponse(String currency, List<MultiIndexEntry> multiIndexEntries, String updatedAt) {
     }
 
-    public record MultiAreaEntry(String deliveryStart, String deliveryEnd, Map<String, String> entryPerArea) {
+    public record MultiIndexEntry(String deliveryStart, String deliveryEnd, Map<String, String> entryPerArea) {
     }
+
 
     // Example usage
     //public static void main(String[] args) {

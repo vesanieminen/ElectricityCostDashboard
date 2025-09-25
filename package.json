@@ -61,12 +61,12 @@
     "@polymer/polymer": "$@polymer/polymer",
     "react": "$react",
     "react-router": "$react-router",
+    "@vaadin-component-factory/vcf-nav": "$@vaadin-component-factory/vcf-nav",
     "date-fns": "$date-fns",
     "proj4": "$proj4",
     "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
     "@vaadin/vaadin-lumo-styles": "$@vaadin/vaadin-lumo-styles",
     "@vaadin/vaadin-material-styles": "$@vaadin/vaadin-material-styles",
-    "@vaadin-component-factory/vcf-nav": "$@vaadin-component-factory/vcf-nav",
     "line-awesome": "$line-awesome"
   },
   "type": "module",
