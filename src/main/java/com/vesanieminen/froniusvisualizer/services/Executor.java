@@ -3,6 +3,7 @@ package com.vesanieminen.froniusvisualizer.services;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -23,13 +24,38 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.getSecondsToNextEven
 @Component
 public class Executor {
 
+    private static final String INITIAL_DATA_FETCH_DONE = "initialDataFetchDone";
+    @Value("${task-scheduling.enabled:true}")
+    private boolean taskSchedulingEnabled;
+
     private ScheduledExecutorService executorService;
 
     @PostConstruct
     public void init() {
         ThreadFactory virtualThreadFactory = Thread.ofVirtual().factory();
         executorService = Executors.newScheduledThreadPool(0, virtualThreadFactory);
-        scheduleTasks();
+
+        // Production only
+        if (taskSchedulingEnabled) {
+            scheduleTasks();
+        } else if (shouldRunInitialFetches()) {
+            executorService.schedule(() -> safeExecute(Executor::updateNordpoolForLast7Days), 0, TimeUnit.SECONDS);
+            executorService.schedule(() -> safeExecute(Executor::updatePakastinData), 0, TimeUnit.SECONDS);
+            executorService.schedule(() -> safeExecute(Executor::updateSpotHintaService), 0, TimeUnit.SECONDS);
+            executorService.schedule(() -> safeExecute(Executor::updateFingridData), 0, TimeUnit.SECONDS);
+            executorService.schedule(() -> safeExecute(Executor::updateSahkovatkainData), 0, TimeUnit.SECONDS);
+            markInitialFetchesDone();
+        }
+
+    }
+
+    private boolean shouldRunInitialFetches() {
+        // run once per JVM:
+        return System.getProperty(INITIAL_DATA_FETCH_DONE) == null;
+    }
+
+    private void markInitialFetchesDone() {
+        System.setProperty(INITIAL_DATA_FETCH_DONE, "true");
     }
 
     @PreDestroy

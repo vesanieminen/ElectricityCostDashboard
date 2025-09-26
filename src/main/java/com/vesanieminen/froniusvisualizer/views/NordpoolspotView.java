@@ -470,8 +470,11 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         final var dataSeries = new DataSeries(title);
         dataSeries.setVisible(isVisible);
         for (FingridRealtimeResponse.Data data : datasource) {
+            //if (data.startTime.getMinute() != 0) {
+            //    continue;
+            //}
             final var dataSeriesItem = new DataSeriesItem();
-            dataSeriesItem.setX(data.startTime.withMinute(0).toInstant());
+            dataSeriesItem.setX(data.startTime.toInstant());
             dataSeriesItem.setY(data.value);
             dataSeries.add(dataSeriesItem);
         }

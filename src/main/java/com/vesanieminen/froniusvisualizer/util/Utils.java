@@ -335,11 +335,21 @@ public class Utils {
     }
 
     public static List<FingridRealtimeResponse.Data> keepEveryFirstItem(List<FingridRealtimeResponse.Data> input) {
-        return input.stream().filter(item -> item.startTime.getMinute() == 0).collect(Collectors.toList());
+        return input.stream().filter(item ->
+                item.startTime.getMinute() == 0 ||
+                        item.startTime.getMinute() == 15 ||
+                        item.startTime.getMinute() == 30 ||
+                        item.startTime.getMinute() == 45
+        ).collect(Collectors.toList());
     }
 
     public static List<FingridLiteResponse> keepEveryFirstItemLite(List<FingridLiteResponse> input) {
-        return input.stream().filter(item -> item.startTime.getMinute() == 0).collect(Collectors.toList());
+        return input.stream().filter(item ->
+                item.startTime.getMinute() == 0 ||
+                        item.startTime.getMinute() == 15 ||
+                        item.startTime.getMinute() == 30 ||
+                        item.startTime.getMinute() == 45
+        ).collect(Collectors.toList());
     }
 
     public static int calculateMonthsInvolved(Instant start, Instant end) {
