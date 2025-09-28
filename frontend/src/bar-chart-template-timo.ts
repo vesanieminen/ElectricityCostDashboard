@@ -55,6 +55,9 @@ export class BarChartTemplateTimo extends LitElement {
     @property()
     plotLines?: Array<Plotline>;
 
+    @property({type: Boolean})
+    mobileMode = false;
+
     private getChartOptions(): Options {
         return {
             chart: {
@@ -89,11 +92,9 @@ export class BarChartTemplateTimo extends LitElement {
                     this.plotLines!
             }],
             plotOptions: {
-                column: {
-                    pointPadding: 0,
-                    groupPadding: 0,
-                    borderRadius: 0,
-                },
+                column: this.mobileMode ?
+                    {pointPadding: 0, groupPadding: 0, borderRadius: 0} :  // mobile mode
+                    {groupPadding: 0, borderRadius: 5}, // desktop mode
                 series: {
                     tooltip: {
                         valueSuffix: " " + this.postfix,
