@@ -38,7 +38,7 @@ public class BarChartTemplateTimo extends Component {
         set(POST_FIX, getTranslation("c/kWh"));
         set(AVERAGE_TEXT, getTranslation("column-chart.month.average"));
         attachEvent.getUI().getPage().retrieveExtendedClientDetails(details -> {
-            if (details.isTouchDevice()) {
+            if (details.isTouchDevice() && details.getBodyClientWidth() < 1000) {
                 set(MOBILE_MODE, true);
                 getElement().callJsFunction("requestUpdate");
 
