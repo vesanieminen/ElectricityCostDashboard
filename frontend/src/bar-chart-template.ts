@@ -229,7 +229,8 @@ export class BarChartTemplate extends LitElement {
                         x: item.time,
                         y: item.price,
                         className: "prediction"
-                    }))
+                    })),
+                    borderWidth: 8
                 }
             ],
         };
