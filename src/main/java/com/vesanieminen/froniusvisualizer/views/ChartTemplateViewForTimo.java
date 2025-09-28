@@ -4,7 +4,6 @@ import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
-import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Image;
@@ -132,13 +131,13 @@ public class ChartTemplateViewForTimo extends Main {
         });
         showTheMonthlyAverageLineCheckbox.setValue(true);
 
-        //showTheMonthlyAverageLineCheckbox.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER);
-        //add(showTheMonthlyAverageLineCheckbox);
+        showTheMonthlyAverageLineCheckbox.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER);
+        add(showTheMonthlyAverageLineCheckbox);
 
-        final var priceResolution = new ComboBox<>(getTranslation("Price resolution"));
-        final var div = new Div(showTheMonthlyAverageLineCheckbox, priceResolution);
-        div.addClassNames(LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER, LumoUtility.Margin.Horizontal.SMALL);
-        add(div);
+        //final var priceResolution = new ComboBox<>(getTranslation("Price resolution"));
+        //final var div = new Div(showTheMonthlyAverageLineCheckbox, priceResolution);
+        //div.addClassNames(LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER, LumoUtility.Margin.Horizontal.SMALL);
+        //add(div);
 
         selectDate(dateOfLatestFullData);
     }
