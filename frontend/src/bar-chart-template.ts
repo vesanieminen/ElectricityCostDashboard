@@ -239,8 +239,10 @@ export class BarChartTemplate extends LitElement {
                     })),
                     //pointWidth: 16,
                     //borderWidth: 6,
-                    pointPadding: 0.25,   // more space from neighbor series
+                    pointPadding: 0.3,   // more space from neighbor series
                     //groupPadding: 0.05   // keep groups tight on the axis
+
+                    //borderRadius: 0
                 }
             ],
         };
