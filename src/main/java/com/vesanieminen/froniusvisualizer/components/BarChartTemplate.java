@@ -10,6 +10,7 @@ import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import com.vesanieminen.froniusvisualizer.util.Utils;
 
+import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -51,7 +52,7 @@ public class BarChartTemplate extends Component {
         //setNordpoolDataList(nordpoolPrices);
 
         final var pricesToday = getPricesToday();
-        setNordpoolDataList(getLatest7DaysList());
+        setNordpoolDataList(getLatest7DaysList().stream().filter(item -> item.timeInstant().isAfter(Instant.now().plusSeconds(3600 * 23))).toList());
         setNordpoolDataList2(getNewHourPricesAsNordpoolPrice());
         set(PREDICTION_TIMESTAMP, NordpoolSpotService.getPriceList().getLast().timeInstant().toEpochMilli() + "");
         final var hour = (int) Utils.getCurrentInstantHourPrecision().getEpochSecond();
