@@ -109,6 +109,20 @@ public class Utils {
         return Instant.now().atZone(fiZoneID).truncatedTo(ChronoUnit.HOURS).toInstant();
     }
 
+    public static Instant getCurrentInstant15minPrecisionFinnishZone() {
+        ZonedDateTime now = Instant.now().atZone(fiZoneID);
+
+        int minute = now.getMinute();
+        int quarter = (minute / 15) * 15; // floor to nearest 15
+
+        ZonedDateTime truncated = now
+                .withMinute(quarter)
+                .withSecond(0)
+                .withNano(0);
+
+        return truncated.toInstant();
+    }
+
     public static LocalDateTime convertNordpoolLocalDateTimeToFinnish(LocalDateTime localDateTime) {
         return localDateTime.atZone(nordpoolZoneID).withZoneSameInstant(fiZoneID).toLocalDateTime();
     }

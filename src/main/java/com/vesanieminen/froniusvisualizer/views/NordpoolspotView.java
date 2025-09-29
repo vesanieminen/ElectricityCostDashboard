@@ -69,7 +69,8 @@ import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService
 import static com.vesanieminen.froniusvisualizer.services.SahkovatkainService.getNewHourPrices;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.format;
-import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentInstantHourPrecisionFinnishZone;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentInstant15minPrecisionFinnishZone;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentLocalDateTime15MinPrecisionFinnishZone;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentTimeWithHourPrecision;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getVAT;
@@ -465,7 +466,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         // Add plotline to point the current time:
         PlotLine plotLine = new PlotLine();
         plotLine.setClassName("time");
-        final var nowWithHourOnly = getCurrentInstantHourPrecisionFinnishZone();
+        final var nowWithHourOnly = getCurrentInstant15minPrecisionFinnishZone();
         plotLine.setValue(nowWithHourOnly.getEpochSecond() * 1000);
         chart.getConfiguration().getxAxis().addPlotLine(plotLine);
     }
@@ -589,7 +590,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
     private DataSeries createSpotPriceDataSeries(List<NordpoolPrice> nordpoolPrices, Chart chart, DateTimeFormatter dateTimeFormatter, ArrayList<Series> series) {
         final NumberFormat decimalFormat = getNumberFormat(getLocale(), 2);
         decimalFormat.setMinimumFractionDigits(2);
-        var now = getCurrentTimeWithHourPrecision();
+        var now = getCurrentLocalDateTime15MinPrecisionFinnishZone();
         var highest = Double.MIN_VALUE;
         var lowest = Double.MAX_VALUE;
         var total = 0d;
@@ -615,7 +616,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
             if (Objects.equals(localDateTime, now)) {
                 priceNow.setTitleBottom(decimalFormat.format(y));
             }
-            if (Objects.equals(localDateTime, now.plusHours(1))) {
+            if (Objects.equals(localDateTime, now.plusMinutes(15))) {
                 nextPrice.setTitleBottom(decimalFormat.format(y));
             }
             if (localDateTime.getDayOfMonth() == now.getDayOfMonth()) {
