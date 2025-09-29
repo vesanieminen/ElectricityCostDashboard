@@ -181,10 +181,19 @@ public class ChartTemplateViewForTimo extends Main {
         final var min = decimalFormat.format(calculateMinimumOfDay(selectedDay.toLocalDate(), combinedSpotData));
         final var max = decimalFormat.format(calculateMaximumOfDay(selectedDay.toLocalDate(), combinedSpotData));
         lowestHighestToday.setTitleBottom(min + " / " + max);
+
         final var cheapestHours = calculateCheapest3HoursOfDay_15min(selectedDay.toLocalDate(), getLatest7DaysMap());
-        final var from = cheapestHours.from().atZone(fiZoneID).getHour();
-        final var to = cheapestHours.to().atZone(fiZoneID).getHour() + 1;
-        cheapestPeriod.setTitleBottom("%s:00 - %s:00, ".formatted(from, to) + getTranslation("avg.") + " " + numberFormat.format(cheapestHours.averagePrice()));
+        final var fromZdt = cheapestHours.from().atZone(fiZoneID);
+        final var toZdt = cheapestHours.to().atZone(fiZoneID);
+        final var fmt = DateTimeFormatter.ofPattern("HH:mm");
+        cheapestPeriod.setTitleBottom(
+                "%s - %s, %s %s".formatted(
+                        fromZdt.format(fmt),
+                        toZdt.plusMinutes(15).format(fmt),
+                        getTranslation("avg."),
+                        numberFormat.format(cheapestHours.averagePrice())
+                )
+        );
     }
 
 }
