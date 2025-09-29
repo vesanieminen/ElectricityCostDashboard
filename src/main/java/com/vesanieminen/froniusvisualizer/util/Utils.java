@@ -86,6 +86,13 @@ public class Utils {
         return Instant.now().truncatedTo(ChronoUnit.HOURS).atZone(fiZoneID).toLocalDateTime();
     }
 
+    public static LocalDateTime getCurrentLocalDateTime15MinPrecisionFinnishZone() {
+        LocalDateTime now = LocalDateTime.now(fiZoneID);
+        int minute = now.getMinute();
+        int quarter = (minute / 15) * 15; // round down to nearest 15
+        return now.withMinute(quarter).withSecond(0).withNano(0);
+    }
+
     public static LocalDateTime getCurrentLocalDateTimeDayPrecisionFinnishZone() {
         return Instant.now().atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS).toLocalDateTime();
     }

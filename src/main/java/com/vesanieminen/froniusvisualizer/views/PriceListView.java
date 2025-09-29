@@ -36,7 +36,7 @@ import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.ge
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
 import static com.vesanieminen.froniusvisualizer.services.SahkovatkainService.getNewHourPricesAsNordpoolPrice;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
-import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentLocalDateTimeHourPrecisionFinnishZone;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentLocalDateTime15MinPrecisionFinnishZone;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getVAT;
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
@@ -131,7 +131,7 @@ public class PriceListView extends Main {
         var locale = attachEvent.getUI().getLocale();
         Collection<Component> containerList = new ArrayList<>();
         ListItem currentItem = null;
-        final var nowLocalDateTime = getCurrentLocalDateTimeHourPrecisionFinnishZone();
+        final var nowLocalDateTime = getCurrentLocalDateTime15MinPrecisionFinnishZone();
         H2 day = null;
         UnorderedList list = null;
         Span daySpan;
