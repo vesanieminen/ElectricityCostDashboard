@@ -61,6 +61,8 @@ public class ChartTemplateViewForTimo extends Main {
     private final Checkbox showTheMonthlyAverageLineCheckbox;
     private LocalDateTime selectedDate;
 
+    private static final String HOURLY_PRECISION = "hourly";
+
     public ChartTemplateViewForTimo() {
         dateOfLatestFullData = getDateOfLatestFullDayData();
         selectedDate = dateOfLatestFullData;
@@ -150,7 +152,7 @@ public class ChartTemplateViewForTimo extends Main {
 
     private void selectDate(LocalDateTime selectedDay) {
         final var beginning = selectedDay.atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS).toInstant().toEpochMilli();
-        final var end = selectedDay.atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS).plusDays(1).toInstant().toEpochMilli();
+        final var end = selectedDay.atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS).plusDays(1).plusMinutes(45).toInstant().toEpochMilli();
         var data = getPriceList().stream().filter(item -> beginning <= item.time && item.time <= end).collect(Collectors.toList());
         barChartTemplateTimo.setNordpoolDataList(data);
 
@@ -195,5 +197,17 @@ public class ChartTemplateViewForTimo extends Main {
                 )
         );
     }
+
+    // @Override
+    // public void setParameter(BeforeEvent event, String parameter) {
+    //     //if (parameter != null) {
+    //     //    this. = !HOURLY_PRECISION.equals(parameter);
+    //     //} else {
+    //     //    this.hasVat = true;
+    //     //}
+    //     //if (!isInitialRender) {
+    //     //    renderView();
+    //     //}
+    // }
 
 }
