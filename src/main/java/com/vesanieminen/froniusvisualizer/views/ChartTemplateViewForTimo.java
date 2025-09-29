@@ -32,7 +32,7 @@ import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.ge
 import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7DaysMap;
 import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getPriceList;
 import static com.vesanieminen.froniusvisualizer.util.Utils.calculateAverageOfDay;
-import static com.vesanieminen.froniusvisualizer.util.Utils.calculateCheapest3HoursOfDay;
+import static com.vesanieminen.froniusvisualizer.util.Utils.calculateCheapest3HoursOfDay_15min;
 import static com.vesanieminen.froniusvisualizer.util.Utils.calculateMaximumOfDay;
 import static com.vesanieminen.froniusvisualizer.util.Utils.calculateMinimumOfDay;
 import static com.vesanieminen.froniusvisualizer.util.Utils.calculateSpotAveragePriceOfMonth;
@@ -181,7 +181,7 @@ public class ChartTemplateViewForTimo extends Main {
         final var min = decimalFormat.format(calculateMinimumOfDay(selectedDay.toLocalDate(), combinedSpotData));
         final var max = decimalFormat.format(calculateMaximumOfDay(selectedDay.toLocalDate(), combinedSpotData));
         lowestHighestToday.setTitleBottom(min + " / " + max);
-        final var cheapestHours = calculateCheapest3HoursOfDay(selectedDay.toLocalDate(), getLatest7DaysMap());
+        final var cheapestHours = calculateCheapest3HoursOfDay_15min(selectedDay.toLocalDate(), getLatest7DaysMap());
         final var from = cheapestHours.from().atZone(fiZoneID).getHour();
         final var to = cheapestHours.to().atZone(fiZoneID).getHour() + 1;
         cheapestPeriod.setTitleBottom("%s:00 - %s:00, ".formatted(from, to) + getTranslation("avg.") + " " + numberFormat.format(cheapestHours.averagePrice()));

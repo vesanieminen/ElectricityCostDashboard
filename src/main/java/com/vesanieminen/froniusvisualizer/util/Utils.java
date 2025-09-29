@@ -293,6 +293,49 @@ public class Utils {
         return cheapestHours;
     }
 
+    public static CheapestHours calculateCheapest3HoursOfDay_15min(LocalDate localDate, LinkedHashMap<Instant, Double> data) {
+        final var day = localDate.getDayOfMonth();
+        final var month = localDate.getMonthValue();
+        final var year = localDate.getYear();
+        final var list = data.entrySet().stream().filter(dayFilter(day, month, year)).map(
+                item -> Map.entry(item.getKey(), item.getValue() * getVAT(item.getKey()))
+        ).toList();
+        var cheapestHours = new CheapestHours(list.get(0).getKey(), list.get(11).getKey(), (
+                list.get(0).getValue() +
+                        list.get(1).getValue() +
+                        list.get(2).getValue() +
+                        list.get(3).getValue() +
+                        list.get(4).getValue() +
+                        list.get(5).getValue() +
+                        list.get(6).getValue() +
+                        list.get(7).getValue() +
+                        list.get(8).getValue() +
+                        list.get(9).getValue() +
+                        list.get(10).getValue() +
+                        list.get(11).getValue()
+        ) / 12);
+        for (int i = 1; i < list.size() - 11; ++i) {
+            final var candidate = new CheapestHours(list.get(i).getKey(), list.get(i + 11).getKey(), (
+                    list.get(i).getValue() +
+                            list.get(i + 1).getValue() +
+                            list.get(i + 2).getValue() +
+                            list.get(i + 3).getValue() +
+                            list.get(i + 4).getValue() +
+                            list.get(i + 5).getValue() +
+                            list.get(i + 6).getValue() +
+                            list.get(i + 7).getValue() +
+                            list.get(i + 8).getValue() +
+                            list.get(i + 9).getValue() +
+                            list.get(i + 10).getValue() +
+                            list.get(i + 11).getValue()
+            ) / 3);
+            if (candidate.averagePrice() < cheapestHours.averagePrice()) {
+                cheapestHours = candidate;
+            }
+        }
+        return cheapestHours;
+    }
+
     public record CheapestHours(Instant from, Instant to, double averagePrice) {
     }
 
