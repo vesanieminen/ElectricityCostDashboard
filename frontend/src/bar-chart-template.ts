@@ -222,19 +222,24 @@ export class BarChartTemplate extends LitElement {
                         className: item.time > Number(this.predictionTimestamp) ? "prediction" : "price"
                     })),
                     //pointPadding: 0.3,   // more space from neighbor series
-                    //groupPadding: 0.05   // keep groups tight on the axis
+                    groupPadding: 0.05,   // keep groups tight on the axis
+
+                    //pointPadding: 0,
+                    borderRadius: 0
+                    //{pointPadding: 0, groupPadding: 0, borderRadius: 0
                 },
                 {
                     name: this.seriesTitle2,
                     type: "column",
-                    pointRange: 3600 * 1000, // 4 hours in ms, or 1 day etc
+                    pointRange: 3600 * 1000, // 1 hour resolution
                     data: this.values2!.map(item => ({
                         x: item.time,
                         y: item.price,
                         className: "prediction"
                     })),
                     //pointWidth: 16,
-                    //pointPadding: 0.3,   // more space from neighbor series
+                    //borderWidth: 6,
+                    pointPadding: 0.25,   // more space from neighbor series
                     //groupPadding: 0.05   // keep groups tight on the axis
                 }
             ],

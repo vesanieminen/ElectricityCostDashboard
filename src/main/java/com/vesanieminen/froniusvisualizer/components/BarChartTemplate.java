@@ -5,7 +5,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.PropertyDescriptor;
 import com.vaadin.flow.component.PropertyDescriptors;
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.charts.model.Label;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
@@ -51,7 +50,6 @@ public class BarChartTemplate extends Component {
         //nordpoolPrices.addAll(getNewHourPricesAsNordpoolPrice());
         //setNordpoolDataList(nordpoolPrices);
 
-        new Label();
         final var pricesToday = getPricesToday();
         setNordpoolDataList(getLatest7DaysList());
         setNordpoolDataList2(getNewHourPricesAsNordpoolPrice());
