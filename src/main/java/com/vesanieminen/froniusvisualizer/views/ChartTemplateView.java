@@ -5,6 +5,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vesanieminen.froniusvisualizer.components.BarChartTemplate;
+import com.vesanieminen.froniusvisualizer.components.SettingsDialog;
 
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
@@ -13,10 +14,11 @@ import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 @PageTitle("Column Chart" + URL_SUFFIX)
 public class ChartTemplateView extends Main {
 
-    public ChartTemplateView() {
+
+    public ChartTemplateView(SettingsDialog.SettingsState settingsState) {
         setHeight("var(--fullscreen-height-column)");
         setMinHeight("300px");
-        add(new BarChartTemplate());
+        add(new BarChartTemplate(settingsState));
     }
 
 }

@@ -15,7 +15,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.updateData;
 import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.getAndWriteToFile2YearData;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getSecondsToNextEvenHour;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getSecondsToNextEvenMinute;
@@ -40,6 +39,7 @@ public class Executor {
             scheduleTasks();
         } else if (shouldRunInitialFetches()) {
             executorService.schedule(() -> safeExecute(Executor::updateNordpoolForLast7Days), 0, TimeUnit.SECONDS);
+            executorService.schedule(() -> safeExecute(Executor::updateNordpool60minForLast7Days), 9, TimeUnit.SECONDS);
             executorService.schedule(() -> safeExecute(Executor::updatePakastinData), 0, TimeUnit.SECONDS);
             executorService.schedule(() -> safeExecute(Executor::updateSpotHintaService), 0, TimeUnit.SECONDS);
             executorService.schedule(() -> safeExecute(Executor::updateFingridData), 0, TimeUnit.SECONDS);
@@ -66,6 +66,7 @@ public class Executor {
     private void scheduleTasks() {
         // initial data fetches
         executorService.schedule(() -> safeExecute(Executor::updateNordpoolForLast7Days), 0, TimeUnit.SECONDS);
+        executorService.schedule(() -> safeExecute(Executor::updateNordpool60minForLast7Days), 9, TimeUnit.SECONDS);
         executorService.schedule(() -> safeExecute(Executor::updatePakastinData), 0, TimeUnit.SECONDS);
         executorService.schedule(() -> safeExecute(Executor::updateSpotHintaService), 0, TimeUnit.SECONDS);
         executorService.schedule(() -> safeExecute(Executor::updateFingridData), 0, TimeUnit.SECONDS);
@@ -75,6 +76,12 @@ public class Executor {
         executorService.scheduleAtFixedRate(
                 () -> safeExecute(() -> updateNordpoolData(LocalDate.now().plusDays(1), false)),
                 getSecondsToNextEvenMinute(),
+                TimeUnit.MINUTES.toSeconds(1),
+                TimeUnit.SECONDS
+        );
+        executorService.scheduleAtFixedRate(
+                () -> safeExecute(() -> updateNordpool60minData(LocalDate.now().plusDays(1), false)),
+                getSecondsToNextEvenMinute() + 10,
                 TimeUnit.MINUTES.toSeconds(1),
                 TimeUnit.SECONDS
         );
@@ -127,7 +134,14 @@ public class Executor {
     public static void updateNordpoolData(LocalDate localDate, boolean forceUpdate) {
         //log.info("Started update Nordpool");
         final var startTime = System.currentTimeMillis();
-        updateData(localDate, forceUpdate);
+        NordpoolSpotService.updateData(localDate, forceUpdate);
+        //log.info("Ended update Nordpool in {} seconds", (System.currentTimeMillis() - startTime) / 1000.0);
+    }
+
+    public static void updateNordpool60minData(LocalDate localDate, boolean forceUpdate) {
+        //log.info("Started update Nordpool");
+        final var startTime = System.currentTimeMillis();
+        Nordpool60MinSpotService.updateData(localDate, forceUpdate);
         //log.info("Ended update Nordpool in {} seconds", (System.currentTimeMillis() - startTime) / 1000.0);
     }
 
@@ -203,7 +217,49 @@ public class Executor {
             for (int i = 0; i < dates.size(); i++) {
                 LocalDate date = dates.get(i);
                 long delayInMillis = i * 1200L; // 1.2 seconds per call
-                scheduler.schedule(() -> updateData(date, true), delayInMillis, TimeUnit.MILLISECONDS);
+                scheduler.schedule(() -> NordpoolSpotService.updateData(date, true), delayInMillis, TimeUnit.MILLISECONDS);
+            }
+
+            // Shutdown the scheduler after tasks are completed
+            scheduler.shutdown();
+            try {
+                // Wait for all scheduled tasks to complete
+                boolean finished = scheduler.awaitTermination(20, TimeUnit.SECONDS);
+                if (!finished) {
+                    log.warn("Scheduler did not finish within the timeout period.");
+                }
+            } catch (InterruptedException e) {
+                log.error("Scheduler was interrupted", e);
+                Thread.currentThread().interrupt();
+            }
+        }
+        log.info("Ended updateNordpoolForLast7Days in {} seconds", (System.currentTimeMillis() - startTime) / 1000.0);
+    }
+
+    public static void updateNordpool60minForLast7Days() {
+        log.info("Started updateNordpool60minForLast7Days");
+        final var startTime = System.currentTimeMillis();
+
+        // Create a ScheduledExecutorService with virtual threads
+        ThreadFactory virtualThreadFactory = Thread.ofVirtual().factory();
+        try (var scheduler = Executors.newScheduledThreadPool(0, virtualThreadFactory)) {
+
+            LocalDate today = LocalDate.now();
+            List<LocalDate> dates = new ArrayList<>();
+
+            // Collect dates from 5 days ago up to tomorrow (total 7 days)
+            for (int i = -6; i <= 1; i++) {
+                dates.add(today.plusDays(i));
+            }
+
+            // Sort dates in chronological order
+            dates.sort(Comparator.naturalOrder());
+
+            // Schedule updateData calls with a 1.2-second delay between each
+            for (int i = 0; i < dates.size(); i++) {
+                LocalDate date = dates.get(i);
+                long delayInMillis = i * 1200L; // 1.2 seconds per call
+                scheduler.schedule(() -> Nordpool60MinSpotService.updateData(date, true), delayInMillis, TimeUnit.MILLISECONDS);
             }
 
             // Shutdown the scheduler after tasks are completed

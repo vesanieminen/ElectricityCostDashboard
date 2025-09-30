@@ -211,6 +211,8 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         super.afterNavigation();
         title.setText(getCurrentPageTitle());
 
+        //settingsDialog.open();
+
         // read settings
         final var zoom = getZoomLevel();
         if (zoom.isEmpty()) {
@@ -235,6 +237,15 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         final var settingsButton = new Button(MaterialIcon.SETTINGS.create(), e -> settingsDialog.open());
         settingsButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         header.add(settingsButton);
+        //Popover popover = new Popover();
+        //popover.setOpenOnClick(false);
+        //popover.setTarget(settingsButton);
+        //popover.setWidth("300px");
+        //popover.addThemeVariants(PopoverVariant.ARROW, PopoverVariant.LUMO_NO_PADDING);
+        //popover.setPosition(PopoverPosition.BOTTOM);
+        //popover.setOpened(true);
+        //popover.setAriaLabelledBy("notifications-heading");
+        //popover.add(new Span("Asetuksista voit vaihtaa 15 min ja 60 min tarkkuuden välillä"));
 
         header.add(createChangeLanguageButton(attachEvent));
 

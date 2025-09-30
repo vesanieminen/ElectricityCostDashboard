@@ -15,6 +15,9 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.BarChartTemplateTimo;
 import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
 import com.vesanieminen.froniusvisualizer.components.MaterialIcon;
+import com.vesanieminen.froniusvisualizer.components.SettingsDialog;
+import com.vesanieminen.froniusvisualizer.services.Nordpool60MinSpotService;
+import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
 import com.vesanieminen.froniusvisualizer.services.model.Plotline;
 
 import java.text.NumberFormat;
@@ -28,10 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getDateOfLatestFullDayData;
-import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7DaysMap;
-import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getPriceList;
 import static com.vesanieminen.froniusvisualizer.util.Utils.calculateAverageOfDay;
+import static com.vesanieminen.froniusvisualizer.util.Utils.calculateCheapest3HoursOfDay;
 import static com.vesanieminen.froniusvisualizer.util.Utils.calculateCheapest3HoursOfDay_15min;
 import static com.vesanieminen.froniusvisualizer.util.Utils.calculateMaximumOfDay;
 import static com.vesanieminen.froniusvisualizer.util.Utils.calculateMinimumOfDay;
@@ -40,6 +41,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCombinedSpotData;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
+import static com.vesanieminen.froniusvisualizer.util.Utils.is15MinPrice;
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
 @Route(value = "porssisahkoryhma", layout = MainLayout.class)
@@ -59,12 +61,13 @@ public class ChartTemplateViewForTimo extends Main {
     private final H2 dayH2;
     private final LocalDateTime dateOfLatestFullData;
     private final Checkbox showTheMonthlyAverageLineCheckbox;
+    private final SettingsDialog.SettingsState settingsState;
     private LocalDateTime selectedDate;
 
-    private static final String HOURLY_PRECISION = "hourly";
+    public ChartTemplateViewForTimo(SettingsDialog.SettingsState settingsState) {
+        this.settingsState = settingsState;
 
-    public ChartTemplateViewForTimo() {
-        dateOfLatestFullData = getDateOfLatestFullDayData();
+        dateOfLatestFullData = is15MinPrice(settingsState) ? NordpoolSpotService.getDateOfLatestFullDayData() : Nordpool60MinSpotService.getDateOfLatestFullDayData();
         selectedDate = dateOfLatestFullData;
 
         final var header = new Div();
@@ -136,11 +139,6 @@ public class ChartTemplateViewForTimo extends Main {
         showTheMonthlyAverageLineCheckbox.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER);
         add(showTheMonthlyAverageLineCheckbox);
 
-        //final var priceResolution = new ComboBox<>(getTranslation("Price resolution"));
-        //final var div = new Div(showTheMonthlyAverageLineCheckbox, priceResolution);
-        //div.addClassNames(LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER, LumoUtility.Margin.Horizontal.SMALL);
-        //add(div);
-
         selectDate(dateOfLatestFullData);
     }
 
@@ -152,10 +150,15 @@ public class ChartTemplateViewForTimo extends Main {
 
     private void selectDate(LocalDateTime selectedDay) {
         final var beginning = selectedDay.atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS).toInstant().toEpochMilli();
-        final var end = selectedDay.atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS).plusDays(1).plusMinutes(45).toInstant().toEpochMilli();
-        var data = getPriceList().stream().filter(item -> beginning <= item.time && item.time <= end).collect(Collectors.toList());
-        barChartTemplateTimo.setNordpoolDataList(data);
-
+        if (is15MinPrice(settingsState)) {
+            final var end = selectedDay.atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS).plusDays(1).plusMinutes(45).toInstant().toEpochMilli();
+            var data = NordpoolSpotService.getPriceList().stream().filter(item -> beginning <= item.time && item.time <= end).collect(Collectors.toList());
+            barChartTemplateTimo.setNordpoolDataList(data);
+        } else {
+            final var end = selectedDay.atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS).plusDays(1).toInstant().toEpochMilli();
+            var data = Nordpool60MinSpotService.getPriceList().stream().filter(item -> beginning <= item.time && item.time <= end).collect(Collectors.toList());
+            barChartTemplateTimo.setNordpoolDataList(data);
+        }
         updateLabels(selectedDay);
         updateButtonVisibility();
     }
@@ -184,30 +187,26 @@ public class ChartTemplateViewForTimo extends Main {
         final var max = decimalFormat.format(calculateMaximumOfDay(selectedDay.toLocalDate(), combinedSpotData));
         lowestHighestToday.setTitleBottom(min + " / " + max);
 
-        final var cheapestHours = calculateCheapest3HoursOfDay_15min(selectedDay.toLocalDate(), getLatest7DaysMap());
-        final var fromZdt = cheapestHours.from().atZone(fiZoneID);
-        final var toZdt = cheapestHours.to().atZone(fiZoneID);
-        final var fmt = DateTimeFormatter.ofPattern("HH:mm");
-        cheapestPeriod.setTitleBottom(
-                "%s - %s, %s %s".formatted(
-                        fromZdt.format(fmt),
-                        toZdt.plusMinutes(15).format(fmt),
-                        getTranslation("avg."),
-                        numberFormat.format(cheapestHours.averagePrice())
-                )
-        );
-    }
+        if (is15MinPrice(settingsState)) {
+            final var cheapestHours = calculateCheapest3HoursOfDay_15min(selectedDay.toLocalDate(), NordpoolSpotService.getLatest7DaysMap());
+            final var fromZdt = cheapestHours.from().atZone(fiZoneID);
+            final var toZdt = cheapestHours.to().atZone(fiZoneID);
+            final var fmt = DateTimeFormatter.ofPattern("HH:mm");
+            cheapestPeriod.setTitleBottom(
+                    "%s - %s, %s %s".formatted(
+                            fromZdt.format(fmt),
+                            toZdt.plusMinutes(15).format(fmt),
+                            getTranslation("avg."),
+                            numberFormat.format(cheapestHours.averagePrice())
+                    )
+            );
+        } else {
+            final var cheapestHours = calculateCheapest3HoursOfDay(selectedDay.toLocalDate(), Nordpool60MinSpotService.getLatest7DaysMap());
+            final var from = cheapestHours.from().atZone(fiZoneID).getHour();
+            final var to = cheapestHours.to().atZone(fiZoneID).getHour() + 1;
+            cheapestPeriod.setTitleBottom("%s:00 - %s:00, ".formatted(from, to) + getTranslation("avg.") + " " + numberFormat.format(cheapestHours.averagePrice()));
 
-    // @Override
-    // public void setParameter(BeforeEvent event, String parameter) {
-    //     //if (parameter != null) {
-    //     //    this. = !HOURLY_PRECISION.equals(parameter);
-    //     //} else {
-    //     //    this.hasVat = true;
-    //     //}
-    //     //if (!isInitialRender) {
-    //     //    renderView();
-    //     //}
-    // }
+        }
+    }
 
 }

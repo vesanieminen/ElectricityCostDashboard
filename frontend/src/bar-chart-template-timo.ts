@@ -94,7 +94,7 @@ export class BarChartTemplateTimo extends LitElement {
             plotOptions: {
                 column: this.mobileMode ?
                     {pointPadding: 0, groupPadding: 0, borderRadius: 0} :  // mobile mode
-                    {groupPadding: 0.00, borderRadius: 0}, // desktop mode
+                    {groupPadding: 0.05, borderRadius: 0}, // desktop mode
                 //{groupPadding: 0, borderRadius: 5}, // desktop mode original
                 series: {
                     tooltip: {

@@ -6,6 +6,7 @@ import com.vaadin.flow.component.PropertyDescriptor;
 import com.vaadin.flow.component.PropertyDescriptors;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vesanieminen.froniusvisualizer.services.Nordpool60MinSpotService;
 import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import com.vesanieminen.froniusvisualizer.util.Utils;
@@ -14,10 +15,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
 
-import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getLatest7DaysList;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getPricesToday;
 import static com.vesanieminen.froniusvisualizer.services.SahkovatkainService.getNewHourPricesAsNordpoolPrice;
+import static com.vesanieminen.froniusvisualizer.util.Utils.is15MinPrice;
 
 @Tag("bar-chart-template")
 @JsModule("./src/bar-chart-template.ts")
@@ -33,6 +34,11 @@ public class BarChartTemplate extends Component {
     private static final PropertyDescriptor<Integer, Integer> CURRENT_HOUR = PropertyDescriptors.propertyWithDefault("currentHour", 0);
     private static final PropertyDescriptor<String, String> LANGUAGE = PropertyDescriptors.propertyWithDefault("language", "en");
     private static final PropertyDescriptor<String, String> PREDICTION_TIMESTAMP = PropertyDescriptors.propertyWithDefault("predictionTimestamp", "" + Integer.MAX_VALUE);
+    private final SettingsDialog.SettingsState settingsState;
+
+    public BarChartTemplate(SettingsDialog.SettingsState settingsState) {
+        this.settingsState = settingsState;
+    }
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
@@ -51,7 +57,7 @@ public class BarChartTemplate extends Component {
         //setNordpoolDataList(nordpoolPrices);
 
         final var pricesToday = getPricesToday();
-        setNordpoolDataList(getLatest7DaysList());
+        setNordpoolDataList(is15MinPrice(settingsState) ? NordpoolSpotService.getLatest7DaysList() : Nordpool60MinSpotService.getLatest7DaysList());
         setNordpoolDataList2(getNewHourPricesAsNordpoolPrice());
         set(PREDICTION_TIMESTAMP, NordpoolSpotService.getPriceList().getLast().timeInstant().toEpochMilli() + "");
         final var hour = (int) Utils.getCurrentInstantHourPrecision().getEpochSecond();

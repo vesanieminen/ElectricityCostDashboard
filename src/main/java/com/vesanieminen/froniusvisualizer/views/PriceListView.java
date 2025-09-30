@@ -13,8 +13,10 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.Ping;
+import com.vesanieminen.froniusvisualizer.components.SettingsDialog;
 import com.vesanieminen.froniusvisualizer.components.list.PriceListItem;
 import com.vesanieminen.froniusvisualizer.components.list.UnorderedPriceList;
+import com.vesanieminen.froniusvisualizer.services.Nordpool60MinSpotService;
 import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import com.vesanieminen.froniusvisualizer.util.css.Background;
@@ -32,13 +34,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-import static com.vesanieminen.froniusvisualizer.services.NordpoolSpotService.getPriceList;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotAveragePriceThisMonth;
 import static com.vesanieminen.froniusvisualizer.services.SahkovatkainService.getNewHourPricesAsNordpoolPrice;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentLocalDateTime15MinPrecisionFinnishZone;
+import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentLocalDateTimeHourPrecisionFinnishZone;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getNumberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getVAT;
+import static com.vesanieminen.froniusvisualizer.util.Utils.is15MinPrice;
 import static com.vesanieminen.froniusvisualizer.views.MainLayout.URL_SUFFIX;
 
 @PageTitle("List" + URL_SUFFIX)
@@ -49,8 +52,10 @@ public class PriceListView extends Main {
 
     private final double expensiveLimit;
     private final double cheapLimit;
+    private final SettingsDialog.SettingsState settingsState;
 
-    public PriceListView() {
+    public PriceListView(SettingsDialog.SettingsState settingsState) {
+        this.settingsState = settingsState;
         addClassNames(LumoUtility.Overflow.AUTO, LumoUtility.Padding.Horizontal.SMALL);
         // Set height to correctly position sticky dates
         // Added fix for iOS Safari header height that changes when scrolling
@@ -117,7 +122,7 @@ public class PriceListView extends Main {
     }
 
     void renderListView(AttachEvent attachEvent) {
-        var data = getPriceList();
+        var data = is15MinPrice(settingsState) ? NordpoolSpotService.getPriceList() : Nordpool60MinSpotService.getPriceList();
         if (data.isEmpty()) {
             return;
         }
@@ -131,7 +136,7 @@ public class PriceListView extends Main {
         var locale = attachEvent.getUI().getLocale();
         Collection<Component> containerList = new ArrayList<>();
         ListItem currentItem = null;
-        final var nowLocalDateTime = getCurrentLocalDateTime15MinPrecisionFinnishZone();
+        final var nowLocalDateTime = is15MinPrice(settingsState) ? getCurrentLocalDateTime15MinPrecisionFinnishZone() : getCurrentLocalDateTimeHourPrecisionFinnishZone();
         H2 day = null;
         UnorderedList list = null;
         Span daySpan;
@@ -160,7 +165,7 @@ public class PriceListView extends Main {
 
             final ListItem item = new PriceListItem(timeSpan, priceSpan);
             // Price prediction items
-            if (entry.timeInstant().isAfter(NordpoolSpotService.getPriceList().getLast().timeInstant())) {
+            if (entry.timeInstant().isAfter(is15MinPrice(settingsState) ? NordpoolSpotService.getPriceList().getLast().timeInstant() : Nordpool60MinSpotService.getPriceList().getLast().timeInstant())) {
                 //item.addClassNames(_50);
                 priceSpan.setWidth(70, Unit.PIXELS);
                 priceSpan.addClassNames(LumoUtility.TextAlignment.RIGHT);

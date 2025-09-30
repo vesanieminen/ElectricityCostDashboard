@@ -440,4 +440,8 @@ public class Utils {
         );
     }
 
+    public static boolean is15MinPrice(SettingsDialog.SettingsState settingsState) {
+        return SettingsDialog.PriceResolution.QUARTER_RESOLUTION.equals(settingsState.getSettings().getPriceResolution());
+    }
+
 }

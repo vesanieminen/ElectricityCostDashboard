@@ -93,6 +93,35 @@ public class ObjectMapperService {
         }
     }
 
+    public SettingsDialog.PriceResolution readPriceResolutionValue(String key) {
+        if (key == null) {
+            return null;
+        }
+        try {
+            var value = objectMapper.readValue(key, new TypeReference<SettingsDialog.PriceResolution>() {
+            });
+            VaadinSession.getCurrent().setAttribute(SettingsDialog.PriceResolution.class, value);
+            return value;
+        } catch (IOException e) {
+            log.info("Could not read value: %s".formatted(e.toString()));
+        }
+        return null;
+    }
+
+    public void readAndSetPriceResolutionValue(String key, Select<SettingsDialog.PriceResolution> priceResolution) {
+        if (key == null) {
+            return;
+        }
+        try {
+            var value = objectMapper.readValue(key, new TypeReference<SettingsDialog.PriceResolution>() {
+            });
+            priceResolution.setValue(value);
+            VaadinSession.getCurrent().setAttribute(key, value);
+        } catch (IOException e) {
+            log.info("Could not read value: %s".formatted(e.toString()));
+        }
+    }
+
     public void readLocalDateTime(String key, DatePicker datePicker) {
         if (key == null) {
             return;
