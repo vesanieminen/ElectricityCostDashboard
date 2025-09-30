@@ -349,7 +349,7 @@ public class Utils {
                             list.get(i + 9).getValue() +
                             list.get(i + 10).getValue() +
                             list.get(i + 11).getValue()
-            ) / 3);
+            ) / 12);
             if (candidate.averagePrice() < cheapestHours.averagePrice()) {
                 cheapestHours = candidate;
             }
