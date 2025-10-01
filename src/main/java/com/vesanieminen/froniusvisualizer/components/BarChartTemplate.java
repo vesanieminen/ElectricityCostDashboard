@@ -60,7 +60,7 @@ public class BarChartTemplate extends Component {
         setNordpoolDataList(is15MinPrice(settingsState) ? NordpoolSpotService.getLatest7DaysList() : Nordpool60MinSpotService.getLatest7DaysList());
         setNordpoolDataList2(getNewHourPricesAsNordpoolPrice());
         set(PREDICTION_TIMESTAMP, NordpoolSpotService.getPriceList().getLast().timeInstant().toEpochMilli() + "");
-        final var hour = (int) Utils.getCurrentInstantHourPrecision().getEpochSecond();
+        final var hour = (int) Utils.getCurrentInstant15MinPrecision().getEpochSecond();
         set(CURRENT_HOUR, hour);
         var monthAverage = calculateSpotAveragePriceThisMonth();
         Utils.average(pricesToday).ifPresent(value -> set(AVERAGE, monthAverage));
