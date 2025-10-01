@@ -49,6 +49,7 @@ import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vesanieminen.froniusvisualizer.components.DoubleLabel;
 import com.vesanieminen.froniusvisualizer.components.MaterialIcon;
+import com.vesanieminen.froniusvisualizer.components.SettingsDialog;
 import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService;
 import com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.FingridUsageData;
 import lombok.Getter;
@@ -141,6 +142,8 @@ public class PriceCalculatorView extends Main {
     private final SuperDoubleField seasonalTransferOtherPriceField;
     private final SuperDoubleField seasonalTransferMonthlyPriceField;
     private final ComboBox<NordpoolspotView.VAT> vatComboBox;
+    private final ComboBox<SettingsDialog.PriceResolution> priceResolutionComboBox;
+
     private MemoryBuffer lastConsumptionData;
     private MemoryBuffer lastProductionData;
 
@@ -252,11 +255,22 @@ public class PriceCalculatorView extends Main {
         content.add(fromDateTimePicker);
         content.add(toDateTimePicker);
 
+        priceResolutionComboBox = new ComboBox<>(getTranslation("calculator.price.resolution"));
+        priceResolutionComboBox.setId("PriceCalculatorView.priceResolutionComboBox");
+        priceResolutionComboBox.setItems(SettingsDialog.PriceResolution.values());
+        priceResolutionComboBox.setItemLabelGenerator(item -> getTranslation(SettingsDialog.PriceResolution.QUARTER_RESOLUTION.equals(item) ? "quarter-resolution" : "hour-resolution"));
+        priceResolutionComboBox.setValue(SettingsDialog.PriceResolution.QUARTER_RESOLUTION);
+        priceResolutionComboBox.setHelperText(getTranslation("calculator.price.resolution.helper"));
+        priceResolutionComboBox.addValueChangeListener(item -> saveFieldValue(priceResolutionComboBox));
+        content.add(priceResolutionComboBox);
+
         vatComboBox = new ComboBox<>(getTranslation("calculator.vat.included"));
+        vatComboBox.setId("PriceCalculatorView.vatComboBox");
         vatComboBox.setItems(NordpoolspotView.VAT.values());
         vatComboBox.setItemLabelGenerator(item -> getTranslation(NordpoolspotView.VAT.VAT.equals(item) ? "calculator.vat.with" : "calculator.vat.without"));
         vatComboBox.setValue(NordpoolspotView.VAT.VAT);
         vatComboBox.setHelperText(getTranslation("calculator.vat.placeholder"));
+        vatComboBox.addValueChangeListener(item -> saveFieldValue(vatComboBox));
         content.add(vatComboBox);
 
         if (fiLocale.equals(getLocale())) {
@@ -534,7 +548,7 @@ public class PriceCalculatorView extends Main {
                         baasPriceField.setValue(0d);
                     }
                 }
-                final var consumptionData = getFingridUsageData(lastConsumptionData);
+                final var consumptionData = getFingridUsageData(lastConsumptionData.getInputStream(), isQuarterlyPriceResolutionEnabled());
                 final var spotCalculation = calculateSpotElectricityPriceDetails(consumptionData.data(), spotMarginField.getValue(), isVATEnabled(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                 final var yearMonthSpotCalculationHashMap = calculateSpotElectricityPriceDetailsPerMonth(consumptionData.data(), spotMarginField.getValue(), isVATEnabled(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                 resultLayout.removeAll();
@@ -684,7 +698,7 @@ public class PriceCalculatorView extends Main {
                     final Div baasResultDiv = addSection(resultLayout, getTranslation("calculator.baas"));
                     FingridUsageData productionData = new FingridUsageData(null, null, null);
                     if (isCalculatingProduction()) {
-                        productionData = getFingridUsageData(lastProductionData);
+                        productionData = getFingridUsageData(lastProductionData.getInputStream(), isQuarterlyPriceResolutionEnabled());
                     }
                     baasResultDiv.add(new DoubleLabel(getTranslation("calculator.baas"), numberFormat.format(baasPriceField.getValue()) + " " + getTranslation("c/kWh"), true));
                     var costList = calculateFixedElectricityPriceWithPastProductionReduced(consumptionData.data(), productionData.data(), baasPriceField.getValue(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
@@ -711,7 +725,7 @@ public class PriceCalculatorView extends Main {
                 }
 
                 if (isCalculatingProduction()) {
-                    final var productionData = getFingridUsageData(lastProductionData);
+                    final var productionData = getFingridUsageData(lastProductionData.getInputStream(), isQuarterlyPriceResolutionEnabled());
                     final var spotProductionCalculation = calculateSpotElectricityPriceDetails(productionData.data(), -spotProductionMarginField.getValue(), false, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     final Div productionDiv = addSection(resultLayout, getTranslation("Surplus production"));
 
@@ -817,7 +831,7 @@ public class PriceCalculatorView extends Main {
                 chartLayout.add(createChart(spotCalculation, isCalculatingFixed(), getTranslation("Consumption / cost per hour"), getTranslation("Consumption"), getTranslation("Spot cost")));
 
                 if (isCalculatingProduction()) {
-                    final var productionData = getFingridUsageData(lastProductionData);
+                    final var productionData = getFingridUsageData(lastProductionData.getInputStream(), isQuarterlyPriceResolutionEnabled());
                     final var spotProductionCalculation = calculateSpotElectricityPriceDetails(productionData.data(), -spotProductionMarginField.getValue(), false, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
                     // Create spot production chart
                     chartLayout.add(createChart(spotProductionCalculation, false, getTranslation("Production / value per hour"), "Production", "Production value"));
@@ -842,6 +856,10 @@ public class PriceCalculatorView extends Main {
 
     private boolean isVATEnabled() {
         return NordpoolspotView.VAT.VAT.equals(vatComboBox.getValue());
+    }
+
+    private boolean isQuarterlyPriceResolutionEnabled() {
+        return SettingsDialog.PriceResolution.QUARTER_RESOLUTION.equals(priceResolutionComboBox.getValue());
     }
 
     private static @NotNull String calculateCostFactorPercentage(PriceCalculatorService.SpotCalculation spotCalculation, DecimalFormat twoDecimalsWithPlusPrefix, boolean withSuffix) {
@@ -1255,7 +1273,7 @@ public class PriceCalculatorView extends Main {
             lastConsumptionData = fileBuffer;
             log.info("Consumption data uploaded: " + ++consumptionFilesUploaded);
             try {
-                final var consumptionData = getFingridUsageData(lastConsumptionData);
+                final var consumptionData = getFingridUsageData(lastConsumptionData.getInputStream(), isQuarterlyPriceResolutionEnabled());
                 final var consumptionDataStart = consumptionData.start().atZone(fiZoneID).toLocalDateTime();
                 final var consumptionDataEnd = consumptionData.end().atZone(fiZoneID).toLocalDateTime();
                 final var isStartProductionAfter = startProduction != null && startProduction.isAfter(consumptionDataStart);
@@ -1283,7 +1301,7 @@ public class PriceCalculatorView extends Main {
             lastProductionData = fileBuffer;
             log.info("Production data uploaded: " + ++productionFilesUploaded);
             try {
-                final var productionData = getFingridUsageData(lastProductionData);
+                final var productionData = getFingridUsageData(lastProductionData.getInputStream(), isQuarterlyPriceResolutionEnabled());
                 final var productionDataStart = productionData.start().atZone(fiZoneID).toLocalDateTime();
                 final var productionDataEnd = productionData.end().atZone(fiZoneID).toLocalDateTime();
                 final var isStartConsumptionAfter = startConsumption != null && startConsumption.isAfter(productionDataStart);
@@ -1612,6 +1630,8 @@ public class PriceCalculatorView extends Main {
                 log.info("Could not read values: %s".formatted(e.toString()));
             }
         });
+        WebStorage.getItem(priceResolutionComboBox.getId().orElseThrow(), item -> readAndSetPriceResolutionValue(item, priceResolutionComboBox));
+        WebStorage.getItem(vatComboBox.getId().orElseThrow(), item -> readAndSetVATValue(item, vatComboBox));
         WebStorage.getItem(fixedPriceField.getId().orElseThrow(), item -> readValue(item, fixedPriceField));
         WebStorage.getItem(spotMarginField.getId().orElseThrow(), item -> readValue(item, spotMarginField));
         WebStorage.getItem(spotProductionMarginField.getId().orElseThrow(), item -> readValue(item, spotProductionMarginField));
@@ -1638,6 +1658,32 @@ public class PriceCalculatorView extends Main {
             T value = mapper.readValue(key, new TypeReference<>() {
             });
             hasValue.setValue(value);
+        } catch (IOException e) {
+            log.info("Could not read value: %s".formatted(e.toString()));
+        }
+    }
+
+    public void readAndSetPriceResolutionValue(String key, ComboBox<SettingsDialog.PriceResolution> priceResolutionField) {
+        if (key == null) {
+            return;
+        }
+        try {
+            var value = mapper.readValue(key, new TypeReference<SettingsDialog.PriceResolution>() {
+            });
+            priceResolutionField.setValue(value);
+        } catch (IOException e) {
+            log.info("Could not read value: %s".formatted(e.toString()));
+        }
+    }
+
+    public void readAndSetVATValue(String key, ComboBox<NordpoolspotView.VAT> vatField) {
+        if (key == null) {
+            return;
+        }
+        try {
+            var value = mapper.readValue(key, new TypeReference<NordpoolspotView.VAT>() {
+            });
+            vatField.setValue(value);
         } catch (IOException e) {
             log.info("Could not read value: %s".formatted(e.toString()));
         }

@@ -5,12 +5,12 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
-import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,6 +51,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.sum;
 @Slf4j
 public class PriceCalculatorService {
 
+    private static final Instant quarterPriceInstant = Instant.parse("2025-09-30T21:00:00Z");
     private static LinkedHashMap<Instant, Double> spotPriceMap;
     private static List<NordpoolPrice> nordpoolPriceList;
     @Getter
@@ -68,18 +69,22 @@ public class PriceCalculatorService {
     }
 
     public static LinkedHashMap<Instant, Double> updateSpotData() {
+        return readSpotFileAndUpdateSpotData(pakastin2YearFile);
+    }
+
+    public static LinkedHashMap<Instant, Double> readSpotFileAndUpdateSpotData(String filename) {
         spotPriceMap = new LinkedHashMap<>();
         final String file;
         try {
-            file = Files.readString(Path.of(pakastin2YearFile));
+            file = Files.readString(Path.of(filename));
         } catch (IOException e) {
             log.error("Could not load the spot price file", e);
             throw new RuntimeException(e);
         }
         final var pakastinResponse = mapToResponse(file);
         pakastinResponse.prices.forEach(price -> spotPriceMap.put(price.date, price.value / 10));
-        spotDataStart = pakastinResponse.prices.get(0).date;
-        spotDataEnd = pakastinResponse.prices.get(pakastinResponse.prices.size() - 1).date;
+        spotDataStart = pakastinResponse.prices.getFirst().date;
+        spotDataEnd = pakastinResponse.prices.getLast().date;
         log.info("updated spot data");
         //log.info("size of pakastin map: " + sizeOf(spotPriceMap));
         updateNordPoolPriceList();
@@ -134,11 +139,11 @@ public class PriceCalculatorService {
         return new FingridUsageData(map, start, end);
     }
 
-    public static FingridUsageData getFingridUsageData(MemoryBuffer memoryBuffer) throws IOException, ParseException, CsvValidationException {
+    public static FingridUsageData getFingridUsageData(InputStream inputStream, boolean useQuarterlyPricePrecision) throws IOException, ParseException, CsvValidationException {
         var start = Instant.MAX;
         var end = Instant.MIN;
         final var map = new LinkedHashMap<Instant, Double>();
-        final var reader = new InputStreamReader(memoryBuffer.getInputStream());
+        final var reader = new InputStreamReader(inputStream);
         CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
         CSVReader csvReader = new CSVReaderBuilder(reader)
                 .withSkipLines(0)
@@ -160,24 +165,32 @@ public class PriceCalculatorService {
                 if (line[6].contains(".")) {
                     map.put(instant, Double.parseDouble(line[6]));
                 } else {
-                    // in case of 15min interval data, combine 4 values into 1h
+                    // in case of 15min interval data exists in Fingrid file
                     if ("PT15M".equals(line[2])) {
-                        final var _15Min = csvReader.readNext();
-                        final var _30Min = csvReader.readNext();
-                        final var _45Min = csvReader.readNext();
-                        // skip if there are no values to combine for a full hour
-                        if (_15Min == null || _30Min == null || _45Min == null) {
-                            break;
+                        // Quarterly spot prices exist and are wanted
+                        if (quarterPriceInstant.compareTo(instant) <= 0 && useQuarterlyPricePrecision) {
+                            map.put(instant, numberFormat.parse(line[6]).doubleValue());
                         }
-                        // also skip if one of the 15min interval values is missing
-                        if ("MISSING".equals(_15Min[getColumnIndex(true, 6)]) || "MISSING".equals(_30Min[getColumnIndex(isNewFormat, 6)]) || "MISSING".equals(_45Min[getColumnIndex(isNewFormat, 6)])) {
-                            break;
+                        // combine 4 x 15 min values into 1h
+                        else {
+                            final var _15Min = csvReader.readNext();
+                            final var _30Min = csvReader.readNext();
+                            final var _45Min = csvReader.readNext();
+                            // skip if there are no values to combine for a full hour
+                            if (_15Min == null || _30Min == null || _45Min == null) {
+                                break;
+                            }
+                            // also skip if one of the 15min interval values is missing
+                            if ("MISSING".equals(_15Min[getColumnIndex(true, 6)]) || "MISSING".equals(_30Min[getColumnIndex(isNewFormat, 6)]) || "MISSING".equals(_45Min[getColumnIndex(isNewFormat, 6)])) {
+                                break;
+                            }
+                            final var value00Min = numberFormat.parse(line[6]).doubleValue();
+                            final var value15Min = numberFormat.parse(_15Min[6]).doubleValue();
+                            final var value30Min = numberFormat.parse(_30Min[6]).doubleValue();
+                            final var value45Min = numberFormat.parse(_45Min[6]).doubleValue();
+                            map.put(instant, value00Min + value15Min + value30Min + value45Min);
                         }
-                        final var value00Min = numberFormat.parse(line[6]).doubleValue();
-                        final var value15Min = numberFormat.parse(_15Min[6]).doubleValue();
-                        final var value30Min = numberFormat.parse(_30Min[6]).doubleValue();
-                        final var value45Min = numberFormat.parse(_45Min[6]).doubleValue();
-                        map.put(instant, value00Min + value15Min + value30Min + value45Min);
+
                     } else {
                         map.put(instant, numberFormat.parse(line[6]).doubleValue());
                     }

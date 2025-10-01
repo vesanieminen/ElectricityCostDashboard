@@ -7,15 +7,20 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateFixedElectricityPrice;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotElectricityPriceDetails;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getFingridUsageData;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.readSpotFileAndUpdateSpotData;
 import static com.vesanieminen.froniusvisualizer.util.Utils.calculateMonthsInvolved;
 import static com.vesanieminen.froniusvisualizer.util.Utils.dateTimeFormatter;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
@@ -121,6 +126,59 @@ public class UtilsTest {
     @Test
     void testExtra15Min_Error() {
 
+    }
+
+    @Test
+    public void testFixedConsumptionCalculation() throws IOException, ParseException, CsvValidationException {
+        var consumptionFile = Files.newInputStream(Paths.get("src/main/resources/META-INF/resources/data/consumption-test.csv"));
+        final var fingridConsumptionFile = getFingridUsageData(consumptionFile, true);
+        final var fixedCost = calculateFixedElectricityPrice(fingridConsumptionFile.data(), 1);
+        assertEquals(90.57930000000052, fixedCost);
+    }
+
+    @Test
+    public void testConsumptionCalculationQuarterPrices() throws IOException, ParseException, CsvValidationException {
+        var consumptionFile = Files.newInputStream(Paths.get("src/main/resources/META-INF/resources/data/consumption-test.csv"));
+        final var fingridConsumptionFile = getFingridUsageData(consumptionFile, true);
+        // Initialize the calculator data:
+        readSpotFileAndUpdateSpotData("src/main/resources/META-INF/resources/data/2025-jan-oct-quarter-prices.json");
+        final var from = LocalDateTime.parse("2025-01-01T00:00");
+        final var to = LocalDateTime.parse("2025-09-30T23:00");
+        final var spotCalculation = calculateSpotElectricityPriceDetails(fingridConsumptionFile.data(), 0, false, from.atZone(fiZoneID).toInstant(), to.atZone(fiZoneID).toInstant());
+        assertEquals(25678.342000000008, spotCalculation.totalSpotPrice);
+        assertEquals(295.8227254999998, spotCalculation.totalCost);
+        assertEquals(9057.930000000051, spotCalculation.totalConsumption);
+        assertEquals(3.9197591207449256, spotCalculation.averagePrice);
+        assertEquals(Instant.parse("2024-12-31T22:00:00Z"), spotCalculation.start);
+        assertEquals(Instant.parse("2025-09-30T20:00:00Z"), spotCalculation.end);
+    }
+
+    @Test
+    public void testConsumptionCalculationHourPrices() throws IOException, ParseException, CsvValidationException {
+        var consumptionFile = Files.newInputStream(Paths.get("src/main/resources/META-INF/resources/data/consumption-test.csv"));
+        final var fingridConsumptionFile = getFingridUsageData(consumptionFile, false);
+        // Initialize the calculator data:
+        readSpotFileAndUpdateSpotData("src/main/resources/META-INF/resources/data/2025-jan-oct-hour-prices.json");
+        final var from = LocalDateTime.parse("2025-01-01T00:00");
+        final var to = LocalDateTime.parse("2025-09-30T23:00");
+        final var spotCalculation = calculateSpotElectricityPriceDetails(fingridConsumptionFile.data(), 0, false, from.atZone(fiZoneID).toInstant(), to.atZone(fiZoneID).toInstant());
+        assertEquals(25678.342000000008, spotCalculation.totalSpotPrice);
+        assertEquals(295.8227254999998, spotCalculation.totalCost);
+        assertEquals(9057.930000000051, spotCalculation.totalConsumption);
+        assertEquals(3.9197591207449256, spotCalculation.averagePrice);
+        assertEquals(Instant.parse("2024-12-31T22:00:00Z"), spotCalculation.start);
+        assertEquals(Instant.parse("2025-09-30T20:00:00Z"), spotCalculation.end);
+    }
+
+    @Test
+    public void testQuarterPricesAndConsumption() throws IOException, ParseException, CsvValidationException {
+        var consumptionFile = Files.newInputStream(Paths.get("src/main/resources/META-INF/resources/data/quarter-consumption-test.csv"));
+        final var fingridConsumptionFile = getFingridUsageData(consumptionFile, true);
+        // Initialize the calculator data:
+        readSpotFileAndUpdateSpotData("src/main/resources/META-INF/resources/data/2025-jan-oct-quarter-prices.json");
+        final var from = LocalDateTime.parse("2025-10-01T00:00");
+        final var to = LocalDateTime.parse("2025-10-01T23:45");
+        final var spotCalculation = calculateSpotElectricityPriceDetails(fingridConsumptionFile.data(), 0, false, from.atZone(fiZoneID).toInstant(), to.atZone(fiZoneID).toInstant());
     }
 
 }

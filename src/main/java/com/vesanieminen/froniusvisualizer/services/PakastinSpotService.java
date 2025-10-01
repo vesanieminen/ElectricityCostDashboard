@@ -34,7 +34,7 @@ import static java.util.stream.Collectors.joining;
 public class PakastinSpotService {
 
     private static PakastinResponse pakastinResponse;
-    private static final String url = "https://sahkotin.fi/prices?";
+    private static final String url = "https://sahkotin.fi/prices?quarter&";
     public static final String pakastinFile = "pakastin.json";
     public static final String pakastin2YearFile = "pakastin-2-year.json";
     public static final String pakastinTempFile = "src/main/resources/data/pakastin/spot.json";
