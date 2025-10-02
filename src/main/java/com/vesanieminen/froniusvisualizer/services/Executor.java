@@ -15,7 +15,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.getAndWriteToFile2YearData;
+import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.getHistoricalSpotPrices_15MinPrecision;
+import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.getHistoricalSpotPrices_HourlyPrecision;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getSecondsToNextEvenHour;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getSecondsToNextEvenMinute;
 
@@ -41,6 +42,7 @@ public class Executor {
             executorService.schedule(() -> safeExecute(Executor::updateNordpoolForLast7Days), 0, TimeUnit.SECONDS);
             executorService.schedule(() -> safeExecute(Executor::updateNordpool60minForLast7Days), 9, TimeUnit.SECONDS);
             executorService.schedule(() -> safeExecute(Executor::updatePakastinData), 0, TimeUnit.SECONDS);
+            executorService.schedule(() -> safeExecute(Executor::updatePakastin60MinData), 1, TimeUnit.SECONDS);
             executorService.schedule(() -> safeExecute(Executor::updateSpotHintaService), 0, TimeUnit.SECONDS);
             executorService.schedule(() -> safeExecute(Executor::updateFingridData), 0, TimeUnit.SECONDS);
             executorService.schedule(() -> safeExecute(Executor::updateSahkovatkainData), 0, TimeUnit.SECONDS);
@@ -68,6 +70,7 @@ public class Executor {
         executorService.schedule(() -> safeExecute(Executor::updateNordpoolForLast7Days), 0, TimeUnit.SECONDS);
         executorService.schedule(() -> safeExecute(Executor::updateNordpool60minForLast7Days), 9, TimeUnit.SECONDS);
         executorService.schedule(() -> safeExecute(Executor::updatePakastinData), 0, TimeUnit.SECONDS);
+        executorService.schedule(() -> safeExecute(Executor::updatePakastin60MinData), 1, TimeUnit.SECONDS);
         executorService.schedule(() -> safeExecute(Executor::updateSpotHintaService), 0, TimeUnit.SECONDS);
         executorService.schedule(() -> safeExecute(Executor::updateFingridData), 0, TimeUnit.SECONDS);
         executorService.schedule(() -> safeExecute(Executor::updateSahkovatkainData), 0, TimeUnit.SECONDS);
@@ -90,6 +93,13 @@ public class Executor {
         executorService.scheduleAtFixedRate(
                 () -> safeExecute(Executor::updatePakastinData),
                 getSecondsToNextEvenHour(),
+                TimeUnit.HOURS.toSeconds(1),
+                TimeUnit.SECONDS
+        );
+
+        executorService.scheduleAtFixedRate(
+                () -> safeExecute(Executor::updatePakastin60MinData),
+                getSecondsToNextEvenHour() + 1,
                 TimeUnit.HOURS.toSeconds(1),
                 TimeUnit.SECONDS
         );
@@ -175,9 +185,18 @@ public class Executor {
         final var startTime = System.currentTimeMillis();
 
         //getAndWriteToFile();
-        getAndWriteToFile2YearData();
+        getHistoricalSpotPrices_15MinPrecision();
 
         log.info("Ended updatePakastinData in {} seconds", (System.currentTimeMillis() - startTime) / 1000.0);
+    }
+
+    private static void updatePakastin60MinData() {
+        log.info("Started updatePakastin60MinData");
+        final var startTime = System.currentTimeMillis();
+
+        getHistoricalSpotPrices_HourlyPrecision();
+
+        log.info("Ended updatePakastin60MinData in {} seconds", (System.currentTimeMillis() - startTime) / 1000.0);
     }
 
     private static void updateSahkovatkainData() {

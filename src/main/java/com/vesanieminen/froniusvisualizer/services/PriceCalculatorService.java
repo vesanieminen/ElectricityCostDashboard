@@ -32,7 +32,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.mapToResponse;
-import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.pakastin2YearFile;
+import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.pakastin15MinFile;
+import static com.vesanieminen.froniusvisualizer.services.PakastinSpotService.pakastin60MinFile;
 import static com.vesanieminen.froniusvisualizer.util.Utils.dayFilter;
 import static com.vesanieminen.froniusvisualizer.util.Utils.divide;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
@@ -52,15 +53,22 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.sum;
 public class PriceCalculatorService {
 
     private static final Instant quarterPriceInstant = Instant.parse("2025-09-30T21:00:00Z");
+    // 15min data
     private static LinkedHashMap<Instant, Double> spotPriceMap;
     private static List<NordpoolPrice> nordpoolPriceList;
+    public static Instant spotDataStart;
+    public static Instant spotDataEnd;
+    // hour data
+    private static LinkedHashMap<Instant, Double> spotPriceMap_60min;
+    private static List<NordpoolPrice> nordpoolPriceList_60min;
+    public static Instant spotDataStart_60min;
+    public static Instant spotDataEnd_60min;
     @Getter
     public static List<MonthData> monthlyPrices;
     @Getter
     public static Map<YearMonth, Double> averagePriceMap = new HashMap<>();
-    public static Instant spotDataStart;
-    public static Instant spotDataEnd;
 
+    // 15 min methods
     public static LinkedHashMap<Instant, Double> getSpotData() {
         if (spotPriceMap == null) {
             spotPriceMap = updateSpotData();
@@ -69,7 +77,7 @@ public class PriceCalculatorService {
     }
 
     public static LinkedHashMap<Instant, Double> updateSpotData() {
-        return readSpotFileAndUpdateSpotData(pakastin2YearFile);
+        return readSpotFileAndUpdateSpotData(pakastin15MinFile);
     }
 
     public static LinkedHashMap<Instant, Double> readSpotFileAndUpdateSpotData(String filename) {
@@ -95,6 +103,42 @@ public class PriceCalculatorService {
     public static void updateNordPoolPriceList() {
         if (spotPriceMap != null) {
             nordpoolPriceList = spotPriceMap.entrySet().stream().map(item -> new NordpoolPrice(item.getValue() * getVAT(item.getKey()), item.getKey().toEpochMilli())).toList();
+        }
+    }
+
+    // 60 min methods
+    public static LinkedHashMap<Instant, Double> getSpotData_60min() {
+        if (spotPriceMap_60min == null) {
+            spotPriceMap_60min = updateSpotData_60min();
+        }
+        return spotPriceMap_60min;
+    }
+
+    public static LinkedHashMap<Instant, Double> updateSpotData_60min() {
+        return readSpotFileAndUpdateSpotData_60min(pakastin60MinFile);
+    }
+
+    public static LinkedHashMap<Instant, Double> readSpotFileAndUpdateSpotData_60min(String filename) {
+        spotPriceMap_60min = new LinkedHashMap<>();
+        final String file;
+        try {
+            file = Files.readString(Path.of(filename));
+        } catch (IOException e) {
+            log.error("Could not load the spot price file", e);
+            throw new RuntimeException(e);
+        }
+        final var pakastinResponse = mapToResponse(file);
+        pakastinResponse.prices.forEach(price -> spotPriceMap_60min.put(price.date, price.value / 10));
+        spotDataStart_60min = pakastinResponse.prices.getFirst().date;
+        spotDataEnd_60min = pakastinResponse.prices.getLast().date;
+        log.info("updated 60 min spot data");
+        updateNordPoolPriceList_60min();
+        return spotPriceMap_60min;
+    }
+
+    public static void updateNordPoolPriceList_60min() {
+        if (spotPriceMap_60min != null) {
+            nordpoolPriceList_60min = spotPriceMap_60min.entrySet().stream().map(item -> new NordpoolPrice(item.getValue() * getVAT(item.getKey()), item.getKey().toEpochMilli())).toList();
         }
     }
 
@@ -347,6 +391,10 @@ public class PriceCalculatorService {
 
     public static List<NordpoolPrice> getPrices() {
         return nordpoolPriceList;
+    }
+
+    public static List<NordpoolPrice> getPrices_60min() {
+        return nordpoolPriceList_60min;
     }
 
     public static double calculateSpotElectricityPrice(LinkedHashMap<LocalDateTime, Double> spotData, LinkedHashMap<LocalDateTime, Double> fingridConsumptionData, double margin) {
@@ -693,7 +741,6 @@ public class PriceCalculatorService {
 
     public record averageMinMax(Number[] average, Number[] min, Number[] max) {
     }
-
 
     public static Map<DayOfWeek, averageMinMax> getHourlyAveragePricesByDay(Instant start, Instant end, boolean vat) {
         Map<DayOfWeek, Map<Integer, DoubleSummaryStatistics>> statsByDayAndHour = spotPriceMap.entrySet().stream()

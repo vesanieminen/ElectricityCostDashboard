@@ -54,4 +54,12 @@ public class BarChartTemplateTimo extends Component {
         set(MOBILE_MODE, mobileMode);
     }
 
+    public void setMin(double min) {
+        getElement().setProperty("min", min);
+    }
+
+    public void setMax(double max) {
+        getElement().setProperty("max", max);
+    }
+
 }

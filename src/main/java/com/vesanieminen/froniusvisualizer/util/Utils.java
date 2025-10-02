@@ -74,6 +74,16 @@ public class Utils {
         return Instant.now().truncatedTo(ChronoUnit.HOURS);
     }
 
+    public static Instant getCurrentInstant15MinPrecision() {
+        Instant now = Instant.now();
+        long epochSeconds = now.getEpochSecond();
+        long secondsIn15Min = 15 * 60;
+
+        // Floor to nearest multiple of 15 minutes
+        long truncated = epochSeconds - (epochSeconds % secondsIn15Min);
+        return Instant.ofEpochSecond(truncated);
+    }
+
     public static ZonedDateTime getCurrentZonedDateTimeHourPrecision() {
         return ZonedDateTime.now(utcZone).truncatedTo(ChronoUnit.HOURS);
     }

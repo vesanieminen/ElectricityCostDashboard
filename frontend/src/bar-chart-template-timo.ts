@@ -58,11 +58,19 @@ export class BarChartTemplateTimo extends LitElement {
     @property({type: Boolean})
     mobileMode = false;
 
+    @property({type: Number})
+    min = undefined;
+
+    @property({type: Number})
+    max = undefined;
+
     private getChartOptions(): Options {
         return {
             chart: {
                 type: "column",
-                animation: false
+                animation: false,
+                //width: 672
+                //width: 385
             },
             legend: {
                 enabled: false
@@ -78,9 +86,16 @@ export class BarChartTemplateTimo extends LitElement {
                 tickInterval: 0,
                 type: "datetime",
                 crosshair: true,
+                startOnTick: true,
                 labels: {
                     format: '{value:%k}'
                 },
+                //minPadding: 0,
+                min: this.min,
+                max: this.max,
+                //min: 1759438800000,
+                //max: 1759527900000,
+                //max: Date.UTC(2025, 10, 4),
             },
             yAxis: [{
                 title: {
@@ -94,7 +109,7 @@ export class BarChartTemplateTimo extends LitElement {
             plotOptions: {
                 column: this.mobileMode ?
                     {pointPadding: 0, groupPadding: 0, borderRadius: 0} :  // mobile mode
-                    {groupPadding: 0.05, borderRadius: 0}, // desktop mode
+                    {borderRadius: 0}, // desktop mode
                 //{groupPadding: 0, borderRadius: 5}, // desktop mode original
                 series: {
                     tooltip: {

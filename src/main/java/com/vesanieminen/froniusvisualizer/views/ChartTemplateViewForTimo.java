@@ -154,10 +154,14 @@ public class ChartTemplateViewForTimo extends Main {
             final var end = selectedDay.atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS).plusDays(1).plusMinutes(45).toInstant().toEpochMilli();
             var data = NordpoolSpotService.getPriceList().stream().filter(item -> beginning <= item.time && item.time <= end).collect(Collectors.toList());
             barChartTemplateTimo.setNordpoolDataList(data);
+            barChartTemplateTimo.setMin(beginning);
+            barChartTemplateTimo.setMax(end);
         } else {
             final var end = selectedDay.atZone(fiZoneID).truncatedTo(ChronoUnit.DAYS).plusDays(1).toInstant().toEpochMilli();
             var data = Nordpool60MinSpotService.getPriceList().stream().filter(item -> beginning <= item.time && item.time <= end).collect(Collectors.toList());
             barChartTemplateTimo.setNordpoolDataList(data);
+            barChartTemplateTimo.setMin(beginning);
+            barChartTemplateTimo.setMax(end);
         }
         updateLabels(selectedDay);
         updateButtonVisibility();

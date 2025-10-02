@@ -179,6 +179,29 @@ public class UtilsTest {
         final var from = LocalDateTime.parse("2025-10-01T00:00");
         final var to = LocalDateTime.parse("2025-10-01T23:45");
         final var spotCalculation = calculateSpotElectricityPriceDetails(fingridConsumptionFile.data(), 0, false, from.atZone(fiZoneID).toInstant(), to.atZone(fiZoneID).toInstant());
+        assertEquals(889.295, spotCalculation.totalSpotPrice);
+        assertEquals(2.0468910999999994, spotCalculation.totalCost);
+        assertEquals(31.05999999999999, spotCalculation.totalConsumption);
+        assertEquals(9.263489583333333, spotCalculation.averagePrice);
+        assertEquals(Instant.parse("2025-09-30T21:00:00Z"), spotCalculation.start);
+        assertEquals(Instant.parse("2025-10-01T20:45:00Z"), spotCalculation.end);
+    }
+
+    @Test
+    public void testHourPricesQuarterConsumptionWithHourPrecision() throws IOException, ParseException, CsvValidationException {
+        var consumptionFile = Files.newInputStream(Paths.get("src/main/resources/META-INF/resources/data/quarter-consumption-test.csv"));
+        final var fingridConsumptionFile = getFingridUsageData(consumptionFile, false);
+        // Initialize the calculator data:
+        readSpotFileAndUpdateSpotData("src/main/resources/META-INF/resources/data/2025-jan-oct-hour-prices.json");
+        final var from = LocalDateTime.parse("2025-10-01T00:00");
+        final var to = LocalDateTime.parse("2025-10-01T23:45");
+        final var spotCalculation = calculateSpotElectricityPriceDetails(fingridConsumptionFile.data(), 0, false, from.atZone(fiZoneID).toInstant(), to.atZone(fiZoneID).toInstant());
+        assertEquals(222.32399999999998, spotCalculation.totalSpotPrice);
+        assertEquals(2.03624591, spotCalculation.totalCost);
+        assertEquals(31.06, spotCalculation.totalConsumption);
+        assertEquals(9.263499999999999, spotCalculation.averagePrice);
+        assertEquals(Instant.parse("2025-09-30T21:00:00Z"), spotCalculation.start);
+        assertEquals(Instant.parse("2025-10-01T20:00:00Z"), spotCalculation.end);
     }
 
 }

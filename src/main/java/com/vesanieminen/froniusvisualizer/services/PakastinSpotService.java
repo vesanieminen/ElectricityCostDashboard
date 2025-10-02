@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.hasBeenUpdatedSuccessfullyToday;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.hasBeenUpdatedSuccessfullyYesterday;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.updateSpotData;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.updateSpotData_60min;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getCurrentInstantDayPrecisionFinnishZone;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getStartOfDay;
@@ -36,9 +37,14 @@ public class PakastinSpotService {
     private static PakastinResponse pakastinResponse;
     private static final String url = "https://sahkotin.fi/prices?quarter&";
     public static final String pakastinFile = "pakastin.json";
-    public static final String pakastin2YearFile = "pakastin-2-year.json";
+    public static final String pakastin15MinFile = "pakastin-2-year.json";
+
+    private static final String url_60min = "https://sahkotin.fi/prices?";
+    public static final String pakastin60MinFile = "pakastin-60min.json";
+
     public static final String pakastinTempFile = "src/main/resources/data/pakastin/spot.json";
-    public static int updated = 0;
+    public static int updated_15min = 0;
+    public static int updated_60min = 0;
 
     // Format with timestamps
     // https://pakastin.fi/hinnat/prices?start=2022-10-01T00:00:00.000Z&end=2022-10-31T23:59:00.000Z
@@ -86,11 +92,11 @@ public class PakastinSpotService {
     }
 
     public static List<PakastinResponse.Price> get(Instant start, Instant end) {
-        final var query = createQuery(start, end);
+        final var query = createQuery(start, end, url);
         return runAndMapToResponse(query).prices;
     }
 
-    public static String createQuery(Instant start, Instant end) {
+    public static String createQuery(Instant start, Instant end, String url) {
         Map<String, String> requestParams = new HashMap<>();
         requestParams.put("start", start.toString());
         requestParams.put("end", end.toString());
@@ -106,7 +112,7 @@ public class PakastinSpotService {
         }
     }
 
-    public static void getAndWriteToFile2YearData() {
+    public static void getHistoricalSpotPrices_15MinPrecision() {
         if (hasBeenUpdatedSuccessfullyToday()) {
             log.info("skipped Pakastin update due to having been updated successfully today already");
             return;
@@ -116,15 +122,37 @@ public class PakastinSpotService {
             return;
         }
 
-        final var stringHttpResponse = runQuery(createQuery(getStartOfDay(2020, 1, 1), Instant.now().plus(10, ChronoUnit.DAYS)));
+        final var stringHttpResponse = runQuery(createQuery(getStartOfDay(2020, 1, 1), Instant.now().plus(10, ChronoUnit.DAYS), url));
         try {
-            log.info("Writing file: " + Paths.get(pakastin2YearFile).getFileName());
-            Files.write(Paths.get(pakastin2YearFile), stringHttpResponse.body().getBytes());
+            log.info("Writing file: " + Paths.get(pakastin15MinFile).getFileName());
+            Files.write(Paths.get(pakastin15MinFile), stringHttpResponse.body().getBytes());
         } catch (IOException e) {
             log.error("Error writing to file", e);
         }
-        log.info("PakastinService has been updated " + ++updated + " times.");
+        log.info("PakastinService has been updated " + ++updated_15min + " times.");
         updateSpotData();
     }
+
+    public static void getHistoricalSpotPrices_HourlyPrecision() {
+        if (hasBeenUpdatedSuccessfullyToday()) {
+            log.info("skipped Pakastin60MinSpotService update due to having been updated successfully today already");
+            return;
+        }
+        if (!isAfter_13_45(ZonedDateTime.now(fiZoneID)) && hasBeenUpdatedSuccessfullyYesterday()) {
+            log.info("skipped Pakastin60MinSpotService update due to not having new data available yet");
+            return;
+        }
+
+        final var stringHttpResponse = runQuery(createQuery(getStartOfDay(2020, 1, 1), Instant.now().plus(10, ChronoUnit.DAYS), url_60min));
+        try {
+            log.info("Pakastin60MinSpotService Writing file: " + Paths.get(pakastin60MinFile).getFileName());
+            Files.write(Paths.get(pakastin60MinFile), stringHttpResponse.body().getBytes());
+        } catch (IOException e) {
+            log.error("Pakastin60MinSpotService Error writing to file", e);
+        }
+        log.info("Pakastin60MinSpotService has been updated " + ++updated_60min + " times.");
+        updateSpotData_60min();
+    }
+
 
 }
