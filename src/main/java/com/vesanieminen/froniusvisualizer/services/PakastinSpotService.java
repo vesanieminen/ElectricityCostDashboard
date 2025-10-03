@@ -22,7 +22,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.hasBeenUpdatedSuccessfullyToday;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.hasBeenUpdatedSuccessfullyToday_60min;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.hasBeenUpdatedSuccessfullyYesterday;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.hasBeenUpdatedSuccessfullyYesterday_60min;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.updateSpotData;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.updateSpotData_60min;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiZoneID;
@@ -134,11 +136,11 @@ public class PakastinSpotService {
     }
 
     public static void getHistoricalSpotPrices_HourlyPrecision() {
-        if (hasBeenUpdatedSuccessfullyToday()) {
+        if (hasBeenUpdatedSuccessfullyToday_60min()) {
             log.info("skipped Pakastin60MinSpotService update due to having been updated successfully today already");
             return;
         }
-        if (!isAfter_13_45(ZonedDateTime.now(fiZoneID)) && hasBeenUpdatedSuccessfullyYesterday()) {
+        if (!isAfter_13_45(ZonedDateTime.now(fiZoneID)) && hasBeenUpdatedSuccessfullyYesterday_60min()) {
             log.info("skipped Pakastin60MinSpotService update due to not having new data available yet");
             return;
         }

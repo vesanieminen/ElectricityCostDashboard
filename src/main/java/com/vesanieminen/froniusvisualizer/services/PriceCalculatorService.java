@@ -7,7 +7,9 @@ import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -401,9 +403,20 @@ public class PriceCalculatorService {
         return fingridConsumptionData.keySet().stream().filter(spotData::containsKey).map(item -> (spotData.get(item) + margin) * fingridConsumptionData.get(item)).reduce(0d, Double::sum) / 100;
     }
 
-    public static SpotCalculation calculateSpotElectricityPriceDetails(LinkedHashMap<Instant, Double> fingridConsumptionData, double margin, boolean vat) {
+    public static SpotCalculation calculateSpotElectricityPriceDetails(LinkedHashMap<Instant, Double> fingridConsumptionData, double margin, boolean vat, boolean isQuarterlyPricesEnabled) {
         final var spotData = getSpotData();
-        final var spotCalculation = fingridConsumptionData.keySet().stream().filter(spotData::containsKey)
+        final var spotCalculation = calculateSpotCosts(fingridConsumptionData, margin, vat, spotData);
+        final var count = fingridConsumptionData.keySet().stream().filter(spotData::containsKey).count();
+        spotCalculation.averagePrice = spotCalculation.totalSpotPrice / count;
+        spotCalculation.averagePriceWithoutMargin = spotCalculation.totalSpotPriceWithoutMargin / count;
+        spotCalculation.totalCost = spotCalculation.totalCost / 100;
+        spotCalculation.totalCostWithoutMargin = spotCalculation.totalCostWithoutMargin / 100;
+        divide(spotCalculation.spotAveragePerHour, count / 24.0);
+        return spotCalculation;
+    }
+
+    private static @NotNull SpotCalculation calculateSpotCosts(LinkedHashMap<Instant, Double> fingridConsumptionData, double margin, boolean vat, LinkedHashMap<Instant, Double> spotData) {
+        return fingridConsumptionData.keySet().stream().filter(spotData::containsKey)
                 .map(item -> new SpotCalculation(
                         spotData.get(item) * getVAT(item, vat) + margin,
                         spotData.get(item) * getVAT(item, vat),
@@ -442,16 +455,16 @@ public class PriceCalculatorService {
                         sum(i1.costHoursWithoutMargin, i2.costHoursWithoutMargin),
                         sum(i1.spotAveragePerHour, i2.spotAveragePerHour)
                 ));
-        final var count = fingridConsumptionData.keySet().stream().filter(spotData::containsKey).count();
-        spotCalculation.averagePrice = spotCalculation.totalSpotPrice / count;
-        spotCalculation.averagePriceWithoutMargin = spotCalculation.totalSpotPriceWithoutMargin / count;
-        spotCalculation.totalCost = spotCalculation.totalCost / 100;
-        spotCalculation.totalCostWithoutMargin = spotCalculation.totalCostWithoutMargin / 100;
-        divide(spotCalculation.spotAveragePerHour, count / 24.0);
-        return spotCalculation;
     }
 
-    public static HashMap<YearMonth, SpotCalculation> calculateSpotElectricityPriceDetailsPerMonth(LinkedHashMap<Instant, Double> fingridConsumptionData, double margin, boolean vat, Instant start, Instant end) {
+    public static boolean isConsumptionDataQuarterlyPrecision(LinkedHashMap<Instant, Double> fingridConsumptionData) {
+        if (fingridConsumptionData == null || fingridConsumptionData.isEmpty()) {
+            return false;
+        }
+        return fingridConsumptionData.keySet().stream().anyMatch(item -> item.atZone(fiZoneID).getMinute() != 0);
+    }
+
+    public static HashMap<YearMonth, SpotCalculation> calculateSpotElectricityPriceDetailsPerMonth(LinkedHashMap<Instant, Double> fingridConsumptionData, double margin, boolean vat, Instant start, Instant end, boolean isQuarterlyPricesEnabled) {
 
         final var map = new HashMap<YearMonth, SpotCalculation>();
 
@@ -481,7 +494,7 @@ public class PriceCalculatorService {
                 spotCalculation = new SpotCalculation(0, 0, 0, 0, 0, monthStart, monthEnd);
             } else {
                 // Calculate SpotCalculation for the current month
-                spotCalculation = calculateSpotElectricityPriceDetails(monthConsumptionData, margin, vat);
+                spotCalculation = calculateSpotElectricityPriceDetails(monthConsumptionData, margin, vat, isQuarterlyPricesEnabled);
             }
 
             YearMonth yearMonth = YearMonth.from(current);
@@ -495,9 +508,9 @@ public class PriceCalculatorService {
         return map;
     }
 
-    public static SpotCalculation calculateSpotElectricityPriceDetails(LinkedHashMap<Instant, Double> fingridConsumptionData, double margin, boolean vat, Instant start, Instant end) throws IOException {
+    public static SpotCalculation calculateSpotElectricityPriceDetails(LinkedHashMap<Instant, Double> fingridConsumptionData, double margin, boolean vat, Instant start, Instant end, boolean isQuarterlyPriceEnabled) throws IOException {
         final LinkedHashMap<Instant, Double> filtered = getDateTimeRange(fingridConsumptionData, start, end);
-        return calculateSpotElectricityPriceDetails(filtered, margin, vat);
+        return calculateSpotElectricityPriceDetails(filtered, margin, vat, isQuarterlyPriceEnabled);
     }
 
     private static LinkedHashMap<Instant, Double> getDateTimeRange(LinkedHashMap<Instant, Double> fingridConsumptionData, Instant start, Instant end) {
@@ -647,10 +660,11 @@ public class PriceCalculatorService {
         public double averagePriceWithoutMargin;
         public Instant start;
         public Instant end;
-        public double[] consumptionHours = new double[24];
-        public double[] costHours = new double[24];
-        public double[] costHoursWithoutMargin = new double[24];
-        public double[] spotAveragePerHour = new double[24];
+        public double[] consumptionHours = new double[96];
+        public double[] costHours = new double[96];
+        public double[] costHoursWithoutMargin = new double[96];
+        public double[] spotAveragePerHour = new double[96];
+        public CalculationType calculationType;
 
         public SpotCalculation(double totalSpotPrice, double totalSpotPriceWithoutMargin, double totalCost, double totalCostWithoutMargin, double totalConsumption, Instant start, Instant end) {
             this.totalSpotPrice = totalSpotPrice;
@@ -695,6 +709,18 @@ public class PriceCalculatorService {
         }
     }
 
+    enum CalculationType {
+        SPOT_15_MIN,
+        SPOT_60_MIN
+    }
+
+    @Getter
+    @Setter
+    public static class SpotCalculations {
+        public SpotCalculation spot15Min;
+        public SpotCalculation spot60Min;
+    }
+
     public static boolean hasBeenUpdatedSuccessfullyToday() {
         if (spotPriceMap == null || spotDataEnd == null) {
             return false;
@@ -709,6 +735,22 @@ public class PriceCalculatorService {
             return false;
         }
         return spotDataEnd.atZone(nordpoolZoneID).getDayOfMonth() == ZonedDateTime.now(nordpoolZoneID).getDayOfMonth();
+    }
+
+    public static boolean hasBeenUpdatedSuccessfullyToday_60min() {
+        if (spotPriceMap_60min == null || spotDataEnd_60min == null) {
+            return false;
+        }
+        final var zonedDateTime = spotDataEnd_60min.atZone(nordpoolZoneID).truncatedTo(ChronoUnit.DAYS);
+        final var other = ZonedDateTime.now(nordpoolZoneID).truncatedTo(ChronoUnit.DAYS);
+        return zonedDateTime.isAfter(other);
+    }
+
+    public static boolean hasBeenUpdatedSuccessfullyYesterday_60min() {
+        if (spotPriceMap_60min == null || spotDataEnd_60min == null) {
+            return false;
+        }
+        return spotDataEnd_60min.atZone(nordpoolZoneID).getDayOfMonth() == ZonedDateTime.now(nordpoolZoneID).getDayOfMonth();
     }
 
     public static averageMinMax getHourlyAveragePrices(Instant start, Instant end, boolean vat) {

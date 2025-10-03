@@ -141,7 +141,7 @@ public class RestService {
             consumptionData.put(instant, entry.getValue());
         }
 
-        var result = calculateSpotElectricityPriceDetails(consumptionData, request.getMargin(), request.isVat());
+        var result = calculateSpotElectricityPriceDetails(consumptionData, request.getMargin(), request.isVat(), false);
         final var totalCost = new BigDecimal(result.totalCost).setScale(2, RoundingMode.HALF_UP).doubleValue();
         final var weightedAverage = totalCost / result.totalConsumption * 100;
         return new CalculationResponse(result.totalCost, weightedAverage);

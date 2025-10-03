@@ -93,9 +93,6 @@ export class BarChartTemplateTimo extends LitElement {
                 //minPadding: 0,
                 min: this.min,
                 max: this.max,
-                //min: 1759438800000,
-                //max: 1759527900000,
-                //max: Date.UTC(2025, 10, 4),
             },
             yAxis: [{
                 title: {

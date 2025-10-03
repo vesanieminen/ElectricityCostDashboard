@@ -549,8 +549,8 @@ public class PriceCalculatorView extends Main {
                     }
                 }
                 final var consumptionData = getFingridUsageData(lastConsumptionData.getInputStream(), isQuarterlyPriceResolutionEnabled());
-                final var spotCalculation = calculateSpotElectricityPriceDetails(consumptionData.data(), spotMarginField.getValue(), isVATEnabled(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
-                final var yearMonthSpotCalculationHashMap = calculateSpotElectricityPriceDetailsPerMonth(consumptionData.data(), spotMarginField.getValue(), isVATEnabled(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                final var spotCalculation = calculateSpotElectricityPriceDetails(consumptionData.data(), spotMarginField.getValue(), isVATEnabled(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant(), isQuarterlyPriceResolutionEnabled());
+                final var yearMonthSpotCalculationHashMap = calculateSpotElectricityPriceDetailsPerMonth(consumptionData.data(), spotMarginField.getValue(), isVATEnabled(), fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant(), isQuarterlyPriceResolutionEnabled());
                 resultLayout.removeAll();
                 chartLayout.removeAll();
 
@@ -726,7 +726,7 @@ public class PriceCalculatorView extends Main {
 
                 if (isCalculatingProduction()) {
                     final var productionData = getFingridUsageData(lastProductionData.getInputStream(), isQuarterlyPriceResolutionEnabled());
-                    final var spotProductionCalculation = calculateSpotElectricityPriceDetails(productionData.data(), -spotProductionMarginField.getValue(), false, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    final var spotProductionCalculation = calculateSpotElectricityPriceDetails(productionData.data(), -spotProductionMarginField.getValue(), false, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant(), isQuarterlyPriceResolutionEnabled());
                     final Div productionDiv = addSection(resultLayout, getTranslation("Surplus production"));
 
                     productionDiv.add(new DoubleLabel(getTranslation("Surplus production over period"), numberFormat.format(spotProductionCalculation.totalConsumption) + " kWh", true));
@@ -832,7 +832,7 @@ public class PriceCalculatorView extends Main {
 
                 if (isCalculatingProduction()) {
                     final var productionData = getFingridUsageData(lastProductionData.getInputStream(), isQuarterlyPriceResolutionEnabled());
-                    final var spotProductionCalculation = calculateSpotElectricityPriceDetails(productionData.data(), -spotProductionMarginField.getValue(), false, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant());
+                    final var spotProductionCalculation = calculateSpotElectricityPriceDetails(productionData.data(), -spotProductionMarginField.getValue(), false, fromDateTimePicker.getValue().atZone(fiZoneID).toInstant(), toDateTimePicker.getValue().atZone(fiZoneID).toInstant(), isQuarterlyPriceResolutionEnabled());
                     // Create spot production chart
                     chartLayout.add(createChart(spotProductionCalculation, false, getTranslation("Production / value per hour"), "Production", "Production value"));
                 }
