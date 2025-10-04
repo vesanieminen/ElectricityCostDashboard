@@ -259,7 +259,7 @@ public class PriceCalculatorView extends Main {
         priceResolutionComboBox.setId("PriceCalculatorView.priceResolutionComboBox");
         priceResolutionComboBox.setItems(SettingsDialog.PriceResolution.values());
         priceResolutionComboBox.setItemLabelGenerator(item -> getTranslation(SettingsDialog.PriceResolution.QUARTER_RESOLUTION.equals(item) ? "quarter-resolution" : "hour-resolution"));
-        priceResolutionComboBox.setValue(SettingsDialog.PriceResolution.QUARTER_RESOLUTION);
+        priceResolutionComboBox.setValue(SettingsDialog.PriceResolution.HOUR_RESOLUTION);
         priceResolutionComboBox.setHelperText(getTranslation("calculator.price.resolution.helper"));
         priceResolutionComboBox.addValueChangeListener(item -> saveFieldValue(priceResolutionComboBox));
         content.add(priceResolutionComboBox);
