@@ -262,7 +262,7 @@ public class PriceCalculatorView extends Main {
         priceResolutionComboBox.setValue(SettingsDialog.PriceResolution.HOUR_RESOLUTION);
         priceResolutionComboBox.setHelperText(getTranslation("calculator.price.resolution.helper"));
         priceResolutionComboBox.addValueChangeListener(item -> saveFieldValue(priceResolutionComboBox));
-        content.add(priceResolutionComboBox);
+        //content.add(priceResolutionComboBox);
 
         vatComboBox = new ComboBox<>(getTranslation("calculator.vat.included"));
         vatComboBox.setId("PriceCalculatorView.vatComboBox");

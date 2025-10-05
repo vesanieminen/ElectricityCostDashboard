@@ -660,10 +660,10 @@ public class PriceCalculatorService {
         public double averagePriceWithoutMargin;
         public Instant start;
         public Instant end;
-        public double[] consumptionHours = new double[96];
-        public double[] costHours = new double[96];
-        public double[] costHoursWithoutMargin = new double[96];
-        public double[] spotAveragePerHour = new double[96];
+        public double[] consumptionHours = new double[24];
+        public double[] costHours = new double[24];
+        public double[] costHoursWithoutMargin = new double[24];
+        public double[] spotAveragePerHour = new double[24];
         public CalculationType calculationType;
 
         public SpotCalculation(double totalSpotPrice, double totalSpotPriceWithoutMargin, double totalCost, double totalCostWithoutMargin, double totalConsumption, Instant start, Instant end) {
