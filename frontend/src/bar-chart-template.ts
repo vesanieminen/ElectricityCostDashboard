@@ -67,6 +67,9 @@ export class BarChartTemplate extends LitElement {
         const minTime = this.values ? this.values[this.values?.length - 1].time : 0;
         const maxTime = minTime + maxDisplayRange; // Set maxTime to 2 days after the start of the data
         return {
+            scrollbar: {
+                enabled: true,
+            },
             navigator: {
                 adaptToUpdatedData: true,
                 enabled: true,

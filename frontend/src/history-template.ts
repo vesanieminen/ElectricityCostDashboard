@@ -47,6 +47,9 @@ export class HistoryTemplate extends LitElement {
 
     private getChartOptions(): Options {
         return {
+            scrollbar: {
+                enabled: true,
+            },
             rangeSelector: {
                 enabled: true,
                 verticalAlign: 'top',

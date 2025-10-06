@@ -224,8 +224,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         //    );
         //});
 
-        //chart.getConfiguration().getNavigator().setEnabled(false);
-        chart.getConfiguration().getScrollbar().setEnabled(false);
+        chart.getConfiguration().getScrollbar().setLiveRedraw(true);
         chart.getConfiguration().getLegend().setEnabled(true);
         chart.getConfiguration().getChart().setStyledMode(true);
         chart.setHeight("calc(100vh - 10rem)");

@@ -70,7 +70,8 @@ export class BarChartTemplateTimo extends LitElement {
                 type: "column",
                 animation: false,
                 //width: 672
-                //width: 385
+                //width: 386
+                //width: 414
             },
             legend: {
                 enabled: false
@@ -90,7 +91,6 @@ export class BarChartTemplateTimo extends LitElement {
                 labels: {
                     format: '{value:%k}'
                 },
-                //minPadding: 0,
                 min: this.min,
                 max: this.max,
             },
