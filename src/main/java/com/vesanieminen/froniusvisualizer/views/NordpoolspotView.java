@@ -347,6 +347,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
             pricePredictionSeries.add(new DataSeriesItem(hourPrice.timestamp() + 45 * 60 * 1000, hourPrice.price()));
         }
         final var plotOptionsLineSpot = new PlotOptionsLine();
+        plotOptionsLineSpot.setShowInNavigator(true);
         plotOptionsLineSpot.setClassName("price-prediction");
         plotOptionsLineSpot.setAnimation(false);
         plotOptionsLineSpot.setStickyTracking(true);
