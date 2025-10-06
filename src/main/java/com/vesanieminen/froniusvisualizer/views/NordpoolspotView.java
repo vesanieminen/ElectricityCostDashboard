@@ -273,10 +273,10 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
 
         final var rangeSelector = new RangeSelector();
         rangeSelector.setButtons(
-                new RangeSelectorButton(RangeSelectorTimespan.DAY, 2, getTranslation("1d")),
-                new RangeSelectorButton(RangeSelectorTimespan.DAY, 3, getTranslation("2d")),
-                new RangeSelectorButton(RangeSelectorTimespan.DAY, 4, getTranslation("3d")),
-                new RangeSelectorButton(RangeSelectorTimespan.DAY, 6, getTranslation("5d")),
+                new RangeSelectorButton(RangeSelectorTimespan.DAY, 3, getTranslation("1d")),
+                new RangeSelectorButton(RangeSelectorTimespan.DAY, 4, getTranslation("2d")),
+                new RangeSelectorButton(RangeSelectorTimespan.DAY, 5, getTranslation("3d")),
+                new RangeSelectorButton(RangeSelectorTimespan.DAY, 7, getTranslation("5d")),
                 new RangeSelectorButton(RangeSelectorTimespan.ALL, getTranslation("7d"))
         );
         rangeSelector.setButtonSpacing(12);
