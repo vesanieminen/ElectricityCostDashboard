@@ -69,6 +69,7 @@ export class BarChartTemplate extends LitElement {
         return {
             scrollbar: {
                 enabled: true,
+                liveRedraw: true,
             },
             navigator: {
                 adaptToUpdatedData: true,

@@ -49,6 +49,7 @@ export class HistoryTemplate extends LitElement {
         return {
             scrollbar: {
                 enabled: true,
+                liveRedraw: true,
             },
             rangeSelector: {
                 enabled: true,
