@@ -99,6 +99,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
     private boolean isInitialRender = true;
     private int screenWidth;
     private DataSeries pricePredictionSeries;
+    private PlotOptionsLine pricePredictionPlotOptions;
 
     public NordpoolspotView() {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.CENTER);
@@ -155,6 +156,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
                 price.getLabels().setFormatter(null);
                 conf.getyAxis(2).setVisible(false);
                 pricePredictionSeries.setVisible(false);
+                pricePredictionPlotOptions.setShowInNavigator(false);
             }
             if (screenWidth < 600) {
                 conf.getRangeSelector().setSelected(1);
@@ -270,19 +272,7 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
 
         pricePredictionSeries = addPredictionPrices(chart);
 
-        final var rangeSelector = new RangeSelector();
-        rangeSelector.setButtons(
-                new RangeSelectorButton(RangeSelectorTimespan.DAY, 3, getTranslation("1d")),
-                new RangeSelectorButton(RangeSelectorTimespan.DAY, 4, getTranslation("2d")),
-                new RangeSelectorButton(RangeSelectorTimespan.DAY, 5, getTranslation("3d")),
-                new RangeSelectorButton(RangeSelectorTimespan.DAY, 7, getTranslation("5d")),
-                new RangeSelectorButton(RangeSelectorTimespan.ALL, getTranslation("7d"))
-        );
-        rangeSelector.setButtonSpacing(12);
-        rangeSelector.setSelected(isTouchDevice ? 2 : 4);
-        chart.getConfiguration().setRangeSelector(rangeSelector);
-        rangeSelector.setEnabled(true);
-        rangeSelector.setInputEnabled(true);
+        configureRangeSelector(chart);
 
         setTouchDeviceConfiguration(chart, chart.getConfiguration());
 
@@ -311,9 +301,24 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
         sahkovatkainSpan.addClassNames(LumoUtility.Display.FLEX, LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL, LumoUtility.Gap.XSMALL);
         add(sahkovatkainSpan);
 
-
         chart.drawChart();
         return chart;
+    }
+
+    private void configureRangeSelector(Chart chart) {
+        final var rangeSelector = new RangeSelector();
+        rangeSelector.setButtons(
+                new RangeSelectorButton(RangeSelectorTimespan.DAY, 3, getTranslation("1d")),
+                new RangeSelectorButton(RangeSelectorTimespan.DAY, 4, getTranslation("2d")),
+                new RangeSelectorButton(RangeSelectorTimespan.DAY, 5, getTranslation("3d")),
+                new RangeSelectorButton(RangeSelectorTimespan.DAY, 7, getTranslation("5d")),
+                new RangeSelectorButton(RangeSelectorTimespan.ALL, getTranslation("7d"))
+        );
+        rangeSelector.setButtonSpacing(12);
+        rangeSelector.setSelected(isTouchDevice ? 2 : 4);
+        chart.getConfiguration().setRangeSelector(rangeSelector);
+        rangeSelector.setEnabled(true);
+        rangeSelector.setInputEnabled(true);
     }
 
     private DataSeries addPredictionPrices(Chart chart) {
@@ -345,12 +350,12 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
             pricePredictionSeries.add(new DataSeriesItem(hourPrice.timestamp() + 30 * 60 * 1000, hourPrice.price()));
             pricePredictionSeries.add(new DataSeriesItem(hourPrice.timestamp() + 45 * 60 * 1000, hourPrice.price()));
         }
-        final var plotOptionsLineSpot = new PlotOptionsLine();
-        plotOptionsLineSpot.setShowInNavigator(true);
-        plotOptionsLineSpot.setClassName("price-prediction");
-        plotOptionsLineSpot.setAnimation(false);
-        plotOptionsLineSpot.setStickyTracking(true);
-        plotOptionsLineSpot.setMarker(new Marker(false));
+        pricePredictionPlotOptions = new PlotOptionsLine();
+        pricePredictionPlotOptions.setShowInNavigator(true);
+        pricePredictionPlotOptions.setClassName("price-prediction");
+        pricePredictionPlotOptions.setAnimation(false);
+        pricePredictionPlotOptions.setStickyTracking(true);
+        pricePredictionPlotOptions.setMarker(new Marker(false));
         final var seriesTooltipSpot = new SeriesTooltip();
         seriesTooltipSpot.setValueDecimals(2);
         seriesTooltipSpot.setValueSuffix(" " + getTranslation("c/kWh"));
@@ -364,8 +369,8 @@ public class NordpoolspotView extends Main implements HasUrlParameter<String> {
                         "}"
         );
         seriesTooltipSpot.setDateTimeLabelFormats(dateTimeLabelFormats);
-        plotOptionsLineSpot.setTooltip(seriesTooltipSpot);
-        pricePredictionSeries.setPlotOptions(plotOptionsLineSpot);
+        pricePredictionPlotOptions.setTooltip(seriesTooltipSpot);
+        pricePredictionSeries.setPlotOptions(pricePredictionPlotOptions);
         chart.getConfiguration().addSeries(pricePredictionSeries);
         return pricePredictionSeries;
     }
