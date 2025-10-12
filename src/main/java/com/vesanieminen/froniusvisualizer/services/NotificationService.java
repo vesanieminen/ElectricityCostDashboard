@@ -60,7 +60,11 @@ public class NotificationService {
     @PostConstruct
     private void init() throws GeneralSecurityException {
         Security.addProvider(new BouncyCastleProvider());
-        pushService = new PushService(publicKey, privateKey, subject);
+        if(!privateKey.isEmpty()) {
+            pushService = new PushService(publicKey, privateKey, subject);
+        } else {
+            log.warn("No VAPID keys found, notifications disabled");
+        }
     }
 
     public List<PriceNotification> listNotifications(UUID userId) {
