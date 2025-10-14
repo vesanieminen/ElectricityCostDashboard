@@ -183,7 +183,7 @@ export class BarChartTemplate extends LitElement {
             plotOptions: {
                 column: {
                     borderRadius: 5,
-                    grouping: true,
+                    grouping: false,
                 },
                 series: {
                     states: {
@@ -225,28 +225,22 @@ export class BarChartTemplate extends LitElement {
                         y: item.time > 1725138000000 ? item.price * 1.255 : item.price * 1.24,
                         className: item.time > Number(this.predictionTimestamp) ? "prediction" : "price"
                     })),
-                    pointPadding: 0.02,   // more space from neighbor series
-                    groupPadding: 0.00,   // keep groups tight on the axis
-
-                    //pointPadding: 0,
-                    borderRadius: 0
-                    //{pointPadding: 0, groupPadding: 0, borderRadius: 0
+                    //pointPadding: 0.02,   // more space from neighbor series
+                    //groupPadding: 0.00,   // keep groups tight on the axis
+                    borderRadius: 0,
                 },
                 {
                     name: this.seriesTitle2,
                     type: "column",
                     pointRange: 3600 * 1000, // 1 hour resolution
+                    pointPlacement: 0.4, // shift right
                     data: this.values2!.map(item => ({
                         x: item.time,
                         y: item.price,
                         className: "prediction"
                     })),
-                    //pointWidth: 16,
-                    //borderWidth: 6,
-                    pointPadding: 0.0,   // more space from neighbor series
-                    groupPadding: 0.05   // keep groups tight on the axis
-
-                    //borderRadius: 0
+                    //pointPadding: 0.0,   // more space from neighbor series
+                    //groupPadding: 1   // keep groups tight on the axis
                 }
             ],
         };
