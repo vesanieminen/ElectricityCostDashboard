@@ -61,6 +61,9 @@ export class BarChartTemplate extends LitElement {
     @property()
     values2?: Array<Nordpool>;
 
+    @property()
+    is15MinResolution: boolean = true;
+
     private getChartOptions(): Options {
         const extraDay = 24 * 60 * 60 * 1000; // One day in milliseconds
         const maxDisplayRange = extraDay * (12 / 24);
@@ -225,22 +228,18 @@ export class BarChartTemplate extends LitElement {
                         y: item.time > 1725138000000 ? item.price * 1.255 : item.price * 1.24,
                         className: item.time > Number(this.predictionTimestamp) ? "prediction" : "price"
                     })),
-                    //pointPadding: 0.02,   // more space from neighbor series
-                    //groupPadding: 0.00,   // keep groups tight on the axis
-                    borderRadius: 0,
+                    borderRadius: this.is15MinResolution ? 0 : 5,
                 },
                 {
                     name: this.seriesTitle2,
                     type: "column",
                     pointRange: 3600 * 1000, // 1 hour resolution
-                    pointPlacement: 0.4, // shift right
+                    pointPlacement: this.is15MinResolution ? 0.4 : 0, // shift right
                     data: this.values2!.map(item => ({
                         x: item.time,
                         y: item.price,
                         className: "prediction"
                     })),
-                    //pointPadding: 0.0,   // more space from neighbor series
-                    //groupPadding: 1   // keep groups tight on the axis
                 }
             ],
         };

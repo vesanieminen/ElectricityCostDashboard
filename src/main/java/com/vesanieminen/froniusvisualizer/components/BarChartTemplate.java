@@ -34,6 +34,7 @@ public class BarChartTemplate extends Component {
     private static final PropertyDescriptor<Integer, Integer> CURRENT_HOUR = PropertyDescriptors.propertyWithDefault("currentHour", 0);
     private static final PropertyDescriptor<String, String> LANGUAGE = PropertyDescriptors.propertyWithDefault("language", "en");
     private static final PropertyDescriptor<String, String> PREDICTION_TIMESTAMP = PropertyDescriptors.propertyWithDefault("predictionTimestamp", "" + Integer.MAX_VALUE);
+    private static final PropertyDescriptor<Boolean, Boolean> IS_15_MIN_RESOLUTION = PropertyDescriptors.propertyWithDefault("is15MinResolution", true);
     private final SettingsDialog.SettingsState settingsState;
 
     public BarChartTemplate(SettingsDialog.SettingsState settingsState) {
@@ -50,6 +51,7 @@ public class BarChartTemplate extends Component {
         set(UNIT, getTranslation("column-chart.series.unit"));
         set(POST_FIX, getTranslation("c/kWh"));
         set(AVERAGE_TEXT, getTranslation("column-chart.month.average"));
+        set(IS_15_MIN_RESOLUTION, is15MinPrice(settingsState));
 
         //var data = getLatest7DaysList();
         //final var nordpoolPrices = new ArrayList<>(data);
