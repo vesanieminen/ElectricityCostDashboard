@@ -155,8 +155,6 @@ public class PriceCalculatorView extends Main {
     public PriceCalculatorView() {
         addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Margin.Top.MEDIUM);
 
-        //Notification.show(getTranslation("ENTSO-E.warning"), 10000, Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_WARNING);
-
         final Div wrapper = createWrapper();
 
         final var content = new Div();
@@ -171,13 +169,16 @@ public class PriceCalculatorView extends Main {
         final var spotAverageThisYear = new DoubleLabel(getTranslation("Spot average this year"), numberFormat.format(spotAverage) + " " + getTranslation("c/kWh"));
         spotAverageThisYear.setAlignLeft();
 
+        final var warning = new Span(getTranslation("price.calculator.15min.warning"));
+        warning.addClassNames(LumoUtility.TextColor.ERROR);
+
         final var spotAverageMonth = PriceCalculatorService.calculateSpotAveragePriceThisMonth();
         final var spotAverageThisMonth = new DoubleLabel(getTranslation("Spot average this month"), numberFormat.format(spotAverageMonth) + " " + getTranslation("c/kWh"));
         spotAverageThisMonth.setAlignLeft();
         final var spotDateRange = new DoubleLabel(getTranslation("calculator.spot.prices.available"), format(spotDataStart, getLocale()) + " - " + format(spotDataEnd, getLocale()));
         spotDateRange.setAlignLeft();
 
-        final var topDiv = new Div(title, spotAverageThisYear, spotAverageThisMonth, spotDateRange);
+        final var topDiv = new Div(title, warning, spotAverageThisYear, spotAverageThisMonth, spotDateRange);
         topDiv.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN);
 
         topRowDiv = new Div(topDiv);
