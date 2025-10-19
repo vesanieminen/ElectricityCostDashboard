@@ -170,7 +170,7 @@ public class PriceCalculatorView extends Main {
         spotAverageThisYear.setAlignLeft();
 
         final var warning = new Span(getTranslation("price.calculator.15min.warning"));
-        warning.addClassNames(LumoUtility.TextColor.ERROR);
+        warning.addClassNames(LumoUtility.TextColor.WARNING);
 
         final var spotAverageMonth = PriceCalculatorService.calculateSpotAveragePriceThisMonth();
         final var spotAverageThisMonth = new DoubleLabel(getTranslation("Spot average this month"), numberFormat.format(spotAverageMonth) + " " + getTranslation("c/kWh"));
