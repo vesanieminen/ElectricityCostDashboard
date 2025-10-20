@@ -262,6 +262,25 @@ public class PriceCalculatorService {
     public record FingridUsageData(LinkedHashMap<Instant, Double> data, Instant start, Instant end) {
     }
 
+    public static boolean is15MinResolution(InputStream inputStream) throws IOException, ParseException, CsvValidationException {
+        final var reader = new InputStreamReader(inputStream);
+        CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
+        CSVReader csvReader = new CSVReaderBuilder(reader)
+                .withSkipLines(0)
+                .withCSVParser(parser)
+                .build();
+
+        String[] header = csvReader.readNext();
+
+        String[] line;
+        while ((line = csvReader.readNext()) != null) {
+            if ("PT15M".equals(line[2])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static double calculateSpotAveragePrice(LinkedHashMap<LocalDateTime, Double> spotData) {
         return spotData.values().stream().reduce(0d, Double::sum) / spotData.values().size();
     }

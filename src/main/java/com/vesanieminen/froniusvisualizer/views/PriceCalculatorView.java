@@ -100,6 +100,7 @@ import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotElectricityPriceDetails;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.calculateSpotElectricityPriceDetailsPerMonth;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.getFingridUsageData;
+import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.is15MinResolution;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataEnd;
 import static com.vesanieminen.froniusvisualizer.services.PriceCalculatorService.spotDataStart;
 import static com.vesanieminen.froniusvisualizer.util.Utils.calculateMonthsInvolved;
@@ -256,15 +257,6 @@ public class PriceCalculatorView extends Main {
         content.add(fromDateTimePicker);
         content.add(toDateTimePicker);
 
-        priceResolutionComboBox = new ComboBox<>(getTranslation("calculator.price.resolution"));
-        priceResolutionComboBox.setId("PriceCalculatorView.priceResolutionComboBox");
-        priceResolutionComboBox.setItems(SettingsDialog.PriceResolution.values());
-        priceResolutionComboBox.setItemLabelGenerator(item -> getTranslation(SettingsDialog.PriceResolution.QUARTER_RESOLUTION.equals(item) ? "quarter-resolution" : "hour-resolution"));
-        priceResolutionComboBox.setValue(SettingsDialog.PriceResolution.HOUR_RESOLUTION);
-        priceResolutionComboBox.setHelperText(getTranslation("calculator.price.resolution.helper"));
-        priceResolutionComboBox.addValueChangeListener(item -> saveFieldValue(priceResolutionComboBox));
-        //content.add(priceResolutionComboBox);
-
         vatComboBox = new ComboBox<>(getTranslation("calculator.vat.included"));
         vatComboBox.setId("PriceCalculatorView.vatComboBox");
         vatComboBox.setItems(NordpoolspotView.VAT.values());
@@ -273,6 +265,15 @@ public class PriceCalculatorView extends Main {
         vatComboBox.setHelperText(getTranslation("calculator.vat.placeholder"));
         vatComboBox.addValueChangeListener(item -> saveFieldValue(vatComboBox));
         content.add(vatComboBox);
+
+        priceResolutionComboBox = new ComboBox<>(getTranslation("calculator.price.resolution"));
+        priceResolutionComboBox.setId("PriceCalculatorView.priceResolutionComboBox");
+        priceResolutionComboBox.setItems(SettingsDialog.PriceResolution.values());
+        priceResolutionComboBox.setItemLabelGenerator(item -> getTranslation(SettingsDialog.PriceResolution.QUARTER_RESOLUTION.equals(item) ? "quarter-resolution" : "hour-resolution"));
+        priceResolutionComboBox.setValue(SettingsDialog.PriceResolution.HOUR_RESOLUTION);
+        priceResolutionComboBox.setHelperText(getTranslation("calculator.price.resolution.helper"));
+        priceResolutionComboBox.addValueChangeListener(item -> saveFieldValue(priceResolutionComboBox));
+        content.add(priceResolutionComboBox);
 
         if (fiLocale.equals(getLocale())) {
             var finnishI18n = new DatePicker.DatePickerI18n();
@@ -489,7 +490,7 @@ public class PriceCalculatorView extends Main {
             updateCalculateButtonState();
             saveCheckboxGroupValues();
         });
-        fields = Arrays.asList(fromDateTimePicker, toDateTimePicker, fixedPriceField, spotMarginField, transferDiv, nightTransferDiv, spotProductionMarginField, taxClassSelect, lockedPriceField, baasDiv);
+        fields = Arrays.asList(fromDateTimePicker, toDateTimePicker, fixedPriceField, spotMarginField, transferDiv, nightTransferDiv, spotProductionMarginField, taxClassSelect, lockedPriceField, baasDiv, priceResolutionComboBox);
 
         calculateButton = new Button(getTranslation("Calculate costs"), e -> {
             try {
@@ -1290,6 +1291,13 @@ public class PriceCalculatorView extends Main {
 
                 updateCalculateButtonState();
                 setFieldsEnabled(true);
+                final var isConsumptionData15MinResolution = is15MinResolution(lastConsumptionData.getInputStream());
+                if (!isConsumptionData15MinResolution) {
+                    priceResolutionComboBox.setValue(SettingsDialog.PriceResolution.HOUR_RESOLUTION);
+                    priceResolutionComboBox.setReadOnly(true);
+                } else {
+                    priceResolutionComboBox.setReadOnly(false);
+                }
             } catch (IOException | ParseException | CsvValidationException e) {
                 throw new RuntimeException(e);
             }
