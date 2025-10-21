@@ -273,7 +273,7 @@ public class PriceCalculatorView extends Main {
         priceResolutionComboBox.setValue(SettingsDialog.PriceResolution.HOUR_RESOLUTION);
         priceResolutionComboBox.setHelperText(getTranslation("calculator.price.resolution.helper"));
         priceResolutionComboBox.addValueChangeListener(item -> saveFieldValue(priceResolutionComboBox));
-        content.add(priceResolutionComboBox);
+        //content.add(priceResolutionComboBox);
 
         if (fiLocale.equals(getLocale())) {
             var finnishI18n = new DatePicker.DatePickerI18n();

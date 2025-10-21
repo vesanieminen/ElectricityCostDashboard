@@ -423,6 +423,7 @@ public class PriceCalculatorService {
     }
 
     public static SpotCalculation calculateSpotElectricityPriceDetails(LinkedHashMap<Instant, Double> fingridConsumptionData, double margin, boolean vat, boolean isQuarterlyPricesEnabled) {
+        //final var spotData = isQuarterlyPricesEnabled ? getSpotData() : getSpotData_60min();
         final var spotData = getSpotData_60min();
         final var spotCalculation = calculateSpotCosts(fingridConsumptionData, margin, vat, spotData);
         final var count = fingridConsumptionData.keySet().stream().filter(spotData::containsKey).count();
