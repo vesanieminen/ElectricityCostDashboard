@@ -71,6 +71,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -272,8 +273,11 @@ public class PriceCalculatorView extends Main {
         priceResolutionComboBox.setItemLabelGenerator(item -> getTranslation(SettingsDialog.PriceResolution.QUARTER_RESOLUTION.equals(item) ? "quarter-resolution" : "hour-resolution"));
         priceResolutionComboBox.setValue(SettingsDialog.PriceResolution.HOUR_RESOLUTION);
         priceResolutionComboBox.setHelperText(getTranslation("calculator.price.resolution.helper"));
-        priceResolutionComboBox.addValueChangeListener(item -> saveFieldValue(priceResolutionComboBox));
-        //content.add(priceResolutionComboBox);
+        priceResolutionComboBox.addValueChangeListener(item -> {
+            saveFieldValue(priceResolutionComboBox);
+            updateDateTimePickerResolution();
+        });
+        content.add(priceResolutionComboBox);
 
         if (fiLocale.equals(getLocale())) {
             var finnishI18n = new DatePicker.DatePickerI18n();
@@ -588,6 +592,7 @@ public class PriceCalculatorView extends Main {
                 final var spotDifferenceSpan = createCostEffectSpan(costEffectFormatted);
                 overviewDiv.add(spotDifferenceSpan);
                 overviewDiv.add(new DoubleLabel(getTranslation("calculator.vat.included"), NordpoolspotView.VAT.VAT.equals(vatComboBox.getValue()) ? getTranslation("calculator.vat.with") : getTranslation("calculator.vat.without"), true));
+                overviewDiv.add(new DoubleLabel(getTranslation("calculator.price.resolution"), SettingsDialog.PriceResolution.QUARTER_RESOLUTION.equals(priceResolutionComboBox.getValue()) ? getTranslation("quarter-resolution") : getTranslation("hour-resolution"), true));
 
                 final var summaryDTO = new SummaryDTO();
 
@@ -854,6 +859,11 @@ public class PriceCalculatorView extends Main {
         content.add(calculateButton);
         add(resultLayout);
         add(chartLayout);
+    }
+
+    private void updateDateTimePickerResolution() {
+        fromDateTimePicker.setStep(isQuarterlyPriceResolutionEnabled() ? Duration.ofMinutes(15) : Duration.ofHours(1));
+        toDateTimePicker.setStep(isQuarterlyPriceResolutionEnabled() ? Duration.ofMinutes(15) : Duration.ofHours(1));
     }
 
     private boolean isVATEnabled() {
