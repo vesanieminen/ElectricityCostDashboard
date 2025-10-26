@@ -169,7 +169,6 @@ public class UtilsTest {
     }
 
     @Test
-    @Disabled
     public void testQuarterPricesAndConsumption() throws IOException, ParseException, CsvValidationException {
         var consumptionFile = Files.newInputStream(Paths.get("src/main/resources/META-INF/resources/data/quarter-consumption-test.csv"));
         final var fingridConsumptionFile = getFingridUsageData(consumptionFile, true);

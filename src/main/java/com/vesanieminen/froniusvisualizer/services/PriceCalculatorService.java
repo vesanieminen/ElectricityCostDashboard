@@ -47,6 +47,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.isBetweenHours;
 import static com.vesanieminen.froniusvisualizer.util.Utils.isBetweenNovAndMar;
 import static com.vesanieminen.froniusvisualizer.util.Utils.isMondayToSaturday;
 import static com.vesanieminen.froniusvisualizer.util.Utils.monthFilter;
+import static com.vesanieminen.froniusvisualizer.util.Utils.multiply;
 import static com.vesanieminen.froniusvisualizer.util.Utils.nordpoolZoneID;
 import static com.vesanieminen.froniusvisualizer.util.Utils.numberFormat;
 import static com.vesanieminen.froniusvisualizer.util.Utils.sum;
@@ -424,13 +425,61 @@ public class PriceCalculatorService {
 
     public static SpotCalculation calculateSpotElectricityPriceDetails(LinkedHashMap<Instant, Double> fingridConsumptionData, double margin, boolean vat, boolean isQuarterlyPricesEnabled) {
         final var spotData = isQuarterlyPricesEnabled ? getSpotData() : getSpotData_60min();
+
+        if (isQuarterlyPricesEnabled && fingridConsumptionData.containsKey(quarterPriceInstant)) {
+            return splitAndCalculate(fingridConsumptionData, margin, vat, spotData);
+        } else {
+            return doCalculationByHour(fingridConsumptionData, margin, vat, spotData);
+        }
+    }
+
+    private static @NotNull SpotCalculation splitAndCalculate(LinkedHashMap<Instant, Double> fingridConsumptionData, double margin, boolean vat, LinkedHashMap<Instant, Double> spotData) {
+        // Calculate consumption data with 1 hour resolution prior to 1.10.2025 0:00
+        final var oneHourConsumptionData = getDateTimeRange(fingridConsumptionData, fingridConsumptionData.firstEntry().getKey(), quarterPriceInstant.minusSeconds(60));
+        final var oneHourSpotCalculation = doCalculationByHour(oneHourConsumptionData, margin, vat, spotData);
+
+        // Calculate consumption data with 15 min resolution starting from 1.10.2025 0:00
+        final var fifteenMinuteConsumptionData = getDateTimeRange(fingridConsumptionData, quarterPriceInstant, fingridConsumptionData.lastEntry().getKey());
+        final var fifteenMinuteSpotCalculation = doCalculationByHour(fifteenMinuteConsumptionData, margin, vat, spotData);
+
+        final var spotCalculation = combineSpotCalculation(oneHourSpotCalculation, fifteenMinuteSpotCalculation);
+        final var count = oneHourSpotCalculation.n + fifteenMinuteSpotCalculation.n / 4;
+        spotCalculation.averagePrice = (oneHourSpotCalculation.averagePrice * oneHourSpotCalculation.n + fifteenMinuteSpotCalculation.averagePrice * fifteenMinuteSpotCalculation.n / 4) / count;
+        spotCalculation.averagePriceWithoutMargin = (oneHourSpotCalculation.averagePriceWithoutMargin * oneHourSpotCalculation.n + fifteenMinuteSpotCalculation.averagePriceWithoutMargin * fifteenMinuteSpotCalculation.n / 4) / count;
+
+        final var spotAveragePerHour = sum(multiply(oneHourSpotCalculation.spotAveragePerHour, oneHourSpotCalculation.n / 24.0), multiply(fifteenMinuteSpotCalculation.spotAveragePerHour, (fifteenMinuteSpotCalculation.n / 4.0) / 24.0));
+        divide(spotAveragePerHour, count / 24.0);
+        spotCalculation.spotAveragePerHour = spotAveragePerHour;
+
+        return spotCalculation;
+    }
+
+    private static SpotCalculation combineSpotCalculation(SpotCalculation i1, SpotCalculation i2) {
+        return new SpotCalculation(
+                i1.totalSpotPrice + i2.totalSpotPrice,
+                i1.totalSpotPriceWithoutMargin + i2.totalSpotPriceWithoutMargin,
+                i1.totalCost + i2.totalCost,
+                i1.totalCostWithoutMargin + i2.totalCostWithoutMargin,
+                i1.totalConsumption + i2.totalConsumption,
+                i1.start.compareTo(i2.start) < 0 ? i1.start : i2.start,
+                i1.end.compareTo(i2.end) > 0 ? i1.end : i2.end,
+                sum(i1.consumptionHours, i2.consumptionHours),
+                sum(i1.costHours, i2.costHours),
+                sum(i1.costHoursWithoutMargin, i2.costHoursWithoutMargin),
+                sum(i1.spotAveragePerHour, i2.spotAveragePerHour),
+                i1.n + i2.n
+        );
+    }
+
+    private static @NotNull SpotCalculation doCalculationByHour(LinkedHashMap<Instant, Double> fingridConsumptionData, double margin, boolean vat, LinkedHashMap<Instant, Double> spotData) {
         final var spotCalculation = calculateSpotCosts(fingridConsumptionData, margin, vat, spotData);
         final var count = fingridConsumptionData.keySet().stream().filter(spotData::containsKey).count();
-        spotCalculation.averagePrice = spotCalculation.totalSpotPrice / count;
-        spotCalculation.averagePriceWithoutMargin = spotCalculation.totalSpotPriceWithoutMargin / count;
+        final var countOrOne = count == 0 ? 1 : count;
+        spotCalculation.averagePrice = spotCalculation.totalSpotPrice / countOrOne;
+        spotCalculation.averagePriceWithoutMargin = spotCalculation.totalSpotPriceWithoutMargin / countOrOne;
         spotCalculation.totalCost = spotCalculation.totalCost / 100;
         spotCalculation.totalCostWithoutMargin = spotCalculation.totalCostWithoutMargin / 100;
-        divide(spotCalculation.spotAveragePerHour, count / 24.0);
+        divide(spotCalculation.spotAveragePerHour, countOrOne / 24.0);
         return spotCalculation;
     }
 
@@ -447,7 +496,8 @@ public class PriceCalculatorService {
                         new HourValue(item.atZone(fiZoneID).getHour(), fingridConsumptionData.get(item)),
                         new HourValue(item.atZone(fiZoneID).getHour(), (spotData.get(item) * getVAT(item, vat) + margin) * fingridConsumptionData.get(item) / 100),
                         new HourValue(item.atZone(fiZoneID).getHour(), (spotData.get(item) * getVAT(item, vat)) * fingridConsumptionData.get(item) / 100),
-                        new HourValue(item.atZone(fiZoneID).getHour(), spotData.get(item) * getVAT(item, vat))
+                        new HourValue(item.atZone(fiZoneID).getHour(), spotData.get(item) * getVAT(item, vat)),
+                        1
                 ))
                 .reduce(new SpotCalculation(
                         0,
@@ -460,7 +510,8 @@ public class PriceCalculatorService {
                         HourValue.Zero(),
                         HourValue.Zero(),
                         HourValue.Zero(),
-                        HourValue.Zero()
+                        HourValue.Zero(),
+                        0
                 ), (i1, i2) -> new SpotCalculation(
                         i1.totalSpotPrice + i2.totalSpotPrice,
                         i1.totalSpotPriceWithoutMargin + i2.totalSpotPriceWithoutMargin,
@@ -472,7 +523,8 @@ public class PriceCalculatorService {
                         sum(i1.consumptionHours, i2.consumptionHours),
                         sum(i1.costHours, i2.costHours),
                         sum(i1.costHoursWithoutMargin, i2.costHoursWithoutMargin),
-                        sum(i1.spotAveragePerHour, i2.spotAveragePerHour)
+                        sum(i1.spotAveragePerHour, i2.spotAveragePerHour),
+                        i1.n + i2.n
                 ));
     }
 
@@ -683,6 +735,7 @@ public class PriceCalculatorService {
         public double[] costHours = new double[24];
         public double[] costHoursWithoutMargin = new double[24];
         public double[] spotAveragePerHour = new double[24];
+        public int n;
         public CalculationType calculationType;
 
         public SpotCalculation(double totalSpotPrice, double totalSpotPriceWithoutMargin, double totalCost, double totalCostWithoutMargin, double totalConsumption, Instant start, Instant end) {
@@ -695,20 +748,22 @@ public class PriceCalculatorService {
             this.end = end;
         }
 
-        public SpotCalculation(double totalSpotPrice, double totalSpotPriceWithoutMargin, double totalCost, double totalCostWithoutMargin, double totalConsumption, Instant start, Instant end, HourValue consumption, HourValue cost, HourValue costWithoutMargin, HourValue spot) {
+        public SpotCalculation(double totalSpotPrice, double totalSpotPriceWithoutMargin, double totalCost, double totalCostWithoutMargin, double totalConsumption, Instant start, Instant end, HourValue consumption, HourValue cost, HourValue costWithoutMargin, HourValue spot, int n) {
             this(totalSpotPrice, totalSpotPriceWithoutMargin, totalCost, totalCostWithoutMargin, totalConsumption, start, end);
             consumptionHours[consumption.hour] = consumption.value;
             costHours[cost.hour] = cost.value;
             costHoursWithoutMargin[costWithoutMargin.hour] = costWithoutMargin.value;
             spotAveragePerHour[spot.hour] = spot.value;
+            this.n = n;
         }
 
-        public SpotCalculation(double totalSpotPrice, double totalSpotPriceWithoutMargin, double totalCost, double totalCostWithoutMargin, double totalConsumption, Instant start, Instant end, double[] consumptionHours, double[] costHours, double[] costHoursWithoutMargin, double[] spotAveragePerHour) {
+        public SpotCalculation(double totalSpotPrice, double totalSpotPriceWithoutMargin, double totalCost, double totalCostWithoutMargin, double totalConsumption, Instant start, Instant end, double[] consumptionHours, double[] costHours, double[] costHoursWithoutMargin, double[] spotAveragePerHour, int n) {
             this(totalSpotPrice, totalSpotPriceWithoutMargin, totalCost, totalCostWithoutMargin, totalConsumption, start, end);
             this.consumptionHours = consumptionHours;
             this.costHours = costHours;
             this.costHoursWithoutMargin = costHoursWithoutMargin;
             this.spotAveragePerHour = spotAveragePerHour;
+            this.n = n;
         }
 
     }

@@ -156,6 +156,15 @@ public class Utils {
         }
     }
 
+    public static double[] multiply(double[] array, double multiplier) {
+        final var result = new double[array.length];
+        for (int i = 0; i < array.length; ++i) {
+            final var value = array[i] * multiplier;
+            result[i] = value;
+        }
+        return result;
+    }
+
     public static String encodeUrl(String url) throws UnsupportedEncodingException {
         return URLEncoder.encode(url, StandardCharsets.UTF_8);
     }
