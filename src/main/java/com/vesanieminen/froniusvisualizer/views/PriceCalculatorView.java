@@ -276,6 +276,12 @@ public class PriceCalculatorView extends Main {
         priceResolutionComboBox.addValueChangeListener(item -> {
             saveFieldValue(priceResolutionComboBox);
             updateDateTimePickerResolution();
+            if (lastConsumptionData != null) {
+                updateFieldsFromConsumptionData();
+            }
+            if (lastProductionData != null) {
+                updateFieldsFromProductionData();
+            }
         });
         content.add(priceResolutionComboBox);
 
@@ -1284,62 +1290,70 @@ public class PriceCalculatorView extends Main {
         consumptionUpload.addSucceededListener(event -> {
             lastConsumptionData = fileBuffer;
             log.info("Consumption data uploaded: " + ++consumptionFilesUploaded);
-            try {
-                final var consumptionData = getFingridUsageData(lastConsumptionData.getInputStream(), isQuarterlyPriceResolutionEnabled());
-                final var consumptionDataStart = consumptionData.start().atZone(fiZoneID).toLocalDateTime();
-                final var consumptionDataEnd = consumptionData.end().atZone(fiZoneID).toLocalDateTime();
-                final var isStartProductionAfter = startProduction != null && startProduction.isAfter(consumptionDataStart);
-                final var isEndProductionBefore = endProduction != null && endProduction.isBefore(consumptionDataEnd);
-                fromDateTimePicker.setMin(isStartProductionAfter ? startProduction : consumptionDataStart);
-                fromDateTimePicker.setMax(isEndProductionBefore ? endConsumption.minusHours(1) : consumptionDataEnd.minusHours(1));
-                fromDateTimePicker.setValue(isStartProductionAfter ? startProduction : consumptionDataStart);
-                toDateTimePicker.setMin(isStartProductionAfter ? startProduction.plusHours(1) : consumptionDataStart.plusHours(1));
-                toDateTimePicker.setMax(isEndProductionBefore ? endConsumption : consumptionDataEnd);
-                toDateTimePicker.setValue(isEndProductionBefore ? endConsumption : consumptionDataEnd);
-                startConsumption = consumptionDataStart;
-                endConsumption = consumptionDataEnd;
-
-                updateCalculateButtonState();
-                setFieldsEnabled(true);
-                final var isConsumptionData15MinResolution = is15MinResolution(lastConsumptionData.getInputStream());
-                if (!isConsumptionData15MinResolution) {
-                    priceResolutionComboBox.setValue(SettingsDialog.PriceResolution.HOUR_RESOLUTION);
-                    priceResolutionComboBox.setReadOnly(true);
-                } else {
-                    priceResolutionComboBox.setReadOnly(false);
-                }
-            } catch (IOException | ParseException | CsvValidationException e) {
-                throw new RuntimeException(e);
-            }
+            updateFieldsFromConsumptionData();
         });
         consumptionUpload.addFailedListener(e -> setEnabled(false, fixedPriceField, spotMarginField, generalTransferField, spotProductionMarginField, fromDateTimePicker, toDateTimePicker, calculateButton));
+    }
+
+    private void updateFieldsFromConsumptionData() {
+        try {
+            final var consumptionData = getFingridUsageData(lastConsumptionData.getInputStream(), isQuarterlyPriceResolutionEnabled());
+            final var consumptionDataStart = consumptionData.start().atZone(fiZoneID).toLocalDateTime();
+            final var consumptionDataEnd = consumptionData.end().atZone(fiZoneID).toLocalDateTime();
+            final var isStartProductionAfter = startProduction != null && startProduction.isAfter(consumptionDataStart);
+            final var isEndProductionBefore = endProduction != null && endProduction.isBefore(consumptionDataEnd);
+            fromDateTimePicker.setMin(isStartProductionAfter ? startProduction : consumptionDataStart);
+            fromDateTimePicker.setMax(isEndProductionBefore ? endConsumption.minusHours(1) : consumptionDataEnd.minusHours(1));
+            fromDateTimePicker.setValue(isStartProductionAfter ? startProduction : consumptionDataStart);
+            toDateTimePicker.setMin(isStartProductionAfter ? startProduction.plusHours(1) : consumptionDataStart.plusHours(1));
+            toDateTimePicker.setMax(isEndProductionBefore ? endConsumption : consumptionDataEnd);
+            toDateTimePicker.setValue(isEndProductionBefore ? endConsumption : consumptionDataEnd);
+            startConsumption = consumptionDataStart;
+            endConsumption = consumptionDataEnd;
+
+            updateCalculateButtonState();
+            setFieldsEnabled(true);
+            final var isConsumptionData15MinResolution = is15MinResolution(lastConsumptionData.getInputStream());
+            if (!isConsumptionData15MinResolution) {
+                priceResolutionComboBox.setValue(SettingsDialog.PriceResolution.HOUR_RESOLUTION);
+                priceResolutionComboBox.setReadOnly(true);
+            } else {
+                priceResolutionComboBox.setReadOnly(false);
+            }
+        } catch (IOException | ParseException | CsvValidationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void addProductionSucceededListener(MemoryBuffer fileBuffer, Upload productionUpload) {
         productionUpload.addSucceededListener(event -> {
             lastProductionData = fileBuffer;
             log.info("Production data uploaded: " + ++productionFilesUploaded);
-            try {
-                final var productionData = getFingridUsageData(lastProductionData.getInputStream(), isQuarterlyPriceResolutionEnabled());
-                final var productionDataStart = productionData.start().atZone(fiZoneID).toLocalDateTime();
-                final var productionDataEnd = productionData.end().atZone(fiZoneID).toLocalDateTime();
-                final var isStartConsumptionAfter = startConsumption != null && startConsumption.isAfter(productionDataStart);
-                final var isEndConsumptionBefore = endConsumption != null && endConsumption.isBefore(productionDataEnd);
-                fromDateTimePicker.setMin(isStartConsumptionAfter ? startConsumption : productionDataStart);
-                fromDateTimePicker.setMax(isEndConsumptionBefore ? endConsumption.minusHours(1) : productionDataEnd.minusHours(1));
-                fromDateTimePicker.setValue(isStartConsumptionAfter ? startConsumption : productionDataStart);
-                toDateTimePicker.setMin(isStartConsumptionAfter ? startConsumption.plusHours(1) : productionDataStart.plusHours(1));
-                toDateTimePicker.setMax(isEndConsumptionBefore ? endConsumption : productionDataEnd);
-                toDateTimePicker.setValue(isEndConsumptionBefore ? endConsumption : productionDataEnd);
-                startProduction = productionDataStart;
-                endProduction = productionDataEnd;
-                updateCalculateButtonState();
-                setFieldsEnabled(true);
-            } catch (IOException | ParseException | CsvValidationException e) {
-                throw new RuntimeException(e);
-            }
+            updateFieldsFromProductionData();
         });
         productionUpload.addFailedListener(e -> setEnabled(false, fixedPriceField, spotMarginField, generalTransferField, spotProductionMarginField, fromDateTimePicker, toDateTimePicker, calculateButton));
+    }
+
+    private void updateFieldsFromProductionData() {
+        try {
+            final var productionData = getFingridUsageData(lastProductionData.getInputStream(), isQuarterlyPriceResolutionEnabled());
+            final var productionDataStart = productionData.start().atZone(fiZoneID).toLocalDateTime();
+            final var productionDataEnd = productionData.end().atZone(fiZoneID).toLocalDateTime();
+            final var isStartConsumptionAfter = startConsumption != null && startConsumption.isAfter(productionDataStart);
+            final var isEndConsumptionBefore = endConsumption != null && endConsumption.isBefore(productionDataEnd);
+            fromDateTimePicker.setMin(isStartConsumptionAfter ? startConsumption : productionDataStart);
+            fromDateTimePicker.setMax(isEndConsumptionBefore ? endConsumption.minusHours(1) : productionDataEnd.minusHours(1));
+            fromDateTimePicker.setValue(isStartConsumptionAfter ? startConsumption : productionDataStart);
+            toDateTimePicker.setMin(isStartConsumptionAfter ? startConsumption.plusHours(1) : productionDataStart.plusHours(1));
+            toDateTimePicker.setMax(isEndConsumptionBefore ? endConsumption : productionDataEnd);
+            toDateTimePicker.setValue(isEndConsumptionBefore ? endConsumption : productionDataEnd);
+            startProduction = productionDataStart;
+            endProduction = productionDataEnd;
+            updateCalculateButtonState();
+            setFieldsEnabled(true);
+        } catch (IOException | ParseException | CsvValidationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private Chart createChart(PriceCalculatorService.SpotCalculation spotCalculation, boolean isCalculatingFixed, String title, String yAxisTitle, String spotTitle) {
