@@ -341,21 +341,21 @@ public class PriceCalculatorService {
     }
 
     public static double calculateSpotAveragePriceOnMonth(int year, int month) {
-        return getSpotData_60min().entrySet().stream().filter(monthFilter(month, year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / getSpotData_60min().entrySet().stream().filter(monthFilter(month, year)).count();
+        return getSpotData().entrySet().stream().filter(monthFilter(month, year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(monthFilter(month, year)).count();
     }
 
     public static double calculateSpotAveragePriceThisMonth() {
         final var now = getCurrentTimeWithHourPrecision();
         final var month = now.getMonthValue();
         final var year = now.getYear();
-        return getSpotData_60min().entrySet().stream().filter(monthFilter(month, year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / getSpotData_60min().entrySet().stream().filter(monthFilter(month, year)).count();
+        return getSpotData().entrySet().stream().filter(monthFilter(month, year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(monthFilter(month, year)).count();
     }
 
     public static double calculateSpotAveragePriceThisMonthWithoutVAT() {
         final var now = getCurrentTimeWithHourPrecision();
         final var month = now.getMonthValue();
         final var year = now.getYear();
-        return getSpotData_60min().entrySet().stream().filter(monthFilter(month, year)).map(Map.Entry::getValue).reduce(0d, Double::sum) / getSpotData_60min().entrySet().stream().filter(monthFilter(month, year)).count();
+        return getSpotData().entrySet().stream().filter(monthFilter(month, year)).map(Map.Entry::getValue).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(monthFilter(month, year)).count();
     }
 
     public static double calculateSpotAveragePriceToday() {
@@ -363,7 +363,7 @@ public class PriceCalculatorService {
         final var day = now.getDayOfMonth();
         final var month = now.getMonthValue();
         final var year = now.getYear();
-        return getSpotData_60min().entrySet().stream().filter(dayFilter(day, month, year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / getSpotData_60min().entrySet().stream().filter(dayFilter(day, month, year)).count();
+        return getSpotData().entrySet().stream().filter(dayFilter(day, month, year)).map(item -> item.getValue() * getVAT(item.getKey())).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(dayFilter(day, month, year)).count();
     }
 
     public static double calculateSpotAveragePriceTodayWithoutVAT() {
@@ -371,7 +371,7 @@ public class PriceCalculatorService {
         final var day = now.getDayOfMonth();
         final var month = now.getMonthValue();
         final var year = now.getYear();
-        return getSpotData_60min().entrySet().stream().filter(dayFilter(day, month, year)).map(Map.Entry::getValue).reduce(0d, Double::sum) / getSpotData_60min().entrySet().stream().filter(dayFilter(day, month, year)).count();
+        return getSpotData().entrySet().stream().filter(dayFilter(day, month, year)).map(Map.Entry::getValue).reduce(0d, Double::sum) / getSpotData().entrySet().stream().filter(dayFilter(day, month, year)).count();
     }
 
     public static List<Double> getPricesToday() {
@@ -379,7 +379,7 @@ public class PriceCalculatorService {
         final var day = now.getDayOfMonth();
         final var month = now.getMonthValue();
         final var year = now.getYear();
-        return getSpotData_60min().entrySet().stream().filter(dayFilter(day, month, year)).map(item -> item.getValue() * getVAT(item.getKey())).collect(Collectors.toList());
+        return getSpotData().entrySet().stream().filter(dayFilter(day, month, year)).map(item -> item.getValue() * getVAT(item.getKey())).collect(Collectors.toList());
     }
 
     public static List<Double> getPricesTomorrow() {
@@ -387,7 +387,7 @@ public class PriceCalculatorService {
         final var day = now.getDayOfMonth() + 1;
         final var month = now.getMonthValue();
         final var year = now.getYear();
-        return getSpotData_60min().entrySet().stream().filter(dayFilter(day, month, year)).map(item -> item.getValue() * getVAT(item.getKey())).collect(Collectors.toList());
+        return getSpotData().entrySet().stream().filter(dayFilter(day, month, year)).map(item -> item.getValue() * getVAT(item.getKey())).collect(Collectors.toList());
     }
 
     public static List<Map.Entry<Instant, Double>> getPriceDataToday() {
@@ -395,20 +395,20 @@ public class PriceCalculatorService {
         final var day = now.getDayOfMonth();
         final var month = now.getMonthValue();
         final var year = now.getYear();
-        return getSpotData_60min().entrySet().stream().filter(dayFilter(day, month, year)).map(item -> Map.entry(item.getKey(), item.getValue() * getVAT(item.getKey()))).collect(Collectors.toList());
+        return getSpotData().entrySet().stream().filter(dayFilter(day, month, year)).map(item -> Map.entry(item.getKey(), item.getValue() * getVAT(item.getKey()))).collect(Collectors.toList());
     }
 
     public static Set<Map.Entry<Instant, Double>> getPriceDataForMonth() {
         final var now = getCurrentTimeWithHourPrecision();
         final var month = now.getMonthValue();
         final var year = now.getYear();
-        return getSpotData_60min().entrySet().stream().filter(monthFilter(month, year)).map(item -> Map.entry(item.getKey(), item.getValue() * getVAT(item.getKey()))).collect(Collectors.toSet());
+        return getSpotData().entrySet().stream().filter(monthFilter(month, year)).map(item -> Map.entry(item.getKey(), item.getValue() * getVAT(item.getKey()))).collect(Collectors.toSet());
     }
 
     public static List<Double> getPricesForYear() {
         final var now = getCurrentTimeWithHourPrecision();
         final var year = now.getYear();
-        return getSpotData_60min().entrySet().stream().filter(yearFilter(year)).map(item -> item.getValue() * getVAT(item.getKey())).collect(Collectors.toList());
+        return getSpotData().entrySet().stream().filter(yearFilter(year)).map(item -> item.getValue() * getVAT(item.getKey())).collect(Collectors.toList());
     }
 
     public static List<NordpoolPrice> getPrices() {
