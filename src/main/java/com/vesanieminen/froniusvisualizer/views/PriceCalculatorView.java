@@ -1570,7 +1570,7 @@ public class PriceCalculatorView extends Main {
 
         final var pksAd = new Span(getTranslation("PKS.ad"));
         pksAd.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.CENTER);
-        final var priimaAnchor = new Anchor("https://bit.ly/priima-sahkosopimus", priimaImage, pksAd);
+        final var priimaAnchor = new Anchor("https://www.pks.fi/sahkosopimus-kotiin/priima-sahkosopimus?utm_source=liukuri&utm_medium=banner", priimaImage, pksAd);
         final var tooltip = com.vaadin.flow.component.shared.Tooltip.forComponent(priimaAnchor);
 
         tooltip.setText(getTranslation("PKS.ad.tooltip"));
