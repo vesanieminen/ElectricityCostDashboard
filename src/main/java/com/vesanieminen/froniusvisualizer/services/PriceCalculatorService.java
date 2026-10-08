@@ -30,6 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -161,9 +162,9 @@ public class PriceCalculatorService {
 
         String[] line;
         while ((line = csvReader.readNext()) != null) {
-            // in case the Fingrid csv data has rows that contain: "null;MISSING", skip them
+            // rows that contain "null;MISSING" are gaps: skip them and keep reading the rest of the file
             if ("MISSING".equals(line[getColumnIndex(isNewFormat, 6)])) {
-                break;
+                continue;
             }
             final var instant = Instant.parse(line[getColumnIndex(isNewFormat, 4)]);
             if (isNewFormat) {
@@ -200,60 +201,46 @@ public class PriceCalculatorService {
         String[] header = csvReader.readNext();
         boolean isNewFormat = header.length == 8;
 
+        // values by period start; hours combined from 15 min values are added once all four quarters are known
+        final var values = new TreeMap<Instant, Double>();
+        final var quarterSums = new HashMap<Instant, Double>();
+        final var quarterCounts = new HashMap<Instant, Integer>();
         String[] line;
         while ((line = csvReader.readNext()) != null) {
-            // in case the Fingrid csv data has rows that contain: "null;MISSING", skip them
+            // rows that contain "null;MISSING" are gaps: skip them and keep reading the rest of the file
             if ("MISSING".equals(line[getColumnIndex(isNewFormat, 6)])) {
-                break;
+                continue;
             }
             final var instant = Instant.parse(line[getColumnIndex(isNewFormat, 4)]);
+            final double value;
             if (isNewFormat) {
                 // On 2023-01-16 Fingrid changed from . to , for the comma separator
-                if (line[6].contains(".")) {
-                    map.put(instant, Double.parseDouble(line[6]));
-                } else {
-                    // in case of 15min interval data exists in Fingrid file
-                    if ("PT15M".equals(line[2])) {
-                        // Quarterly spot prices exist and are wanted
-                        if (quarterPriceInstant.compareTo(instant) <= 0 && useQuarterlyPricePrecision) {
-                            map.put(instant, numberFormat.parse(line[6]).doubleValue());
-                        }
-                        // combine 4 x 15 min values into 1h
-                        else {
-                            final var _15Min = csvReader.readNext();
-                            final var _30Min = csvReader.readNext();
-                            final var _45Min = csvReader.readNext();
-                            // skip if there are no values to combine for a full hour
-                            if (_15Min == null || _30Min == null || _45Min == null) {
-                                break;
-                            }
-                            // also skip if one of the 15min interval values is missing
-                            if ("MISSING".equals(_15Min[getColumnIndex(true, 6)]) || "MISSING".equals(_30Min[getColumnIndex(isNewFormat, 6)]) || "MISSING".equals(_45Min[getColumnIndex(isNewFormat, 6)])) {
-                                break;
-                            }
-                            final var value00Min = numberFormat.parse(line[6]).doubleValue();
-                            final var value15Min = numberFormat.parse(_15Min[6]).doubleValue();
-                            final var value30Min = numberFormat.parse(_30Min[6]).doubleValue();
-                            final var value45Min = numberFormat.parse(_45Min[6]).doubleValue();
-                            map.put(instant, value00Min + value15Min + value30Min + value45Min);
-                        }
-
-                    } else {
-                        map.put(instant, numberFormat.parse(line[6]).doubleValue());
-                    }
-                }
+                value = line[6].contains(".") ? Double.parseDouble(line[6]) : numberFormat.parse(line[6]).doubleValue();
             } else {
-                map.put(instant, numberFormat.parse(line[5]).doubleValue());
+                value = numberFormat.parse(line[5]).doubleValue();
             }
-            if (start.isAfter(instant)) {
-                start = instant;
-            }
-            if (end.isBefore(instant)) {
-                end = instant;
+            // 15 min values are combined into hours unless quarterly spot prices exist and are wanted
+            final var combineToHour = isNewFormat && !line[6].contains(".") && "PT15M".equals(line[2])
+                    && !(quarterPriceInstant.compareTo(instant) <= 0 && useQuarterlyPricePrecision);
+            if (combineToHour) {
+                final var hour = instant.truncatedTo(ChronoUnit.HOURS);
+                quarterSums.merge(hour, value, Double::sum);
+                quarterCounts.merge(hour, 1, Integer::sum);
+            } else {
+                values.put(instant, value);
             }
         }
+        // an hour with a missing quarter stays a gap
+        quarterCounts.forEach((hour, count) -> {
+            if (count == 4) {
+                values.put(hour, quarterSums.get(hour));
+            }
+        });
         reader.close();
-        return new FingridUsageData(map, start, end);
+        if (values.isEmpty()) {
+            return new FingridUsageData(new LinkedHashMap<>(), start, end);
+        }
+        return new FingridUsageData(new LinkedHashMap<>(values), values.firstKey(), values.lastKey());
     }
 
     private static int getColumnIndex(boolean isNewFormat, int index) {
