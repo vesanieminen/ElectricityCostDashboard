@@ -1,8 +1,8 @@
 package com.vesanieminen.froniusvisualizer.views;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Component;
@@ -58,7 +58,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.jetbrains.annotations.NotNull;
 import org.vaadin.miki.superfields.numbers.SuperDoubleField;
 
 import java.io.ByteArrayInputStream;
@@ -880,7 +879,7 @@ public class PriceCalculatorView extends Main {
         return SettingsDialog.PriceResolution.QUARTER_RESOLUTION.equals(priceResolutionComboBox.getValue());
     }
 
-    private static @NotNull String calculateCostFactorPercentage(PriceCalculatorService.SpotCalculation spotCalculation, DecimalFormat twoDecimalsWithPlusPrefix, boolean withSuffix) {
+    private static String calculateCostFactorPercentage(PriceCalculatorService.SpotCalculation spotCalculation, DecimalFormat twoDecimalsWithPlusPrefix, boolean withSuffix) {
         final var priceWithoutMargin = spotCalculation.totalCostWithoutMargin / spotCalculation.totalConsumption * 100;
         final var loweredCost = (priceWithoutMargin - spotCalculation.averagePriceWithoutMargin) / Math.abs(spotCalculation.averagePriceWithoutMargin) * 100;
         return withSuffix ? "%s %%".formatted(twoDecimalsWithPlusPrefix.format(loweredCost)) : "%s".formatted(twoDecimalsWithPlusPrefix.format(loweredCost));
@@ -1150,7 +1149,7 @@ public class PriceCalculatorView extends Main {
         }
     }
 
-    private @NotNull Div createDivWithTooltip(String title, String tooltip, String suffix) {
+    private Div createDivWithTooltip(String title, String tooltip, String suffix) {
         final var span = new Span(getTranslation(title));
         span.addClassNames(
                 LumoUtility.TextOverflow.ELLIPSIS,
@@ -1166,7 +1165,7 @@ public class PriceCalculatorView extends Main {
         return div;
     }
 
-    private static @NotNull String getPricePartName(double averagePrice, int cheapLimit, int normalLimit) {
+    private static String getPricePartName(double averagePrice, int cheapLimit, int normalLimit) {
         if (averagePrice <= cheapLimit) {
             return "cheap";
         } else if (averagePrice < normalLimit) {
@@ -1195,7 +1194,7 @@ public class PriceCalculatorView extends Main {
         return weightedAverage;
     }
 
-    private @NotNull DoubleLabel createCostEffectSpan(String costEffectFormatted) {
+    private DoubleLabel createCostEffectSpan(String costEffectFormatted) {
         final var spotDifferenceSpan = new DoubleLabel(getTranslation("calculator.spot.difference.cents"), costEffectFormatted + " " + getTranslation("c/kWh"), true);
         final var spanTop = spotDifferenceSpan.getSpanTop();
         spanTop.addClassNames(
@@ -1637,7 +1636,7 @@ public class PriceCalculatorView extends Main {
     public void saveCheckboxGroupValues() {
         try {
             WebStorage.setItem(calculationsCheckboxGroup.getId().orElseThrow(), mapper.writeValueAsString(calculationsCheckboxGroup.getValue()));
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             log.info("Could not save values: %s".formatted(e.toString()));
         }
     }
@@ -1645,7 +1644,7 @@ public class PriceCalculatorView extends Main {
     public <C extends AbstractField<C, T>, T> void saveFieldValue(AbstractField<C, T> field) {
         try {
             WebStorage.setItem(field.getId().orElseThrow(), mapper.writeValueAsString(field.getValue()));
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             log.info("Could not save value: %s".formatted(e.toString()));
         }
     }
@@ -1659,7 +1658,7 @@ public class PriceCalculatorView extends Main {
                 Set<Calculations> calculationsSet = mapper.readValue(item, new TypeReference<>() {
                 });
                 calculationsCheckboxGroup.setValue(calculationsSet);
-            } catch (IOException e) {
+            } catch (JacksonException e) {
                 log.info("Could not read values: %s".formatted(e.toString()));
             }
         });
@@ -1691,7 +1690,7 @@ public class PriceCalculatorView extends Main {
             T value = mapper.readValue(key, new TypeReference<>() {
             });
             hasValue.setValue(value);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             log.info("Could not read value: %s".formatted(e.toString()));
         }
     }
@@ -1704,7 +1703,7 @@ public class PriceCalculatorView extends Main {
             var value = mapper.readValue(key, new TypeReference<SettingsDialog.PriceResolution>() {
             });
             priceResolutionField.setValue(value);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             log.info("Could not read value: %s".formatted(e.toString()));
         }
     }
@@ -1717,7 +1716,7 @@ public class PriceCalculatorView extends Main {
             var value = mapper.readValue(key, new TypeReference<NordpoolspotView.VAT>() {
             });
             vatField.setValue(value);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             log.info("Could not read value: %s".formatted(e.toString()));
         }
     }

@@ -20,6 +20,8 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.page.WebStorage;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.BeforeEvent;
@@ -43,7 +45,7 @@ import static com.vesanieminen.froniusvisualizer.util.Utils.enLocale;
 import static com.vesanieminen.froniusvisualizer.util.Utils.fiLocale;
 import static com.vesanieminen.froniusvisualizer.util.Utils.getZoomLevel;
 
-public class MainLayout extends AppLayout implements BeforeEnterObserver {
+public class MainLayout extends AppLayout implements BeforeEnterObserver, AfterNavigationObserver {
 
     public static final String URL_SUFFIX = " ⋅ Liukuri";
     private final ObjectMapperService objectMapperService;
@@ -207,8 +209,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     }
 
     @Override
-    protected void afterNavigation() {
-        super.afterNavigation();
+    public void afterNavigation(AfterNavigationEvent event) {
         title.setText(getCurrentPageTitle());
 
         //settingsDialog.open();

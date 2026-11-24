@@ -12,7 +12,7 @@ COPY . /app/
 WORKDIR /app/
 ARG offlinekey
 ENV VAADIN_OFFLINE_KEY=$offlinekey
-RUN ./mvnw clean test package -Pproduction
+RUN ./mvnw clean test package
 RUN ls -la /app/target
 # At this point, we have the app (executable jar file):  /app/target/froniusvizualizer-1.0-SNAPSHOT.jar
 

@@ -16,7 +16,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import java.time.DayOfWeek;
@@ -96,7 +95,7 @@ public class DailyHourlyPricesView extends Main {
         add(cssGrid, grid);
     }
 
-    private @NotNull Grid<Map<String, Double>> createGrid() {
+    private Grid<Map<String, Double>> createGrid() {
         Grid<Map<String, Double>> grid = new Grid<>();
 
         // Add a column for the hour
@@ -175,8 +174,8 @@ public class DailyHourlyPricesView extends Main {
                     return "expensive";
                 });
 
-        // Set a class name generator to style the summary row
-        grid.setClassNameGenerator(item -> {
+        // Set a part name generator to style the summary row
+        grid.setPartNameGenerator(item -> {
             if (item.containsKey("SummaryRow")) {
                 return "summary-row"; // This class can be used in your CSS to style the row
             }

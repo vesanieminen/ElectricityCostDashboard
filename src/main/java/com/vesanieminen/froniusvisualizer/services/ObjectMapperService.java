@@ -1,8 +1,8 @@
 package com.vesanieminen.froniusvisualizer.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -14,7 +14,6 @@ import com.vesanieminen.froniusvisualizer.components.SettingsDialog;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
@@ -33,7 +32,7 @@ public class ObjectMapperService {
         try {
             WebStorage.setItem(field.getId().orElseThrow(), objectMapper.writeValueAsString(field.getValue()));
             VaadinSession.getCurrent().setAttribute(field.getId().orElseThrow(), field.getValue());
-        } catch (JsonProcessingException | NoSuchElementException e) {
+        } catch (JacksonException | NoSuchElementException e) {
             log.info("Could not save value: %s".formatted(e.toString()));
         }
     }
@@ -46,7 +45,7 @@ public class ObjectMapperService {
             T value = objectMapper.readValue(key, new TypeReference<>() {
             });
             hasValue.setValue(value);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             log.info("Could not read value: %s".formatted(e.toString()));
         }
     }
@@ -59,7 +58,7 @@ public class ObjectMapperService {
             var value = objectMapper.readValue(key, new TypeReference<LocalDateTime>() {
             });
             dateTimePicker.setValue(value);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             log.info("Could not read value: %s".formatted(e.toString()));
         }
     }
@@ -73,7 +72,7 @@ public class ObjectMapperService {
             });
             VaadinSession.getCurrent().setAttribute(SettingsDialog.ZoomLevel.class, value);
             return value;
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             log.info("Could not read value: %s".formatted(e.toString()));
         }
         return null;
@@ -88,7 +87,7 @@ public class ObjectMapperService {
             });
             zoomLevel.setValue(value);
             VaadinSession.getCurrent().setAttribute(key, value);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             log.info("Could not read value: %s".formatted(e.toString()));
         }
     }
@@ -102,7 +101,7 @@ public class ObjectMapperService {
             });
             VaadinSession.getCurrent().setAttribute(SettingsDialog.PriceResolution.class, value);
             return value;
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             log.info("Could not read value: %s".formatted(e.toString()));
         }
         return null;
@@ -117,7 +116,7 @@ public class ObjectMapperService {
             });
             priceResolution.setValue(value);
             VaadinSession.getCurrent().setAttribute(key, value);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             log.info("Could not read value: %s".formatted(e.toString()));
         }
     }
@@ -130,7 +129,7 @@ public class ObjectMapperService {
             var value = objectMapper.readValue(key, new TypeReference<LocalDate>() {
             });
             datePicker.setValue(value);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             log.info("Could not read value: %s".formatted(e.toString()));
         }
     }
