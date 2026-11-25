@@ -27,7 +27,15 @@ jobs:
           java-version: '21'
           cache: maven
 
-      # Vaadin Charts needs a license for production builds. CI only checks that the
-      # build works, so it builds with a watermark instead (no license key needed).
+      # Vaadin Charts needs a license for production builds. Pull requests from forks
+      # get no secrets, so without the key the build falls back to a watermarked build.
       - name: Build and test
-        run: ./mvnw -B -ntp -Dvaadin.commercialWithBanner verify
+        env:
+          VAADIN_OFFLINE_KEY: ${{ secrets.VAADIN_OFFLINE_KEY }}
+        run: |
+          if [ -n "$VAADIN_OFFLINE_KEY" ]; then
+            ./mvnw -B -ntp verify
+          else
+            echo "::notice::No Vaadin license key available, building with a watermark"
+            ./mvnw -B -ntp -Dvaadin.commercialWithBanner verify
+          fi
