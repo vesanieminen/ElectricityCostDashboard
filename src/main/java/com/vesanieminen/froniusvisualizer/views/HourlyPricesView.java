@@ -27,7 +27,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -107,7 +106,7 @@ public class HourlyPricesView extends Main {
         add(cssGrid, chart, grid);
     }
 
-    private @NotNull Grid<PriceCalculatorService.HourValue> createGrid() {
+    private Grid<PriceCalculatorService.HourValue> createGrid() {
         final Grid<PriceCalculatorService.HourValue> grid;
         grid = new Grid<>(PriceCalculatorService.HourValue.class, false);
         grid.setAllRowsVisible(true);

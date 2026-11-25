@@ -9,7 +9,6 @@ import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -433,7 +432,7 @@ public class PriceCalculatorService {
         }
     }
 
-    private static @NotNull SpotCalculation splitAndCalculate(LinkedHashMap<Instant, Double> fingridConsumptionData, double margin, boolean vat, LinkedHashMap<Instant, Double> spotData) {
+    private static SpotCalculation splitAndCalculate(LinkedHashMap<Instant, Double> fingridConsumptionData, double margin, boolean vat, LinkedHashMap<Instant, Double> spotData) {
         // Calculate consumption data with 1 hour resolution prior to 1.10.2025 0:00
         final var oneHourConsumptionData = getDateTimeRange(fingridConsumptionData, fingridConsumptionData.firstEntry().getKey(), quarterPriceInstant.minusSeconds(60));
         final var oneHourSpotCalculation = doCalculationByHour(oneHourConsumptionData, margin, vat, spotData);
@@ -471,7 +470,7 @@ public class PriceCalculatorService {
         );
     }
 
-    private static @NotNull SpotCalculation doCalculationByHour(LinkedHashMap<Instant, Double> fingridConsumptionData, double margin, boolean vat, LinkedHashMap<Instant, Double> spotData) {
+    private static SpotCalculation doCalculationByHour(LinkedHashMap<Instant, Double> fingridConsumptionData, double margin, boolean vat, LinkedHashMap<Instant, Double> spotData) {
         final var spotCalculation = calculateSpotCosts(fingridConsumptionData, margin, vat, spotData);
         final var count = fingridConsumptionData.keySet().stream().filter(spotData::containsKey).count();
         final var countOrOne = count == 0 ? 1 : count;
@@ -483,7 +482,7 @@ public class PriceCalculatorService {
         return spotCalculation;
     }
 
-    private static @NotNull SpotCalculation calculateSpotCosts(LinkedHashMap<Instant, Double> fingridConsumptionData, double margin, boolean vat, LinkedHashMap<Instant, Double> spotData) {
+    private static SpotCalculation calculateSpotCosts(LinkedHashMap<Instant, Double> fingridConsumptionData, double margin, boolean vat, LinkedHashMap<Instant, Double> spotData) {
         return fingridConsumptionData.keySet().stream().filter(spotData::containsKey)
                 .map(item -> new SpotCalculation(
                         spotData.get(item) * getVAT(item, vat) + margin,

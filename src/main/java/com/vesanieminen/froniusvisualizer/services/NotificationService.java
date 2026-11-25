@@ -1,6 +1,6 @@
 package com.vesanieminen.froniusvisualizer.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import com.vesanieminen.froniusvisualizer.services.model.NotificationSubscription;
 import com.vesanieminen.froniusvisualizer.services.model.PriceNotification;
@@ -60,7 +60,11 @@ public class NotificationService {
     @PostConstruct
     private void init() throws GeneralSecurityException {
         Security.addProvider(new BouncyCastleProvider());
-        pushService = new PushService(publicKey, privateKey, subject);
+        if (!privateKey.isBlank()) {
+            pushService = new PushService(publicKey, privateKey, subject);
+        } else {
+            log.warn("No VAPID keys found, notifications disabled");
+        }
     }
 
     public List<PriceNotification> listNotifications(UUID userId) {
@@ -88,6 +92,9 @@ public class NotificationService {
 
     @Scheduled(cron = "0 0 * * * *")
     public void sendNotifications() {
+        if (pushService == null) {
+            return;
+        }
         log.info("Starting to send hourly notifications...");
 
         Instant now = Instant.now().truncatedTo(ChronoUnit.HOURS);
@@ -143,7 +150,7 @@ public class NotificationService {
                         "Price now %.2f c/kWh. %s".formatted(priceNow, pn.getExtraMsg())
                                 + peakLowMsg;
                 String title = up ? "Prices going up!": "Prices going down!";
-                Message message = new Message(title, body);
+                Message message = new Message(title, new Message.Options(body));
                 Subscription s = getSubscription(pn.getSubscriptionId());
                 sendNotification(s, message);
             }
@@ -192,8 +199,13 @@ public class NotificationService {
         return publicKey;
     }
 
-    public record Message(String title, String body) {
-        
+    /**
+     * Web push payload, in the shape Vaadin's default service worker expects:
+     * it calls {@code showNotification(title, options)}.
+     */
+    public record Message(String title, Options options) {
+        public record Options(String body) {
+        }
     }
 
     ObjectMapper mapper = new ObjectMapper();

@@ -1,6 +1,6 @@
 package com.vesanieminen.froniusvisualizer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.vesanieminen.froniusvisualizer.services.NordpoolSpotService;
 import com.vesanieminen.froniusvisualizer.services.model.NordpoolPrice;
 import lombok.AllArgsConstructor;
