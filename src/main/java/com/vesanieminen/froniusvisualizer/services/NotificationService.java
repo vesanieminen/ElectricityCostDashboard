@@ -60,7 +60,7 @@ public class NotificationService {
     @PostConstruct
     private void init() throws GeneralSecurityException {
         Security.addProvider(new BouncyCastleProvider());
-        if(!privateKey.isEmpty()) {
+        if (!privateKey.isBlank()) {
             pushService = new PushService(publicKey, privateKey, subject);
         } else {
             log.warn("No VAPID keys found, notifications disabled");
@@ -92,6 +92,9 @@ public class NotificationService {
 
     @Scheduled(cron = "0 0 * * * *")
     public void sendNotifications() {
+        if (pushService == null) {
+            return;
+        }
         log.info("Starting to send hourly notifications...");
 
         Instant now = Instant.now().truncatedTo(ChronoUnit.HOURS);
