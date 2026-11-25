@@ -106,7 +106,6 @@ export class HistoryTemplate extends LitElement {
                 xDateFormat: "%A<br />%H:%M %e.%m.%Y",
             },
             time: {
-                useUTC: false,
                 timezone: 'Europe/Helsinki'
             },
             xAxis: {

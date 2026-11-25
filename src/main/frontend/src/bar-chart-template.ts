@@ -140,7 +140,6 @@ export class BarChartTemplate extends LitElement {
                 shared: true,
             },
             time: {
-                useUTC: false,
                 timezone: 'Europe/Helsinki'
             },
             xAxis: {

@@ -23,16 +23,16 @@
     "experimentalDecorators": true,
     "useDefineForClassFields": false,
     "paths": {
-      "@vaadin/flow-frontend": ["./frontend/generated/jar-resources"],
-      "@vaadin/flow-frontend/*": ["./frontend/generated/jar-resources/*"],
-      "Frontend/*": ["./frontend/*"]
+      "@vaadin/flow-frontend": ["./src/main/frontend/generated/jar-resources"],
+      "@vaadin/flow-frontend/*": ["./src/main/frontend/generated/jar-resources/*"],
+      "Frontend/*": ["./src/main/frontend/*"]
     }
   },
   "include": [
-    "frontend/**/*",
+    "src/main/frontend/**/*",
     "types.d.ts"
   ],
   "exclude": [
-    "frontend/generated/jar-resources/**"
+    "src/main/frontend/generated/jar-resources/**"
   ]
 }

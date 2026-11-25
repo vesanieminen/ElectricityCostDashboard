@@ -27,5 +27,7 @@ jobs:
           java-version: '21'
           cache: maven
 
+      # Vaadin Charts needs a license for production builds. CI only checks that the
+      # build works, so it builds with a watermark instead (no license key needed).
       - name: Build and test
-        run: ./mvnw -B -ntp verify
+        run: ./mvnw -B -ntp -Dvaadin.commercialWithBanner verify

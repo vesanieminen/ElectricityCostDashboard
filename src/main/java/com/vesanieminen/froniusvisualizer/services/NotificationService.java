@@ -150,7 +150,7 @@ public class NotificationService {
                         "Price now %.2f c/kWh. %s".formatted(priceNow, pn.getExtraMsg())
                                 + peakLowMsg;
                 String title = up ? "Prices going up!": "Prices going down!";
-                Message message = new Message(title, body);
+                Message message = new Message(title, new Message.Options(body));
                 Subscription s = getSubscription(pn.getSubscriptionId());
                 sendNotification(s, message);
             }
@@ -199,8 +199,13 @@ public class NotificationService {
         return publicKey;
     }
 
-    public record Message(String title, String body) {
-        
+    /**
+     * Web push payload, in the shape Vaadin's default service worker expects:
+     * it calls {@code showNotification(title, options)}.
+     */
+    public record Message(String title, Options options) {
+        public record Options(String body) {
+        }
     }
 
     ObjectMapper mapper = new ObjectMapper();
